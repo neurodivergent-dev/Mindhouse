@@ -220,7 +220,7 @@ Related to #
 
 ---
 
-**Thank you for contributing to AkılHane! 🚀**
+**Thank you for contributing to Mindhouse! 🚀**
 
 <!-- 
 Template Usage Notes:

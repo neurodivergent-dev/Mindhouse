@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
 
 interface HuggingFaceImageGeneratorProps {
   description: string;
@@ -30,6 +31,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
   onImageGenerated,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("ImageGenerator");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [showImage, setShowImage] = useState(true);
@@ -121,7 +123,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
   };
 
   // Alt text for the generated image
-  const imageAltText = `${topic} konusu için Pollinations.ai ile üretilen AI görsel - ${description}`;
+  const imageAltText = t("imageAlt", { topic });
 
   return (
     <Card className="shadow-lg border-purple-200 dark:border-purple-700">
@@ -130,7 +132,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-purple-600" />
             <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-              Pollinations.ai Görsel Üretici
+              {t("title")}
             </CardTitle>
           </div>
           <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -142,7 +144,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
         {/* Görsel Açıklaması */}
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
           <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-2">
-            AI Görsel Açıklaması:
+            {t("descriptionLabel")}
           </h4>
           <p className="text-sm text-purple-700 dark:text-purple-400">
             {description}
@@ -159,12 +161,12 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Pollinations.ai Görsel Üretiliyor...
+                {t("generating")}
               </>
             ) : (
               <>
                 <Image className="w-4 h-4 mr-2" />
-                Pollinations.ai Görsel Üret
+                {t("generateButton")}
               </>
             )}
           </Button>
@@ -242,13 +244,13 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
                 className="flex-1"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Yeniden Üret
+                {t("regenerate")}
               </Button>
             </div>
 
             {/* Görsel Bilgileri */}
             <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              <p>Pollinations.ai tarafından üretilen görsel</p>
+              <p>{t("producedBy")}</p>
               <p>
                 Konu: {topic} | Ders: {subject}
               </p>
@@ -258,12 +260,12 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
 
         {/* Bilgi */}
         <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-          <p className="font-medium mb-1">ℹ️ Pollinations.ai Görsel Üretimi:</p>
+          <p className="font-medium mb-1">ℹ️ {t("infoTitle")}</p>
           <ul className="space-y-1 text-xs">
-            <li>• Tamamen ücretsiz AI görsel üretimi</li>
-            <li>• Yüksek kaliteli ve hızlı</li>
-            <li>• API key gerektirmez</li>
-            <li>• 768x768 çözünürlük</li>
+            <li>• {t("infoFree")}</li>
+            <li>• {t("infoQuality")}</li>
+            <li>• {t("infoNoKey")}</li>
+            <li>• {t("infoResolution")}</li>
           </ul>
         </div>
       </CardContent>

@@ -1,10 +1,12 @@
 import { useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useToast } from "@/hooks/use-toast";
 import { QuestionService } from "@/services/supabase-service";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
 import type { Question, Answer } from "@/lib/types";
 import type { InsertTables } from "@/lib/supabase";
 import type { AIGeneratedQuestion, AIGenerationResult, Subject } from "@/types/question-manager";
+import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 
 export const useAIGeneration = (
   isAuthenticated: boolean,
@@ -19,6 +21,8 @@ export const useAIGeneration = (
   setQuestions: (questions: Question[] | ((prev: Question[]) => Question[])) => void,
   calculateRealQuestionCount: (subjects: Subject[]) => Promise<Subject[]>,
 ) => {
+  const t = useTranslations("QuestionManager");
+  const locale = useLocale();
   const { toast } = useToast();
 
   // Generate AI questions
@@ -43,6 +47,17 @@ export const useAIGeneration = (
         .filter(q => q.subject === formData.subject && q.topic === formData.topic)
         .map(q => q.text);
 
+      // Load AI preferences from localStorage (centralized)
+      const aiPreferences = getStoredAiPreferences();
+      if (!isAiConfigured(aiPreferences)) {
+        toast({
+          title: t("aiServiceError"),
+          description: t("aiApiKeyError") || "AI service configuration error. Please check your API key in Settings.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Call the AI service
       const result = await aiGenerateQuestions({
         subject: formData.subject,
@@ -50,41 +65,54 @@ export const useAIGeneration = (
         difficulty: formData.difficulty,
         type: formData.type,
         count: formData.count,
-        language: "tr", // Turkish language
+        language: locale === "en" ? "en" : "tr",
         existingQuestions: existingQuestions.length > 0 ? existingQuestions : undefined,
         guidelines: formData.guidelines || undefined,
-      });
+      }, aiPreferences);
 
-      // Ensure type compatibility by handling optional formula property
+      // Ensure type compatibility by handling optional properties
       const compatibleQuestions: AIGeneratedQuestion[] = result.questions.map((q) => ({
         ...q,
         formula: q.formula || "",
+        topic: q.topic || formData.topic || "",
+        difficulty: q.difficulty || formData.difficulty || "Medium",
+        keywords: q.keywords || [],
+        learningObjective: q.learningObjective || "",
       }));
 
       const compatibleResult: AIGenerationResult = {
         ...result,
         questions: compatibleQuestions,
+        qualityScore: result.qualityScore || 0.8,
+        suggestions: Array.isArray(result.suggestions) ? result.suggestions : (result.suggestions ? [result.suggestions as unknown as string] : []),
+        metadata: result.metadata || {
+          totalGenerated: compatibleQuestions.length,
+          subject: formData.subject || "",
+          topic: formData.topic || "",
+          averageDifficulty: formData.difficulty || "Medium",
+          generationTimestamp: new Date().toISOString(),
+        }
       };
 
       setAIGeneratedQuestions(compatibleQuestions);
       setAIGenerationResult(compatibleResult);
 
       toast({
-        title: "Başarılı",
-        description: `${result.questions.length} soru başarıyla oluşturuldu.`,
+        title: t("success"),
+        description: t("aiQuestionsGenerated", { count: result.questions.length }),
       });
     } catch (error) {
       // Check if it's an API key issue
-      if (error instanceof Error && error.message.includes("API key")) {
+      if (error instanceof Error && /api key|not configured/i.test(error.message)) {
         toast({
-          title: "AI Servisi Hatası",
-          description: "Google AI API anahtarı bulunamadı. Lütfen GEMINI_API_KEY, GOOGLE_GENAI_API_KEY veya GOOGLE_AI_API_KEY environment variable'ını ayarlayın.",
+          title: t("aiServiceError"),
+          description: t("aiApiKeyError"),
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Hata",
-          description: "AI soruları oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+          title: t("error"),
+          description: t("aiGenerateError"),
           variant: "destructive",
         });
       }
@@ -184,15 +212,15 @@ export const useAIGeneration = (
       setSubjects(updatedSubjects);
 
       toast({
-        title: "Başarılı",
-        description: `${questionsToAdd.length} AI sorusu başarıyla eklendi.`,
+        title: t("success"),
+        description: t("aiQuestionsAdded", { count: questionsToAdd.length }),
       });
 
       return true;
     } catch {
       toast({
-        title: "Hata",
-        description: "AI soruları eklenirken bir hata oluştu.",
+        title: t("error"),
+        description: t("aiQuestionsAddError"),
         variant: "destructive",
       });
       return false;

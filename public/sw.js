@@ -1,4 +1,4 @@
-const CACHE_NAME = 'akilhane-v1.0.0';
+const CACHE_NAME = 'mindhouse-v1.0.0';
 const urlsToCache = [
   '/',
   '/quiz',
@@ -148,7 +148,7 @@ const urlsToCache = [
 //                     <head>
 //                       <meta charset="UTF-8">
 //                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//                       <title>AkılHane - Çevrimdışı</title>
+//                       <title>Mindhouse - Çevrimdışı</title>
 //                       <style>
 //                         body { 
 //                           font-family: 'Inter', sans-serif; 
@@ -171,7 +171,7 @@ const urlsToCache = [
 //                     </head>
 //                     <body>
 //                       <div class="container">
-//                         <h1>📱 AkılHane</h1>
+//                         <h1>📱 Mindhouse</h1>
 //                         <p>Şu anda çevrimdışısınız. İnternet bağlantınızı kontrol edip tekrar deneyin.</p>
 //                         <button class="btn" onclick="window.location.reload()">Yenile</button>
 //                       </div>
@@ -209,7 +209,7 @@ const urlsToCache = [
 //   console.log('📱 Push notification received');
   
 //   const options = {
-//     body: event.data ? event.data.text() : 'AkılHane\'den yeni bildirim',
+//     body: event.data ? event.data.text() : 'Mindhouse\'den yeni bildirim',
 //     icon: '/favicon.svg',
 //     badge: '/favicon.svg',
 //     vibrate: [100, 50, 100],
@@ -232,7 +232,7 @@ const urlsToCache = [
 //   };
 
 //   event.waitUntil(
-//     self.registration.showNotification('AkılHane', options)
+//     self.registration.showNotification('Mindhouse', options)
 //   );
 // });
 

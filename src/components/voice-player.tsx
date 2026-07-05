@@ -13,6 +13,8 @@ import {
   Settings,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
+import { markdownToPlainText } from "@/lib/utils";
 
 interface VoicePlayerProps {
   text: string;
@@ -39,6 +41,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   onEnd,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("VoicePlayer");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentSpeed, setCurrentSpeed] = useState(speed);
@@ -96,12 +99,14 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   const handlePlay = () => {
     if (!isSupported || !text) {return;}
 
+    const plainText = markdownToPlainText(text);
+
     try {
       // Stop any current speech
       window.speechSynthesis.cancel();
 
-      // Create new utterance
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Create new utterance with cleaned text (no more "asterisk asterisk" for **bold** etc.)
+      const utterance = new SpeechSynthesisUtterance(plainText);
       utteranceRef.current = utterance;
 
       // Set properties
@@ -235,7 +240,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             ) : (
               <Play className="w-4 h-4" />
             )}
-            {isPlaying ? "Duraklat" : "Oynat"}
+            {isPlaying ? t("pause") : t("play")}
           </Button>
 
           <Button
@@ -246,7 +251,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             className="hover:bg-gradient-to-r hover:from-red-600 hover:to-pink-600 hover:text-white"
           >
             <RotateCcw className="w-4 h-4" />
-            Durdur
+            {t("stop")}
           </Button>
 
           <Button

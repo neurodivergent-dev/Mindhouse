@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { mapAiDifficulty } from "@/lib/question-manager-labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Sparkles, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getStoredAiPreferences } from "@/lib/ai-preferences";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -69,6 +72,9 @@ export default function AISubjectGenerator({
     new Set(),
   );
   const [activeTab, setActiveTab] = useState<string>("generate");
+  const t = useTranslations("SubjectManager.ai");
+  const tRoot = useTranslations("SubjectManager");
+  const locale = useLocale();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -82,12 +88,15 @@ export default function AISubjectGenerator({
     try {
       setIsGenerating(true);
 
+      const preferences = getStoredAiPreferences();
+
       const response = await fetch("/api/ai-generate-subjects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          language: "tr",
+          language: locale,
+          preferences,
         }),
       });
 
@@ -118,15 +127,16 @@ export default function AISubjectGenerator({
       setActiveTab("review");
 
       toast({
-        title: "AI Dersler Oluşturuldu!",
-        description: `${result.subjects.length} ders başarıyla oluşturuldu. Kalite puanı: ${(
-          result.qualityScore * 100
-        ).toFixed(0)}%`,
+        title: t("toasts.generatedTitle"),
+        description: t("toasts.generatedDesc", {
+          count: result.subjects.length,
+          score: (result.qualityScore * 100).toFixed(0),
+        }),
       });
     } catch {
       toast({
-        title: "Hata!",
-        description: "AI ders oluşturma sırasında bir hata oluştu",
+        title: t("toasts.errorTitle"),
+        description: t("toasts.generateError"),
         variant: "destructive",
       });
     } finally {
@@ -137,8 +147,8 @@ export default function AISubjectGenerator({
   const handleApproveAISubjects = async () => {
     if (selectedAISubjects.size === 0) {
       toast({
-        title: "Uyarı",
-        description: "Lütfen eklemek istediğiniz dersleri seçin",
+        title: t("toasts.warningTitle"),
+        description: t("toasts.selectSubjects"),
         variant: "destructive",
       });
       return;
@@ -155,8 +165,8 @@ export default function AISubjectGenerator({
       }
 
       toast({
-        title: "Başarılı!",
-        description: `${subjectsToAdd.length} ders başarıyla eklendi`,
+        title: t("toasts.successTitle"),
+        description: t("toasts.addedDesc", { count: subjectsToAdd.length }),
       });
 
       // Reset dialog
@@ -166,8 +176,8 @@ export default function AISubjectGenerator({
       setSelectedAISubjects(new Set());
     } catch {
       toast({
-        title: "Hata!",
-        description: "Dersler eklenirken bir hata oluştu",
+        title: t("toasts.errorTitle"),
+        description: t("toasts.addError"),
         variant: "destructive",
       });
     }
@@ -200,7 +210,7 @@ export default function AISubjectGenerator({
         className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg ${className}`}
       >
         <Sparkles className="w-4 h-4 mr-2" />
-        AI ile Ders Oluştur
+        {t("generateButton")}
       </Button>
 
       <Dialog
@@ -219,7 +229,7 @@ export default function AISubjectGenerator({
           <DialogHeader className="p-4 sm:p-5 pb-3 border-b">
             <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-              AI ile Ders Oluştur
+              {t("dialogTitle")}
             </DialogTitle>
           </DialogHeader>
 
@@ -228,19 +238,19 @@ export default function AISubjectGenerator({
               <div className="space-y-4 sm:space-y-5 py-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">Kategori</Label>
+                    <Label htmlFor="category">{tRoot("category")}</Label>
                     <Input
                       id="category"
                       value={formData.category}
                       onChange={(e) =>
                         setFormData({ ...formData, category: e.target.value })
                       }
-                      placeholder="Örn: Fen Bilimleri"
+                      placeholder={tRoot("exampleScience")}
                       className="h-11"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="difficulty">Zorluk Seviyesi</Label>
+                    <Label htmlFor="difficulty">{tRoot("difficultyLevel")}</Label>
                     <Select
                       value={formData.difficulty}
                       onValueChange={(value) =>
@@ -254,16 +264,16 @@ export default function AISubjectGenerator({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Başlangıç">Başlangıç</SelectItem>
-                        <SelectItem value="Orta">Orta</SelectItem>
-                        <SelectItem value="İleri">İleri</SelectItem>
+                        <SelectItem value="Başlangıç">{tRoot("difficultyBeginner")}</SelectItem>
+                        <SelectItem value="Orta">{tRoot("difficultyMedium")}</SelectItem>
+                        <SelectItem value="İleri">{tRoot("difficultyAdvanced")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="count">Ders Sayısı</Label>
+                  <Label htmlFor="count">{t("subjectCount")}</Label>
                   <Input
                     id="count"
                     type="number"
@@ -282,7 +292,7 @@ export default function AISubjectGenerator({
 
                 <div className="space-y-2">
                   <Label htmlFor="guidelines">
-                    Ek Yönergeler (Opsiyonel)
+                    {t("guidelinesOptional")}
                   </Label>
                   <Textarea
                     id="guidelines"
@@ -293,7 +303,7 @@ export default function AISubjectGenerator({
                         guidelines: e.target.value,
                       })
                     }
-                    placeholder="AI&apos;ya ek talimatlar verebilirsiniz. Örn: Pratik uygulamalar içersin, güncel konulara odaklansın..."
+                    placeholder={t("guidelinesPlaceholder")}
                     rows={4}
                     className="min-h-[100px] resize-none"
                   />
@@ -302,9 +312,7 @@ export default function AISubjectGenerator({
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    AI tarafından oluşturulan dersler otomatik olarak kalite
-                    kontrolünden geçirilecek ve onayınız alındıktan sonra ders
-                    listesine eklenecektir.
+                    {t("qualityNotice")}
                   </AlertDescription>
                 </Alert>
               </div>
@@ -316,17 +324,17 @@ export default function AISubjectGenerator({
                     <div className="space-y-4 mb-5">
                       <div>
                         <h3 className="text-lg font-semibold">
-                          Oluşturulan Dersler
+                          {t("generatedSubjects")}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          Kategori: {formData.category}
+                          {t("categoryLabel", { category: formData.category })}
                         </p>
                       </div>
 
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                           <div className="text-sm">
-                            <span className="font-medium">Kalite Puanı:</span>
+                            <span className="font-medium">{t("qualityScore")}</span>
                             <Badge
                               variant={
                                 aiGenerationResult.qualityScore > 0.8
@@ -352,8 +360,8 @@ export default function AISubjectGenerator({
                           onClick={selectAllAISubjects}
                         >
                           {selectedAISubjects.size === aiGeneratedSubjects.length
-                            ? "Hiçbirini Seçme"
-                            : "Tümünü Seç"}
+                            ? t("deselectAll")
+                            : t("selectAll")}
                         </Button>
                       </div>
 
@@ -361,7 +369,7 @@ export default function AISubjectGenerator({
                         <Alert>
                           <AlertCircle className="h-4 w-4" />
                           <AlertDescription>
-                            <strong>İyileştirme Önerileri:</strong>
+                            <strong>{t("improvementSuggestions")}</strong>
                             <ul className="list-disc list-inside mt-2 space-y-1">
                               {aiGenerationResult.suggestions.map(
                                 (suggestion, idx) => (
@@ -402,7 +410,7 @@ export default function AISubjectGenerator({
                                     />
                                     <div className="flex gap-2">
                                       <Badge variant="outline">
-                                        {subject.difficulty}
+                                        {mapAiDifficulty(subject.difficulty, (key) => tRoot(key))}
                                       </Badge>
                                       <Badge variant="secondary">
                                         {subject.category}
@@ -427,7 +435,7 @@ export default function AISubjectGenerator({
                                     {subject.topics.length > 0 && (
                                       <div>
                                         <p className="text-sm font-medium mb-2">
-                                          Konular:
+                                          {t("topics")}
                                         </p>
                                         <div className="flex flex-wrap gap-2">
                                           {subject.topics.map((topic, tIdx) => (
@@ -446,7 +454,7 @@ export default function AISubjectGenerator({
                                     {subject.learningObjectives.length > 0 && (
                                       <div>
                                         <p className="text-sm font-medium mb-2">
-                                          Öğrenme Hedefleri:
+                                          {t("learningObjectives")}
                                         </p>
                                         <ul className="text-sm text-muted-foreground space-y-1">
                                           {subject.learningObjectives.map(
@@ -464,7 +472,7 @@ export default function AISubjectGenerator({
                                     {subject.prerequisites.length > 0 && (
                                       <div>
                                         <p className="text-sm font-medium mb-2">
-                                          Ön Koşullar:
+                                          {t("prerequisites")}
                                         </p>
                                         <div className="flex flex-wrap gap-2">
                                           {subject.prerequisites.map(
@@ -483,7 +491,7 @@ export default function AISubjectGenerator({
                                     )}
 
                                     <div className="text-sm text-muted-foreground pt-2 border-t">
-                                      <strong>Tahmini Süre:</strong>{" "}
+                                      <strong>{t("estimatedDuration")}</strong>{" "}
                                       {subject.estimatedDuration}
                                     </div>
                                   </div>
@@ -499,16 +507,16 @@ export default function AISubjectGenerator({
                   <div className="flex flex-col items-center justify-center flex-1 text-center">
                     <Sparkles className="w-16 h-16 text-green-400 mb-4" />
                     <h3 className="text-lg font-semibold mb-2">
-                      Henüz ders oluşturulmadı
+                      {t("noSubjectsYet")}
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      AI ile ders oluşturmak için yukarıdaki formu kullanın
+                      {t("noSubjectsYetDesc")}
                     </p>
                     <Button
                       variant="outline"
                       onClick={() => setActiveTab("generate")}
                     >
-                      Ders Oluştur
+                      {t("generateSubjects")}
                     </Button>
                   </div>
                 )}
@@ -529,19 +537,22 @@ export default function AISubjectGenerator({
                 {isGenerating ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Dersler Oluşturuluyor...
+                    {t("generating")}
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 mr-2" />
-                    AI ile Ders Oluştur
+                    {t("generateButton")}
                   </>
                 )}
               </Button>
             ) : (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground text-center">
-                  {selectedAISubjects.size} / {aiGeneratedSubjects.length} ders seçildi
+                  {t("selectedCount", {
+                    selected: selectedAISubjects.size,
+                    total: aiGeneratedSubjects.length,
+                  })}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
@@ -549,7 +560,7 @@ export default function AISubjectGenerator({
                     onClick={() => setIsDialogOpen(false)}
                     className="flex-1 h-11"
                   >
-                    İptal
+                    {tRoot("cancel")}
                   </Button>
                   <Button
                     onClick={() => {
@@ -559,7 +570,7 @@ export default function AISubjectGenerator({
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-11 shadow-lg"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Dersleri Ekle ({selectedAISubjects.size})
+                    {t("addSubjects", { count: selectedAISubjects.size })}
                   </Button>
                 </div>
               </div>

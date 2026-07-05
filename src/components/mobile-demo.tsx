@@ -98,7 +98,7 @@ export default function MobileDemo() {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-gray-900/50 dark:to-gray-800/50">
+    <section className="py-16 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:bg-transparent dark:!bg-none">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -141,7 +141,7 @@ export default function MobileDemo() {
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mb-4 mx-auto">
                       <SmartphoneIcon className="h-8 w-8 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-semibold text-foreground">
+                    <CardTitle className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                       {devices.find((d) => d.id === selectedDevice)?.name} View
                     </CardTitle>
                   </CardHeader>
@@ -228,7 +228,7 @@ export default function MobileDemo() {
                      >
                       <feature.icon className="h-6 w-6 text-white" />
                     </div>
-                    <CardTitle className="text-lg font-semibold text-foreground">
+                    <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                       {feature.name}
                     </CardTitle>
                   </CardHeader>
@@ -254,7 +254,7 @@ export default function MobileDemo() {
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mb-4">
                     <MousePointer className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-foreground">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                     Touch Gestures
                   </CardTitle>
                 </CardHeader>
@@ -291,7 +291,7 @@ export default function MobileDemo() {
                   <div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-lg flex items-center justify-center mb-4">
                     <Activity className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-foreground">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400 bg-clip-text text-transparent">
                     Mobile Optimizations
                   </CardTitle>
                 </CardHeader>
@@ -338,7 +338,7 @@ export default function MobileDemo() {
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Eye className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                     Responsive Score
                   </CardTitle>
                 </CardHeader>
@@ -366,7 +366,7 @@ export default function MobileDemo() {
                   <div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Hand className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400 bg-clip-text text-transparent">
                     Touch Friendly
                   </CardTitle>
                 </CardHeader>
@@ -394,7 +394,7 @@ export default function MobileDemo() {
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Shield className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                     PWA Compliance
                   </CardTitle>
                 </CardHeader>

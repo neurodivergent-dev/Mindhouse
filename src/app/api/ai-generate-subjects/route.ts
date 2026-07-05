@@ -1,6 +1,7 @@
 import type { NextRequest} from "next/server";
 import { NextResponse } from "next/server";
-import { ai } from "@/ai/genkit";
+import { AIFactory } from "@/services/ai/AIFactory";
+import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
 import { z } from "zod";
 
 const SubjectGenerationInputSchema = z.object({
@@ -9,6 +10,7 @@ const SubjectGenerationInputSchema = z.object({
   count: z.number().min(1).max(5),
   guidelines: z.string().optional(),
   language: z.string().default("tr"),
+  preferences: z.record(z.any()).optional(),
 });
 
 const AIGeneratedSubjectSchema = z.object({
@@ -57,34 +59,18 @@ interface ExtractedSubject {
 }
 
 export async function POST(request: NextRequest) {
+  let language = "tr";
+
   try {
     const body = await request.json();
+    language = typeof body?.language === "string" ? body.language : "tr";
     const input = SubjectGenerationInputSchema.parse(body);
-
-    // Check if AI is properly configured
-    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_GENAI_API_KEY && !process.env.GOOGLE_AI_API_KEY) {
-      return NextResponse.json(
-        {
-          error: "AI servisi yapılandırılmamış. Lütfen sistem yöneticisi ile iletişime geçin.",
-        },
-        { status: 500 },
-      );
-    }
 
     const response = await subjectGenerationFlow(input);
     return NextResponse.json(response);
   } catch (error) {
-    let errorMessage = "Üzgünüm, bir hata oluştu ve isteğinizi işleyemedim. Lütfen daha sonra tekrar deneyin.";
-
-    if (error instanceof Error) {
-      if (error.message.includes("rate limit") || error.message.includes("quota")) {
-        errorMessage = "AI servisi şu anda yoğun. Lütfen birkaç dakika sonra tekrar deneyin.";
-      } else if (error.message.includes("API key") || error.message.includes("authentication")) {
-        errorMessage = "AI servisi yapılandırma hatası. Lütfen sistem yöneticisi ile iletişime geçin.";
-      } else if (error.message.includes("network") || error.message.includes("timeout")) {
-        errorMessage = "Bağlantı sorunu yaşanıyor. Lütfen internet bağlantınızı kontrol edin.";
-      }
-    }
+    console.error("AI Generate Subjects Error:", error);
+    const errorMessage = resolveAiErrorMessage(error, language, "apiKeyAdmin");
 
     return NextResponse.json(
       { error: errorMessage },
@@ -93,13 +79,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-const subjectGenerationFlow = ai.defineFlow(
-  {
-    name: "subjectGenerationFlow",
-    inputSchema: SubjectGenerationInputSchema,
-    outputSchema: SubjectGenerationOutputSchema,
-  },
-  async (input) => {
+async function subjectGenerationFlow(input: SubjectGenerationInput & { preferences?: any }) {
     const prompt = `
     ## ROLÜN
     Sen, eğitim müfredatı tasarımında uzman bir eğitim danışmanısın. Öğrenciler için kapsamlı ve etkili dersler oluşturuyorsun.
@@ -108,36 +88,30 @@ const subjectGenerationFlow = ai.defineFlow(
     Belirtilen kategori ve zorluk seviyesine uygun, kaliteli dersler oluştur ve JSON formatında döndür.
 
     ## ÇIKTI FORMATI
-    Sadece JSON formatında döndür, başka açıklama ekleme:
+    Sadece JSON formatında döndür, hiçbir açıklama, markdown (Örn: json bloğu) ekleme:
 
-    \`\`\`json
     {
       "subjects": [
         {
           "name": "Ders Adı",
-          "description": "Ders açıklaması",
+          "description": "Kısa açıklama",
           "category": "Kategori",
           "difficulty": "Başlangıç|Orta|İleri",
-          "topics": ["Konu 1", "Konu 2", "Konu 3"],
+          "topics": ["Alt Konu 1", "Alt Konu 2", "Alt Konu 3"],
           "learningObjectives": ["Hedef 1", "Hedef 2"],
-          "estimatedDuration": "4 hafta",
-          "prerequisites": ["Ön koşul 1", "Ön koşul 2"],
-          "keywords": ["Anahtar 1", "Anahtar 2"]
+          "estimatedDuration": "X Hafta",
+          "prerequisites": ["Ön koşul 1"],
+          "keywords": ["Anahtar Kelime 1"]
         }
-      ]
+      ],
+      "metadata": {
+        "totalGenerated": 1,
+        "averageDifficulty": "Orta",
+        "generationTimestamp": "2024-03-20T12:00:00Z"
+      },
+      "qualityScore": 0.9,
+      "suggestions": ["Öneri 1", "Öneri 2"]
     }
-    \`\`\`
-
-    ## OLUŞTURULACAK DERS ÖZELLİKLERİ:
-    - **Ders Adı**: Net, anlaşılır ve kategorinin konusuna uygun
-    - **Açıklama**: Dersin amacını, kapsamını ve önemini açıklayan detaylı açıklama
-    - **Kategori**: Verilen kategori ile uyumlu
-    - **Zorluk Seviyesi**: Belirtilen seviyeye uygun (Başlangıç/Orta/İleri)
-    - **Konular**: Dersin kapsayacağı ana konular (5-8 adet)
-    - **Öğrenme Hedefleri**: Öğrencinin bu dersten ne kazanacağı (3-5 adet)
-    - **Tahmini Süre**: Dersin tamamlanması için gereken süre
-    - **Ön Koşullar**: Bu dersi almadan önce bilinmesi gerekenler (2-4 adet)
-    - **Anahtar Kelimeler**: Dersle ilgili önemli terimler (5-8 adet)
 
     ## KALİTE KRİTERLERİ:
     1. **Tutarlılık**: Tüm bilgiler birbiriyle uyumlu olmalı
@@ -172,13 +146,13 @@ const subjectGenerationFlow = ai.defineFlow(
     Şimdi, yukarıdaki talimatlara göre ${input.count} adet ${input.category} kategorisinde ${input.difficulty} seviyesinde ders oluştur ve sadece JSON formatında döndür.
     `;
 
-    const result = await ai.generate({
+    const provider = AIFactory.getProviderFromPreferences(input.preferences || {});
+    const resultText = await provider.generateText({
       prompt,
-      model: "googleai/gemini-2.0-flash",
     });
 
     // Parse the AI response and create structured output
-    const parsedResult = parseAIResponse(result.text || "");
+    const parsedResult = parseAIResponse(resultText);
 
     // Calculate quality score based on completeness
     const qualityScore = calculateQualityScore(parsedResult.subjects);
@@ -196,8 +170,7 @@ const subjectGenerationFlow = ai.defineFlow(
       qualityScore,
       suggestions,
     };
-  },
-);
+}
 
 function parseAIResponse(text: string): ParsedAIResponse {
   try {

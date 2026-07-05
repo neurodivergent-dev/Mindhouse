@@ -1,4 +1,4 @@
-# 🧠 AkılHane Web Lint Checker
+# 🧠 Mindhouse Web Lint Checker
 
 Modern web tabanlı lint kontrol aracı - Gerçek zamanlı test sonuçları ve güzel arayüz!
 

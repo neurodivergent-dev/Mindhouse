@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
 import { Play, Pause, RotateCcw, Trophy, Target, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BreakoutLoadingGameProps {
@@ -41,26 +42,29 @@ interface Brick {
 
 const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
   isLoading = true,
-  loadingText = "Yükleniyor...",
+  loadingText,
   onGameComplete,
   className = "",
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("BreakoutLoadingGame");
+  const displayLoadingText = loadingText || t("loading");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
-  const [gameState, setGameState] = useState<"menu" | "playing" | "gameOver" | "won">("menu");
-  const [loadingProgress, setLoadingProgress] = useState(0);
-
-  // Game objects
-  const [ball, setBall] = useState<Ball>({
+  const scoreRef = useRef(0);
+  const livesRef = useRef(3);
+  const ballRef = useRef<Ball>({
     x: 0,
     y: 0,
     dx: 3,
     dy: -3,
     radius: 5,
   });
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [score, setScore] = useState(0);
+  const [lives, setLives] = useState(3);
+  const [gameState, setGameState] = useState<"menu" | "playing" | "gameOver" | "won">("menu");
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   const [paddle, setPaddle] = useState<Paddle>({
     x: 0,
@@ -70,8 +74,13 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
   });
 
   const [bricks, setBricks] = useState<Brick[]>([]);
+
   const [rightPressed, setRightPressed] = useState(false);
   const [leftPressed, setLeftPressed] = useState(false);
+
+  // Keep refs in sync with state (after all relevant declarations)
+  scoreRef.current = score;
+  livesRef.current = lives;
 
   // Initialize game
   useEffect(() => {
@@ -110,13 +119,13 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     }
 
     // Initialize ball
-    setBall({
+    ballRef.current = {
       x: canvas.width / 2,
       y: canvas.height - 30,
       dx: 3,
       dy: -3,
       radius: 5,
-    });
+    };
 
     // Initialize paddle
     setPaddle({
@@ -208,19 +217,19 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
          setIsPlaying(false);
          setTimeout(() => {
            toast({
-             title: "🎉 Oyun Kazanıldı!",
-             description: `Skor: ${score}`,
+             title: "🎉 " + t("won"),
+             description: t("toastScore", { score }),
            });
          }, 100);
          onGameComplete?.();
        }
 
        // Check lose condition
-       if (ball.y + ball.dy < ball.radius) {
-         ball.dy = -ball.dy;
-       } else if (ball.y + ball.dy > canvas.height - ball.radius) {
-         if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
-           ball.dy = -ball.dy;
+       if (ballRef.current.y + ballRef.current.dy < ballRef.current.radius) {
+         ballRef.current.dy = -ballRef.current.dy;
+       } else if (ballRef.current.y + ballRef.current.dy > canvas.height - ballRef.current.radius) {
+         if (ballRef.current.x > paddle.x && ballRef.current.x < paddle.x + paddle.width) {
+           ballRef.current.dy = -ballRef.current.dy;
          } else {
            setLives((prev) => {
              if (prev - 1 === 0) {
@@ -228,38 +237,38 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
                setIsPlaying(false);
                setTimeout(() => {
                  toast({
-                   title: "💥 Oyun Bitti!",
-                   description: `Final Skor: ${score}`,
+                   title: "💥 " + t("lost"),
+                   description: t("toastFinalScore", { score }),
                  });
                }, 100);
                return 0;
              }
              return prev - 1;
            });
-           setBall({
+           ballRef.current = {
              x: canvas.width / 2,
              y: canvas.height - 30,
              dx: 3,
              dy: -3,
              radius: 5,
-           });
+           };
          }
        }
 
       // Wall collision
-      if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
-        ball.dx = -ball.dx;
+      if (ballRef.current.x + ballRef.current.dx > canvas.width - ballRef.current.radius || ballRef.current.x + ballRef.current.dx < ballRef.current.radius) {
+        ballRef.current.dx = -ballRef.current.dx;
       }
     }, 16);
 
     return () => clearInterval(gameLoop);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying, gameState, ball, paddle, bricks, score, lives, onGameComplete, toast]);
+  }, [isPlaying, gameState, paddle, bricks, score, lives, onGameComplete, toast]);
 
      // Draw functions
    const drawBall = (ctx: CanvasRenderingContext2D) => {
      ctx.beginPath();
-     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+     ctx.arc(ballRef.current.x, ballRef.current.y, ballRef.current.radius, 0, Math.PI * 2);
      ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
      ctx.fill();
      ctx.closePath();
@@ -288,14 +297,14 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
      const drawScore = (ctx: CanvasRenderingContext2D) => {
      ctx.font = "16px Arial";
      ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
-     ctx.fillText(`Skor: ${score}`, 8, 20);
+     ctx.fillText(t("score", { score: scoreRef.current }), 8, 20);
    };
 
    const drawLives = (ctx: CanvasRenderingContext2D) => {
      ctx.font = "16px Arial";
      ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
      if (canvasRef.current) {
-       ctx.fillText(`Can: ${lives}`, canvasRef.current.width - 65, 20);
+       ctx.fillText(t("lives", { lives: livesRef.current }), canvasRef.current.width - 65, 20);
      }
    };
 
@@ -304,12 +313,12 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     bricks.forEach((brick) => {
       if (brick.status === 1) {
         if (
-          ball.x > brick.x &&
-          ball.x < brick.x + brick.width &&
-          ball.y > brick.y &&
-          ball.y < brick.y + brick.height
+          ballRef.current.x > brick.x &&
+          ballRef.current.x < brick.x + brick.width &&
+          ballRef.current.y > brick.y &&
+          ballRef.current.y < brick.y + brick.height
         ) {
-          ball.dy = -ball.dy;
+          ballRef.current.dy = -ballRef.current.dy;
           brick.status = 0;
           setScore((prev) => prev + 10);
         }
@@ -319,11 +328,8 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
 
   // Move ball
   const moveBall = () => {
-    setBall((prev) => ({
-      ...prev,
-      x: prev.x + prev.dx,
-      y: prev.y + prev.dy,
-    }));
+    ballRef.current.x += ballRef.current.dx;
+    ballRef.current.y += ballRef.current.dy;
   };
 
   // Move paddle
@@ -397,13 +403,13 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     }
 
     // Initialize ball
-    setBall({
+    ballRef.current = {
       x: canvas.width / 2,
       y: canvas.height - 30,
       dx: 3,
       dy: -3,
       radius: 5,
-    });
+    };
 
     // Initialize paddle
     setPaddle({
@@ -479,11 +485,11 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5" />
-            Atari Breakout Loading Game
+            {t("title")}
           </div>
           {isLoading && (
             <Badge variant="secondary" className="animate-pulse">
-              {loadingText}
+              {displayLoadingText}
             </Badge>
           )}
         </CardTitle>
@@ -493,7 +499,7 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
         {isLoading && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Yükleniyor...</span>
+              <span>{t("loading")}</span>
               <span>{Math.round(loadingProgress)}%</span>
             </div>
             <Progress value={loadingProgress} className="w-full" />
@@ -525,7 +531,7 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
                className="flex items-center gap-2"
              >
                <Play className="w-4 h-4" />
-               Oyunu Başlat
+               {t("startGame")}
              </Button>
            )}
 
@@ -533,11 +539,11 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
             <>
               <Button onClick={pauseGame} variant="outline" className="flex items-center gap-2">
                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                {isPlaying ? "Duraklat" : "Devam Et"}
+                {isPlaying ? t("pause") : t("resume")}
               </Button>
               <Button onClick={resetGame} variant="outline" className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4" />
-                Yeniden Başlat
+                {t("restart")}
               </Button>
             </>
           )}
@@ -545,16 +551,16 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
           {(gameState === "gameOver" || gameState === "won") && (
             <Button onClick={resetGame} className="flex items-center gap-2">
               <Trophy className="w-4 h-4" />
-              Tekrar Oyna
+              {t("playAgain")}
             </Button>
           )}
         </div>
 
                  {/* Game Instructions */}
          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-           <p className="hidden md:block">Klavyeden ok tuşlarıyla paddle&apos;ı kontrol edin</p>
-           <p className="block md:hidden">Aşağıdaki butonları kullanın</p>
-           <p>Topu kaçırmamaya çalışın ve tüm tuğlaları kırın!</p>
+           <p className="hidden md:block">{t("controls")}</p>
+           <p className="block md:hidden">{t("controlsMobile")}</p>
+           <p>{t("instructions")}</p>
          </div>
 
          {/* Mobile Controls */}
@@ -589,10 +595,10 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
 
         {/* Game Stats */}
         <div className="flex justify-center gap-4 text-sm">
-          <Badge variant="outline">Skor: {score}</Badge>
-          <Badge variant="outline">Can: {lives}</Badge>
+          <Badge variant="outline">{t("score", { score })}</Badge>
+          <Badge variant="outline">{t("lives", { lives })}</Badge>
           <Badge variant="outline">
-            Durum: {gameState === "menu" ? "Menü" : gameState === "playing" ? "Oynuyor" : gameState === "won" ? "Kazandı" : "Kaybetti"}
+            {t("status", { status: gameState === "menu" ? t("menu") : gameState === "playing" ? t("playing") : gameState === "won" ? t("won") : t("lost") })}
           </Badge>
         </div>
       </CardContent>

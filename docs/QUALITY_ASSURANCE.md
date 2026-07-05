@@ -3,7 +3,7 @@
 ### **🌐 Temel Erişim Testleri:**
 
 **✅ Canlı Site Testi:**
-- [x] `https://akilhane.vercel.app/landing` erişilebilir mi?
+- [x] `https://mindhouse.vercel.app/landing` erişilebilir mi?
 - [x] Sayfa yükleniyor mu?
 - [x] Responsive design çalışıyor mu?
 - [x] Dark/Light mode çalışıyor mu?
@@ -2055,4 +2055,4 @@ Henüz bütün detaylar Test edilmedi
 
 Testi Hazırlayan: Melih Can Demir - Full-Stack Software Developer, Generative AI, Senior Prompt Engineering
 
-Akılhane - Bilginin ve Zekânın Buluştuğu Yer
+Mindhouse - Bilginin ve Zekânın Buluştuğu Yer

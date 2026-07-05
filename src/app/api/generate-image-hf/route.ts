@@ -3,22 +3,23 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, topic, subject } = await request.json();
+    const { prompt } = await request.json();
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt gerekli" }, { status: 400 });
     }
 
-    // URL uzunluğunu azaltmak için prompt'u kısalt
-    const shortPrompt = prompt.length > 200 ? `${prompt.substring(0, 200)}...` : prompt;
+    // URL çok uzun olmaması için 1000 karaktere kadar izin ver (Önceki 200 çok kısaydı)
+    const shortPrompt = prompt.length > 1000 ? `${prompt.substring(0, 1000)}...` : prompt;
 
-    // Daha kısa ve öz bir prompt oluştur
-    const cleanPrompt = `Educational: ${shortPrompt}. Subject: ${subject || "education"}. Topic: ${topic || "science"}. Professional, detailed`;
+    // AI zaten çok detaylı bir prompt ürettiği için ekstra İngilizce kelimelerle kafasını karıştırmıyoruz
+    const cleanPrompt = shortPrompt;
 
     const seed = Math.floor(Math.random() * 1000000);
 
-    // URL'yi daha kısa tut
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=true&nologo=true`;
+    // enhance=false yapıyoruz çünkü bizim AI'ımız zaten yeterince detaylı bir prompt verdi.
+    // enhance=true olunca Pollinations kendi kafasına göre promptu tamamen değiştirip alakasız şeyler üretebiliyor.
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
 
     return NextResponse.json({
       imageUrl,

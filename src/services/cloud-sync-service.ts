@@ -402,9 +402,9 @@ export class CloudSyncService {
    */
   static clearLocalData(): void {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("akilhane_questions");
-      localStorage.removeItem("akilhane_subjects");
-      localStorage.removeItem("akilhane_flashcards");
+      localStorage.removeItem("mindhouse_questions");
+      localStorage.removeItem("mindhouse_subjects");
+      localStorage.removeItem("mindhouse_flashcards");
     }
   }
 

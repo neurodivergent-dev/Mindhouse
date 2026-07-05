@@ -213,7 +213,6 @@ export class QuestionService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for questions query");
       return [];
     }
 

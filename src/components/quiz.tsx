@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAiTutorHelp, type AiTutorOutput } from "../ai/flows/ai-tutor";
+import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +17,7 @@ import LoadingSpinner from "./loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { QuestionService } from "@/services/supabase-service";
 import { getDemoQuestions } from "@/data/demo-data";
+import AIFloatingChat from "./ai-floating-chat";
 
 interface DemoQuestion {
   id: string;
@@ -73,6 +76,125 @@ const QuizComponent: React.FC<QuizProps> = ({
   isDemoMode = false,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("Quiz");
+  const locale = useLocale();
+  const tSubjects = useTranslations("Subjects");
+
+  const getDisplaySubject = (name: string) => {
+    try {
+      return tSubjects(name as any);
+    } catch {
+      return name;
+    }
+  };
+  const displaySubject = getDisplaySubject(subject);
+
+  // Translations for demo questions
+  const DEMO_QUESTION_TRANSLATIONS: Record<string, { question: string; options: string[]; explanation: string; tags: string[] }> = {
+    // Mathematics
+    "q_mat_001": {
+      question: "What is the value of f(5) for the function f(x) = 2x + 3?",
+      options: ["11", "13", "15", "17"],
+      explanation: "f(5) = 2(5) + 3 = 10 + 3 = 13",
+      tags: ["function", "algebra"],
+    },
+    "q_mat_002": {
+      question: "What is the sum of the interior angles of a triangle?",
+      options: ["90°", "180°", "270°", "360°"],
+      explanation: "The sum of the interior angles of a triangle is always 180 degrees.",
+      tags: ["geometry", "triangle"],
+    },
+    "q_mat_003": {
+      question: "What is the result of the integral ∫(2x + 1)dx?",
+      options: ["x² + x + C", "2x² + x + C", "x² + C", "2x + C"],
+      explanation: "∫(2x + 1)dx = ∫2x dx + ∫1 dx = x² + x + C",
+      tags: ["integral", "calculus"],
+    },
+    // Physics
+    "q_fiz_001": {
+      question: "What is the formula for Newton's second law?",
+      options: ["F = ma", "E = mc²", "P = mv", "W = Fd"],
+      explanation: "Newton's second law: Force = mass × acceleration (F = ma)",
+      tags: ["newton", "force", "mechanics"],
+    },
+    "q_fiz_002": {
+      question: "What is the approximate speed of light in a vacuum?",
+      options: ["3×10⁶ m/s", "3×10⁷ m/s", "3×10⁸ m/s", "3×10⁹ m/s"],
+      explanation: "The speed of light in a vacuum is approximately 3×10⁸ m/s (300,000,000 m/s).",
+      tags: ["light", "speed", "optics"],
+    },
+    "q_fiz_003": {
+      question: "What concept does the first law of thermodynamics express?",
+      options: ["Increase in entropy", "Conservation of energy", "Conservation of momentum", "Conservation of mass"],
+      explanation: "The first law of thermodynamics states the principle of energy conservation.",
+      tags: ["thermodynamics", "energy", "conservation"],
+    },
+    // Chemistry
+    "q_kim_001": {
+      question: "By what name are the elements in Group 1 of the periodic table known?",
+      options: ["Halogens", "Alkali metals", "Noble gases", "Alkaline earth metals"],
+      explanation: "Group 1 elements are known as alkali metals (Li, Na, K, Rb, Cs, Fr).",
+      tags: ["periodic table", "alkali metals"],
+    },
+    "q_kim_002": {
+      question: "What is the molecular geometry of H₂O?",
+      options: ["Linear", "Trigonal planar", "Bent", "Tetrahedral"],
+      explanation: "The water molecule (H₂O) has a bent (angular) geometry.",
+      tags: ["molecular geometry", "water", "hybridization"],
+    },
+    // Biology
+    "q_bio_001": {
+      question: "In which organelles does photosynthesis occur?",
+      options: ["Mitochondria", "Chloroplast", "Ribosome", "Golgi apparatus"],
+      explanation: "Photosynthesis occurs in the chloroplasts of plant cells.",
+      tags: ["photosynthesis", "chloroplast", "plant"],
+    },
+    "q_bio_002": {
+      question: "Who first discovered the structure of DNA?",
+      options: ["Darwin", "Mendel", "Watson and Crick", "Pasteur"],
+      explanation: "The double helix structure of DNA was discovered by Watson and Crick.",
+      tags: ["dna", "watson", "crick", "genetics"],
+    },
+    // History
+    "q_tar_001": {
+      question: "In what year was the Ottoman Empire founded?",
+      options: ["1299", "1326", "1354", "1389"],
+      explanation: "The Ottoman Empire was founded by Osman Gazi in 1299.",
+      tags: ["ottoman", "foundation", "osman gazi"],
+    },
+    "q_tar_002": {
+      question: "On what date was the Republic of Turkey proclaimed?",
+      options: ["May 19, 1919", "April 23, 1920", "August 30, 1922", "October 29, 1923"],
+      explanation: "The Republic of Turkey was proclaimed on October 29, 1923.",
+      tags: ["republic", "ataturk", "foundation"],
+    },
+    // Literature
+    "q_ede_001": {
+      question: "Who is the author of the novel 'The Red-Haired Woman'?",
+      options: ["Orhan Pamuk", "Yaşar Kemal", "Nazim Hikmet", "Sabahattin Ali"],
+      explanation: "The novel 'The Red-Haired Woman' was written by Nobel laureate Orhan Pamuk.",
+      tags: ["novel", "orhan pamuk", "contemporary literature"],
+    },
+    "q_ede_002": {
+      question: "What is the most important poetic form in Divan Literature?",
+      options: ["Ghazal", "Koshma", "Turku", "Mani"],
+      explanation: "The most important and common poetic form in Divan Literature is the ghazal.",
+      tags: ["divan literature", "ghazal", "poetry"],
+    },
+    // English
+    "q_ing_001": {
+      question: "Which sentence is grammatically correct?",
+      options: ["She don't like coffee", "She doesn't likes coffee", "She doesn't like coffee", "She not like coffee"],
+      explanation: "Third person singular uses \"doesn't\" and base form of verb.",
+      tags: ["grammar", "present simple", "negative"],
+    },
+    "q_ing_002": {
+      question: 'What is the past tense of "go"?',
+      options: ["goed", "went", "gone", "going"],
+      explanation: '"Go" is an irregular verb. Its past tense is "went".',
+      tags: ["irregular verbs", "past tense"],
+    }
+  };
 
   // Save demo mode to localStorage
   useEffect(() => {
@@ -189,19 +311,22 @@ const QuizComponent: React.FC<QuizProps> = ({
           const demoQuestionsFromData = getDemoQuestions(subject) as DemoQuestion[];
           
           // Convert demo questions to Quiz component format
-          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map(q => ({
-            id: q.id,
-            subject, // Use the selected subject name directly
-            type: "multiple-choice",
-            difficulty: q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
-            text: q.question,
-            topic: (q.tags && q.tags.length > 0 ? q.tags[0] : "Genel") as string,
-            options: q.options.map((option, index) => ({
-              text: option,
-              isCorrect: index === q.correctAnswer
-            })),
-            explanation: q.explanation
-          }));
+          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map(q => {
+            const tr = (locale !== "tr" && DEMO_QUESTION_TRANSLATIONS[q.id]) ? DEMO_QUESTION_TRANSLATIONS[q.id] : null;
+            return {
+              id: q.id,
+              subject, // Use the selected subject name directly
+              type: "multiple-choice",
+              difficulty: q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
+              text: tr ? tr.question : q.question,
+              topic: (tr ? tr.tags[0] : (q.tags && q.tags.length > 0 ? q.tags[0] : "Genel")) || "Genel",
+              options: q.options.map((option, index) => ({
+                text: (tr ? tr.options[index] : option) || option,
+                isCorrect: index === q.correctAnswer
+              })),
+              explanation: tr ? tr.explanation : q.explanation
+            };
+          });
 
           const demoQuestions = convertedDemoQuestions;
 
@@ -268,7 +393,7 @@ const QuizComponent: React.FC<QuizProps> = ({
             }
 
             // Also check localStorage and merge
-            const stored = localStorage.getItem("akilhane_questions");
+            const stored = localStorage.getItem("mindhouse_questions");
             if (stored) {
               const localQuestions = JSON.parse(stored).filter(
                 (q: unknown) =>
@@ -297,8 +422,8 @@ const QuizComponent: React.FC<QuizProps> = ({
         if (localQuestions.length === 0) {
           // Show error message and redirect to home page
           toast({
-            title: "Hata",
-            description: "Bu ders için henüz soru bulunmuyor",
+            title: t("errorTitle"),
+            description: t("noQuestionsForSubject"),
             variant: "destructive",
           });
           window.location.href = "/";
@@ -325,8 +450,8 @@ const QuizComponent: React.FC<QuizProps> = ({
       } catch (error) {
         // Show user-friendly error message
         toast({
-          title: "Hata",
-          description: `Soru yüklenirken hata oluştu: ${error instanceof Error ? error.message : "Bilinmeyen hata"}`,
+          title: t("errorTitle"),
+          description: `${t("errorLoadingQuestions")} ${error instanceof Error ? error.message : t("unknownError")}`,
           variant: "destructive",
         });
         window.location.href = "/";
@@ -685,19 +810,7 @@ const QuizComponent: React.FC<QuizProps> = ({
     }
   };
 
-  // Convert difficulty from English to Turkish for AI Tutor
-  const convertDifficulty = (difficulty: string): "Kolay" | "Orta" | "Zor" => {
-    switch (difficulty.toLowerCase()) {
-      case "easy":
-        return "Kolay";
-      case "medium":
-        return "Orta";
-      case "hard":
-        return "Zor";
-      default:
-        return "Orta"; // Default fallback
-    }
-  };
+
 
   const requestAiTutorHelp = async (
     step: "hint" | "explanation" | "step-by-step" | "concept-review",
@@ -710,11 +823,19 @@ const QuizComponent: React.FC<QuizProps> = ({
     setTutorStep(step);
 
     try {
+      const aiPreferences = getStoredAiPreferences();
+      if (!isAiConfigured(aiPreferences)) {
+        setAiTutorHelp({
+          help: t("aiTutorUnavailable") || "AI service configuration error. Please check your API key in Settings.",
+        });
+        return;
+      }
+
       const result = await getAiTutorHelp({
         question: currentQuestion.text,
         subject: currentQuestion.subject,
         topic: currentQuestion.topic,
-        difficulty: convertDifficulty(currentQuestion.difficulty),
+        difficulty: currentQuestion.difficulty,
         options: currentQuestion.options,
         correctAnswer:
           currentQuestion.options.find((opt) => opt.isCorrect)?.text || "",
@@ -724,13 +845,14 @@ const QuizComponent: React.FC<QuizProps> = ({
             ? currentQuestion.options[selectedAnswer]?.text
             : undefined,
         step,
-      });
+        language: locale === "en" ? "en" : "tr",
+      }, aiPreferences);
 
       setAiTutorHelp(result);
     } catch {
       // Show user-friendly error message
       setAiTutorHelp({
-        help: "Şu anda AI asistanına erişilemiyor. Lütfen daha sonra tekrar deneyin.",
+        help: t("aiTutorUnavailable"),
         confidence: 0,
       });
     } finally {
@@ -788,16 +910,16 @@ const QuizComponent: React.FC<QuizProps> = ({
                 className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Test Sayfasına Dön
+                {t("backToTestPage")}
               </Button>
             </Link>
             <h1 className="text-3xl font-headline font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {subject} Quiz
+              {displaySubject} {t("title")}
             </h1>
           </div>
           <div className="flex items-center justify-between text-base font-medium">
             <span className="text-gray-700 dark:text-gray-300">
-              Soru {currentQuestionIndex + 1} / {totalQuestions}
+              {t("questionCount", { current: currentQuestionIndex + 1, total: totalQuestions })}
             </span>
             <div className="flex items-center gap-4">
               {userSettings.studyPreferences.showTimer && (
@@ -817,7 +939,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                   }`}
                 >
                   <Clock className="w-4 h-4" />
-                  Kalan: {formatTime(timeRemaining)}
+                  {t("remaining")}{formatTime(timeRemaining)}
                 </span>
               )}
             </div>
@@ -847,7 +969,7 @@ const QuizComponent: React.FC<QuizProps> = ({
               className="mb-4 p-4 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-lg"
             >
               <p className="text-red-800 dark:text-red-200 font-semibold text-center">
-                ⚠️ Dikkat! Sadece {timeRemaining} saniye kaldı!
+                {t("timeWarning", { seconds: timeRemaining })}
               </p>
             </motion.div>
           )}
@@ -933,7 +1055,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                 animate={{ opacity: 1, height: "auto" }}
                 className="border-gradient-question bg-white dark:bg-gray-800 rounded-lg p-4 mb-6"
               >
-                <h3 className="font-semibold mb-2">Açıklama:</h3>
+                <h3 className="font-semibold mb-2">{t("explanationTitle")}</h3>
                 <p className="text-muted-foreground">
                   {currentQuestion.explanation}
                 </p>
@@ -942,7 +1064,7 @@ const QuizComponent: React.FC<QuizProps> = ({
 
             {/* AI Tutor Help */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-3">AI Tutor Yardımı:</h3>
+              <h3 className="font-semibold mb-3">{t("aiTutorHelpTitle")}</h3>
               <div className="flex flex-wrap gap-2 mb-4">
                 {!showResult ? (
                   // Cevaplanmadan önce sadece İpucu butonu
@@ -953,7 +1075,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                     disabled={isLoadingTutor}
                     className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
                   >
-                    💡 İpucu
+                    💡 {t("hint")}
                   </button>
                 ) : (
                   // Cevaplandıktan sonra tüm butonlar
@@ -973,10 +1095,10 @@ const QuizComponent: React.FC<QuizProps> = ({
                       disabled={isLoadingTutor}
                       className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
                     >
-                      {step === "hint" && "💡 İpucu"}
-                      {step === "explanation" && "📚 Açıklama"}
-                      {step === "step-by-step" && "🔍 Adım Adım"}
-                      {step === "concept-review" && "🎯 Konu Tekrarı"}
+                      {step === "hint" && `💡 ${t("hint")}`}
+                      {step === "explanation" && `📚 ${t("explanation")}`}
+                      {step === "step-by-step" && `🔍 ${t("stepByStep")}`}
+                      {step === "concept-review" && `🎯 ${t("conceptReview")}`}
                     </button>
                   ))
                 )}
@@ -986,7 +1108,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
                   <p className="text-sm text-muted-foreground">
-                    AI yardımı hazırlanıyor...
+                    {t("preparingAiHelp")}
                   </p>
                 </div>
               )}
@@ -998,10 +1120,10 @@ const QuizComponent: React.FC<QuizProps> = ({
                   className="border-gradient-question bg-white dark:bg-gray-800 rounded-lg p-4"
                 >
                   <h4 className="font-semibold mb-2">
-                    {tutorStep === "hint" && "💡 İpucu"}
-                    {tutorStep === "explanation" && "📚 Açıklama"}
-                    {tutorStep === "step-by-step" && "🔍 Adım Adım"}
-                    {tutorStep === "concept-review" && "🎯 Konu Tekrarı"}
+                    {tutorStep === "hint" && `💡 ${t("hint")}`}
+                    {tutorStep === "explanation" && `📚 ${t("explanation")}`}
+                    {tutorStep === "step-by-step" && `🔍 ${t("stepByStep")}`}
+                    {tutorStep === "concept-review" && `🎯 ${t("conceptReview")}`}
                   </h4>
                   <div className="ai-tutor-markdown">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -1020,14 +1142,14 @@ const QuizComponent: React.FC<QuizProps> = ({
                   disabled={selectedAnswer === null}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Cevabı Gönder
+                  {t("submitAnswer")}
                 </button>
               ) : currentQuestionIndex < questions.length - 1 ? (
                 <button
                   onClick={handleNext}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
                 >
-                  Sonraki Soru
+                  {t("nextQuestion")}
                 </button>
               ) : (
                 <button
@@ -1037,7 +1159,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                   disabled={isSaving}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
                 >
-                  {isSaving ? "Kaydediliyor..." : "Testi Bitir"}
+                  {isSaving ? t("saving") : t("finishTest")}
                 </button>
               )}
             </div>
@@ -1047,10 +1169,10 @@ const QuizComponent: React.FC<QuizProps> = ({
         {/* Score Display */}
         <div className="text-center">
           <p className="text-lg font-semibold">
-            Puan: {score} / {totalQuestions}
+            {t("score")}: {score} / {totalQuestions}
           </p>
           <p className="text-muted-foreground">
-            Başarı Oranı:{" "}
+            {t("successRate")}:{" "}
             {totalQuestions > 0
               ? Math.round((score / totalQuestions) * 100)
               : 0}
@@ -1073,6 +1195,24 @@ const QuizComponent: React.FC<QuizProps> = ({
         onListeningChange={setIsListening}
         showExplanation={showResult}
         mode="quiz"
+      />
+
+      {/* AI Floating Chat - accesses quiz data */}
+      <AIFloatingChat
+        subject={subject}
+        quizData={{
+          questions,
+          currentQuestionIndex,
+          currentQuestion: currentQuestionIndex < questions.length ? questions[currentQuestionIndex] : undefined,
+          selectedAnswer,
+          timeSpent,
+          timeRemaining,
+          timeLimit,
+          showTimer: userSettings.studyPreferences.showTimer,
+          totalQuestions,
+          aiTutorUsed: !!aiTutorHelp,
+          showResult,
+        }}
       />
     </div>
   );

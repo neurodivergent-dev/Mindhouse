@@ -1,7 +1,8 @@
 "use server";
 
-import { ai } from "@/ai/genkit";
-import { z } from "genkit";
+import { z } from "zod";
+import { AIFactory, AIPreferences } from "@/services/ai/AIFactory";
+import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
 
 const AiChatInputSchema = z.object({
   message: z.string().describe("Kullanıcının gönderdiği mesaj"),
@@ -34,59 +35,79 @@ export type AiChatOutput = z.infer<typeof AiChatOutputSchema>;
 
 export async function getAiChatResponse(
   input: AiChatInput,
+  preferences?: Partial<AIPreferences>,
+  locale?: string,
 ): Promise<AiChatOutput> {
   try {
-    // Check if AI is properly configured
-    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_GENAI_API_KEY && !process.env.GOOGLE_AI_API_KEY) {
-      return {
-        response: "AI servisi yapılandırılmamış. Lütfen sistem yöneticisi ile iletişime geçin.",
-        confidence: 0.0,
-        suggestedTopics: [],
-        followUpQuestions: [],
-        learningTips: [],
-      };
+    const provider = AIFactory.getProviderFromPreferences(preferences || {});
+
+    const isEnglish = locale === "en";
+
+    const formattedHistory = input.conversationHistory
+      .map((msg) => {
+        const prefix = isEnglish 
+          ? (msg.role === "user" ? "Student" : "Teacher")
+          : (msg.role === "user" ? "Öğrenci" : "Öğretmen");
+        return `${prefix}: ${msg.content}`;
+      })
+      .join("\n");
+
+    const prompt = isEnglish
+      ? `
+    ## YOUR ROLE
+    You are an expert teacher (AI Tutor) who explains complex topics to students in a simple and understandable way. The person talking to you is a student.
+
+    ## YOUR MAIN TASK (MOST IMPORTANT)
+    1. Analyze the student's last message (in the "STUDENT'S NEW QUESTION" section).
+    2. Give a **DIRECT, CLEAR and COMPLETE** answer to this question.
+    3. After giving your answer, provide additional information, examples or questions to reinforce the topic.
+    4. If the topic requires visual explanation (math formulas, biology diagrams, physics schematics, chemistry molecules, etc.), use phrases like "I can generate a visual for this topic" or "I can explain this topic visually".
+
+    ## PROCESS STEPS
+    - **STEP 1: ANSWER THE QUESTION:** First, focus on the student's question and create a satisfying response. If you don't know, say so but help them research the topic.
+    - **STEP 2: ACT LIKE A TEACHER:** After giving your answer, use a friendly, encouraging, teacher-like tone. Provide additional materials to reinforce the topic.
+    - **STEP 3: VISUAL SUGGESTION:** If the topic requires visual explanation, use expressions like "I can generate a visual for this topic" or "I can explain this topic visually".
+    - **STEP 4: MAINTAIN INTERACTION:** Suggest logical follow-up questions ('followUpQuestions') and related topics ('suggestedTopics') that the student can ask you to keep the conversation alive.
+
+    ## THINGS TO NOTE
+    - **NEVER** ignore the question and send a general "Hello, how are you?" message.
+    - **PRIORITY IS ALWAYS ANSWERING THE QUESTION.** Role-playing is secondary.
+    - Be consistent by considering the conversation history ('conversationHistory').
+    - Never say "I am an AI".
+    - Always suggest visuals for topics that require them.
+    - When ADDITIONAL CONTEXT is provided with quiz state (current question, options, user's selection, time, question number), ALWAYS base your response on it. Reference the exact question text and the student's selection if relevant. If the student has not submitted their answer yet (showResult false or no selection), give hints and encouragement but NEVER reveal or confirm the correct answer. Only discuss correctness after they have submitted.
+
+    ## IMPORTANT FORMAT RULE (MANDATORY)
+    Your response MUST be ONLY and EXACTLY a valid JSON object. Do not use any explanation, greeting or markdown (e.g. json block) outside the JSON. Start directly with curly brace { and end with }.
+    The JSON object must be EXACTLY in this structure:
+    {
+      "response": "The main answer text you will give to the student",
+      "confidence": 0.9,
+      "suggestedTopics": ["Suggested topic 1", "Suggested topic 2"],
+      "followUpQuestions": ["Follow-up question 1 that the STUDENT CAN ASK YOU", "Another question the student can ask you"],
+      "learningTips": ["Learning tip 1", "Learning tip 2"]
     }
 
-    const response = await aiChatFlow(input);
-    return response;
-  } catch (error) {
-    // AI Chat Error handled silently
+    ---
 
-    // Provide more specific error messages
-    let errorMessage = "Üzgünüm, bir hata oluştu ve isteğinizi işleyemedim. Lütfen daha sonra tekrar deneyin.";
+    ## Conversation Information
 
-    if (error instanceof Error) {
-      if (error.message.includes("rate limit") || error.message.includes("quota")) {
-        errorMessage = "AI servisi şu anda yoğun. Lütfen birkaç dakika sonra tekrar deneyin.";
-      } else if (error.message.includes("API key") || error.message.includes("authentication")) {
-        errorMessage = "AI servisi yapılandırma hatası. Lütfen sistem yöneticisi ile iletişime geçin.";
-      } else if (error.message.includes("network") || error.message.includes("timeout")) {
-        errorMessage = "Bağlantı sorunu yaşanıyor. Lütfen internet bağlantınızı kontrol edin.";
-      }
-    }
+    - **SUBJECT:** ${input.subject}
+    
+    - **ADDITIONAL CONTEXT (current quiz state, question, user's selection, time, etc.):**
+    ${input.context || 'No additional context provided.'}
+    
+    - **CONVERSATION HISTORY:**
+    ${formattedHistory}
 
-    return {
-      response: errorMessage,
-      confidence: 0.1,
-      suggestedTopics: [],
-      followUpQuestions: [],
-      learningTips: [],
-    };
-  }
-}
+    - **STUDENT'S NEW QUESTION:**
+    ${input.message}
 
-const PromptInputSchema = z.object({
-  ...AiChatInputSchema.shape,
-  conversationHistory: z
-    .string()
-    .describe("Formata dönüştürülmüş konuşma geçmişi metni"),
-});
+    ---
 
-const prompt = ai.definePrompt({
-  name: "aiChatPrompt",
-  input: { schema: PromptInputSchema },
-  output: { schema: AiChatOutputSchema },
-  prompt: `
+    Now, according to the instructions above, answer the student's question. Use the ADDITIONAL CONTEXT to give relevant, personalized help. Do not reveal the correct answer if the user has not yet submitted their answer.
+  `
+      : `
     ## ROLÜN
     Sen, öğrencilere karmaşık konuları basit ve anlaşılır bir dille açıklayan uzman bir öğretmensin (AI Tutor). Seninle konuşan kişi bir öğrenci.
 
@@ -108,47 +129,56 @@ const prompt = ai.definePrompt({
     - Konuşma geçmişini ('conversationHistory') dikkate alarak tutarlı ol.
     - Asla "Ben bir yapay zekayım" deme.
     - Görsel gerektiren konularda mutlaka görsel önerisi yap.
+    - EK BAĞLAM quiz durumu (soru, seçenekler, kullanıcının seçimi, süre, soru numarası) içeriyorsa, bunu kullanarak kesin yardım ver. Tam soruyu ve öğrencinin seçimini referans al. Öğrenci henüz cevabını göndermediyse (showResult false veya seçim yok), ipucu ve teşvik ver ama ASLA doğru cevabı açığa vurma veya onaylama. Sadece gönderdikten sonra doğruluğu tartış.
+
+    ## ÖNEMLİ FORMAT KURALI (ZORUNLU)
+    Cevabını KESİNLİKLE ve SADECE geçerli bir JSON objesi olarak döndürmelisin. JSON dışında hiçbir açıklama, selamlama veya markdown (Örn: json bloğu) KULLANMA. Doğrudan süslü parantez { ile başla ve } ile bitir.
+    JSON objesi BİREBİR şu yapıda olmalıdır:
+    {
+      "response": "Öğrenciye vereceğin asıl cevap metni",
+      "confidence": 0.9,
+      "suggestedTopics": ["Önerilen konu 1", "Önerilen konu 2"],
+      "followUpQuestions": ["ÖĞRENCİNİN SANA sorabileceği takip sorusu 1", "Öğrencinin sana sorabileceği diğer bir soru"],
+      "learningTips": ["Öğrenme ipucu 1", "Öğrenme ipucu 2"]
+    }
 
     ---
 
     ## Konuşma Bilgileri
 
-    - **DERS KONUSU:** {{{subject}}}
+    - **DERS KONUSU:** ${input.subject}
+    
+    - **EK BAĞLAM (şu anki quiz durumu, soru, kullanıcının seçimi, süre vb.):**
+    ${input.context || 'Ek bağlam sağlanmadı.'}
     
     - **GEÇMİŞ KONUŞMA:**
-    {{{conversationHistory}}}
+    ${formattedHistory}
 
     - **ÖĞRENCİNİN YENİ SORUSU:**
-    {{{message}}}
+    ${input.message}
 
     ---
 
-    Şimdi, yukarıdaki talimatlara göre öğrencinin sorusunu cevapla.
-  `,
-});
+    Şimdi, yukarıdaki talimatlara göre öğrencinin sorusunu cevapla. EK BAĞLAM'ı kullanarak ilgili ve kişiselleştirilmiş yardım ver. Kullanıcı henüz cevabını göndermediyse doğru cevabı açıklama.
+  `;
 
-const aiChatFlow = ai.defineFlow(
-  {
-    name: "aiChatFlow",
-    inputSchema: AiChatInputSchema,
-    outputSchema: AiChatOutputSchema,
-  },
-  async (input) => {
-    const formattedHistory = input.conversationHistory
-      .map((msg) => {
-        const prefix = msg.role === "user" ? "Öğrenci" : "Öğretmen";
-        return `${prefix}: ${msg.content}`;
-      })
-      .join("\n");
-
-    const { output } = await prompt({
-      ...input,
-      conversationHistory: formattedHistory,
+    const result = await provider.generateObject<AiChatOutput>({
+      schema: AiChatOutputSchema as any,
+      prompt: prompt,
     });
 
-    if (!output) {
-      throw new Error("AI output was null or undefined.");
-    }
-    return output;
-  },
-);
+    return result;
+  } catch (error) {
+    console.error("AI Chat Error:", error);
+
+    const errorMessage = resolveAiErrorMessage(error, locale, "apiKey");
+
+    return {
+      response: errorMessage,
+      confidence: 0.1,
+      suggestedTopics: [],
+      followUpQuestions: [],
+      learningTips: [],
+    };
+  }
+}

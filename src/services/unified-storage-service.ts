@@ -45,9 +45,9 @@ export interface SavedTopicContent {
 // Unified storage service with single storage keys
 export class UnifiedStorageService {
   // Single storage keys for the entire application
-  private static readonly QUESTIONS_KEY = "akilhane_questions";
-  private static readonly SUBJECTS_KEY = "akilhane_subjects";
-  private static readonly FLASHCARDS_KEY = "akilhane_flashcards";
+  private static readonly QUESTIONS_KEY = "mindhouse_questions";
+  private static readonly SUBJECTS_KEY = "mindhouse_subjects";
+  private static readonly FLASHCARDS_KEY = "mindhouse_flashcards";
 
   // Supabase client for server-side operations
   private static getSupabaseClient() {
@@ -660,7 +660,7 @@ export class UnifiedStorageService {
       // Remove old storage keys
       const oldKeys = [
         "exam_training_questions",
-        "akilhane_questions_v2",
+        "mindhouse_questions_v2",
         "exam_training_subjects",
       ];
 
@@ -819,7 +819,7 @@ export class UnifiedStorageService {
       // Get all subjects to find their topic data
       const subjects = this.getSubjects();
       subjects.forEach((subject) => {
-        const _subjectKey = `akilhane_topic_explainer_${subject.name}`;
+        const _subjectKey = `mindhouse_topic_explainer_${subject.name}`;
         const stored = localStorage.getItem(_subjectKey);
         if (stored) {
           const subjectTopics = JSON.parse(stored);
@@ -923,7 +923,7 @@ export class UnifiedStorageService {
       return [];
     }
     try {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
+      const subjectKey = `mindhouse_topic_explainer_${subject}`;
       const stored = localStorage.getItem(subjectKey);
       return stored ? JSON.parse(stored) : [];
     } catch {
@@ -943,7 +943,7 @@ export class UnifiedStorageService {
     const removedCount = topics.length;
 
     if (removedCount > 0) {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
+      const subjectKey = `mindhouse_topic_explainer_${subject}`;
       localStorage.removeItem(subjectKey);
     }
 
@@ -959,7 +959,7 @@ export class UnifiedStorageService {
       return;
     }
     try {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
+      const subjectKey = `mindhouse_topic_explainer_${subject}`;
       localStorage.setItem(subjectKey, JSON.stringify(topics));
     } catch {}
   }

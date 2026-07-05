@@ -6,6 +6,7 @@ import PWAServiceWorker from "@/components/pwa-service-worker";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import Footer from "@/components/footer";
 import { useAppearance } from "@/hooks/use-appearance";
+import ParticlesBackground from "@/components/particles-background";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
   // Initialize appearance settings
@@ -17,9 +18,10 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
-      storageKey="akilhane-theme"
+      storageKey="mindhouse-theme"
     >
-      <div className="flex-grow">{children}</div>
+      <ParticlesBackground />
+      <div className="flex-grow relative z-10">{children}</div>
       <Toaster />
       <PWAServiceWorker />
       <PWAInstallPrompt />

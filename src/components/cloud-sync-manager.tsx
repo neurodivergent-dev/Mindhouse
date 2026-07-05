@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { CloudSyncService } from '@/services/cloud-sync-service';
 import { Button } from '@/components/ui/button';
@@ -22,14 +23,17 @@ interface SyncStatus {
   };
 }
 
+type SyncAction = 'upload' | 'download' | 'fullSync' | 'connectionTest' | '';
+
 interface SyncState {
   isLoading: boolean;
   error: string | null;
-  lastAction: string;
+  lastAction: SyncAction;
   syncStatus: SyncStatus | null;
 }
 
 export function CloudSyncManager() {
+  const t = useTranslations('CloudSync');
   const { isAuthenticated, user } = useAuth();
   const [state, setState] = useState<SyncState>({
     isLoading: false,
@@ -55,7 +59,7 @@ export function CloudSyncManager() {
     } catch (error) {
       updateState({
         isLoading: false,
-        error: `Sync status kontrolü başarısız: ${error}`,
+        error: t('syncStatusCheckFailed', { error: String(error) }),
       });
     }
   };
@@ -73,8 +77,12 @@ export function CloudSyncManager() {
     }
   };
 
-  const handleSyncAction = async (action: () => Promise<{ success: boolean; message?: string }>, actionName: string) => {
-    updateState({ lastAction: actionName, isLoading: true, error: null });
+  const handleSyncAction = async (
+    action: () => Promise<{ success: boolean; message?: string }>,
+    actionKey: SyncAction,
+    actionLabel: string,
+  ) => {
+    updateState({ lastAction: actionKey, isLoading: true, error: null });
 
     try {
       const result = await action();
@@ -98,7 +106,7 @@ export function CloudSyncManager() {
 
       return result;
     } catch (error) {
-      const errorMessage = `${actionName} hatası: ${error}`;
+      const errorMessage = t('actionError', { action: actionLabel, error: String(error) });
       updateState({
         isLoading: false,
         error: errorMessage,
@@ -109,16 +117,16 @@ export function CloudSyncManager() {
   };
 
   const syncLocalToCloud = () => {
-    void handleSyncAction(CloudSyncService.syncLocalToCloud, 'Buluta Yükleme');
+    void handleSyncAction(CloudSyncService.syncLocalToCloud, 'upload', t('uploadAction'));
   };
   const syncCloudToLocal = () => {
-    void handleSyncAction(CloudSyncService.syncCloudToLocal, 'Buluttan İndirme');
+    void handleSyncAction(CloudSyncService.syncCloudToLocal, 'download', t('downloadAction'));
   };
   const fullSync = () => {
-    void handleSyncAction(CloudSyncService.fullSync, 'Tam Senkronizasyon');
+    void handleSyncAction(CloudSyncService.fullSync, 'fullSync', t('fullSyncAction'));
   };
   const testConnection = () => {
-    void handleSyncAction(CloudSyncService.testCloudConnection, 'Bağlantı Testi');
+    void handleSyncAction(CloudSyncService.testCloudConnection, 'connectionTest', t('connectionTestAction'));
   };
 
   const clearError = () => {
@@ -131,10 +139,10 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cloud className="h-5 w-5" />
-            Bulut Senkronizasyonu
+            {t('title')}
           </CardTitle>
           <CardDescription>
-            Verilerinizi bulutla senkronize etmek için oturum açmanız gerekiyor.
+            {t('loginRequiredDesc')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -152,10 +160,10 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cloud className="h-5 w-5" />
-            Bulut Senkronizasyonu
+            {t('title')}
           </CardTitle>
           <CardDescription>
-            {user?.email} hesabınız için veri senkronizasyonu yönetimi
+            {t('accountSyncDesc', { email: user?.email ?? '' })}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -167,7 +175,7 @@ export function CloudSyncManager() {
           <AlertDescription className="flex items-center justify-between">
             <span>{error}</span>
             <Button variant="outline" size="sm" onClick={clearError}>
-              Temizle
+              {t('clear')}
             </Button>
           </AlertDescription>
         </Alert>
@@ -178,7 +186,7 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            Veri Durumu
+            {t('dataStatus')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -189,7 +197,7 @@ export function CloudSyncManager() {
               ) : (
                 <Database className="h-4 w-4 mr-2" />
               )}
-              Durumu Kontrol Et
+              {t('checkStatus')}
             </Button>
 
             {syncStatus && (
@@ -198,14 +206,14 @@ export function CloudSyncManager() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
-                    <span className="font-medium">Yerel Veri</span>
+                    <span className="font-medium">{t('localData')}</span>
                     <Badge variant={hasLocalData ? "default" : "secondary"}>
-                      {hasLocalData ? "Mevcut" : "Yok"}
+                      {hasLocalData ? t('available') : t('notAvailable')}
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <div>📚 Dersler: {syncStatus.localCounts.subjects}</div>
-                    <div>❓ Sorular: {syncStatus.localCounts.questions}</div>
+                    <div>📚 {t('subjects')}: {syncStatus.localCounts.subjects}</div>
+                    <div>❓ {t('questions')}: {syncStatus.localCounts.questions}</div>
                   </div>
                 </div>
 
@@ -213,14 +221,14 @@ export function CloudSyncManager() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Cloud className="h-4 w-4" />
-                    <span className="font-medium">Bulut Veri</span>
+                    <span className="font-medium">{t('cloudData')}</span>
                     <Badge variant={hasCloudData ? "default" : "secondary"}>
-                      {hasCloudData ? "Mevcut" : "Yok"}
+                      {hasCloudData ? t('available') : t('notAvailable')}
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <div>📚 Dersler: {syncStatus.cloudCounts.subjects}</div>
-                    <div>❓ Sorular: {syncStatus.cloudCounts.questions}</div>
+                    <div>📚 {t('subjects')}: {syncStatus.cloudCounts.subjects}</div>
+                    <div>❓ {t('questions')}: {syncStatus.cloudCounts.questions}</div>
                   </div>
                 </div>
               </div>
@@ -234,10 +242,10 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5" />
-            Senkronizasyon İşlemleri
+            {t('syncOperations')}
           </CardTitle>
           <CardDescription>
-            Verilerinizi yerel depolama ile bulut arasında senkronize edin
+            {t('syncDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -246,10 +254,10 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Upload className="h-4 w-4" />
-                <span className="font-medium">Buluta Yükle</span>
+                <span className="font-medium">{t('uploadToCloud')}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Yerel verilerinizi bulut depolamaya yükleyin
+                {t('uploadDesc')}
               </p>
               <Button
                 onClick={syncLocalToCloud}
@@ -257,12 +265,12 @@ export function CloudSyncManager() {
                 variant="outline"
                 className="w-full"
               >
-                {isLoading && lastAction === 'Buluta Yükleme' ? (
+                {isLoading && lastAction === 'upload' ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <Upload className="h-4 w-4 mr-2" />
                 )}
-                Yerel → Bulut
+                {t('localToCloud')}
               </Button>
             </div>
 
@@ -270,10 +278,10 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                <span className="font-medium">Buluttan İndir</span>
+                <span className="font-medium">{t('downloadFromCloud')}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Bulut verilerinizi yerel depolamaya indirin
+                {t('downloadDesc')}
               </p>
               <Button
                 onClick={syncCloudToLocal}
@@ -281,12 +289,12 @@ export function CloudSyncManager() {
                 variant="outline"
                 className="w-full"
               >
-                {isLoading && lastAction === 'Buluttan İndirme' ? (
+                {isLoading && lastAction === 'download' ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                Bulut → Yerel
+                {t('cloudToLocal')}
               </Button>
             </div>
 
@@ -294,22 +302,22 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
-                <span className="font-medium">Tam Senkronizasyon</span>
+                <span className="font-medium">{t('fullSync')}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Her iki yönde de veri birleştirme yapın
+                {t('fullSyncDesc')}
               </p>
               <Button
                 onClick={fullSync}
                 disabled={isLoading || (!hasLocalData && !hasCloudData)}
                 className="w-full"
               >
-                {isLoading && lastAction === 'Tam Senkronizasyon' ? (
+                {isLoading && lastAction === 'fullSync' ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <CheckCircle className="h-4 w-4 mr-2" />
                 )}
-                Tam Senkronizasyon
+                {t('fullSync')}
               </Button>
             </div>
 
@@ -317,10 +325,10 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <TestTube className="h-4 w-4" />
-                <span className="font-medium">Bağlantı Testi</span>
+                <span className="font-medium">{t('connectionTest')}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Bulut bağlantısını test edin
+                {t('connectionTestDesc')}
               </p>
               <Button
                 onClick={testConnection}
@@ -328,12 +336,12 @@ export function CloudSyncManager() {
                 variant="secondary"
                 className="w-full"
               >
-                {isLoading && lastAction === 'Bağlantı Testi' ? (
+                {isLoading && lastAction === 'connectionTest' ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <TestTube className="h-4 w-4 mr-2" />
                 )}
-                Bağlantıyı Test Et
+                {t('testConnection')}
               </Button>
             </div>
           </div>
@@ -346,7 +354,7 @@ export function CloudSyncManager() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5" />
-              Öneriler
+              {t('recommendations')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -355,7 +363,7 @@ export function CloudSyncManager() {
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Henüz hiç veri yok. Ders Yöneticisi veya Soru Yöneticisi&apos;nden veri eklemeye başlayın.
+                    {t('noDataYet')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -364,7 +372,7 @@ export function CloudSyncManager() {
                 <Alert>
                   <Upload className="h-4 w-4" />
                   <AlertDescription>
-                    Yerel verileriniz var ama bulutta yok. &quot;Yerel → Bulut&quot; ile yükleyebilirsiniz.
+                    {t('localOnly')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -373,7 +381,7 @@ export function CloudSyncManager() {
                 <Alert>
                   <Download className="h-4 w-4" />
                   <AlertDescription>
-                    Bulutta verileriniz var ama yerel depolamada yok. &quot;Bulut → Yerel&quot; ile indirebilirsiniz.
+                    {t('cloudOnly')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -382,7 +390,7 @@ export function CloudSyncManager() {
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Hem yerel hem bulut verileriniz var. &quot;Tam Senkronizasyon&quot; ile her ikisini birleştirebilirsiniz.
+                    {t('bothData')}
                   </AlertDescription>
                 </Alert>
               )}

@@ -3,7 +3,9 @@
 interface QuizResult {
   id: string;
   userId: string;
+  type?: string; // e.g. 'Quiz', 'TopicExplainer', 'Flashcard'
   subject: string;
+  topic?: string;
   score: number;
   totalQuestions: number;
   timeSpent: number;

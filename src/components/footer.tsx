@@ -1,39 +1,42 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Brain, Github, Linkedin, Youtube, Heart } from "lucide-react";
 
 export default function Footer() {
+  const t = useTranslations("Footer");
+  const tCommon = useTranslations("Common");
+  const year = new Date().getFullYear();
+
   return (
     <footer className="bg-white dark:bg-gray-900 border-t mt-auto">
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Logo and Description */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/landing" className="flex items-center gap-2">
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
                 <Brain className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-gray-800 dark:text-white">
-                AkılHane
+                {tCommon("appName")}
               </span>
             </Link>
-            <p className="text-gray-500 dark:text-gray-400">
-              AI Destekli Kişiselleştirilmiş Eğitim Platformu.
-            </p>
+            <p className="text-gray-500 dark:text-gray-400">{t("tagline")}</p>
           </div>
 
-          {/* Links */}
           <div className="grid grid-cols-3 gap-8">
             <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase">
-                Sayfalar
+                {t("pages")}
               </h3>
               <ul className="mt-4 space-y-2">
                 <li>
                   <Link
-                    href="/"
+                    href="/landing"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Ana Sayfa
+                    {t("home")}
                   </Link>
                 </li>
                 <li>
@@ -41,7 +44,7 @@ export default function Footer() {
                     href="/quiz"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Test Çöz
+                    {t("quiz")}
                   </Link>
                 </li>
                 <li>
@@ -49,7 +52,7 @@ export default function Footer() {
                     href="/flashcard"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Flashcard
+                    {t("flashcard")}
                   </Link>
                 </li>
                 <li>
@@ -57,14 +60,14 @@ export default function Footer() {
                     href="/topic-explainer"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Konu Anlatımı
+                    {t("topicExplainer")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase">
-                Destek
+                {t("support")}
               </h3>
               <ul className="mt-4 space-y-2">
                 <li>
@@ -72,7 +75,7 @@ export default function Footer() {
                     href="/contact"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    İletişim
+                    {t("contact")}
                   </Link>
                 </li>
                 <li>
@@ -80,7 +83,7 @@ export default function Footer() {
                     href="/help"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Yardım
+                    {t("help")}
                   </Link>
                 </li>
                 <li>
@@ -88,14 +91,14 @@ export default function Footer() {
                     href="/pricing"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Fiyatlandırma
+                    {t("pricing")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase">
-                Yasal
+                {t("legal")}
               </h3>
               <ul className="mt-4 space-y-2">
                 <li>
@@ -103,7 +106,7 @@ export default function Footer() {
                     href="/privacy-policy"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Gizlilik Politikası
+                    {t("privacyPolicy")}
                   </Link>
                 </li>
                 <li>
@@ -111,22 +114,21 @@ export default function Footer() {
                     href="/terms-of-service"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Kullanım Şartları
+                    {t("termsOfService")}
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Social Media */}
           <div className="flex justify-center md:justify-end items-start">
             <div className="text-left md:text-right">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase">
-                Bizi Takip Edin
+                {t("followUs")}
               </h3>
               <div className="flex mt-4 space-x-6 justify-start md:justify-end">
                 <a
-                  href="https://www.youtube.com/@Akilhane-Tech"
+                  href="https://www.youtube.com/@Mindhouse-Tech"
                   className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -135,7 +137,7 @@ export default function Footer() {
                   <Youtube className="h-6 w-6" />
                 </a>
                 <a
-                  href="https://github.com/melihcanndemir/akilhane"
+                  href="https://github.com/melihcanndemir/mindhouse"
                   className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -159,20 +161,19 @@ export default function Footer() {
 
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center">
           <p className="text-base text-gray-400">
-            © {new Date().getFullYear()} AkılHane. Tüm hakları saklıdır.
+            {t("copyright", { year })}
           </p>
-          <p className="text-sm text-gray-400 mt-2 flex items-center justify-center gap-1">
-            <a
-              href="https://www.linkedin.com/in/melihcandemir/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-600 transition-colors duration-200 font-medium"
-            >
-              Melih Can Demir
-            </a>{" "}
-            tarafından{" "}
-            <Heart className="h-4 w-4 text-red-500 animate-pulse" />
-            {" "}ile oluşturuldu
+          <p className="text-sm text-gray-400 mt-2 flex items-center justify-center gap-1 flex-wrap">
+            {t.rich("madeBy", {
+              author: (chunks) => (
+                <span className="text-blue-500 font-medium">
+                  {chunks}
+                </span>
+              ),
+              heart: () => (
+                <Heart className="h-4 w-4 text-red-500 animate-pulse inline" />
+              ),
+            })}
           </p>
         </div>
       </div>

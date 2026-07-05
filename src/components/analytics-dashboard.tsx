@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,6 +16,7 @@ import {
   LineChart,
   PieChart,
   Sparkles,
+  BookOpen,
 } from "lucide-react";
 import { demoAnalyticsData } from "@/data/demo-data";
 
@@ -35,6 +37,7 @@ interface AnalyticsData {
     score: number;
     timestamp: string;
     subject?: string | undefined;
+    topic?: string;
   }>;
   weeklyProgress?: Array<{
     day: string;
@@ -67,10 +70,93 @@ interface AnalyticsDashboardProps {
   useMockData: boolean;
 }
 
+const IMPROVEMENT_THRESHOLD = 60;
+
+const translateSubject = (subject: string, locale: string) => {
+  if (locale === "tr") return subject;
+  const map: Record<string, string> = {
+    "Matematik": "Mathematics",
+    "Fizik": "Physics",
+    "Kimya": "Chemistry",
+    "Biyoloji": "Biology",
+    "Tarih": "History",
+    "Türk Dili ve Edebiyatı": "Turkish Language & Lit.",
+    "Türk Dili": "Turkish Language",
+    "İngilizce": "English",
+    "Coğrafya": "Geography",
+    "Felsefe": "Philosophy",
+    "Din Kültürü": "Religion"
+  };
+  return map[subject] || subject;
+};
+
+const translateTopic = (topic: string, locale: string) => {
+  if (locale === "tr") return topic;
+  const map: Record<string, string> = {
+    "Türev Uygulamaları": "Derivative Applications",
+    "İntegral Hesabı": "Integral Calculus",
+    "Logaritma": "Logarithms",
+    "Geometri": "Geometry",
+    "Cebir": "Algebra",
+    "Analiz": "Calculus",
+    "Elektrik ve Manyetizma": "Electricity & Magnetism",
+    "Dalga Hareketi": "Wave Motion",
+    "Modern Fizik": "Modern Physics",
+    "Mekanik": "Mechanics",
+    "Termodinamik": "Thermodynamics",
+    "Elektrik": "Electricity",
+    "Organik Kimya": "Organic Chemistry",
+    "Elektrokimya": "Electrochemistry",
+    "Kimyasal Reaksiyonlar": "Chemical Reactions",
+    "Anorganik Kimya": "Inorganic Chemistry",
+    "Kimyasal Bağlar": "Chemical Bonds",
+    "Genetik": "Genetics",
+    "Ekoloji": "Ecology",
+    "Hücre Bölünmesi": "Cell Division",
+    "Hücre Biyolojisi": "Cell Biology",
+    "Sistemler": "Systems",
+    "Dokular": "Tissues",
+    "Osmanlı Duraklama Dönemi": "Ottoman Stagnation Period",
+    "Tarih": "History",
+    "Tarihsel Olaylar": "Historical Events",
+    "Tarihsel Süreçler": "Historical Processes",
+    "Divan Edebiyatı": "Divan Literature",
+    "Çağdaş Türk Edebiyatı": "Modern Turkish Lit.",
+    "Dil Bilgisi": "Grammar",
+    "Edebiyat": "Literature",
+    "Çağdaş Edebiyat": "Modern Literature",
+    "Grammar Tenses": "Grammar Tenses",
+    "Reading Comprehension": "Reading Comprehension",
+    "Vocabulary": "Vocabulary",
+    "Türk Dili": "Turkish Language",
+    "Coğrafya": "Geography",
+    "Felsefe": "Philosophy",
+    "Din Kültürü": "Religion"
+  };
+  return map[topic] || topic;
+};
+
+const translateDay = (day: string, locale: string) => {
+  if (locale === "tr") return day;
+  const map: Record<string, string> = {
+    "Pazartesi": "Monday",
+    "Salı": "Tuesday",
+    "Çarşamba": "Wednesday",
+    "Perşembe": "Thursday",
+    "Cuma": "Friday",
+    "Cumartesi": "Saturday",
+    "Pazar": "Sunday"
+  };
+  return map[day] || day;
+};
+
 // return the useMockData parameter
 export default function AnalyticsDashboard({
   useMockData,
 }: AnalyticsDashboardProps) {
+  const t = useTranslations("AnalyticsDashboard");
+  const tDashboard = useTranslations("Dashboard");
+  const locale = useLocale();
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     totalQuestions: 0,
     correctAnswers: 0,
@@ -92,7 +178,24 @@ export default function AnalyticsDashboard({
     const generateMockData = () => {
       // Use rich demo data for BTK Hackathon
       if (useMockData) {
-        setAnalytics(demoAnalyticsData);
+        setAnalytics({
+          ...demoAnalyticsData,
+          weakTopics: demoAnalyticsData.weakTopics?.map(t => translateTopic(t, locale)) || [],
+          strongTopics: demoAnalyticsData.strongTopics?.map(t => translateTopic(t, locale)) || [],
+          topicsNeedingImprovement: demoAnalyticsData.topicsNeedingImprovement?.map(t => translateTopic(t, locale)) || [],
+          recentActivity: demoAnalyticsData.recentActivity?.map(item => ({
+            ...item,
+            subject: translateSubject(item.subject || "", locale)
+          })) || [],
+          subjectDistribution: demoAnalyticsData.subjectDistribution?.map(item => ({
+            ...item,
+            subject: translateSubject(item.subject || "", locale)
+          })) || [],
+          weeklyProgress: demoAnalyticsData.weeklyProgress?.map(item => ({
+            ...item,
+            day: translateDay(item.day || "", locale)
+          })) || []
+        });
       } else {
         // Simple mock data (old version)
         const mockData: AnalyticsData = {
@@ -138,13 +241,13 @@ export default function AnalyticsDashboard({
               : results.filter((result: QuizResult) => !result.isDemo);
 
             // Get subject information from Subjects
-            const subjects = localStorage.getItem("akilhane_subjects");
+            const subjects = localStorage.getItem("mindhouse_subjects");
             const subjectsData: Subject[] = subjects
               ? JSON.parse(subjects)
               : [];
 
             // Get question information from Questions (not currently used)
-            // const questions = localStorage.getItem('akilhane_questions');
+            // const questions = localStorage.getItem('mindhouse_questions');
 
             if (filteredResults.length === 0) {
               // If there are no quiz results, use simple mock data
@@ -157,19 +260,21 @@ export default function AnalyticsDashboard({
                 rank: 0,
                 totalUsers: 1,
                 improvement: 0,
-                              weakTopics: [],
-              strongTopics: [],
-              topicsNeedingImprovement: [],
+                weakTopics: [],
+                strongTopics: [],
+                topicsNeedingImprovement: [],
                 recentActivity: [],
               };
             }
 
-            // Calculate analytics
-            const totalQuestions = filteredResults.reduce(
+            // Calculate analytics (exclude TopicExplainer from question counts)
+            const quizOnlyResults = filteredResults.filter((r: any) => r.type !== "TopicExplainer");
+
+            const totalQuestions = quizOnlyResults.reduce(
               (sum: number, result: QuizResult) => sum + result.totalQuestions,
               0,
             );
-            const correctAnswers = filteredResults.reduce(
+            const correctAnswers = quizOnlyResults.reduce(
               (sum: number, result: QuizResult) => sum + result.score,
               0,
             );
@@ -221,7 +326,6 @@ export default function AnalyticsDashboard({
               .map(([topic]) => topic);
 
             // Topics that need improvement (configurable threshold)
-            const IMPROVEMENT_THRESHOLD = 60; // Configurable threshold
             const topicsNeedingImprovement = Object.entries(topicPerformanceMap)
               .filter(([, performance]) => {
                 if (performance.total < 2) {
@@ -248,8 +352,8 @@ export default function AnalyticsDashboard({
                 const successRate =
                   (performance.correct / performance.total) * 100;
                 return successRate >= STRONG_THRESHOLD &&
-                       !weakTopics.includes(topic) &&
-                       !topicsNeedingImprovement.some(item => item.topic === topic);
+                  !weakTopics.includes(topic) &&
+                  !topicsNeedingImprovement.some(item => item.topic === topic);
               })
               .slice(0, 3);
 
@@ -257,19 +361,20 @@ export default function AnalyticsDashboard({
             const defaultStrongTopics =
               strongTopics.length === 0
                 ? subjectsData
-                    .filter((subject: Subject) => subject.isActive)
-                    .slice(0, 3)
-                    .map((subject: Subject) => subject.name)
+                  .filter((subject: Subject) => subject.isActive)
+                  .slice(0, 3)
+                  .map((subject: Subject) => subject.name)
                 : strongTopics;
 
             // Recent activity
             const recentActivity = filteredResults
               .slice(-5)
-              .map((result: QuizResult) => ({
-                type: "Quiz",
-                score: Math.round((result.score / result.totalQuestions) * 100),
-                timestamp: result.completedAt,
+              .map((result: any) => ({
+                type: result.type || "Quiz",
+                score: result.totalQuestions > 0 ? Math.round((result.score / result.totalQuestions) * 100) : 100,
+                timestamp: result.completedAt || result.createdAt,
                 subject: result.subject,
+                topic: result.topic,
               }));
 
             return {
@@ -330,30 +435,50 @@ export default function AnalyticsDashboard({
       fetchRealData();
     }
 
-    return () => {};
+    return () => { };
   }, [useMockData]); // add useMockData as a dependency
 
   // add console log for debugging
-  useEffect(() => {}, [analytics]);
+  useEffect(() => { }, [analytics]);
 
   const getScoreColor = (score: number) => {
     if (score >= 90) {
-      return "text-green-600";
+      return "text-[#34c759] dark:text-[#30d158] border-[#34c759]/30 bg-[#34c759]/10 font-bold shadow-none";
     }
     if (score >= 80) {
-      return "text-blue-600";
+      return "text-[#007aff] dark:text-[#0a84ff] border-[#007aff]/30 bg-[#007aff]/10 font-bold shadow-none";
     }
     if (score >= 70) {
-      return "text-yellow-600";
+      return "text-[#ff9500] dark:text-[#ff9f0a] border-[#ff9500]/30 bg-[#ff9500]/10 font-bold shadow-none";
     }
-    return "text-red-600";
+    return "text-[#ff3b30] dark:text-[#ff453a] border-[#ff3b30]/30 bg-[#ff3b30]/10 font-bold shadow-none";
   };
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return hours > 0 ? `${hours}s ${mins}dk` : `${mins}dk`;
+    return hours > 0
+      ? t("timeHoursMinutes", { hours, minutes: mins })
+      : t("timeMinutesOnly", { minutes: mins });
   };
+
+  const getActivityLabel = (type: string) => {
+    const normalizedType = type.toLowerCase();
+    switch (normalizedType) {
+      case "quiz":
+        return t("activityQuiz");
+      case "flashcard":
+        return t("activityFlashcard");
+      case "topicexplainer":
+        return t("activityTopicExplainer");
+      case "ai_chat":
+        return t("activityAiChat");
+      default:
+        return type;
+    }
+  };
+
+  const dateLocale = locale === "tr" ? "tr-TR" : "en-US";
 
   if (isLoading) {
     return (
@@ -376,25 +501,25 @@ export default function AnalyticsDashboard({
     <div className="space-y-6">
       {/* Header with Live Badge */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100">
-          <BarChart3 className="w-6 h-6 text-blue-600" />
-          Canlı Analitik Dashboard
+        <h2 className="text-2xl font-bold flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight">
+          <BarChart3 className="w-6 h-6 text-[#007aff] dark:text-[#0a84ff]" />
+          {t("title")}
         </h2>
-        <Badge className="bg-green-100 text-green-800 animate-pulse dark:bg-green-900 dark:text-green-200">
+        <Badge className="bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 animate-pulse font-medium shadow-none">
           <Activity className="w-3 h-3 mr-1" />
-          CANLI
+          {t("liveBadge")}
         </Badge>
       </div>
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Questions */}
-        <Card className="border-gradient-question hover:shadow-lg transition-shadow">
+        <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Toplam Cevaplanan Soru
+            <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+              {t("totalQuestionsAnswered")}
             </CardTitle>
-            <Target className="h-4 w-4 text-blue-600" />
+            <Target className="h-4 w-4 text-[#007aff] dark:text-[#0a84ff]" />
           </CardHeader>
           <CardContent>
             {analytics.totalQuestions > 0 ? (
@@ -403,17 +528,17 @@ export default function AnalyticsDashboard({
                   {analytics.totalQuestions.toLocaleString()}
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Tüm zamanlar
+                  {t("allTime")}
                 </p>
               </>
             ) : (
               <div className="text-center py-4">
                 <Target className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Henüz soru çözülmedi
+                  {t("noQuestionsYet")}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Test çözerek başlayın
+                  {t("startByTakingTests")}
                 </p>
               </div>
             )}
@@ -421,12 +546,12 @@ export default function AnalyticsDashboard({
         </Card>
 
         {/* Average Score */}
-        <Card className="border-gradient-question hover:shadow-lg transition-shadow">
+        <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Ortalama Puan
+            <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+              {t("averageScore")}
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-[#34c759] dark:text-[#30d158]" />
           </CardHeader>
           <CardContent>
             {analytics.averageScore > 0 ? (
@@ -435,17 +560,17 @@ export default function AnalyticsDashboard({
                   {analytics.averageScore}%
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Genel başarı oranı
+                  {t("overallSuccessRate")}
                 </p>
               </>
             ) : (
               <div className="text-center py-4">
                 <TrendingUp className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Henüz puan yok
+                  {t("noScoreYet")}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                  İlk testinizi çözün
+                  {t("takeFirstTest")}
                 </p>
               </div>
             )}
@@ -453,12 +578,12 @@ export default function AnalyticsDashboard({
         </Card>
 
         {/* Study Time */}
-        <Card className="border-gradient-question hover:shadow-lg transition-shadow">
+        <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Toplam Çalışma Süresi
+            <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+              {t("totalStudyTime")}
             </CardTitle>
-            <Clock className="h-4 w-4 text-purple-600" />
+            <Clock className="h-4 w-4 text-[#af52de] dark:text-[#bf5af2]" />
           </CardHeader>
           <CardContent>
             {analytics.studyTime > 0 ? (
@@ -467,17 +592,17 @@ export default function AnalyticsDashboard({
                   {formatTime(analytics.studyTime)}
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Tüm zamanlar
+                  {t("allTime")}
                 </p>
               </>
             ) : (
               <div className="text-center py-4">
                 <Clock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Henüz çalışma yok
+                  {t("noStudyYet")}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Çalışmaya başlayın
+                  {t("startStudying")}
                 </p>
               </div>
             )}
@@ -488,11 +613,11 @@ export default function AnalyticsDashboard({
       {/* Progress and Performance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Performance Progress */}
-        <Card className="border-gradient-question">
+        <Card className="apple-glass-card border-0">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-              <LineChart className="w-5 h-5 text-blue-600" />
-              Performans İlerlemesi
+            <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <LineChart className="w-5 h-5 text-[#007aff] dark:text-[#0a84ff]" />
+              {t("performanceProgress")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -500,7 +625,7 @@ export default function AnalyticsDashboard({
               <>
                 <div>
                   <div className="flex justify-between text-sm mb-2 text-gray-700 dark:text-gray-300">
-                    <span>Genel Başarı</span>
+                    <span>{t("overallSuccess")}</span>
                     <span>{analytics.averageScore}%</span>
                   </div>
                   <div className="progress-gradient-bg rounded-full h-2">
@@ -513,13 +638,13 @@ export default function AnalyticsDashboard({
 
                 <div>
                   <div className="flex justify-between text-sm mb-2 text-gray-700 dark:text-gray-300">
-                    <span>Doğru Cevap Oranı</span>
+                    <span>{t("correctAnswerRate")}</span>
                     <span>
                       {analytics.totalQuestions > 0
                         ? Math.round(
-                            (analytics.correctAnswers / analytics.totalQuestions) *
-                              100,
-                          )
+                          (analytics.correctAnswers / analytics.totalQuestions) *
+                          100,
+                        )
                         : 0}
                       %
                     </span>
@@ -536,7 +661,7 @@ export default function AnalyticsDashboard({
 
                 <div>
                   <div className="flex justify-between text-sm mb-2 text-gray-700 dark:text-gray-300">
-                    <span>Çalışma Süresi</span>
+                    <span>{t("studyTime")}</span>
                     <span>{formatTime(analytics.studyTime)}</span>
                   </div>
                   <div className="progress-gradient-bg rounded-full h-2">
@@ -553,10 +678,10 @@ export default function AnalyticsDashboard({
               <div className="text-center py-8">
                 <LineChart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                  Performans Verisi Yok
+                  {t("noPerformanceData")}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Test çözerek performansınızı takip edin
+                  {t("trackPerformanceByTests")}
                 </p>
               </div>
             )}
@@ -564,30 +689,30 @@ export default function AnalyticsDashboard({
         </Card>
 
         {/* Topic Analysis */}
-        <Card className="border-gradient-question">
+        <Card className="apple-glass-card border-0">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-              <PieChart className="w-5 h-5 text-green-600" />
-              Konu Analizi
+            <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <PieChart className="w-5 h-5 text-[#34c759] dark:text-[#30d158]" />
+              {t("topicAnalysis")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {analytics.strongTopics.length === 0 &&
-            analytics.weakTopics.length === 0 ? (
+              analytics.weakTopics.length === 0 ? (
               <div className="text-center text-gray-500 dark:text-gray-400 py-4">
                 <p>
-                  Yeterli veri toplandığında konu analiziniz burada görünecek.
+                  {t("topicAnalysisPlaceholder")}
                 </p>
               </div>
             ) : (
               <>
                 {/* Strong Topics */}
                 <div>
-                  <h4 className="text-sm font-medium mb-2 text-green-700 dark:text-green-400">
-                    Güçlü Konular
+                  <h4 className="text-sm font-medium mb-2 text-[#34c759] dark:text-[#30d158]">
+                    {t("strongTopics")}
                   </h4>
                   {analytics.strongTopics &&
-                  analytics.strongTopics.length > 0 ? (
+                    analytics.strongTopics.length > 0 ? (
                     <div className="space-y-2">
                       {analytics.strongTopics
                         // If a topic is in weak topics, it will not be shown in strong topics
@@ -597,24 +722,24 @@ export default function AnalyticsDashboard({
                         .map((topic, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between"
+                            className="flex items-center justify-between p-2 bg-[#f5f5f7] dark:bg-[#2c2c2e]/50 rounded-xl"
                           >
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
                               {topic}
                             </span>
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              Güçlü
+                            <Badge className="bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium shadow-none">
+                              {t("strong")}
                             </Badge>
                           </div>
                         ))}
                     </div>
                   ) : (
-                    <div className="text-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Henüz güçlü konu tespit edilmedi.
+                    <div className="text-center p-3 bg-[#f5f5f7] dark:bg-[#1d1d1f]/50 rounded-xl border border-transparent dark:border-[#38383a]">
+                      <p className="text-sm text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("noStrongTopicsDetected")}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">
-                        Daha fazla test çözerek güçlü konularınızı belirleyin.
+                      <p className="text-xs text-[#86868b] dark:text-[#86868b]">
+                        {t("identifyStrongTopics")}
                       </p>
                     </div>
                   )}
@@ -622,33 +747,33 @@ export default function AnalyticsDashboard({
 
                 {/* Weak Topics */}
                 <div>
-                  <h4 className="text-sm font-medium mb-2 text-red-700 dark:text-red-400">
-                    Geliştirilmesi Gerekenler
+                  <h4 className="text-sm font-medium mb-2 text-[#ff3b30] dark:text-[#ff453a]">
+                    {t("needsImprovement")}
                   </h4>
                   {analytics.weakTopics && analytics.weakTopics.length > 0 ? (
                     <div className="space-y-2">
                       {analytics.weakTopics.map((topic, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between"
+                          className="flex items-center justify-between p-2 bg-[#f5f5f7] dark:bg-[#2c2c2e]/50 rounded-xl"
                         >
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                          <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
                             {topic}
                           </span>
-                          <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                            Zayıf
+                          <Badge className="bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium shadow-none">
+                            {t("weak")}
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                      <Award className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                      <p className="font-semibold text-green-800 dark:text-green-200">
-                        Harika İş!
+                    <div className="text-center p-4 bg-[#34c759]/10 rounded-xl border border-[#34c759]/20">
+                      <Award className="w-8 h-8 text-[#34c759] mx-auto mb-2" />
+                      <p className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("greatJob")}
                       </p>
-                      <p className="text-sm text-green-700 dark:text-green-300">
-                        Geliştirilmesi gereken konu bulunamadı.
+                      <p className="text-sm text-[#34c759] dark:text-[#30d158]">
+                        {t("noTopicsNeedImprovementFound")}
                       </p>
                     </div>
                   )}
@@ -656,29 +781,29 @@ export default function AnalyticsDashboard({
 
                 {/* Topics Needing Improvement (configurable threshold) */}
                 <div>
-                  <h4 className="text-sm font-medium mb-2 text-orange-700 dark:text-orange-400">
-                    %60 ve Altı Başarı
+                  <h4 className="text-sm font-medium mb-2 text-[#ff9500] dark:text-[#ff9f0a]">
+                    {t("belowThresholdSuccess", { threshold: IMPROVEMENT_THRESHOLD })}
                   </h4>
                   {analytics.topicsNeedingImprovement && analytics.topicsNeedingImprovement.length > 0 ? (
                     <div className="space-y-2">
                       {analytics.topicsNeedingImprovement.map((topic, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between"
+                          className="flex items-center justify-between p-2 bg-[#f5f5f7] dark:bg-[#2c2c2e]/50 rounded-xl"
                         >
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                          <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
                             {topic}
                           </span>
-                          <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                            %60
+                          <Badge className="bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 font-medium shadow-none">
+                            {t("thresholdBadge", { threshold: IMPROVEMENT_THRESHOLD })}
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <p className="text-sm text-blue-700 dark:text-blue-300">
-                        %60 altında başarı gösteren konu yok.
+                    <div className="text-center p-3 bg-[#007aff]/10 rounded-xl border border-[#007aff]/20">
+                      <p className="text-sm text-[#007aff] dark:text-[#0a84ff]">
+                        {t("noBelowThresholdTopics", { threshold: IMPROVEMENT_THRESHOLD })}
                       </p>
                     </div>
                   )}
@@ -691,105 +816,105 @@ export default function AnalyticsDashboard({
 
       {/* Weak and Strong Topics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                 <Card className="border-gradient-question">
-           <CardHeader>
-             <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-               <TrendingDown className="w-5 h-5 text-red-500" />
-               Geliştirilmesi Gereken Konular
-             </CardTitle>
-           </CardHeader>
-           <CardContent>
-             {analytics.weakTopics.length > 0 || analytics.topicsNeedingImprovement.length > 0 ? (
-               <div className="space-y-2">
-                 {analytics.weakTopics.map((topic, index) => (
-                   <div
-                     key={index}
-                     className="flex items-center justify-between p-2 bg-red-50 dark:bg-red-900/20 rounded"
-                   >
-                     <span className="text-sm text-gray-700 dark:text-gray-300">
-                       {topic}
-                     </span>
-                     <Badge variant="destructive" className="text-xs">
-                       Zayıf
-                     </Badge>
-                   </div>
-                 ))}
-                 {analytics.topicsNeedingImprovement.map((topic, index) => (
-                   <div
-                     key={`improvement-${index}`}
-                     className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded"
-                   >
-                     <span className="text-sm text-gray-700 dark:text-gray-300">
-                       {topic}
-                     </span>
-                     <Badge className="bg-orange-100 text-orange-800 text-xs dark:bg-orange-900 dark:text-orange-200">
-                       %60
-                     </Badge>
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <div className="text-center py-8">
-                 <TrendingDown className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                   Geliştirilmesi Gereken Konu Yok
-                 </p>
-                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                   Harika! Tüm konularda iyi performans gösteriyorsunuz
-                 </p>
-               </div>
-             )}
-           </CardContent>
-         </Card>
+        <Card className="apple-glass-card border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <TrendingDown className="w-5 h-5 text-[#ff3b30] dark:text-[#ff453a]" />
+              {t("topicsNeedingImprovement")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.weakTopics.length > 0 || analytics.topicsNeedingImprovement.length > 0 ? (
+              <div className="space-y-2">
+                {analytics.weakTopics.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 bg-[#ff3b30]/10 dark:bg-[#ff3b30]/10 rounded-xl"
+                  >
+                    <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {topic}
+                    </span>
+                    <Badge className="bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 shadow-none text-xs">
+                      {t("weak")}
+                    </Badge>
+                  </div>
+                ))}
+                {analytics.topicsNeedingImprovement.map((topic, index) => (
+                  <div
+                    key={`improvement-${index}`}
+                    className="flex items-center justify-between p-2 bg-[#ff9500]/10 dark:bg-[#ff9500]/10 rounded-xl"
+                  >
+                    <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {topic}
+                    </span>
+                    <Badge className="bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 shadow-none text-xs">
+                      {t("thresholdBadge", { threshold: IMPROVEMENT_THRESHOLD })}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <TrendingDown className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
+                <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                  {t("noTopicsNeedingImprovement")}
+                </p>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                  {t("greatPerformanceAllTopics")}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                 <Card className="border-gradient-question">
-           <CardHeader>
-             <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-               <TrendingUp className="w-5 h-5 text-green-500" />
-               Güçlü Olduğunuz Konular
-             </CardTitle>
-           </CardHeader>
-           <CardContent>
-             {analytics.strongTopics.length > 0 ? (
-               <div className="space-y-2">
-                 {analytics.strongTopics.map((topic, index) => (
-                   <div
-                     key={index}
-                     className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded"
-                   >
-                     <span className="text-sm text-gray-700 dark:text-gray-300">
-                       {topic}
-                     </span>
-                     <Badge className="bg-green-100 text-green-800 text-xs dark:bg-green-900 dark:text-green-200">
-                       Güçlü
-                     </Badge>
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <div className="text-center py-8">
-                 <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                   Henüz Güçlü Konu Yok
-                 </p>
-                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                   Daha fazla test çözerek güçlü konularınızı belirleyin
-                 </p>
-               </div>
-             )}
-           </CardContent>
-         </Card>
+        <Card className="apple-glass-card border-0">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <TrendingUp className="w-5 h-5 text-[#34c759] dark:text-[#30d158]" />
+              {t("yourStrongTopics")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {analytics.strongTopics.length > 0 ? (
+              <div className="space-y-2">
+                {analytics.strongTopics.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 bg-[#34c759]/10 dark:bg-[#34c759]/10 rounded-xl"
+                  >
+                    <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {topic}
+                    </span>
+                    <Badge className="bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 shadow-none text-xs">
+                      {t("strong")}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <TrendingUp className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
+                <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                  {t("noStrongTopicsYet")}
+                </p>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                  {t("identifyStrongTopicsShort")}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* BTK Hackathon: Weekly Progress Graph */}
-      <Card className="border-gradient-question">
+      <Card className="apple-glass-card border-0">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-            <LineChart className="w-5 h-5 text-purple-600" />
-            Haftalık İlerleme Analizi
+          <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+            <LineChart className="w-5 h-5 text-[#af52de] dark:text-[#bf5af2]" />
+            {t("weeklyProgressAnalysis")}
             {analytics.weeklyProgress && (
-              <Badge className="bg-orange-100 text-orange-800 text-xs dark:bg-orange-900 dark:text-orange-200">
-                Demo
+              <Badge className="bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 shadow-none text-xs">
+                {tDashboard("demo")}
               </Badge>
             )}
           </CardTitle>
@@ -803,7 +928,7 @@ export default function AnalyticsDashboard({
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                    <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
                       {day.day}
                     </span>
                   </div>
@@ -816,14 +941,14 @@ export default function AnalyticsDashboard({
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm min-w-0">
-                    <span className="font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] whitespace-nowrap">
                       %{day.score}
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-xs whitespace-nowrap"
+                      className="text-xs whitespace-nowrap border-[#e5e5ea] dark:border-[#38383a] text-[#86868b] dark:text-[#a1a1a6]"
                     >
-                      {day.tests} test
+                      {t("testsCount", { count: day.tests })}
                     </Badge>
                   </div>
                 </div>
@@ -831,12 +956,12 @@ export default function AnalyticsDashboard({
             </div>
           ) : (
             <div className="text-center py-8">
-              <LineChart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                Haftalık İlerleme Verisi Yok
+              <LineChart className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
+              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                {t("noWeeklyProgressData")}
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Test çözerek haftalık ilerlemenizi takip edin
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                {t("trackWeeklyProgress")}
               </p>
             </div>
           )}
@@ -844,14 +969,14 @@ export default function AnalyticsDashboard({
       </Card>
 
       {/* Demo: Subject Distribution */}
-      <Card className="border-gradient-question">
+      <Card className="apple-glass-card border-0">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-            <PieChart className="w-5 h-5 text-indigo-600" />
-            Konu Bazlı Çalışma Dağılımı
+          <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+            <PieChart className="w-5 h-5 text-[#5856d6] dark:text-[#5e5ce6]" />
+            {t("subjectStudyDistribution")}
             {analytics.subjectDistribution && (
-              <Badge className="bg-orange-900 dark:text-orange-200">
-                Demo
+              <Badge className="bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 shadow-none text-xs">
+                {tDashboard("demo")}
               </Badge>
             )}
           </CardTitle>
@@ -869,7 +994,7 @@ export default function AnalyticsDashboard({
                       className="w-4 h-4 rounded-full flex-shrink-0"
                       style={{ backgroundColor: subject.color }}
                     ></div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                    <span className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
                       {subject.subject}
                     </span>
                   </div>
@@ -882,7 +1007,7 @@ export default function AnalyticsDashboard({
                         />
                       </div>
                     </div>
-                    <span className="text-sm font-semibold w-12 text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold w-12 text-[#1d1d1f] dark:text-[#f5f5f7] whitespace-nowrap">
                       %{subject.percentage}
                     </span>
                   </div>
@@ -891,12 +1016,12 @@ export default function AnalyticsDashboard({
             </div>
           ) : (
             <div className="text-center py-8">
-              <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                Konu Dağılımı Verisi Yok
+              <PieChart className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
+              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                {t("noSubjectDistributionData")}
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Farklı konularda test çözerek dağılımı görün
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                {t("seeDistributionByTests")}
               </p>
             </div>
           )}
@@ -904,11 +1029,11 @@ export default function AnalyticsDashboard({
       </Card>
 
       {/* Recent Activity */}
-      <Card className="border-gradient-question">
+      <Card className="apple-glass-card border-0">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
-            <Activity className="w-5 h-5 text-blue-600" />
-            Son Aktiviteler
+          <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+            <Activity className="w-5 h-5 text-[#007aff] dark:text-[#0a84ff]" />
+            {t("recentActivities")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -917,26 +1042,31 @@ export default function AnalyticsDashboard({
               {analytics.recentActivity.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 border rounded-lg border-gray-200 dark:border-gray-700"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e]/50 hover:bg-[#e8e8ed] dark:hover:bg-[#3a3a3c] transition-colors border border-transparent dark:border-[#38383a]"
                 >
                   <div className="flex items-center gap-3">
-                    {activity.type === "Quiz" && (
-                      <Target className="w-4 h-4 text-blue-500" />
+                    {activity.type.toLowerCase() === "quiz" && (
+                      <Target className="w-4 h-4 text-[#007aff]" />
                     )}
-                    {activity.type === "Flashcard" && (
-                      <Brain className="w-4 h-4 text-green-500" />
+                    {activity.type.toLowerCase() === "flashcard" && (
+                      <Brain className="w-4 h-4 text-[#34c759]" />
                     )}
-                    {activity.type === "ai_chat" && (
-                      <Sparkles className="w-4 h-4 text-purple-500" />
+                    {activity.type.toLowerCase() === "topicexplainer" && (
+                      <BookOpen className="w-4 h-4 text-[#ff9500]" />
+                    )}
+                    {activity.type.toLowerCase() === "ai_chat" && (
+                      <Sparkles className="w-4 h-4 text-[#af52de]" />
                     )}
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {activity.type === "Quiz" && "Test Çözüldü"}
-                        {activity.type === "Flashcard" && "Flashcard Çalışması"}
-                        {activity.type === "ai_chat" && "AI Tutor Sohbeti"}
+                      <p className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {getActivityLabel(activity.type)}
                       </p>
-                      {activity.subject && (
-                        <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
+                      {activity.topic ? (
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                          {activity.subject} - {activity.topic}
+                        </p>
+                      ) : activity.subject && (
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                           {activity.subject}
                         </p>
                       )}
@@ -944,12 +1074,12 @@ export default function AnalyticsDashboard({
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge
-                      className={`${getScoreColor(activity.score)} bg-transparent border border-gray-300 dark:border-gray-600`}
+                      className={`${getScoreColor(activity.score)}`}
                     >
                       %{activity.score}
                     </Badge>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {new Date(activity.timestamp).toLocaleDateString("tr-TR")}
+                    <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                      {new Date(activity.timestamp).toLocaleDateString(dateLocale)}
                     </span>
                   </div>
                 </div>
@@ -957,12 +1087,12 @@ export default function AnalyticsDashboard({
             </div>
           ) : (
             <div className="text-center py-8">
-              <Activity className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                Henüz Aktivite Yok
+              <Activity className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
+              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                {t("noActivityYet")}
               </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Test çözerek, flashcard çalışarak veya AI ile sohbet ederek aktivite oluşturun
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                {t("createActivityHint")}
               </p>
             </div>
           )}

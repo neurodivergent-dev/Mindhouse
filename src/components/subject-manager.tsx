@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { getFormDifficultyLabel } from "@/lib/question-manager-labels";
 import type { Question } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +34,12 @@ import {
   GraduationCap,
   Target,
   Brain,
+  Database,
+  Search,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { shouldUseDemoData, demoSubjects } from "@/data/demo-data";
+import { shouldUseDemoData, getDemoSubjects } from "@/data/demo-data";
 import { SubjectService } from "@/services/supabase-service";
 import { supabase } from "@/lib/supabase";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
@@ -57,7 +63,22 @@ interface SubjectManagerProps {
 }
 
 const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
+  const t = useTranslations("SubjectManager");
+  const tSubjects = useTranslations("Subjects");
+  const locale = useLocale();
+
+  const getSubjectName = (name: string) => {
+    try {
+      return tSubjects(name as any);
+    } catch {
+      return name;
+    }
+  };
+
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 21;
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -76,11 +97,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
       // Use demo data for demo mode
       if (shouldUseDemoData()) {
-        setSubjects(demoSubjects);
+        const localizedDemoSubjects = getDemoSubjects(locale);
+        setSubjects(localizedDemoSubjects);
         setUseSupabase(false);
 
         // Save demo subjects to localStorage for Question Manager to use
-        UnifiedStorageService.saveSubjects(demoSubjects);
+        UnifiedStorageService.saveSubjects(localizedDemoSubjects);
         return;
       }
 
@@ -145,7 +167,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             }
 
             // Also get local questions and merge
-            const stored = localStorage.getItem("akilhane_questions");
+            const stored = localStorage.getItem("mindhouse_questions");
             if (stored) {
               const localQuestions = JSON.parse(stored);
               localQuestions.forEach((localQ: Question) => {
@@ -158,7 +180,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             return allQuestions;
           } catch {
             // Fallback to localStorage only
-            const stored = localStorage.getItem("akilhane_questions");
+            const stored = localStorage.getItem("mindhouse_questions");
             return stored ? JSON.parse(stored) : [];
           }
         };
@@ -216,18 +238,18 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         }
       });
 
-              // Calculate real question count
-        const getQuestionsFromStorage = () => {
-          if (typeof window === "undefined") {
-            return [];
-          }
-          try {
-            const stored = localStorage.getItem("akilhane_questions");
-            return stored ? JSON.parse(stored) : [];
-          } catch {
-            return [];
-          }
-        };
+      // Calculate real question count
+      const getQuestionsFromStorage = () => {
+        if (typeof window === "undefined") {
+          return [];
+        }
+        try {
+          const stored = localStorage.getItem("mindhouse_questions");
+          return stored ? JSON.parse(stored) : [];
+        } catch {
+          return [];
+        }
+      };
 
       const questions = getQuestionsFromStorage();
 
@@ -290,8 +312,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     try {
       if (!formData.name || !formData.description || !formData.category) {
         toast({
-          title: "Hata",
-          description: "Lütfen tüm alanları doldurun.",
+          title: t("toasts.error"),
+          description: t("toasts.fillAllFields"),
           variant: "destructive",
         });
         return;
@@ -337,8 +359,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       }
 
       toast({
-        title: "Başarılı",
-        description: "Ders başarıyla eklendi.",
+        title: t("toasts.success"),
+        description: t("toasts.subjectAdded"),
       });
 
       setFormData({
@@ -356,8 +378,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     } catch {
       //do nothing
       toast({
-        title: "Hata",
-        description: "Ders eklenirken bir hata oluştu.",
+        title: t("toasts.error"),
+        description: t("toasts.addError"),
         variant: "destructive",
       });
     }
@@ -367,8 +389,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     try {
       if (!formData.name || !formData.description || !formData.category) {
         toast({
-          title: "Hata",
-          description: "Lütfen tüm alanları doldurun.",
+          title: t("toasts.error"),
+          description: t("toasts.fillAllFields"),
           variant: "destructive",
         });
         return;
@@ -415,8 +437,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       }
 
       toast({
-        title: "Başarılı",
-        description: "Ders başarıyla güncellendi.",
+        title: t("toasts.success"),
+        description: t("toasts.subjectUpdated"),
       });
 
       setFormData({
@@ -435,8 +457,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     } catch {
       //do nothing
       toast({
-        title: "Hata",
-        description: "Ders güncellenirken bir hata oluştu.",
+        title: t("toasts.error"),
+        description: t("toasts.updateError"),
         variant: "destructive",
       });
     }
@@ -457,8 +479,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       }
 
       toast({
-        title: "Başarılı",
-        description: "Ders başarıyla silindi.",
+        title: t("toasts.success"),
+        description: t("toasts.subjectDeleted"),
       });
 
       // Call refresh callback if provided
@@ -468,8 +490,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     } catch {
       //do nothing
       toast({
-        title: "Hata",
-        description: "Ders silinirken bir hata oluştu.",
+        title: t("toasts.error"),
+        description: t("toasts.deleteError"),
         variant: "destructive",
       });
     }
@@ -510,14 +532,14 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       }
 
       toast({
-        title: "Başarılı",
-        description: "Ders durumu güncellendi.",
+        title: t("toasts.success"),
+        description: t("toasts.statusUpdated"),
       });
     } catch {
       //do nothing
       toast({
-        title: "Hata",
-        description: "Ders durumu güncellenirken bir hata oluştu.",
+        title: t("toasts.error"),
+        description: t("toasts.statusUpdateError"),
         variant: "destructive",
       });
     }
@@ -564,12 +586,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-300">
-              Dersler yükleniyor...
+              {t("loading")}
             </p>
           </div>
         </div>
@@ -577,55 +599,75 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 glass-card">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-              <BookOpen className="w-8 h-8 text-blue-600" />
-              Ders Yöneticisi
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg">
-            Dersleri yönetin ve organize edin
-          </p>
-        </div>
+  const filteredSubjects = subjects.filter((subject) => {
+    const query = searchQuery.toLowerCase();
+    const displayName = getSubjectName(subject.name).toLowerCase();
+    const displayCategory = subject.category.toLowerCase();
+    const displayDescription = (subject.description || "").toLowerCase();
 
-        {/* Add Subject Button */}
-        <div className="mb-6 flex justify-center mx-6 sm:mx-0">
+    return (
+      displayName.includes(query) ||
+      displayCategory.includes(query) ||
+      displayDescription.includes(query)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredSubjects.length / ITEMS_PER_PAGE);
+  const paginatedSubjects = filteredSubjects.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  return (
+    <div className="w-full">
+      <div className="max-w-6xl mx-auto">
+
+        {/* Actions Bar */}
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 mx-6 sm:mx-0">
+          <div className="relative w-full sm:w-96">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Input
+              type="text"
+              placeholder={t("searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="pl-10 w-full h-11 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus-visible:ring-blue-500"
+            />
+          </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
                 onClick={openAddDialog}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 h-11 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                Yeni Ders Ekle
+                {t("addNewSubject")}
               </Button>
             </DialogTrigger>
             <DialogContent className="mx-auto max-w-[90%] sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>
-                  {editingSubject ? "Dersi Düzenle" : "Yeni Ders Ekle"}
+                  {editingSubject ? t("editSubject") : t("addNewSubject")}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Ders Adı</Label>
+                  <Label htmlFor="name">{t("subjectName")}</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, name: e.target.value }))
                     }
-                    placeholder="Örn: Matematik"
+                    placeholder={t("exampleMath")}
                     className="w-full"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description">Açıklama</Label>
+                  <Label htmlFor="description">{t("description")}</Label>
                   <Input
                     id="description"
                     value={formData.description}
@@ -635,12 +677,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                         description: e.target.value,
                       }))
                     }
-                    placeholder="Ders açıklaması"
+                    placeholder={t("subjectDescription")}
                     className="w-full"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">Kategori</Label>
+                  <Label htmlFor="category">{t("category")}</Label>
                   <Input
                     id="category"
                     value={formData.category}
@@ -650,12 +692,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                         category: e.target.value,
                       }))
                     }
-                    placeholder="Örn: Fen Bilimleri"
+                    placeholder={t("exampleScience")}
                     className="w-full"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="difficulty">Zorluk Seviyesi</Label>
+                  <Label htmlFor="difficulty">{t("difficultyLevel")}</Label>
                   <Select
                     value={formData.difficulty}
                     onValueChange={(value) =>
@@ -666,9 +708,9 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Kolay">Kolay</SelectItem>
-                      <SelectItem value="Orta">Orta</SelectItem>
-                      <SelectItem value="Zor">Zor</SelectItem>
+                      <SelectItem value="Kolay">{t("difficultyEasy")}</SelectItem>
+                      <SelectItem value="Orta">{t("difficultyMedium")}</SelectItem>
+                      <SelectItem value="Zor">{t("difficultyHard")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -677,22 +719,22 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                     onClick={
                       editingSubject
                         ? () => {
-                            void handleEditSubject(editingSubject);
-                          }
+                          void handleEditSubject(editingSubject);
+                        }
                         : () => {
-                            void handleAddSubject();
-                          }
+                          void handleAddSubject();
+                        }
                     }
                     className="flex-1"
                   >
-                    {editingSubject ? "Güncelle" : "Ekle"}
+                    {editingSubject ? t("update") : t("add")}
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                     className="flex-1"
                   >
-                    İptal
+                    {t("cancel")}
                   </Button>
                 </div>
               </div>
@@ -702,116 +744,148 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
         {/* Subjects Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mx-6 sm:mx-0">
-          {subjects.map((subject) => (
+          {paginatedSubjects.map((subject) => (
             <div
               key={subject.id}
-              className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
-                subject.isActive
-                  ? "border-gradient-active"
-                  : "border-2 border-gray-200 dark:border-gray-700"
-              }`}
+              className="apple-glass-card"
             >
-              <div className="p-4 sm:p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 truncate">
-                      {subject.name}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
-                      {subject.description}
-                    </p>
-                  </div>
-                  <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        void handleToggleActive(subject.id);
-                      }}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                    >
-                      {subject.isActive ? (
-                        <Eye className="w-4 h-4" />
-                      ) : (
-                        <EyeOff className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(subject)}
-                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        void handleDeleteSubject(subject.id);
-                      }}
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+              <div className="flex flex-col h-full w-full">
+                {/* Header */}
+                <div className="p-5 pb-3 flex items-start justify-between border-b border-gray-50 dark:border-gray-700">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className={`w-10 h-10 mt-0.5 rounded-xl flex items-center justify-center flex-shrink-0 ${subject.isActive ? 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-800/40' : 'bg-gray-100 dark:bg-gray-800'}`}>
+                      <BookOpen className={`w-5 h-5 ${subject.isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${subject.isActive ? 'bg-blue-500 shadow-blue-500/50' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                        <span className="text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 uppercase truncate">
+                          {subject.category}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight line-clamp-2" title={getSubjectName(subject.name)}>
+                        {getSubjectName(subject.name)}
+                      </h3>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Kategori:
-                    </span>
-                    <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                      {subject.category}
+                {/* Body */}
+                <div className="p-5 flex-1 flex flex-col">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-5 line-clamp-3 leading-relaxed flex-1" title={subject.description}>
+                    {subject.description || t("noDescription")}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mt-auto">
+                    <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 font-medium border-0 px-2.5 py-0.5 rounded-md">
+                      {getFormDifficultyLabel(subject.difficulty, t)}
                     </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Zorluk:
-                    </span>
-                    <Badge
-                      className={
-                        subject.difficulty === "Kolay"
-                          ? "bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0"
-                          : subject.difficulty === "Orta"
-                            ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0"
-                            : "bg-gradient-to-r from-red-400 to-pink-500 text-white border-0"
-                      }
-                    >
-                      {subject.difficulty}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Soru Sayısı:
-                    </span>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {subject.questionCount}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Durum:
-                    </span>
-                    <Badge
-                      className={
-                        subject.isActive
-                          ? "bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0"
-                          : "bg-gradient-to-r from-gray-400 to-gray-500 text-white border-0"
-                      }
-                    >
-                      {subject.isActive ? "Aktif" : "Pasif"}
+                    <Badge variant="secondary" className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 font-medium border-0 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
+                      <Database className="w-3.5 h-3.5" />
+                      {t("questionCount", { count: subject.questionCount })}
                     </Badge>
                   </div>
                 </div>
+
+                {/* Footer Actions */}
+                <div className="px-4 py-3 bg-gray-50/80 dark:bg-gray-800/40 border-t border-gray-100 dark:border-gray-700 rounded-b-2xl flex items-center justify-end gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleToggleActive(subject.id)}
+                  className={`h-8 px-2 rounded-lg transition-colors ${subject.isActive ? 'text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950/30' : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
+                  title={subject.isActive ? t("deactivate") : t("activate")}
+                >
+                  {subject.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openEditDialog(subject)}
+                  className="h-8 px-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-950/30 transition-colors"
+                  title={t("edit")}
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteSubject(subject.id)}
+                  className="h-8 px-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/30 transition-colors"
+                  title={t("delete")}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8 mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="h-9 w-9 p-0 rounded-lg border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <Button
+                  key={i}
+                  variant={currentPage === i + 1 ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`h-9 w-9 p-0 rounded-lg transition-all ${currentPage === i + 1
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                    : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    }`}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="h-9 w-9 p-0 rounded-lg border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+
+        {subjects.length > 0 && filteredSubjects.length === 0 && (
+          <div className="text-center py-12 bg-white/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 mx-6 sm:mx-0">
+            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {t("noResults")}
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              {t("noResultsFor", { query: searchQuery })}
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => setSearchQuery("")}
+              className="mt-4"
+            >
+              {t("clearSearch")}
+            </Button>
+          </div>
+        )}
+
         {subjects.length === 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-6 sm:mx-0">
             <Card className="border-gradient-question shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300">
               <CardContent className="p-8 text-center">
                 <div className="mb-4 flex justify-center">
@@ -820,17 +894,17 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  İlk Dersinizi Ekleyin
+                  {t("addFirstSubjectTitle")}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  Ders ekleyerek öğrenme yolculuğunuza başlayın!
+                  {t("addFirstSubjectDesc")}
                 </p>
                 <Button
                   onClick={openAddDialog}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full"
                 >
                   <Plus className="w-5 h-5 mr-2" />
-                  Ders Ekle
+                  {t("addSubject")}
                 </Button>
               </CardContent>
             </Card>
@@ -843,23 +917,23 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Ders Yönetimi Nasıl Çalışır?
+                  {t("howItWorksTitle")}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  Dersleri kategorilere göre organize edin ve yönetin.
+                  {t("howItWorksDesc")}
                 </p>
                 <div className="text-sm text-gray-400 dark:text-gray-500">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <BookOpen className="w-4 h-4" />
-                    <span>Ders Ekle</span>
+                    <span>{t("howItWorksAdd")}</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Target className="w-4 h-4" />
-                    <span>Kategori Belirle</span>
+                    <span>{t("howItWorksCategory")}</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <Brain className="w-4 h-4" />
-                    <span>AI Destekli</span>
+                    <span>{t("howItWorksAi")}</span>
                   </div>
                 </div>
               </CardContent>
@@ -873,23 +947,23 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Öğrenme Süreci
+                  {t("learningProcessTitle")}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  Her ders için özelleştirilmiş öğrenme yolları ve ilerleme takibi.
+                  {t("learningProcessDesc")}
                 </p>
                 <div className="text-sm text-gray-400 dark:text-gray-500">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-                    <span>Ders Ekle</span>
+                    <span>{t("learningProcessAdd")}</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="w-4 h-4 bg-green-500 rounded-full"></span>
-                    <span>Sorular Ekle</span>
+                    <span>{t("learningProcessQuestions")}</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <span className="w-4 h-4 bg-purple-500 rounded-full"></span>
-                    <span>Öğrenmeye Başla</span>
+                    <span>{t("learningProcessStart")}</span>
                   </div>
                 </div>
               </CardContent>

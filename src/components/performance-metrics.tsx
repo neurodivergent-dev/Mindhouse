@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,18 +20,19 @@ import {
 } from "lucide-react";
 
 export default function PerformanceMetrics() {
+  const t = useTranslations("Performance");
+
   return (
-    <section className="py-16 bg-gradient-to-br from-green-50/50 to-blue-50/50 dark:from-gray-900/50 dark:to-gray-800/50">
+    <section className="py-16 bg-gradient-to-br from-green-50/50 to-blue-50/50 dark:bg-transparent dark:!bg-none">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-              Performance Metrics
+              {t("title")}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Enterprise-level performance, Lighthouse scores ve Core Web Vitals
-              ile optimize edilmiş eğitim platformu
+              {t("subtitle")}
             </p>
           </div>
 
@@ -46,7 +48,7 @@ export default function PerformanceMetrics() {
                   <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                     98
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
                     Performance
                   </CardTitle>
                 </CardHeader>
@@ -104,7 +106,7 @@ export default function PerformanceMetrics() {
                   <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                     90
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                     Accessibility
                   </CardTitle>
                 </CardHeader>
@@ -162,7 +164,7 @@ export default function PerformanceMetrics() {
                   <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                     100
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
                     Best Practices
                   </CardTitle>
                 </CardHeader>
@@ -222,7 +224,7 @@ export default function PerformanceMetrics() {
                   <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">
                     100
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">
                     SEO
                   </CardTitle>
                 </CardHeader>
@@ -282,7 +284,7 @@ export default function PerformanceMetrics() {
                   <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg flex items-center justify-center mb-4">
                     <Activity className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-foreground">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
                     Core Web Vitals
                   </CardTitle>
                 </CardHeader>
@@ -350,7 +352,7 @@ export default function PerformanceMetrics() {
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
                     <BarChart3 className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-foreground">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                     Bundle Analysis
                   </CardTitle>
                 </CardHeader>
@@ -427,7 +429,7 @@ export default function PerformanceMetrics() {
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-violet-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Smartphone className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
                     PWA Score
                   </CardTitle>
                 </CardHeader>
@@ -455,7 +457,7 @@ export default function PerformanceMetrics() {
                   <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Clock className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">
                     Load Time
                   </CardTitle>
                 </CardHeader>
@@ -483,7 +485,7 @@ export default function PerformanceMetrics() {
                   <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg flex items-center justify-center mb-4 mx-auto">
                     <Globe className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
                     Performance Rank
                   </CardTitle>
                 </CardHeader>

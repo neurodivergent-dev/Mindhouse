@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AkılHane Project Checker - GUI Version
+Mindhouse Project Checker - GUI Version
 PyQt5 ile Glassmorphism Tasarım
 Gelişmiş Test Özellikleri ve Dark/Light Mode
 """
@@ -55,12 +55,12 @@ class TestResult:
         self.error = error
         self.timestamp = datetime.now()
 
-class AkilhaneCheckerGUI(QMainWindow):
+class MindhouseCheckerGUI(QMainWindow):
     """Ana GUI sınıfı"""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("🧠 AkılHane Checker - GUI Version")
+        self.setWindowTitle("🧠 Mindhouse Checker - GUI Version")
         self.setGeometry(100, 100, 1200, 800)
         
         # Dark mode varsayılan
@@ -203,7 +203,7 @@ class AkilhaneCheckerGUI(QMainWindow):
         header_layout = QHBoxLayout(header_widget)
         
         # Logo ve başlık
-        title_label = QLabel("🧠 AKILHANE CHECKER")
+        title_label = QLabel("🧠 MINDHOUSE CHECKER")
         title_label.setStyleSheet("""
             QLabel {
                 font-size: 24px;
@@ -831,11 +831,11 @@ def main():
     app = QApplication(sys.argv)
     
     # Uygulama ayarları
-    app.setApplicationName("AkılHane Checker GUI")
+    app.setApplicationName("Mindhouse Checker GUI")
     app.setApplicationVersion("2.0.0")
     
     # Ana pencere
-    window = AkilhaneCheckerGUI()
+    window = MindhouseCheckerGUI()
     window.show()
     
     sys.exit(app.exec_())

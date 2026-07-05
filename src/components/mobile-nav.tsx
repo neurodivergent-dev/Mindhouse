@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -25,8 +25,10 @@ import {
   Home,
   UserCircle,
   Lightbulb,
+  MoreHorizontal,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -35,37 +37,40 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, logout, isAuthenticated } = useAuth();
-  const navLinks = [
-    { href: "/landing", label: "Tanıtım", icon: Home },
-    { href: "/demo", label: "Demo", icon: Play },
-    { href: "/dashboard", label: "Gösterge Paneli", icon: Brain },
-    { href: "/quiz", label: "Test Çöz", icon: BookOpen },
-    { href: "/flashcard", label: "Flashcard", icon: Brain },
-    { href: "/topic-explainer", label: "Konu Anlatımı", icon: Lightbulb },
-    { href: "/ai-chat", label: "AI Asistan", icon: Users },
-    { href: "/ai-3d-education", label: "AI 3D Eğitim", icon: Brain },
-    { href: "/question-manager", label: "Soru Yöneticisi", icon: Database },
-    { href: "/subject-manager", label: "Ders Yöneticisi", icon: GraduationCap },
-    { href: "/settings", label: "Ayarlar", icon: Settings },
-  ];
+  const t = useTranslations("Navigation");
+  const tCommon = useTranslations("Common");
 
-  // Desktop için sadece en önemli linkler
+  const navLinks = [
+    { href: "/landing", label: t("landing"), icon: Home },
+    { href: "/demo", label: t("demo"), icon: Play },
+    { href: "/dashboard", label: t("dashboard"), icon: Brain },
+    { href: "/quiz", label: t("quiz"), icon: BookOpen },
+    { href: "/flashcard", label: t("flashcard"), icon: Brain },
+    { href: "/topic-explainer", label: t("topicExplainer"), icon: Lightbulb },
+    { href: "/ai-chat", label: t("aiChat"), icon: Users },
+    { href: "/ai-3d-education", label: t("ai3dEducation"), icon: Brain },
+    { href: "/question-manager", label: t("questionManager"), icon: Database },
+    { href: "/subject-manager", label: t("subjectManager"), icon: GraduationCap },
+    { href: "/settings", label: t("settings"), icon: Settings },
+  ] as const;
+
   const desktopNavLinks = [
-    { href: "/landing", label: "Tanıtım", icon: Home },
-    { href: "/demo", label: "Demo", icon: Play },
-    { href: "/dashboard", label: "Dashboard", icon: Brain },
-    { href: "/quiz", label: "Test", icon: BookOpen },
-    { href: "/flashcard", label: "Flashcard", icon: Brain },
-    { href: "/topic-explainer", label: "Konular", icon: Lightbulb },
-    { href: "/ai-chat", label: "AI Tutor", icon: Users },
-    { href: "/ai-3d-education", label: "AI 3D", icon: Brain },
-    { href: "/question-manager", label: "Sorular", icon: Database },
-    { href: "/subject-manager", label: "Dersler", icon: GraduationCap },
-  ];
+    { href: "/landing", label: t("landing"), icon: Home },
+    { href: "/demo", label: t("demo"), icon: Play },
+    { href: "/dashboard", label: t("dashboardShort"), icon: Brain },
+    { href: "/quiz", label: t("quizShort"), icon: BookOpen },
+    { href: "/flashcard", label: t("flashcard"), icon: Brain },
+    { href: "/topic-explainer", label: t("topicExplainerShort"), icon: Lightbulb },
+    { href: "/ai-chat", label: t("aiChatShort"), icon: Users },
+    { href: "/ai-3d-education", label: t("ai3dEducationShort"), icon: Brain },
+    { href: "/question-manager", label: t("questionManagerShort"), icon: Database },
+    { href: "/subject-manager", label: t("subjectManagerShort"), icon: GraduationCap },
+  ] as const;
 
   return (
     <nav className="bg-background/75 sticky top-0 z-50">
@@ -76,13 +81,13 @@ export default function MobileNav() {
               <Brain className="h-6 w-6 text-white" />
             </div>
             <span className="font-headline font-bold text-xl text-blue-600">
-              AkılHane
+              {tCommon("appName")}
             </span>
           </Link>
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex items-center gap-1 absolute left-1/2 transform -translate-x-1/2">
-            {desktopNavLinks.map(({ href, label, icon: Icon }) => (
+          {/* Sıkışık ekranlar (lg) için "Daha Fazla" menülü versiyon */}
+          <div className="hidden lg:flex xl:hidden flex-1 justify-center items-center gap-1 mx-4">
+            {desktopNavLinks.slice(0, 5).map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href}>
                 <Button
                   variant="ghost"
@@ -94,10 +99,61 @@ export default function MobileNav() {
                 </Button>
               </Link>
             ))}
+            
+            {desktopNavLinks.length > 5 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                    <span>{tCommon("more", { fallback: "More" })}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48">
+                  {desktopNavLinks.slice(5).map(({ href, label, icon: Icon }) => (
+                    <DropdownMenuItem key={href} asChild>
+                      <Link href={href} className="flex items-center gap-2 cursor-pointer">
+                        <Icon className="w-4 h-4" />
+                        {label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
-          {/* Authentication Status - Right Side */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Geniş ekranlar (xl+) için tüm menüyü gösteren versiyon */}
+          <div className="hidden xl:flex flex-1 justify-center items-center gap-1 mx-4">
+            {desktopNavLinks.map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} className="whitespace-nowrap">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1.5 hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white hover:border-0"
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </Button>
+              </Link>
+            ))}
+          </div>
+
+          <div className="hidden md:flex items-center gap-2 ml-auto">
+            <Link href="/settings">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white hover:border-0 transition-all"
+              >
+                <Settings className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">{t("settings")}</span>
+              </Button>
+            </Link>
+            <LanguageSwitcher />
             <ThemeToggle />
             {loading ? (
               <div className="w-8 h-8 animate-pulse bg-gray-200 dark:bg-gray-700 rounded-full" />
@@ -107,7 +163,7 @@ export default function MobileNav() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 max-w-[200px]"
+                    className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white hover:border-0 max-w-[200px]"
                   >
                     <Avatar className="w-6 h-6 flex-shrink-0">
                       <AvatarImage
@@ -125,7 +181,7 @@ export default function MobileNav() {
                     <span className="truncate">
                       {user?.user_metadata?.full_name ||
                         user?.email?.split("@")[0] ||
-                        "Kullanıcı"}
+                        tCommon("user")}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -133,20 +189,19 @@ export default function MobileNav() {
                   align="end"
                   className="bg-background/95 border border-border w-64"
                 >
-                  {/* User Email Display */}
                   <div className="px-2 py-1.5 text-xs text-muted-foreground border-b border-border">
                     <div className="break-words break-all">{user?.email}</div>
                   </div>
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center gap-2">
                       <UserCircle className="w-4 h-4" />
-                      Profilim
+                      {t("profile")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="flex items-center gap-2">
                       <Settings className="w-4 h-4" />
-                      Ayarlar
+                      {t("settings")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -157,7 +212,7 @@ export default function MobileNav() {
                     className="flex items-center gap-2 text-red-600 dark:text-red-400"
                   >
                     <LogOut className="w-4 h-4" />
-                    Çıkış Yap
+                    {t("logout")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -166,25 +221,23 @@ export default function MobileNav() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex items-center gap-1.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
+                  className="flex items-center gap-1.5 hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white hover:border-0"
                 >
                   <User className="w-4 h-4" />
-                  Giriş Yap
+                  {t("login")}
                 </Button>
               </Link>
             )}
           </div>
 
-          {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center gap-2">
-            {/* LOGIN BUTTON - RETURNED */}
+          <div className="lg:hidden flex items-center gap-2 ml-auto">
             {!loading && !isAuthenticated && (
               <Link href="/login">
                 <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
-                  Giriş
+                  {t("loginShort")}
                 </Button>
               </Link>
             )}
@@ -200,15 +253,14 @@ export default function MobileNav() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="glass-sheet">
-                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <SheetTitle className="sr-only">{tCommon("menu")}</SheetTitle>
                 <SheetDescription className="sr-only">
-                  Ana navigasyon menüsü
+                  {tCommon("mainNavigationMenu")}
                 </SheetDescription>
                 <div className="flex flex-col h-full">
-                  {/* Fixed Header - Logo */}
                   <div className="flex-shrink-0 p-4 pb-2">
                     <Link
-                      href="/"
+                      href="/landing"
                       className="flex items-center gap-2 group"
                       onClick={() => setIsOpen(false)}
                     >
@@ -216,17 +268,14 @@ export default function MobileNav() {
                         <Brain className="h-8 w-8 text-white" />
                       </div>
                       <span className="font-headline font-bold text-2xl bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        AkılHane
+                        {tCommon("appName")}
                       </span>
                     </Link>
                   </div>
 
-                  {/* Scrollable Content */}
                   <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4">
-                    {/* User Info and Logout Button */}
                     {isAuthenticated && user && (
                       <div className="space-y-3">
-                        {/* User Information */}
                         <div className="glass-card-inner p-3 rounded-lg shadow-lg">
                           <div className="flex items-center gap-3 text-sm text-foreground">
                             <Avatar className="w-8 h-8 flex-shrink-0">
@@ -248,13 +297,12 @@ export default function MobileNav() {
                               <span className="font-medium break-words break-all block">
                                 {user.user_metadata?.full_name ||
                                   user.email?.split("@")[0] ||
-                                  "Kullanıcı"}
+                                  tCommon("user")}
                               </span>
                             </div>
                           </div>
                         </div>
 
-                        {/* Profile Link - Now at the top */}
                         <Link
                           href="/profile"
                           onClick={() => setIsOpen(false)}
@@ -262,13 +310,12 @@ export default function MobileNav() {
                         >
                           <UserCircle className="w-5 h-5 group-hover:text-white transition-colors duration-300" />
                           <span className="font-medium group-hover:text-white transition-colors duration-300">
-                            Profilim
+                            {t("profile")}
                           </span>
                         </Link>
                       </div>
                     )}
 
-                    {/* Navigation Links */}
                     <div className="space-y-2">
                       {navLinks.map(({ href, label, icon: Icon }) => (
                         <Link
@@ -283,11 +330,8 @@ export default function MobileNav() {
                           </span>
                         </Link>
                       ))}
-
-                      {/* Settings is now in navLinks, so no need for separate link */}
                     </div>
 
-                    {/* Logout Button - Large and Prominent at the end */}
                     {isAuthenticated && user && (
                       <div className="pt-4">
                         <Button
@@ -299,17 +343,16 @@ export default function MobileNav() {
                           className="w-full flex items-center justify-center gap-3 p-4 rounded-lg bg-red-50/20 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-200/50 dark:border-red-800/50 hover:bg-red-100/30 dark:hover:bg-red-800/30 hover:border-red-300 dark:hover:border-red-700 transition-all duration-300 hover:scale-105 font-semibold text-base"
                         >
                           <LogOut className="w-6 h-6" />
-                          <span>Çıkış Yap</span>
+                          <span>{t("logout")}</span>
                         </Button>
                       </div>
                     )}
 
-                    {/* Extra spacing for scroll */}
                     <div className="h-4"></div>
                   </div>
 
-                  {/* Fixed Footer - Theme Toggle */}
-                  <div className="flex-shrink-0 border-t border-white/20 dark:border-white/10 p-4 pt-3">
+                  <div className="flex-shrink-0 border-t border-white/20 dark:border-white/10 p-4 pt-3 flex items-center justify-between gap-2">
+                    <LanguageSwitcher />
                     <ThemeToggle />
                   </div>
                 </div>

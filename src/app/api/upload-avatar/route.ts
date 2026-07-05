@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       cloudinary.uploader
         .upload_stream(
           {
-            folder: "akilhane-avatars",
+            folder: "mindhouse-avatars",
             transformation: [
               { width: 200, height: 200, crop: "fill" },
               { quality: "auto" },

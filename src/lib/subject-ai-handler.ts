@@ -2,18 +2,7 @@ import { toast } from "@/hooks/use-toast";
 import { shouldUseDemoData } from "@/data/demo-data";
 import { SubjectService } from "@/services/supabase-service";
 import { supabase } from "@/lib/supabase";
-
-interface AIGeneratedSubject {
-  name: string;
-  description: string;
-  category: string;
-  difficulty: "Başlangıç" | "Orta" | "İleri";
-  topics: string[];
-  learningObjectives: string[];
-  estimatedDuration: string;
-  prerequisites: string[];
-  keywords: string[];
-}
+import type { AIGeneratedSubject, AiSubjectDifficulty } from "@/types/subject";
 
 // Subject type for localStorage operations
 interface LocalStorageSubject {
@@ -21,14 +10,14 @@ interface LocalStorageSubject {
   name: string;
   description: string;
   category: string;
-  difficulty: "Başlangıç" | "Orta" | "İleri";
+  difficulty: AiSubjectDifficulty;
   questionCount: number;
   isActive: boolean;
 }
 
 // LocalStorage service for subjects
 class SubjectLocalStorageService {
-  private static readonly STORAGE_KEY = "akilhane_subjects";
+  private static readonly STORAGE_KEY = "mindhouse_subjects";
 
   static getSubjects(): LocalStorageSubject[] {
     if (typeof window === "undefined") {
@@ -66,7 +55,17 @@ class SubjectLocalStorageService {
   }
 }
 
-export const handleAIGeneratedSubjects = async (aiSubjects: AIGeneratedSubject[]) => {
+interface SubjectToastMessages {
+  successTitle: string;
+  successDescription: string;
+  errorTitle: string;
+  errorDescription: string;
+}
+
+export const handleAIGeneratedSubjects = async (
+  aiSubjects: AIGeneratedSubject[],
+  messages?: SubjectToastMessages,
+) => {
   try {
     for (const aiSubject of aiSubjects) {
       const subjectData = {
@@ -101,15 +100,18 @@ export const handleAIGeneratedSubjects = async (aiSubjects: AIGeneratedSubject[]
     }
 
     toast({
-      title: "Başarılı!",
-      description: `${aiSubjects.length} ders başarıyla eklendi`,
+      title: messages?.successTitle ?? "Success!",
+      description:
+        messages?.successDescription ??
+        `${aiSubjects.length} subjects added successfully`,
     });
 
     return true;
   } catch {
     toast({
-      title: "Hata!",
-      description: "Dersler eklenirken bir hata oluştu",
+      title: messages?.errorTitle ?? "Error!",
+      description:
+        messages?.errorDescription ?? "An error occurred while adding subjects",
       variant: "destructive",
     });
     return false;

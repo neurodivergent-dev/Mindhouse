@@ -1,4 +1,6 @@
-// BTK Hackathon Demo Data - AkılHane AI-Powered Education Platform
+import type { Subject } from "@/types/question-manager";
+
+// BTK Hackathon Demo Data - Mindhouse AI-Powered Education Platform
 // Rich demo data for jury presentation
 
 export interface DemoPerformanceData {
@@ -28,7 +30,7 @@ export interface DemoTotalStats {
 }
 
 // Turkish Education System compatible demo subjects
-export const demoSubjects = [
+export const demoSubjects: Subject[] = [
   {
     id: "subj_matematik_001",
     name: "Matematik",
@@ -296,11 +298,11 @@ export const demoFlashcardProgress = {
 export const demoUser = {
   id: "demo_user_btk_2025",
   name: "Demo",
-  email: "demo@akilhane.com",
+  email: "demo@mindhouse.com",
   isGuest: true,
   createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
   preferences: {
-    defaultSubject: "Matematik",
+    defaultSubject: demoSubjects[0]?.name || "Matematik",
     questionsPerQuiz: 20,
     difficulty: "Orta" as const,
     theme: "system" as const,
@@ -725,29 +727,249 @@ export const demoQuestions = {
 // Map subject names to IDs
 const subjectNameToId: Record<string, string> = {
   "Matematik": "subj_matematik_001",
-  "Fizik": "subj_fizik_002", 
+  "Fizik": "subj_fizik_002",
   "Kimya": "subj_kimya_003",
   "Biyoloji": "subj_biyoloji_004",
   "Tarih": "subj_tarih_005",
   "Türk Dili ve Edebiyatı": "subj_edebiyat_006",
-  "İngilizce": "subj_ingilizce_007"
+  "İngilizce": "subj_ingilizce_007",
+  "Mathematics": "subj_matematik_001",
+  "Physics": "subj_fizik_002",
+  "Chemistry": "subj_kimya_003",
+  "Biology": "subj_biyoloji_004",
+  "History": "subj_tarih_005",
+  "Turkish Literature": "subj_edebiyat_006",
+  "English": "subj_ingilizce_007"
 };
 
 // Get demo questions for a specific subject (by name or ID)
-export const getDemoQuestions = (subjectNameOrId: string) => {
+
+const tMap: Record<string, string> = {
+  'f(x) = 2x + 3 fonksiyonunun f(5) değeri kaçtır?': 'What is the value of f(5) for the function f(x) = 2x + 3?',
+  'Bir üçgenin iç açıları toplamı kaç derecedir?': 'What is the sum of the interior angles of a triangle?',
+  '∫(2x + 1)dx integralinin sonucu nedir?': 'What is the result of the integral ∫(2x + 1)dx?',
+  'Newton\'un ikinci yasası hangi formülle ifade edilir?': 'What formula expresses Newton\'s second law?',
+  'Işığın boşluktaki hızı yaklaşık kaç m/s\'dir?': 'What is the approximate speed of light in a vacuum in m/s?',
+  'Termodinamiğin birinci yasası hangi kavramı ifade eder?': 'What concept does the first law of thermodynamics express?',
+  'Periyodik tabloda 1. grupta bulunan elementler hangi isimle bilinir?': 'What are the elements in group 1 of the periodic table called?',
+  'H₂O molekülünün geometrik şekli nedir?': 'What is the geometric shape of the H₂O molecule?',
+  'pH değeri 2 olan bir çözelti nasıldır?': 'What is a solution with a pH of 2?',
+  'Fotosentez hangi organellerde gerçekleşir?': 'In which organelles does photosynthesis occur?',
+  'İnsan vücudundaki en uzun kemik hangisidir?': 'What is the longest bone in the human body?',
+  'DNA\'nın yapısını ilk kez kim keşfetmiştir?': 'Who first discovered the structure of DNA?',
+  'Osmanlı İmparatorluğu hangi yılda kurulmuştur?': 'In what year was the Ottoman Empire founded?',
+  'Türkiye Cumhuriyeti hangi tarihte ilan edilmiştir?': 'On what date was the Republic of Turkey proclaimed?',
+  'Fransız İhtilali hangi yılda başlamıştır?': 'In what year did the French Revolution begin?',
+  '"Kırmızı Saçlı Kadın" romanının yazarı kimdir?': 'Who is the author of the novel "The Red-Haired Woman"?',
+  'Divan Edebiyatı\'nın en önemli nazım şekli hangisidir?': 'What is the most important verse form in Divan Literature?',
+  'Aşağıdakilerden hangisi bir edebi akım değildir?': 'Which of the following is not a literary movement?',
+  'Which sentence is grammatically correct?': 'Which sentence is grammatically correct?',
+  'What is the past tense of "go"?': 'What is the past tense of "go"?',
+  'Choose the correct synonym for "happy".': 'Choose the correct synonym for "happy".',
+  'fonksiyon': 'function',
+  'cebir': 'algebra',
+  'geometri': 'geometry',
+  'üçgen': 'triangle',
+  'integral': 'integral',
+  'analiz': 'calculus',
+  'newton': 'newton',
+  'kuvvet': 'force',
+  'mekanik': 'mechanics',
+  'ışık': 'light',
+  'hız': 'speed',
+  'optik': 'optics',
+  'termodinamik': 'thermodynamics',
+  'enerji': 'energy',
+  'korunum': 'conservation',
+  'periyodik tablo': 'periodic table',
+  'alkali metaller': 'alkali metals',
+  'molekül geometrisi': 'molecular geometry',
+  'bağlar': 'bonds',
+  'asitler ve bazlar': 'acids and bases',
+  'ph': 'ph',
+  'fotosentez': 'photosynthesis',
+  'hücre': 'cell',
+  'anatomi': 'anatomy',
+  'iskelet': 'skeleton',
+  'genetik': 'genetics',
+  'dna': 'dna',
+  'osmanlı': 'ottoman',
+  'kuruluş': 'foundation',
+  'türkiye': 'turkey',
+  'cumhuriyet': 'republic',
+  'avrupa tarihi': 'european history',
+  'ihtilal': 'revolution',
+  'türk edebiyatı': 'turkish literature',
+  'roman': 'novel',
+  'divan edebiyatı': 'divan literature',
+  'şiir': 'poetry',
+  'edebi akımlar': 'literary movements',
+  'teori': 'theory',
+  'grammar': 'grammar',
+  'tenses': 'tenses',
+  'vocabulary': 'vocabulary',
+  'synonyms': 'synonyms',
+
+  // Flashcard translations for English locale
+  'Bir fonksiyonun türevi nedir?': 'What is the derivative of a function?',
+  'Bir fonksiyonun değişim hızını gösteren matematiksel kavramdır': 'A mathematical concept that shows the rate of change of a function',
+  'Türev, bir fonksiyonun belirli bir noktadaki anlık değişim hızını verir. f\'(x) = lim(h→0) [f(x+h) - f(x)]/h': 'The derivative gives the instantaneous rate of change of a function at a specific point. f\'(x) = lim(h→0) [f(x+h) - f(x)]/h',
+  'Pisagor teoremi nedir?': 'What is the Pythagorean theorem?',
+  'a² + b² = c² (dik üçgende hipotenüsün karesi, diğer kenarların karelerinin toplamına eşittir)': 'a² + b² = c² (the square of the hypotenuse in a right triangle equals the sum of the squares of the other two sides)',
+  'Dik üçgenlerde, hipotenüsün uzunluğunun karesi, diğer iki kenarın uzunluklarının karelerinin toplamına eşittir.': 'In right triangles, the square of the hypotenuse equals the sum of the squares of the other two sides.',
+  'Limit kavramı neyi ifade eder?': 'What does the concept of a limit express?',
+  'Bir fonksiyonun belirli bir değere yaklaşırken aldığı değeri ifade eder': 'The value that a function approaches as it gets close to a specific value',
+  'Limit, x değeri a\'ya yaklaşırken f(x) fonksiyonunun yaklaştığı değerdir. Süreklilik ve türev kavramlarının temelini oluşturur.': 'The limit is the value f(x) approaches as x approaches a. It is the foundation of continuity and derivatives.',
+  'Fonksiyonun değişim hızı': 'The rate of change of the function',
+  'Fonksiyonun integrali': 'The integral of the function',
+  'Fonksiyonun tersi': 'The inverse of the function',
+  'Fonksiyonun kökü': 'The root of the function',
+  'a² + b² = c²': 'a² + b² = c²',
+  'a + b = c': 'a + b = c',
+  'a² - b² = c²': 'a² - b² = c²',
+  'a × b = c': 'a × b = c',
+  'Fonksiyonun yaklaştığı değer': 'The value the function approaches',
+  'Fonksiyonun maksimum değeri': 'The maximum value of the function',
+  'Fonksiyonun minimum değeri': 'The minimum value of the function',
+  'Fonksiyonun ortalama değeri': 'The average value of the function',
+  'Newton\'un birinci yasası nedir?': 'What is Newton\'s first law?',
+  'Eylemsizlik yasası: Bir cisim üzerine net kuvvet etki etmediği sürece durgun halde durur veya düzgün doğrusal hareket yapar': 'Law of inertia: An object remains at rest or in uniform straight-line motion unless acted upon by a net force',
+  'Eylemsizlik yasası olarak da bilinir. Cisimler mevcut hareket durumlarını koruma eğilimindedir.': 'Also known as the law of inertia. Objects tend to maintain their current state of motion.',
+  'Eylemsizlik yasası': 'Law of inertia',
+  'F = ma': 'F = ma',
+  'Etki-tepki yasası': 'Action-reaction law',
+  'Kütle çekim yasası': 'Law of universal gravitation',
+  'Elektrik akımı nedir?': 'What is electric current?',
+  'Yüklü parçacıkların düzenli hareketi sonucu oluşan elektrik yükü akışıdır': 'The flow of electric charge resulting from the orderly movement of charged particles',
+  'Akım, birim zamanda bir kesiten geçen elektrik yükü miktarıdır. I = Q/t formülü ile hesaplanır.': 'Current is the amount of electric charge passing through a cross-section per unit time. Calculated with I = Q/t.',
+  'Yüklü parçacıkların hareketi': 'Movement of charged particles',
+  'Elektronların durması': 'Electrons stopping',
+  'Manyetik alan': 'Magnetic field',
+  'Işık hızı': 'Speed of light',
+  'Atom nedir?': 'What is an atom?',
+  'Maddenin kimyasal özelliklerini koruyan en küçük parçacığıdır': 'The smallest particle that retains the chemical properties of matter',
+  'Atom, proton, nötron ve elektronlardan oluşur. Kimyasal reaksiyonlarda bölünmez.': 'An atom consists of protons, neutrons, and electrons. It is indivisible in chemical reactions.',
+  'Maddenin en küçük parçacığı': 'The smallest particle of matter',
+  'Molekülün yarısı': 'Half of a molecule',
+  'Elektronun çekirdeği': 'The nucleus of an electron',
+  'İyonun tersi': 'The opposite of an ion',
+  'Fatih Sultan Mehmet hangi şehri fethetti?': 'Which city did Fatih Sultan Mehmet conquer?',
+  'İstanbul (Konstantinopolis) - 1453': 'Istanbul (Constantinople) - 1453',
+  '29 Mayıs 1453\'te Konstantinopolis\'i fethederek Bizans İmparatorluğu\'na son verdi.': 'On May 29, 1453, he conquered Constantinople and ended the Byzantine Empire.',
+  'İstanbul': 'Istanbul',
+  'Ankara': 'Ankara',
+  'Bursa': 'Bursa',
+  'İzmir': 'Izmir',
+  'Hücrenin enerji merkezi hangisidir?': 'What is the energy center of the cell?',
+  'Mitokondri': 'Mitochondria',
+  'Mitokondri, hücresel solunumla ATP üretir ve hücrenin enerji ihtiyacını karşılar.': 'Mitochondria produce ATP through cellular respiration and meet the cell\'s energy needs.',
+  'Kloroplast': 'Chloroplast',
+  'Ribozom': 'Ribosome',
+  'Çekirdek': 'Nucleus',
+  'Türk edebiyatının ilk romanı hangisidir?': 'What is the first novel in Turkish literature?',
+  'Taaşşuk-u Talat ve Fitnat (Şemsettin Sami)': 'Taaşşuk-u Talat ve Fitnat (Şemsettin Sami)',
+  '1872\'de yazılan bu eser, Türk edebiyatının ilk romanı kabul edilir.': 'Written in 1872, this work is considered the first novel in Turkish literature.',
+  'Araba Sevdası': 'Araba Sevdası',
+  'Mai ve Siyah': 'Mai ve Siyah',
+  'Aşk-ı Memnu': 'Aşk-ı Memnu',
+  'What is the past tense of "bring"?': 'What is the past tense of "bring"?',
+  'Brought': 'Brought',
+  '"Bring" is an irregular verb. Past tense: brought, Past participle: brought': '"Bring" is an irregular verb. Past tense: brought, Past participle: brought',
+  'Bringed': 'Bringed',
+  'Brung': 'Brung',
+  'Brang': 'Brang'
+};
+
+export const translateDemoData = (data: any, locale?: string) => {
+  if (locale !== "en" || !data) return data;
+  if (Array.isArray(data)) return data.map(item => translateDemoData(item, locale));
+  if (typeof data === "object") {
+    const translated = { ...data };
+    if (translated.question && tMap[translated.question]) {
+      translated.question = tMap[translated.question];
+    }
+    if (translated.answer && tMap[translated.answer]) {
+      translated.answer = tMap[translated.answer];
+    }
+    if (translated.explanation && tMap[translated.explanation]) {
+      translated.explanation = tMap[translated.explanation];
+    }
+    if (translated.tags && Array.isArray(translated.tags)) {
+      translated.tags = translated.tags.map((tag: string) => tMap[tag] || tag);
+    }
+    if (translated.topic && typeof translated.topic === "string" && tMap[translated.topic.toLowerCase()]) {
+      translated.topic = tMap[translated.topic.toLowerCase()];
+    }
+    if (translated.options && Array.isArray(translated.options)) {
+      translated.options = translated.options.map((opt: any) => {
+        if (opt && opt.text && tMap[opt.text]) {
+          return { ...opt, text: tMap[opt.text] };
+        }
+        return opt;
+      });
+    }
+    return translated;
+  }
+  return data;
+};
+
+export const getDemoQuestions = (subjectNameOrId: string, locale?: string) => {
   // If it's already an ID, use it directly
   let subjectId = subjectNameOrId;
-  
+
   // If it's a name, convert to ID
   if (subjectNameToId[subjectNameOrId]) {
     subjectId = subjectNameToId[subjectNameOrId];
   }
-  
-  return demoQuestions[subjectId as keyof typeof demoQuestions] || [];
+
+  return translateDemoData(demoQuestions[subjectId as keyof typeof demoQuestions] || [], locale);
 };
 
 // Get all demo questions
-export const getAllDemoQuestions = () => Object.values(demoQuestions).flat();
+export const getAllDemoQuestions = (locale?: string) => translateDemoData(Object.values(demoQuestions).flat(), locale);
+
+// Get localized demo subjects (for empty states / subject lists in Question Manager etc.)
+export const getDemoSubjects = (locale?: string): Subject[] => {
+  if (locale !== "en") {
+    return demoSubjects;
+  }
+
+  // English translations for demo subject metadata (name stays as canonical key
+  // so that useTranslations("Subjects") can resolve the display name)
+  const descriptionTranslations: Record<string, string> = {
+    "Temel matematik konuları: Cebir, Geometri, Analiz": "Fundamental math topics: Algebra, Geometry, Calculus",
+    "Mekanik, Termodinamik, Elektrik ve Manyetizma": "Mechanics, Thermodynamics, Electricity and Magnetism",
+    "Genel Kimya, Organik ve Anorganik Kimya": "General Chemistry, Organic and Inorganic Chemistry",
+    "Hücre Biyolojisi, Genetik, Ekoloji": "Cell Biology, Genetics, Ecology",
+    "Türk Tarihi, Dünya Tarihi, Çağdaş Tarih": "Turkish History, World History, Contemporary History",
+    "Dil Bilgisi, Klasik Edebiyat, Çağdaş Edebiyat": "Grammar, Classical Literature, Contemporary Literature",
+    "Grammar, Vocabulary, Reading Comprehension": "Grammar, Vocabulary, Reading Comprehension",
+  };
+
+  const categoryTranslations: Record<string, string> = {
+    "Fen Bilimleri": "Science",
+    "Sosyal Bilimler": "Social Sciences",
+    "Dil ve Edebiyat": "Language and Literature",
+    "Yabancı Dil": "Foreign Language",
+  };
+
+  const difficultyTranslations: Record<string, string> = {
+    "Kolay": "Easy",
+    "Orta": "Medium",
+    "Zor": "Hard",
+    "İleri": "Advanced",
+  };
+
+  return demoSubjects.map((subject) => ({
+    ...subject,
+    // Keep canonical name (e.g. "Matematik") so t("Subjects.xxx") lookups work
+    // Display name comes from Subjects translations
+    name: subject.name,
+    description: descriptionTranslations[subject.description] || subject.description,
+    category: categoryTranslations[subject.category] || subject.category,
+    difficulty: difficultyTranslations[subject.difficulty] || subject.difficulty,
+  }));
+};
 
 // Demo Flashcards for BTK Hackathon
 export const demoFlashcards = {
@@ -941,9 +1163,11 @@ export const demoFlashcards = {
   ],
 };
 
-// Get demo flashcards for a specific subject
-export const getDemoFlashcards = (subject: string) =>
-  demoFlashcards[subject as keyof typeof demoFlashcards] || [];
+// Get demo flashcards for a specific subject (with locale support for English translation)
+export const getDemoFlashcards = (subject: string, locale?: string) => {
+  const cards = demoFlashcards[subject as keyof typeof demoFlashcards] || [];
+  return translateDemoData(cards, locale);
+};
 
-// Get all demo flashcards
-export const getAllDemoFlashcards = () => Object.values(demoFlashcards).flat();
+// Get all demo flashcards (with locale support)
+export const getAllDemoFlashcards = (locale?: string) => translateDemoData(Object.values(demoFlashcards).flat(), locale);

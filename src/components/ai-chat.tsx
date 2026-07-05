@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAiChatResponse, type AiChatOutput } from "../ai/flows/ai-chat";
+import { getStoredAiPreferences } from "@/lib/ai-preferences";
 import { Mic, Send, Volume2 } from "lucide-react";
 import VoiceAssistant from "./voice-assistant";
 import MobileNav from "./mobile-nav";
@@ -20,6 +22,7 @@ interface AiChatProps {
 }
 
 const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
+  const locale = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -76,12 +79,13 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
         timestamp: msg.timestamp,
       }));
 
+      const aiPreferences = getStoredAiPreferences();
       const response = await getAiChatResponse({
         message: inputMessage,
         subject,
         conversationHistory,
         context,
-      });
+      }, aiPreferences, locale);
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -153,12 +157,13 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
             timestamp: msg.timestamp,
           }));
 
+          const aiPreferences = getStoredAiPreferences();
           const response = await getAiChatResponse({
             message: voiceTranscript,
             subject,
             conversationHistory: updatedHistory,
             context,
-          });
+          }, aiPreferences, locale);
 
           const assistantMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
@@ -282,7 +287,7 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:bg-transparent dark:!bg-none">
       {/* Responsive Navigation Bar */}
       <MobileNav />
 

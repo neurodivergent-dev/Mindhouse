@@ -6,6 +6,7 @@ import {
 } from "@/ai/flows/question-generator";
 import { supabase } from "@/lib/supabase";
 import { shouldUseDemoData } from "@/data/demo-data";
+import { AIFactory } from "@/services/ai/AIFactory";
 
 // Increase timeout for AI generation
 export const maxDuration = 120; // 2 minutes
@@ -197,21 +198,17 @@ export async function POST(request: NextRequest) {
 
     let result;
 
-    // Check if Google AI API key is available (support multiple key names)
-    const hasApiKey =
-      process.env.GEMINI_API_KEY ||
-      process.env.GOOGLE_GENAI_API_KEY ||
-      process.env.GOOGLE_AI_API_KEY;
+    // We instantiate the correct AI Provider using our Factory
+    const provider = AIFactory.getProvider(request);
 
-    // Debug environment variables
-
-    if (!hasApiKey || shouldUseDemoData()) {
+    if (shouldUseDemoData()) {
       result = generateMockQuestions(body);
     } else {
       try {
-        // Call the AI generation flow
-        result = await generateQuestions(body);
-      } catch {
+        // Call the AI generation flow with the provider
+        result = await generateQuestions(body, provider);
+      } catch (error) {
+        console.error("AI Generation Error:", error);
         result = generateMockQuestions(body);
       }
     }

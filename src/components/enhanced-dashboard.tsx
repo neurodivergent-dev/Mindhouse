@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -33,6 +33,7 @@ import {
   Zap,
   Trophy,
   Activity,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocalAuth } from "@/hooks/useLocalAuth";
@@ -41,9 +42,11 @@ import AnalyticsDashboard from "./analytics-dashboard";
 import MobileNav from "./mobile-nav";
 import LoadingSpinner from "./loading-spinner";
 import { Switch } from "@/components/ui/switch";
+import { useTranslations, useLocale } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import AIPerformanceRecommendation from "./ai-performance-recommendation";
+import AIFloatingChat from "./ai-floating-chat";
 import {
   shouldUseDemoData,
   toggleDemoMode,
@@ -64,7 +67,10 @@ interface PerformanceData {
 
 interface QuizResult {
   id: string;
+  userId?: string;
+  type?: string;
   subject: string;
+  topic?: string;
   score: number;
   totalQuestions: number;
   timeSpent: number;
@@ -80,7 +86,88 @@ interface TotalStats {
   totalSubjects: number;
 }
 
+const DASHBOARD_FEATURE_KEYS = [
+  "detailed_analytics",
+  "smart_suggestions",
+  "achievement_tracking",
+  "performance_charts",
+  "learning_tips",
+  "achievement_badges",
+] as const;
+
 export default function EnhancedDashboard() {
+  const t = useTranslations("Dashboard");
+  const locale = useLocale();
+
+  const translateSubject = (subject: string) => {
+    if (locale === "tr") return subject;
+    
+    const map: Record<string, string> = {
+      "Matematik": "Mathematics",
+      "Fizik": "Physics",
+      "Kimya": "Chemistry",
+      "Biyoloji": "Biology",
+      "Tarih": "History",
+      "Türk Dili ve Edebiyatı": "Turkish Language & Lit.",
+      "İngilizce": "English",
+      "Coğrafya": "Geography",
+      "Felsefe": "Philosophy",
+      "Din Kültürü": "Religion"
+    };
+    
+    return map[subject] || subject;
+  };
+
+  const translateTopic = (topic: string) => {
+    if (locale === "tr") return topic;
+    
+    const map: Record<string, string> = {
+      "Türev Uygulamaları": "Derivative Applications",
+      "İntegral Hesabı": "Integral Calculus",
+      "Logaritma": "Logarithms",
+      "Geometri": "Geometry",
+      "Cebir": "Algebra",
+      "Analiz": "Calculus",
+      "Elektrik ve Manyetizma": "Electricity & Magnetism",
+      "Dalga Hareketi": "Wave Motion",
+      "Modern Fizik": "Modern Physics",
+      "Mekanik": "Mechanics",
+      "Termodinamik": "Thermodynamics",
+      "Elektrik": "Electricity",
+      "Organik Kimya": "Organic Chemistry",
+      "Elektrokimya": "Electrochemistry",
+      "Kimyasal Reaksiyonlar": "Chemical Reactions",
+      "Anorganik Kimya": "Inorganic Chemistry",
+      "Kimyasal Bağlar": "Chemical Bonds",
+      "Genetik": "Genetics",
+      "Ekoloji": "Ecology",
+      "Hücre Bölünmesi": "Cell Division",
+      "Hücre Biyolojisi": "Cell Biology",
+      "Sistemler": "Systems",
+      "Dokular": "Tissues",
+      "Osmanlı Duraklama Dönemi": "Ottoman Stagnation Period",
+      "Tarih": "History",
+      "Tarihsel Olaylar": "Historical Events",
+      "Tarihsel Süreçler": "Historical Processes",
+      "Divan Edebiyatı": "Divan Literature",
+      "Çağdaş Türk Edebiyatı": "Modern Turkish Lit.",
+      "Dil Bilgisi": "Grammar",
+      "Edebiyat": "Literature",
+      "Çağdaş Edebiyat": "Modern Literature"
+    };
+    
+    return map[topic] || topic;
+  };
+
+  const translatedFeatures = useMemo(
+    () =>
+      dashboardFeatures.map((feature, index) => ({
+        ...feature,
+        title: t(`features.${DASHBOARD_FEATURE_KEYS[index]}.title`),
+        description: t(`features.${DASHBOARD_FEATURE_KEYS[index]}.description`),
+      })),
+    [t],
+  );
   const { user, loading, isGuest, isAuthenticated, clearGuestData, initializeGuestUser } = useLocalAuth();
   const { toast } = useToast();
 
@@ -149,8 +236,21 @@ export default function EnhancedDashboard() {
       try {
         // BTK Hackathon Demo Mode
         if (useDemoData) {
-          setPerformanceData(demoPerformanceData);
-          setRecentResults(demoRecentResults);
+          setPerformanceData(
+            demoPerformanceData.map((item) => ({
+              ...item,
+              subject: translateSubject(item.subject),
+              weakTopics: item.weakTopics.map(translateTopic),
+              strongTopics: item.strongTopics.map(translateTopic),
+            }))
+          );
+          setRecentResults(
+            demoRecentResults.map((item) => ({
+              ...item,
+              subject: translateSubject(item.subject),
+              weakTopics: Array.isArray(item.weakTopics) ? item.weakTopics.map(translateTopic) : item.weakTopics,
+            }))
+          );
           setTotalStats(demoTotalStats);
           setStorageInfo({ used: 2048, available: 5242880, percentage: 0.04 });
 
@@ -174,13 +274,74 @@ export default function EnhancedDashboard() {
             const quizResults = localStorage.getItem(quizResultsKey);
             const results = quizResults ? JSON.parse(quizResults) : [];
 
+            // --- BACKWARD COMPATIBILITY MIGRATION ---
+            if (typeof window !== "undefined") {
+              try {
+                // Get old saved topics
+                let savedTopics: any[] = [];
+                // Look for all keys matching mindhouse_topic_explainer_*
+                for (let i = 0; i < localStorage.length; i++) {
+                  const key = localStorage.key(i);
+                  if (key && key.startsWith("mindhouse_topic_explainer_")) {
+                    const subjectTopicsRaw = localStorage.getItem(key);
+                    if (subjectTopicsRaw) {
+                      const subjectTopics = JSON.parse(subjectTopicsRaw);
+                      if (Array.isArray(subjectTopics)) {
+                        savedTopics = savedTopics.concat(subjectTopics);
+                      }
+                    }
+                  }
+                }
+
+                if (savedTopics.length > 0) {
+                  let hasNewMigrations = false;
+
+                  savedTopics.forEach((st: any) => {
+                    // Check if this topic is already in results
+                    const alreadyExists = results.find((r: any) => r.type === "TopicExplainer" && r.subject === st.subject && (r.topic === st.topic || r.topic === (st.content && JSON.parse(st.content).title)));
+                    if (!alreadyExists) {
+                      // Compute total time if available
+                      let tTime = 300;
+                      let realTopicName = st.topic;
+                      try {
+                        const parsedContent = JSON.parse(st.content);
+                        if (parsedContent.totalTime) tTime = parsedContent.totalTime;
+                        if (parsedContent.title) realTopicName = parsedContent.title;
+                      } catch (e) { }
+
+                      results.push({
+                        id: `explainer_migrated_${st.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                        userId: "guest",
+                        type: "TopicExplainer",
+                        subject: st.subject,
+                        topic: realTopicName,
+                        score: 1,
+                        totalQuestions: 1,
+                        timeSpent: tTime,
+                        weakTopics: [],
+                        createdAt: st.createdAt || new Date().toISOString()
+                      });
+                      hasNewMigrations = true;
+                    }
+                  });
+
+                  if (hasNewMigrations) {
+                    localStorage.setItem(quizResultsKey, JSON.stringify(results));
+                  }
+                }
+              } catch (e) {
+                console.error("Migration error", e);
+              }
+            }
+            // --- END MIGRATION ---
+
             // Filter out demo results if not in demo mode
             const filteredResults = useDemoData
               ? results
               : results.filter((result: QuizResult) => !result.isDemo);
 
             // Get subject information from Subjects
-            const subjects = localStorage.getItem("akilhane_subjects");
+            const subjects = localStorage.getItem("mindhouse_subjects");
             const subjectsData = subjects ? JSON.parse(subjects) : [];
 
             if (filteredResults.length === 0) {
@@ -218,9 +379,11 @@ export default function EnhancedDashboard() {
                 };
               }
               const subjectData = performanceMap[result.subject]!;
-              subjectData.totalTests++;
-              subjectData.totalScore += result.score;
-              subjectData.totalQuestions += result.totalQuestions;
+              if (result.type !== "TopicExplainer") {
+                subjectData.totalTests++;
+                subjectData.totalScore += result.score;
+                subjectData.totalQuestions += result.totalQuestions;
+              }
 
               // Add weak topics
               if (
@@ -285,9 +448,9 @@ export default function EnhancedDashboard() {
 
                 return {
                   subject,
-                  averageScore: Math.round(
+                  averageScore: data.totalQuestions > 0 ? Math.round(
                     (data.totalScore / data.totalQuestions) * 100,
-                  ),
+                  ) : 0,
                   totalTests: data.totalTests,
                   weakTopics: Object.entries(data.weakTopics)
                     .sort(([, a], [, b]) => b - a)
@@ -302,8 +465,10 @@ export default function EnhancedDashboard() {
             // Recent results
             const recentResults = filteredResults
               .slice(-5)
-              .map((result: QuizResult) => ({
+              .map((result: any) => ({
                 id: result.id,
+                type: result.type,
+                topic: result.topic,
                 subject: result.subject,
                 score: result.score,
                 totalQuestions: result.totalQuestions,
@@ -314,13 +479,15 @@ export default function EnhancedDashboard() {
                 createdAt: result.createdAt,
               }));
 
-            // Total stats
-            const totalTests = filteredResults.length;
-            const totalCorrectAnswers = filteredResults.reduce(
+            // Total stats (exclude TopicExplainer from test counts and scores)
+            const quizOnlyResults = filteredResults.filter((r: any) => r.type !== "TopicExplainer");
+
+            const totalTests = quizOnlyResults.length;
+            const totalCorrectAnswers = quizOnlyResults.reduce(
               (sum: number, result: QuizResult) => sum + result.score,
               0,
             );
-            const totalQuestions = filteredResults.reduce(
+            const totalQuestions = quizOnlyResults.reduce(
               (sum: number, result: QuizResult) => sum + result.totalQuestions,
               0,
             );
@@ -397,9 +564,9 @@ export default function EnhancedDashboard() {
   const handleExportData = () => {
     if (!isGuest) {
       toast({
-        title: "Bu özellik sadece misafir kullanıcılar içindir",
+        title: t("toasts.guestOnly"),
         description:
-          "Giriş yapmış kullanıcılar verilerini profil ayarlarından yönetebilir.",
+          t("toasts.guestOnlyDesc"),
         variant: "destructive",
       });
       return;
@@ -413,19 +580,19 @@ export default function EnhancedDashboard() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `akilhane-backup-${new Date().toISOString().split("T")[0]}.json`;
+      a.download = `mindhouse-backup-${new Date().toISOString().split("T")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
 
       toast({
-        title: "Veriler başarıyla dışa aktarıldı",
+        title: t("toasts.exportSuccess"),
         description:
-          "Yedek dosyanız indirildi. Bu dosyayı güvenli bir yerde saklayın.",
+          t("toasts.exportSuccessDesc"),
       });
     } catch {
       toast({
-        title: "Dışa aktarma hatası",
-        description: "Veriler dışa aktarılırken bir hata oluştu.",
+        title: t("toasts.exportError"),
+        description: t("toasts.exportErrorDesc"),
         variant: "destructive",
       });
     }
@@ -456,9 +623,9 @@ export default function EnhancedDashboard() {
 
             if (success) {
               toast({
-                title: "Veriler başarıyla içe aktarıldı",
+                title: t("toasts.importSuccess"),
                 description:
-                  "Yedek verileriniz geri yüklendi. Sayfa yenileniyor...",
+                  t("toasts.importSuccessDesc"),
               });
               setTimeout(() => window.location.reload(), 1500);
             } else {
@@ -466,8 +633,8 @@ export default function EnhancedDashboard() {
             }
           } catch {
             toast({
-              title: "İçe aktarma hatası",
-              description: "Dosya formatı geçersiz veya bozuk.",
+              title: t("toasts.importError"),
+              description: t("toasts.importErrorDesc"),
               variant: "destructive",
             });
           }
@@ -486,8 +653,8 @@ export default function EnhancedDashboard() {
     if (newDemoMode) {
       loadDemoDataToLocalStorage();
       toast({
-        title: "Demo Modu Aktif",
-        description: "Demo veriler yüklendi. Sayfa yenileniyor...",
+        title: t("toasts.demoActive"),
+        description: t("toasts.demoActiveDesc"),
       });
       setTimeout(() => window.location.reload(), 1000);
     } else {
@@ -499,15 +666,15 @@ export default function EnhancedDashboard() {
         localStorage.removeItem("guestFlashcardProgress");
         localStorage.removeItem("guestPerformanceData");
         localStorage.removeItem("guestAIRecommendations");
-        
+
         // Clear guest data and reinitialize with default guest user
         clearGuestData();
         initializeGuestUser();
       }
       toast({
-        title: "Demo modu kapatıldı",
+        title: t("toasts.demoInactive"),
         description:
-          "Demo veriler temizlendi. Misafir kullanıcı moduna geçildi. Sayfa yenileniyor...",
+          t("toasts.demoInactiveDesc"),
       });
       // Reload immediately to ensure user data is updated
       window.location.reload();
@@ -527,14 +694,14 @@ export default function EnhancedDashboard() {
       <div className="flex justify-center items-center min-h-screen">
         <Card className="max-w-md">
           <CardHeader>
-            <CardTitle>Giriş Gerekli</CardTitle>
+            <CardTitle>{t("loginRequired")}</CardTitle>
             <CardDescription>
-              Dashboard&apos;a erişmek için giriş yapmanız gerekiyor.
+              {t("loginToAccess")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/login">
-              <Button className="w-full">Giriş Yap</Button>
+              <Button className="w-full">{t("login")}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -542,8 +709,31 @@ export default function EnhancedDashboard() {
     );
   }
 
+  // Build context for AI assistant - uses current data (demo or real)
+  const dashboardContext = `
+Dashboard Overview (${useDemoData ? 'DEMO MODE - sample data' : 'Real user data'}):
+
+Total Tests: ${totalStats.totalTests}
+Average Score: ${totalStats.averageScore}%
+Total Study Time: ${totalStats.totalTimeSpent} minutes
+Number of Subjects: ${performanceData.length}
+
+Recent Activity:
+${recentResults.slice(0, 5).map(r => 
+  `- ${r.subject}: ${r.score}/${r.totalQuestions} (${Math.round(r.timeSpent/60)} min)`
+).join('\n')}
+
+Subject Performance:
+${performanceData.map(p => 
+  `- ${p.subject}: Average ${p.averageScore}%, ${p.totalTests} tests`
+).join('\n')}
+
+Weak Topics Overall: ${performanceData.flatMap(p => p.weakTopics).slice(0,10).join(', ')}
+Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10).join(', ')}
+`.trim();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none relative selection:bg-blue-200 selection:text-blue-900 dark:selection:bg-blue-900/30 dark:selection:text-blue-200">
       <MobileNav />
 
       <div className="container mx-auto px-4 py-8">
@@ -553,27 +743,25 @@ export default function EnhancedDashboard() {
           <div className="flex flex-col gap-4 mb-8">
             {/* Title Section */}
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                AkılHane Dashboard
+              <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                {t("title")}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Hoş geldiniz,{" "}
+              <p className="text-[#86868b] dark:text-[#a1a1a6] mt-2 text-lg font-medium tracking-wide">
+                {t("welcome")},{" "}
                 {isGuest
-                  ? user && "name" in user
-                    ? user.name
-                    : "Kullanıcı"
-                  : user?.email || "Kullanıcı"}
+                  ? t("guestUser")
+                  : (user && "name" in user ? user.name : user?.email) || t("user")}
                 !
                 {isGuest && (
                   <span className="ml-2 inline-flex items-center">
                     <UserX className="h-4 w-4 mr-1" />
-                    Misafir Modu
+                    {t("guestMode")}
                   </span>
                 )}
                 {!isGuest && (
                   <span className="ml-2 inline-flex items-center">
                     <UserCheck className="h-4 w-4 mr-1" />
-                    Üye
+                    {t("member")}
                   </span>
                 )}
               </p>
@@ -608,7 +796,7 @@ export default function EnhancedDashboard() {
                     htmlFor="analytics-mode"
                     className="hover:text-indigo-600 transition-colors"
                   >
-                    Analitik Görünüm
+                    {t("analyticsView")}
                   </Label>
                 </div>
               </div>
@@ -622,7 +810,7 @@ export default function EnhancedDashboard() {
                     className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    Ayarlar
+                    {t("settings")}
                   </Button>
                 </Link>
               </div>
@@ -635,10 +823,12 @@ export default function EnhancedDashboard() {
             <div className="mb-6 border-gradient-question p-[1px] rounded-xl">
               <Alert className="border-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-[11px] backdrop-blur-sm">
                 <Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <AlertDescription className="text-gray-700 dark:text-gray-300">
-                  <strong className="text-gray-800 dark:text-white">Demo Modu Aktif!</strong> Bu veriler
-                  örnek kullanım için hazırlanmış demo verileridir. Gerçek kullanım
-                  deneyimini görmek için demo modunu kapatabilirsiniz.
+                <AlertDescription className="text-gray-600 dark:text-gray-300">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <span>
+                      <strong className="text-gray-800 dark:text-white">{t("demoModeActive")}</strong> {t("demoModeDesc")}
+                    </span>
+                  </div>
                 </AlertDescription>
               </Alert>
             </div>
@@ -651,16 +841,16 @@ export default function EnhancedDashboard() {
                 <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <AlertDescription className="text-gray-700 dark:text-gray-300">
                   <strong className="text-gray-800 dark:text-white">
-                    Misafir modunda kullanıyorsunuz.
+                    {t("guestModeActive")}
                   </strong>{" "}
-                  Verileriniz sadece bu cihazda saklanıyor. Kalıcı kayıt için{" "}
+                  {t("guestModeDesc1")}
                   <Link
                     href="/login?mode=register"
                     className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline font-medium"
                   >
-                    ücretsiz hesap oluşturun
+                    {t("createFreeAccount")}
                   </Link>{" "}
-                  veya verilerinizi yedekleyin.
+                  {t("guestModeDesc2")}
                   {/* OPTIONAL UPDATE */}
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Button
@@ -670,7 +860,7 @@ export default function EnhancedDashboard() {
                       className="border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                     >
                       <Download className="h-3 w-3 mr-1" />
-                      Yedekle
+                      {t("backup")}
                     </Button>
                     <Button
                       onClick={handleImportData}
@@ -679,7 +869,7 @@ export default function EnhancedDashboard() {
                       className="border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-200 hover:bg-purple-50 dark:hover:bg-purple-900/20"
                     >
                       <Upload className="h-3 w-3 mr-1" />
-                      Geri Yükle
+                      {t("restore")}
                     </Button>
                   </div>
                 </AlertDescription>
@@ -693,7 +883,7 @@ export default function EnhancedDashboard() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-medium">
-                    Depolama Kullanımı
+                    {t("storageUsage")}
                   </CardTitle>
                   <HardDrive className="h-4 w-4 text-gray-500" />
                 </div>
@@ -702,7 +892,7 @@ export default function EnhancedDashboard() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>
-                      Kullanılan: {(storageInfo.used / 1024).toFixed(1)} KB
+                      {t("used")}: {(storageInfo.used / 1024).toFixed(1)} KB
                     </span>
                     <span>{storageInfo.percentage.toFixed(1)}%</span>
                   </div>
@@ -730,90 +920,89 @@ export default function EnhancedDashboard() {
           <>
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="border-gradient-question hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Toplam Test
-                  </CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
+              <div className="apple-glass-card h-full">
+                <div className="flex flex-col h-full w-full relative z-10 p-5">
+                  <div className="flex flex-row items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("totalTests")}
+                    </span>
+                    <FileText className="h-5 w-5 text-[#007aff] dark:text-[#0a84ff]" />
+                  </div>
+                  <div className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                     {totalStats.totalTests}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {totalStats.totalSubjects} farklı konuda
+                  <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                    {totalStats.totalSubjects} {t("differentSubjects")}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="border-gradient-question hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Ortalama Başarı
-                  </CardTitle>
-                  <Target className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">
+              <div className="apple-glass-card h-full">
+                <div className="flex flex-col h-full w-full relative z-10 p-5">
+                  <div className="flex flex-row items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("averageScore")}
+                    </span>
+                    <Target className="h-5 w-5 text-[#34c759] dark:text-[#30d158]" />
+                  </div>
+                  <div className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                     %{totalStats.averageScore.toFixed(0)}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Son testlerin ortalaması
+                  <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("recentTestsAvg")}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="border-gradient-question hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Toplam Süre
-                  </CardTitle>
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {Math.round(totalStats.totalTimeSpent)}dk
+              <div className="apple-glass-card h-full">
+                <div className="flex flex-col h-full w-full relative z-10 p-5">
+                  <div className="flex flex-row items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("totalTime")}
+                    </span>
+                    <Clock className="h-5 w-5 text-[#af52de] dark:text-[#bf5af2]" />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Çalışma süresi
+                  <div className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                    {Math.round(totalStats.totalTimeSpent)}<span className="text-xl font-semibold text-[#86868b] dark:text-[#a1a1a6] ml-1">dk</span>
+                  </div>
+                  <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("studyTime")}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="border-gradient-question hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Aktif Konular
-                  </CardTitle>
-                  <BookOpen className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-indigo-600">
+              <div className="apple-glass-card h-full">
+                <div className="flex flex-col h-full w-full relative z-10 p-5">
+                  <div className="flex flex-row items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("activeSubjects")}
+                    </span>
+                    <BookOpen className="h-5 w-5 text-[#ff9500] dark:text-[#ff9f0a]" />
+                  </div>
+                  <div className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                     {totalStats.totalSubjects}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Çalıştığınız konu sayısı
+                  <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("subjectCount")}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
               {/* Performance by Subject */}
               <div className="lg:col-span-2">
-                <Card className="border-gradient-question">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <TrendingUp className="h-5 w-5 mr-2" />
-                      Konu Bazlı Performans
-                    </CardTitle>
-                    <CardDescription>
-                      Her konudaki gelişiminizi takip edin
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                <div className="apple-glass-card h-full">
+                  <div className="flex flex-col h-full w-full relative z-10 p-6">
+                    <div className="flex items-center mb-6">
+                      <TrendingUp className="h-6 w-6 mr-2 text-[#007aff] dark:text-[#0a84ff]" />
+                      <div>
+                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectPerformance")}</h2>
+                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("subjectPerformanceDesc")}</p>
+                      </div>
+                    </div>
+                    
                     {performanceData.length > 0 ? (
                       <div className="space-y-6">
                         {performanceData.map((subject, index) => (
@@ -826,13 +1015,12 @@ export default function EnhancedDashboard() {
                                 {subject.subject}
                               </h4>
                               <Badge
-                                className={`text-sm ${
-                                  subject.averageScore >= 80
+                                className={`text-sm ${subject.averageScore >= 80
                                     ? "badge-gradient-high"
                                     : subject.averageScore >= 70
                                       ? "badge-gradient-medium"
                                       : "badge-gradient-low"
-                                }`}
+                                  }`}
                               >
                                 %{subject.averageScore.toFixed(0)}
                               </Badge>
@@ -844,7 +1032,7 @@ export default function EnhancedDashboard() {
                               />
                             </div>
                             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                              <span>{subject.totalTests} test tamamlandı</span>
+                              <span>{subject.totalTests} {t("testsCompleted")}</span>
                               <span>
                                 {new Date(
                                   subject.lastUpdated,
@@ -853,224 +1041,252 @@ export default function EnhancedDashboard() {
                             </div>
                             {subject.weakTopics.length > 0 && (
                               <div className="mt-2">
-                                <p className="text-xs text-gray-500 mb-1">
-                                  Geliştirilmesi gereken konular:
-                                </p>
-                                <div className="flex flex-wrap gap-1">
-                                  {subject.weakTopics
-                                    .slice(0, 3)
-                                    .map((topic, i) => (
-                                      <Badge
-                                        key={i}
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        {topic}
-                                      </Badge>
-                                    ))}
-                                  {subject.weakTopics.length > 3 && (
-                                    <Badge
-                                      variant="outline"
-                                      className="text-xs"
-                                    >
-                                      +{subject.weakTopics.length - 3} diğer
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                            {subject.strongTopics &&
-                              subject.strongTopics.length > 0 && (
-                                <div className="mt-2">
-                                  <p className="text-xs text-green-600 mb-1">
-                                    Güçlü olduğunuz konular:
+                                  <p className="text-xs font-medium text-[#ff3b30] mb-2">
+                                    {t("topicsToImprove")}
                                   </p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {subject.strongTopics
-                                      .slice(0, 2)
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {subject.weakTopics
+                                      .slice(0, 3)
                                       .map((topic, i) => (
                                         <Badge
                                           key={i}
                                           variant="outline"
-                                          className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
+                                          className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
                                         >
                                           {topic}
                                         </Badge>
                                       ))}
-                                    {subject.strongTopics.length > 2 && (
+                                    {subject.weakTopics.length > 3 && (
                                       <Badge
                                         variant="outline"
-                                        className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
+                                        className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
                                       >
-                                        +{subject.strongTopics.length - 2} diğer
+                                        +{subject.weakTopics.length - 3} {t("others")}
                                       </Badge>
                                     )}
                                   </div>
                                 </div>
+                              )}
+                              {subject.strongTopics &&
+                                subject.strongTopics.length > 0 && (
+                                  <div className="mt-3">
+                                    <p className="text-xs font-medium text-[#34c759] mb-2">
+                                      {t("strongTopics")}
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {subject.strongTopics
+                                        .slice(0, 2)
+                                        .map((topic, i) => (
+                                          <Badge
+                                            key={i}
+                                            variant="outline"
+                                            className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
+                                          >
+                                            {topic}
+                                          </Badge>
+                                        ))}
+                                      {subject.strongTopics.length > 2 && (
+                                        <Badge
+                                          variant="outline"
+                                          className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
+                                        >
+                                          +{subject.strongTopics.length - 2} {t("others") || (locale === "tr" ? "diğer" : "other")}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
                               )}
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 rounded-lg p-8 text-center">
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                              <Trophy className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                        <div className="apple-glass-card h-full">
+                          <div className="p-8 text-center flex flex-col items-center justify-center h-full w-full relative z-10">
+                            <div className="mb-4 flex justify-center">
+                              <div className="w-16 h-16 bg-[#007aff]/10 dark:bg-[#0a84ff]/20 rounded-2xl flex items-center justify-center border border-[#007aff]/20">
+                                <Trophy className="w-8 h-8 text-[#007aff] dark:text-[#0a84ff]" />
+                              </div>
                             </div>
-                          </div>
-                          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            İlk Testinizi Çözün
-                          </h3>
-                          <p className="text-gray-500 dark:text-gray-400 mb-6">
-                            Test çözerek performansınızı takip etmeye başlayın!
-                          </p>
-                          <Link href="/quiz">
-                            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
-                              <Zap className="w-4 h-4 mr-2" />
-                              Test Çöz
-                            </Button>
-                          </Link>
-                        </div>
-
-                        <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-500 transition-all duration-300 rounded-lg p-8 text-center">
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full flex items-center justify-center">
-                              <Target className="w-8 h-8 text-green-600 dark:text-green-400" />
-                            </div>
-                          </div>
-                          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Performans Takibi
-                          </h3>
-                          <p className="text-gray-500 dark:text-gray-400 mb-6">
-                            Test sonuçlarınızı analiz edin ve gelişiminizi görün.
-                          </p>
-                          <div className="text-sm text-gray-400 dark:text-gray-500">
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                              <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-                              <span>Test Çöz</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                              <span className="w-4 h-4 bg-green-500 rounded-full"></span>
-                              <span>Sonuçları Gör</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-2">
-                              <span className="w-4 h-4 bg-purple-500 rounded-full"></span>
-                              <span>Gelişimi Takip Et</span>
-                            </div>
+                            <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                              {t("takeFirstTest")}
+                            </h3>
+                            <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
+                              {t("takeFirstTestDesc")}
+                            </p>
+                            <Link href="/quiz" className="mt-auto w-full">
+                              <Button className="w-full bg-[#007aff] hover:bg-[#007aff]/90 text-white rounded-xl shadow-md border-0 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                <Zap className="w-4 h-4 mr-2" />
+                                {t("takeTest")}
+                              </Button>
+                            </Link>
                           </div>
                         </div>
 
-                        <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 rounded-lg p-8 text-center">
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-full flex items-center justify-center">
-                              <TrendingUp className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                        <div className="apple-glass-card h-full">
+                          <div className="p-8 text-center flex flex-col items-center justify-center h-full w-full relative z-10">
+                            <div className="mb-4 flex justify-center">
+                              <div className="w-16 h-16 bg-[#34c759]/10 dark:bg-[#30d158]/20 rounded-2xl flex items-center justify-center border border-[#34c759]/20">
+                                <Target className="w-8 h-8 text-[#34c759] dark:text-[#30d158]" />
+                              </div>
+                            </div>
+                            <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                              {t("performanceTracking")}
+                            </h3>
+                            <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
+                              {t("performanceTrackingDesc")}
+                            </p>
+                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full">
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="w-4 h-4 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
+                                <span>{t("takeTest")}</span>
+                              </div>
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="w-4 h-4 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
+                                <span>{t("seeResults")}</span>
+                              </div>
+                              <div className="flex items-center justify-center gap-2">
+                                <span className="w-4 h-4 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
+                                <span>{t("trackProgress")}</span>
+                              </div>
                             </div>
                           </div>
-                          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Gelişim Süreci
-                          </h3>
-                          <p className="text-gray-500 dark:text-gray-400 mb-6">
-                            Her test ile kendinizi geliştirin ve başarıya ulaşın.
-                          </p>
-                          <div className="text-sm text-gray-400 dark:text-gray-500">
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                              <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-                              <span>Konu Seç</span>
+                        </div>
+
+                        <div className="apple-glass-card h-full">
+                          <div className="p-8 text-center flex flex-col items-center justify-center h-full w-full relative z-10">
+                            <div className="mb-4 flex justify-center">
+                              <div className="w-16 h-16 bg-[#af52de]/10 dark:bg-[#bf5af2]/20 rounded-2xl flex items-center justify-center border border-[#af52de]/20">
+                                <TrendingUp className="w-8 h-8 text-[#af52de] dark:text-[#bf5af2]" />
+                              </div>
                             </div>
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                              <span className="w-4 h-4 bg-green-500 rounded-full"></span>
-                              <span>Test Çöz</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-2">
-                              <span className="w-4 h-4 bg-purple-500 rounded-full"></span>
-                              <span>Gelişimi İzle</span>
+                            <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                              {t("developmentProcess")}
+                            </h3>
+                            <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
+                              {t("developmentProcessDesc")}
+                            </p>
+                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full">
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="w-4 h-4 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
+                                <span>{t("selectSubject")}</span>
+                              </div>
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="w-4 h-4 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
+                                <span>{t("takeTest")}</span>
+                              </div>
+                              <div className="flex items-center justify-center gap-2">
+                                <span className="w-4 h-4 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
+                                <span>{t("watchProgress")}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
 
               {/* Recent Results */}
               <div>
-                <Card className="border-gradient-question">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Activity className="h-5 w-5 mr-2" />
-                      Son Testler
-                    </CardTitle>
-                    <CardDescription>En son çözdüğünüz testler</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                <div className="apple-glass-card h-full">
+                  <div className="flex flex-col h-full w-full relative z-10 p-6">
+                    <div className="flex items-center mb-6">
+                      <Activity className="h-6 w-6 mr-2 text-[#ff2d55] dark:text-[#ff375f]" />
+                      <div>
+                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("recentActivities")}</h2>
+                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("recentActivitiesDesc")}</p>
+                      </div>
+                    </div>
                     {recentResults.length > 0 ? (
                       <div className="space-y-4">
                         {recentResults.map((result) => (
-                          <div
-                            key={result.id}
-                            className="flex items-center justify-between p-3 border rounded-lg"
-                          >
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">
-                                {result.subject}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {result.score}/{result.totalQuestions} doğru •{" "}
-                                {Math.round(result.timeSpent / 60)}dk
-                              </p>
+                          <div key={result.id} className="flex items-center justify-between p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#1d1d1f]/50 hover:bg-[#e8e8ed] dark:hover:bg-[#2c2c2e] transition-colors border border-transparent dark:border-[#333336]">
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-[#007aff]/10 dark:bg-[#0a84ff]/20 flex items-center justify-center border border-[#007aff]/20">
+                                <Activity className="w-5 h-5 text-[#007aff] dark:text-[#0a84ff]" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                                    {result.type === "TopicExplainer" ? t("topicRead") : t("testSolved")}: {result.subject}
+                                  </h4>
+                                </div>
+                                <div className="flex items-center gap-3 mt-1">
+                                  <div className="flex items-center text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                                    {result.isDemo ? (
+                                      <Badge variant="outline" className="text-xs bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 font-medium">
+                                        Demo
+                                      </Badge>
+                                    ) : (
+                                      <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                                        {result.type !== "TopicExplainer" && (
+                                          <>
+                                            {result.score}/{result.totalQuestions} {t("correct")} •{" "}
+                                          </>
+                                        )}
+                                        {Math.round(result.timeSpent / 60)} dk
+                                        {" "}•{" "}
+                                        {new Date(result.createdAt).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US")}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge
-                                className={`${
-                                  result.score / result.totalQuestions >= 0.8
-                                    ? "badge-gradient-high"
-                                    : result.score / result.totalQuestions >=
-                                        0.7
-                                      ? "badge-gradient-medium"
-                                      : "badge-gradient-low"
-                                }`}
-                              >
-                                %
-                                {Math.round(
-                                  (result.score / result.totalQuestions) * 100,
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                {result.type === "TopicExplainer" ? (
+                                  <Badge className="badge-gradient-high shadow-none">{t("read")}</Badge>
+                                ) : (
+                                  <Badge className={`text-sm px-2 py-0.5 shadow-none ${
+                                    result.score / result.totalQuestions >= 0.8
+                                      ? "badge-gradient-high"
+                                      : result.score / result.totalQuestions >= 0.7
+                                        ? "badge-gradient-medium"
+                                        : "badge-gradient-low"
+                                  }`}>
+                                    %{Math.round((result.score / result.totalQuestions) * 100)}
+                                  </Badge>
                                 )}
-                              </Badge>
-                              {result.score / result.totalQuestions >= 0.8 ? (
-                                <CheckCircle className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-red-500" />
-                              )}
+                              </div>
+                              <Link href={`/quiz/${result.id}`}>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-[#86868b] hover:text-[#007aff] hover:bg-[#007aff]/10 rounded-full transition-colors">
+                                  <ArrowRight className="h-4 w-4" />
+                                </Button>
+                              </Link>
                             </div>
                           </div>
                         ))}
                       </div>
-                                         ) : (
-                       <div className="flex flex-col items-center justify-center py-4 text-center">
-                         <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 rounded-lg p-8 text-center max-w-md">
-                           <div className="mb-4 flex justify-center">
-                             <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                               <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                             </div>
-                           </div>
-                           <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                             Test Sonuçları
-                           </h3>
-                           <p className="text-gray-500 dark:text-gray-400 mb-6">
-                             Test çözerek sonuçlarınızı görün ve gelişiminizi takip edin!
-                           </p>
-                           <Link href="/quiz">
-                             <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
-                               <Zap className="w-4 h-4 mr-2" />
-                               Test Çöz
-                             </Button>
-                           </Link>
-                         </div>
-                       </div>
-                     )}
-                  </CardContent>
-                </Card>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-4 text-center">
+                        <div className="apple-glass-card h-full w-full max-w-md border-0">
+                          <div className="p-8 text-center flex flex-col items-center justify-center h-full w-full relative z-10">
+                            <div className="mb-4 flex justify-center">
+                              <div className="w-16 h-16 bg-[#ff2d55]/10 dark:bg-[#ff375f]/20 rounded-2xl flex items-center justify-center border border-[#ff2d55]/20">
+                                <FileText className="w-8 h-8 text-[#ff2d55] dark:text-[#ff375f]" />
+                              </div>
+                            </div>
+                            <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+                              {t("recentActivities")}
+                            </h3>
+                            <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
+                              {t("recentActivitiesEmptyDesc")}
+                            </p>
+                            <Link href="/quiz" className="w-full mt-auto">
+                              <Button className="w-full bg-[#ff2d55] hover:bg-[#ff2d55]/90 text-white rounded-xl shadow-md border-0 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                <Zap className="w-4 h-4 mr-2" />
+                                {t("takeTest")}
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1089,63 +1305,61 @@ export default function EnhancedDashboard() {
 
               {/* Other Quick Actions */}
               <div className="lg:col-span-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="border-gradient-question hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
-                    <Link href="/quiz">
-                      <CardContent className="p-6 text-center">
-                        <Zap className="h-8 w-8 mx-auto mb-3 text-blue-600" />
-                        <h3 className="font-semibold mb-2 text-base">Hızlı Test</h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {userSettings.studyPreferences.questionsPerQuiz} soruluk hızlı test çöz
-                        </p>
-                      </CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+                  <div className="apple-glass-card h-full">
+                    <Link href="/quiz" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                      <Zap className="h-8 w-8 mx-auto mb-3 text-[#007aff]" />
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("quickTest")}</h3>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                        {userSettings.studyPreferences.questionsPerQuiz} {t("quickTestDesc")}
+                      </p>
                     </Link>
-                  </Card>
+                  </div>
 
-                  <Card className="border-gradient-question hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
-                    <Link href="/flashcard">
-                      <CardContent className="p-6 text-center">
-                        <Brain className="h-8 w-8 mx-auto mb-3 text-green-600" />
-                        <h3 className="font-semibold mb-2 text-base">Flashcard</h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Akıllı kartlarla çalış
-                        </p>
-                      </CardContent>
+                  <div className="apple-glass-card h-full">
+                    <Link href="/flashcard" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                      <Brain className="h-8 w-8 mx-auto mb-3 text-[#34c759]" />
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">Flashcard</h3>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                        {t("flashcardDesc")}
+                      </p>
                     </Link>
-                  </Card>
+                  </div>
 
-                  <Card className="border-gradient-question hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
-                    <Link href="/ai-chat">
-                      <CardContent className="p-6 text-center">
-                        <BookOpen className="h-8 w-8 mx-auto mb-3 text-purple-600" />
-                        <h3 className="font-semibold mb-2 text-base">AI Tutor</h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Yapay zeka ile sohbet et
-                        </p>
-                      </CardContent>
+                  <div className="apple-glass-card h-full">
+                    <Link href="/ai-chat" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                      <BookOpen className="h-8 w-8 mx-auto mb-3 text-[#af52de]" />
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">AI Tutor</h3>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                        {t("aiTutorDesc")}
+                      </p>
                     </Link>
-                  </Card>
+                  </div>
 
-                  <Card className="border-gradient-question hover:shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
-                    <Link href="/subject-manager">
-                      <CardContent className="p-6 text-center">
-                        <Database className="h-8 w-8 mx-auto mb-3 text-indigo-600" />
-                        <h3 className="font-semibold mb-2 text-base">Konu Yönetimi</h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Konuları düzenle
-                        </p>
-                      </CardContent>
+                  <div className="apple-glass-card h-full">
+                    <Link href="/subject-manager" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                      <Database className="h-8 w-8 mx-auto mb-3 text-[#ff9500]" />
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectManagement")}</h3>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                        {t("subjectManagementDesc")}
+                      </p>
                     </Link>
-                  </Card>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Feature Cards */}
             <FeatureCards
-              title="Dashboard Özellikleri"
-              features={dashboardFeatures}
+              title={t("dashboardFeatures")}
+              features={translatedFeatures}
               columns={3}
+            />
+
+            {/* AI Floating Chat - uses current dashboard data (demo or real) */}
+            <AIFloatingChat
+              subject="Dashboard"
+              context={dashboardContext}
             />
           </>
         )}
