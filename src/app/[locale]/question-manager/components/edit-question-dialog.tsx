@@ -94,7 +94,7 @@ export default function EditQuestionDialog({
                       <Checkbox
                         checked={option.isCorrect}
                         onCheckedChange={(checked) =>
-                          onOptionChange(index, "isCorrect", checked as boolean)
+                          onOptionChange(index, "isCorrect", checked)
                         }
                       />
                       <Input

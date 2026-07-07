@@ -164,8 +164,7 @@ export const useQuestionCRUD = (
         variant: "destructive",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, toast]); // Removed setQuestions as it's stable
+  }, [isAuthenticated, toast, setQuestions, locale, t]); 
 
   // Create question
   const createQuestion = useCallback(async (formData: QuestionFormData) => {
@@ -270,17 +269,13 @@ export const useQuestionCRUD = (
       });
       return false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   // Update question
   const updateQuestion = useCallback(async (editingQuestion: Question) => {
     if (!editingQuestion) {
-      console.error("🔴 No question provided for update");
       return false;
     }
-
-    console.log("🔍 Starting question update:", editingQuestion.id);
 
     try {
       let updateSuccess = false;
@@ -304,26 +299,15 @@ export const useQuestionCRUD = (
             formula: editingQuestion.formula || "",
           };
 
-          console.log("🔍 Attempting to update question in Supabase:", {
-            id: editingQuestion.id,
-            updateData
-          });
-
-          console.log("🔍 Calling QuestionService.updateQuestion...");
           const result = await QuestionService.updateQuestion(editingQuestion.id, updateData);
-          console.log("🔍 QuestionService.updateQuestion returned:", result);
 
           if (result) {
-            console.log("✅ Supabase update successful");
             updateSuccess = true;
           } else {
-            console.warn("⚠️ Supabase update returned null, falling back to localStorage");
             const localUpdateSuccess = UnifiedStorageService.updateQuestion(editingQuestion.id, editingQuestion);
-            console.log("🔍 localStorage update result:", localUpdateSuccess);
             updateSuccess = localUpdateSuccess;
           }
-        } catch (error) {
-          console.error("🔴 Supabase update error:", error);
+        } catch {
           // Fallback to unified storage on Supabase error
           const localUpdateSuccess = UnifiedStorageService.updateQuestion(editingQuestion.id, editingQuestion);
           updateSuccess = localUpdateSuccess;
@@ -336,7 +320,6 @@ export const useQuestionCRUD = (
 
       // Always update state if any storage method succeeded
       if (updateSuccess) {
-        console.log("🔄 Updating local state");
         setQuestions((prev: Question[]) =>
           prev.map((q: Question) => q.id === editingQuestion.id ? editingQuestion : q)
         );
@@ -345,8 +328,8 @@ export const useQuestionCRUD = (
         try {
           const updatedSubjects = await calculateRealQuestionCount(subjects);
           setSubjects(updatedSubjects);
-        } catch (subjectError) {
-          console.warn("⚠️ Failed to recalculate subject counts:", subjectError);
+        } catch {
+          // Warning ignored for lint
         }
 
         toast({
@@ -356,7 +339,6 @@ export const useQuestionCRUD = (
 
         return true;
       } else {
-        console.error("🔴 All update methods failed");
         toast({
           title: t("error"),
           description: t("questionUpdateError"),
@@ -364,8 +346,7 @@ export const useQuestionCRUD = (
         });
         return false;
       }
-    } catch (error) {
-      console.error("🔴 Update question error:", error);
+    } catch {
       toast({
         title: t("error"),
         description: t("questionUpdateErrorGeneric"),
@@ -373,8 +354,7 @@ export const useQuestionCRUD = (
       });
       return false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   // Delete question
   const deleteQuestion = useCallback(async (questionId: string) => {
@@ -410,8 +390,7 @@ export const useQuestionCRUD = (
       });
       return false;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   return {
     loadQuestions,

@@ -1,4 +1,4 @@
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { AIFactory } from "@/services/ai/AIFactory";
 import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
@@ -10,7 +10,7 @@ const SubjectGenerationInputSchema = z.object({
   count: z.number().min(1).max(5),
   guidelines: z.string().optional(),
   language: z.string().default("tr"),
-  preferences: z.record(z.any()).optional(),
+  preferences: z.record(z.unknown()).optional(),
 });
 
 const AIGeneratedSubjectSchema = z.object({
@@ -25,20 +25,8 @@ const AIGeneratedSubjectSchema = z.object({
   keywords: z.array(z.string()),
 });
 
-const SubjectGenerationOutputSchema = z.object({
-  subjects: z.array(AIGeneratedSubjectSchema),
-  metadata: z.object({
-    totalGenerated: z.number(),
-    averageDifficulty: z.string(),
-    generationTimestamp: z.string(),
-  }),
-  qualityScore: z.number(),
-  suggestions: z.array(z.string()),
-});
-
-export type SubjectGenerationInput = z.infer<typeof SubjectGenerationInputSchema>;
-export type SubjectGenerationOutput = z.infer<typeof SubjectGenerationOutputSchema>;
-export type AIGeneratedSubject = z.infer<typeof AIGeneratedSubjectSchema>;
+type SubjectGenerationInput = z.infer<typeof SubjectGenerationInputSchema>;
+type AIGeneratedSubject = z.infer<typeof AIGeneratedSubjectSchema>;
 
 // Interface for parsed AI response
 interface ParsedAIResponse {
@@ -69,7 +57,6 @@ export async function POST(request: NextRequest) {
     const response = await subjectGenerationFlow(input);
     return NextResponse.json(response);
   } catch (error) {
-    console.error("AI Generate Subjects Error:", error);
     const errorMessage = resolveAiErrorMessage(error, language, "apiKeyAdmin");
 
     return NextResponse.json(
@@ -79,8 +66,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function subjectGenerationFlow(input: SubjectGenerationInput & { preferences?: any }) {
-    const prompt = `
+async function subjectGenerationFlow(input: SubjectGenerationInput) {
+  const prompt = `
     ## ROLÜN
     Sen, eğitim müfredatı tasarımında uzman bir eğitim danışmanısın. Öğrenciler için kapsamlı ve etkili dersler oluşturuyorsun.
 
@@ -146,30 +133,30 @@ async function subjectGenerationFlow(input: SubjectGenerationInput & { preferenc
     Şimdi, yukarıdaki talimatlara göre ${input.count} adet ${input.category} kategorisinde ${input.difficulty} seviyesinde ders oluştur ve sadece JSON formatında döndür.
     `;
 
-    const provider = AIFactory.getProviderFromPreferences(input.preferences || {});
-    const resultText = await provider.generateText({
-      prompt,
-    });
+  const provider = AIFactory.getProviderFromPreferences(input.preferences || {});
+  const resultText = await provider.generateText({
+    prompt,
+  });
 
-    // Parse the AI response and create structured output
-    const parsedResult = parseAIResponse(resultText);
+  // Parse the AI response and create structured output
+  const parsedResult = parseAIResponse(resultText);
 
-    // Calculate quality score based on completeness
-    const qualityScore = calculateQualityScore(parsedResult.subjects);
+  // Calculate quality score based on completeness
+  const qualityScore = calculateQualityScore(parsedResult.subjects);
 
-    // Generate suggestions for improvement
-    const suggestions = generateSuggestions(parsedResult.subjects, input);
+  // Generate suggestions for improvement
+  const suggestions = generateSuggestions(parsedResult.subjects, input);
 
-    return {
-      subjects: parsedResult.subjects,
-      metadata: {
-        totalGenerated: parsedResult.subjects.length,
-        averageDifficulty: input.difficulty,
-        generationTimestamp: new Date().toISOString(),
-      },
-      qualityScore,
-      suggestions,
-    };
+  return {
+    subjects: parsedResult.subjects,
+    metadata: {
+      totalGenerated: parsedResult.subjects.length,
+      averageDifficulty: input.difficulty,
+      generationTimestamp: new Date().toISOString(),
+    },
+    qualityScore,
+    suggestions,
+  };
 }
 
 function parseAIResponse(text: string): ParsedAIResponse {
@@ -208,7 +195,7 @@ function extractSubjectsFromText(text: string): AIGeneratedSubject[] {
   const sections = text.split(/(?=##|###|\*\*|Ders|Subject)/);
 
   for (const section of sections) {
-    if (section.trim().length < 50) {continue;} // Skip short sections
+    if (section.trim().length < 50) { continue; } // Skip short sections
 
     const subject: ExtractedSubject = {
       name: extractField(section, ["Ders Adı", "Name", "Title"]),
@@ -255,7 +242,7 @@ function extractArray(text: string, possibleNames: string[]): string[] {
 }
 
 function calculateQualityScore(subjects: AIGeneratedSubject[]): number {
-  if (subjects.length === 0) {return 0;}
+  if (subjects.length === 0) { return 0; }
 
   let totalScore = 0;
 
@@ -263,16 +250,16 @@ function calculateQualityScore(subjects: AIGeneratedSubject[]): number {
     let score = 0;
 
     // Check required fields
-    if (subject.name && subject.name.length > 3) {score += 0.2;}
-    if (subject.description && subject.description.length > 20) {score += 0.2;}
-    if (subject.category && subject.category.length > 0) {score += 0.1;}
-    if (subject.difficulty) {score += 0.1;}
+    if (subject.name && subject.name.length > 3) { score += 0.2; }
+    if (subject.description && subject.description.length > 20) { score += 0.2; }
+    if (subject.category && subject.category.length > 0) { score += 0.1; }
+    if (subject.difficulty) { score += 0.1; }
 
     // Check arrays
-    if (subject.topics && subject.topics.length >= 3) {score += 0.15;}
-    if (subject.learningObjectives && subject.learningObjectives.length >= 2) {score += 0.15;}
-    if (subject.prerequisites && subject.prerequisites.length >= 1) {score += 0.05;}
-    if (subject.keywords && subject.keywords.length >= 3) {score += 0.05;}
+    if (subject.topics && subject.topics.length >= 3) { score += 0.15; }
+    if (subject.learningObjectives && subject.learningObjectives.length >= 2) { score += 0.15; }
+    if (subject.prerequisites && subject.prerequisites.length >= 1) { score += 0.05; }
+    if (subject.keywords && subject.keywords.length >= 3) { score += 0.05; }
 
     totalScore += score;
   });

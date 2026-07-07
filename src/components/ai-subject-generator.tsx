@@ -207,7 +207,7 @@ export default function AISubjectGenerator({
     <>
       <Button
         onClick={() => setIsDialogOpen(true)}
-        className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg ${className}`}
+        className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-sm transition-all hover:shadow-md h-11 px-6 rounded-xl ${className}`}
       >
         <Sparkles className="w-4 h-4 mr-2" />
         {t("generateButton")}

@@ -1,6 +1,6 @@
 import { generateObject, generateText } from "ai";
 import { createOllama } from "ai-sdk-ollama";
-import { IAIProvider, GenerateObjectOptions, GenerateTextOptions } from "../core/IAIProvider";
+import type { IAIProvider, GenerateObjectOptions, GenerateTextOptions } from "../core/IAIProvider";
 
 export class OllamaProvider implements IAIProvider {
   private ollama;
@@ -8,14 +8,15 @@ export class OllamaProvider implements IAIProvider {
   private isCloud: boolean;
 
   constructor(baseURL: string = "http://localhost:11434", model: string = "llama3", apiKey?: string) {
-    this.isCloud = !!(apiKey && (baseURL.includes('ollama.com') || baseURL.includes('api.ollama')));
+    this.isCloud = Boolean(apiKey && (baseURL.includes('ollama.com') || baseURL.includes('api.ollama')));
 
-    let normalizedBase = baseURL || (this.isCloud ? "https://ollama.com/api" : "http://localhost:11434");
+    let normalizedBase = baseURL || (this.isCloud ? "https://ollama.com" : "http://localhost:11434");
 
-    if (!this.isCloud) {
-      // For local, strip trailing /api as the SDK usually expects the root
-      normalizedBase = normalizedBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
-      if (!normalizedBase) normalizedBase = "http://localhost:11434";
+    // Remove any trailing /api or /api/api from the base URL to prevent /api/api/chat error
+    normalizedBase = normalizedBase.replace(/(\/api)+\/?$/, "").replace(/\/$/, "");
+
+    if (!normalizedBase) {
+      normalizedBase = this.isCloud ? "https://ollama.com" : "http://localhost:11434";
     }
 
     this.ollama = createOllama({
@@ -35,16 +36,17 @@ export class OllamaProvider implements IAIProvider {
         : strictInstruction;
 
       const { object } = await generateObject({
-        model: this.ollama(this.model) as any,
+        model: this.ollama(this.model) as unknown as Parameters<typeof generateObject>[0]["model"],
         schema: options.schema,
         mode: "json",
         prompt: options.prompt,
         system: enhancedSystemPrompt,
         ...(options.temperature !== undefined && { temperature: options.temperature }),
       });
-      return object as T;
-    } catch (err: any) {
-      if (err?.message?.includes("Failed to fetch") || err?.message?.toLowerCase().includes("fetch")) {
+      return object;
+    } catch (err: unknown) {
+      const error = err as Error;
+      if (error?.message?.includes("Failed to fetch") || error?.message?.toLowerCase().includes("fetch")) {
         if (this.isCloud) {
           throw new Error(`Ollama Cloud Error: Failed to fetch. Check your API key in Settings (Ollama Cloud), internet connection, and that the cloud model is available.`);
         } else {
@@ -58,14 +60,15 @@ export class OllamaProvider implements IAIProvider {
   async generateText(options: GenerateTextOptions): Promise<string> {
     try {
       const { text } = await generateText({
-        model: this.ollama(this.model) as any,
+        model: this.ollama(this.model) as unknown as Parameters<typeof generateObject>[0]["model"],
         prompt: options.prompt,
         ...(options.systemPrompt !== undefined && { system: options.systemPrompt }),
         ...(options.temperature !== undefined && { temperature: options.temperature }),
       });
       return text;
-    } catch (err: any) {
-      if (err?.message?.includes("Failed to fetch") || err?.message?.toLowerCase().includes("fetch")) {
+    } catch (err: unknown) {
+      const error = err as Error;
+      if (error?.message?.includes("Failed to fetch") || error?.message?.toLowerCase().includes("fetch")) {
         if (this.isCloud) {
           throw new Error(`Ollama Cloud Error: Failed to fetch. Check your API key in Settings (Ollama Cloud), internet connection, and that the cloud model is available.`);
         } else {

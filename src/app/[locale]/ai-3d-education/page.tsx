@@ -148,7 +148,7 @@ export default function AI3DEducationPage() {
 
     // Initial size from container
     const updateSize = () => {
-      if (!currentMount) return;
+      if (!currentMount) {return;}
       const w = currentMount.clientWidth || 800;
       const h = currentMount.clientHeight || 600;
       renderer.setSize(w, h);
@@ -251,12 +251,12 @@ export default function AI3DEducationPage() {
 
       // Drive per-mesh animations (pulse, orbit, rotation, blink) with speed multiplier
       animatedMeshesRef.current.forEach((obj) => {
-        if (!obj || !obj.userData) return;
+        if (!obj?.userData) {return;}
         const ud = obj.userData;
 
         if (ud.rotationSpeed) {
           obj.rotation.y += (ud.rotationSpeed || 0.01) * speed;
-          if (ud.rotationSpeedX) obj.rotation.x += (ud.rotationSpeedX * speed);
+          if (ud.rotationSpeedX) {obj.rotation.x += (ud.rotationSpeedX * speed);}
         }
 
         // Orbiting (used by electrons etc)
@@ -266,7 +266,7 @@ export default function AI3DEducationPage() {
           const yOff = ud.yOffset || 0;
           obj.position.x = Math.cos(ud.angle) * r;
           obj.position.z = Math.sin(ud.angle) * r;
-          if (yOff) obj.position.y = yOff + Math.sin(ud.angle * 1.3) * (ud.yAmp || 0.15);
+          if (yOff) {obj.position.y = yOff + Math.sin(ud.angle * 1.3) * (ud.yAmp || 0.15);}
         }
 
         // Pulse / scale animation
@@ -279,8 +279,8 @@ export default function AI3DEducationPage() {
         // Blink / emissive pulse (ribosomes, particles)
         if (ud.blink !== undefined) {
           ud.blink += (ud.blinkSpeed || 0.07) * speed;
-          const mat = (obj as THREE.Mesh).material as any;
-          if (mat && mat.emissiveIntensity !== undefined) {
+          const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial;
+          if (mat?.emissiveIntensity !== undefined) {
             mat.emissiveIntensity = 0.25 + Math.sin(ud.blink) * 0.65;
           }
         }
@@ -336,8 +336,8 @@ export default function AI3DEducationPage() {
       const provider = AIFactory.getProviderFromPreferences(aiPreferences);
 
       // Raw prompt'u doğrudan gönder (sadece JSON 3D veri bekliyoruz)
-      const rawText = await provider.generateText({
-        prompt: rawPrompt + "\n\nIMPORTANT: Output ONLY the raw JSON object for the 3D scene. No extra text, no explanations, start with { and end with }.",
+      await provider.generateText({
+        prompt: `${rawPrompt  }\n\nIMPORTANT: Output ONLY the raw JSON object for the 3D scene. No extra text, no explanations, start with { and end with }.`,
       });
 
       // Basit bir response objesi oluştur (UI için) - LLM'in "ben oluşturdum" demesini engelle
@@ -372,7 +372,7 @@ export default function AI3DEducationPage() {
      sceneRef.current.children.forEach((child) => {
        // Preserve lights + ground + grid
        const isLight = child.type.includes('Light');
-       const isGround = child.userData?.isGround || (child.type === 'Mesh' && (child as any).geometry?.type === 'PlaneGeometry');
+       const isGround = child.userData?.isGround || (child.type === 'Mesh' && (child as THREE.Mesh).geometry?.type === 'PlaneGeometry');
        const isGrid = child.type === 'GridHelper';
        if (!isLight && !isGround && !isGrid) {
          childrenToRemove.push(child);
@@ -395,12 +395,12 @@ export default function AI3DEducationPage() {
        // Dispose resources
        if (child.type === 'Mesh') {
          const mesh = child as THREE.Mesh;
-         if (mesh.geometry) mesh.geometry.dispose();
+         if (mesh.geometry) {mesh.geometry.dispose();}
          if (mesh.material) {
            if (Array.isArray(mesh.material)) {
              mesh.material.forEach(mat => mat.dispose());
            } else {
-             (mesh.material as THREE.Material).dispose();
+             (mesh.material).dispose();
            }
          }
        }
@@ -611,7 +611,7 @@ export default function AI3DEducationPage() {
     geminiGroup.children.forEach((child) => {
       if (child.userData?.animation) {
         const anim = child.userData.animation;
-        if (anim.type === 'rotation') child.userData.rotationSpeed = anim.speed || 0.015;
+        if (anim.type === 'rotation') {child.userData.rotationSpeed = anim.speed || 0.015;}
         if (anim.type === 'pulse') {
           child.userData.pulse = 0;
           child.userData.pulseSpeed = (anim.speed || 1) * 0.06;
@@ -627,7 +627,7 @@ export default function AI3DEducationPage() {
           child.userData.floatSpeed = 0.03;
         }
       }
-      if (child.type === 'Mesh') animatedMeshesRef.current.push(child);
+      if (child.type === 'Mesh') {animatedMeshesRef.current.push(child);}
     });
     animatedMeshesRef.current.push(geminiGroup);
   };
@@ -819,14 +819,14 @@ export default function AI3DEducationPage() {
 
     // Apply current wireframe preference
     if (wireframeMode) {
-      dnaGroup.traverse((o) => { if ((o as any).material) (o as any).material.wireframe = true; });
+      dnaGroup.traverse((o) => { if ((o as THREE.Mesh).material) {((o as THREE.Mesh).material as THREE.MeshStandardMaterial).wireframe = true;} });
     }
 
     // Register everything that should animate
     dnaGroup.children.forEach((child) => {
       if (child.type === 'Mesh') {
         const m = child as THREE.Mesh;
-        if ((m.geometry as any).type?.includes('Sphere')) {
+        if (m.geometry.type?.includes('Sphere')) {
           m.userData.pulse = Math.random() * 2;
           m.userData.pulseSpeed = 0.07;
           m.userData.pulseAmp = 0.085;
@@ -878,9 +878,9 @@ export default function AI3DEducationPage() {
         new THREE.MeshBasicMaterial({ color: orbitColors[i] ?? 0x44ffff, transparent: true, opacity: 0.45 })
       );
       // Rotate to get 3D orbitals
-      if (i === 0) orbit.rotation.x = Math.PI * 0.5;
-      if (i === 1) orbit.rotation.y = Math.PI * 0.5;
-      if (i === 2) orbit.rotation.z = Math.PI * 0.35;
+      if (i === 0) {orbit.rotation.x = Math.PI * 0.5;}
+      if (i === 1) {orbit.rotation.y = Math.PI * 0.5;}
+      if (i === 2) {orbit.rotation.z = Math.PI * 0.35;}
       atomGroup.add(orbit);
 
       // 2 electrons per shell, different phase
@@ -906,7 +906,7 @@ export default function AI3DEducationPage() {
 
     animatedMeshesRef.current.push(nucleus);
     atomGroup.children.forEach(c => {
-      if (c.userData?.pulse) animatedMeshesRef.current.push(c);
+      if (c.userData?.pulse) {animatedMeshesRef.current.push(c);}
     });
     animatedMeshesRef.current.push(atomGroup);
   };
@@ -1833,8 +1833,8 @@ export default function AI3DEducationPage() {
       const px = (Math.random() - 0.5) * 3.5;
       const pz = (Math.random() - 0.5) * 3.5;
       let py = Math.sin(px * 1.5) * Math.cos(pz * 1.2) * 1.1;
-      if (isSin) py = Math.sin(px * 1.2) * 0.8 + Math.cos(pz * 1.5) * 0.5;
-      if (isParabola) py = (px * px + pz * pz) * 0.15 - 1.2;
+      if (isSin) {py = Math.sin(px * 1.2) * 0.8 + Math.cos(pz * 1.5) * 0.5;}
+      if (isParabola) {py = (px * px + pz * pz) * 0.15 - 1.2;}
 
       const point = new THREE.Mesh(
         new THREE.SphereGeometry(0.08),
@@ -1862,8 +1862,8 @@ export default function AI3DEducationPage() {
           const x = pos.getX(i);
           const z = pos.getZ(i);
           let baseY = Math.sin(x * 1.5) * Math.cos(z * 1.2) * 1.1;
-          if (isSin) baseY = Math.sin(x * 1.2) * 0.8 + Math.cos(z * 1.5) * 0.5;
-          if (isParabola) baseY = (x * x + z * z) * 0.15 - 1.2;
+          if (isSin) {baseY = Math.sin(x * 1.2) * 0.8 + Math.cos(z * 1.5) * 0.5;}
+          if (isParabola) {baseY = (x * x + z * z) * 0.15 - 1.2;}
 
           const wave = Math.sin(graphGroup.userData.wavePhase + x * 0.5) * 0.12;
           pos.setY(i, baseY + wave);
@@ -2159,8 +2159,8 @@ export default function AI3DEducationPage() {
                 if (sceneRef.current) {
                   sceneRef.current.traverse((obj) => {
                     if (obj.type === 'Mesh') {
-                      const mat = (obj as THREE.Mesh).material as any;
-                      if (mat && 'wireframe' in mat) mat.wireframe = newWf;
+                      const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial;
+                      if (mat && 'wireframe' in mat) {mat.wireframe = newWf;}
                     }
                   });
                 }

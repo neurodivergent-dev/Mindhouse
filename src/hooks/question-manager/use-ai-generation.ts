@@ -84,7 +84,7 @@ export const useAIGeneration = (
         ...result,
         questions: compatibleQuestions,
         qualityScore: result.qualityScore || 0.8,
-        suggestions: Array.isArray(result.suggestions) ? result.suggestions : (result.suggestions ? [result.suggestions as unknown as string] : []),
+        suggestions: Array.isArray(result.suggestions) ? result.suggestions : (result.suggestions ? [result.suggestions] : []),
         metadata: result.metadata || {
           totalGenerated: compatibleQuestions.length,
           subject: formData.subject || "",
@@ -119,8 +119,7 @@ export const useAIGeneration = (
     } finally {
       setIsGeneratingAI(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questions, toast]); // Removed stable setter functions
+  }, [questions, toast, locale, t, setAIGeneratedQuestions, setAIGenerationResult, setIsGeneratingAI]); 
 
   // Approve AI questions
   const approveAIQuestions = useCallback(async (
@@ -179,7 +178,7 @@ export const useAIGeneration = (
               const createdQuestion: Question = {
                 id: result.id,
                 subject: result.subject,
-                type: result.type as "multiple-choice" | "true-false" | "calculation" | "case-study",
+                type: result.type,
                 difficulty: result.difficulty,
                 text: result.text,
                 options: (typeof result.options === 'string' ? JSON.parse(result.options || "[]") : result.options || []) as Answer[],
@@ -227,8 +226,7 @@ export const useAIGeneration = (
     } finally {
       setIsCreating(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed loadQuestions to prevent infinite loop
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setIsCreating, setQuestions, setSubjects, t]); 
 
   return {
     generateQuestions,

@@ -1,4 +1,4 @@
-import { IAIProvider } from "./core/IAIProvider";
+import type { IAIProvider } from "./core/IAIProvider";
 import { GeminiProvider } from "./providers/GeminiProvider";
 import { GroqProvider } from "./providers/GroqProvider";
 import { OllamaProvider } from "./providers/OllamaProvider";

@@ -2,7 +2,8 @@
 
 import { z } from "zod";
 import { logError } from "@/lib/error-logger";
-import { AIFactory, AIPreferences } from "@/services/ai/AIFactory";
+import type { AIPreferences } from "@/services/ai/AIFactory";
+import { AIFactory } from "@/services/ai/AIFactory";
 
 const FlashcardGenerationInputSchema = z.object({
   subject: z.string().describe("The subject for which to generate flashcards"),
@@ -137,7 +138,7 @@ export async function generateFlashcards(
     try {
       const result = await provider.generateObject<{ flashcards: z.infer<typeof GeneratedFlashcardSchema>[] }>({
         schema: AIResponseSchema as any,
-        prompt: prompt,
+        prompt,
       });
 
       const generatedFlashcards = result.flashcards.slice(0, count);
@@ -215,17 +216,17 @@ export async function generateFlashcards(
 function calculateQualityScore(
   flashcards: z.infer<typeof GeneratedFlashcardSchema>[],
 ): number {
-  if (flashcards.length === 0) return 0;
+  if (flashcards.length === 0) {return 0;}
 
   let totalScore = 0;
   for (const card of flashcards) {
     let cardScore = 1.0;
 
     // Check for quality indicators
-    if (card.explanation.length < 20) cardScore -= 0.2;
-    if (card.keywords.length < 2) cardScore -= 0.1;
-    if (card.question.length < 10) cardScore -= 0.1;
-    if (card.answer.length < 5) cardScore -= 0.2;
+    if (card.explanation.length < 20) {cardScore -= 0.2;}
+    if (card.keywords.length < 2) {cardScore -= 0.1;}
+    if (card.question.length < 10) {cardScore -= 0.1;}
+    if (card.answer.length < 5) {cardScore -= 0.2;}
     
     totalScore += Math.max(0, cardScore);
   }

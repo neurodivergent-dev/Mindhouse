@@ -63,7 +63,7 @@ const TopicExplainerPageContent = () => {
   const locale = useLocale();
 
   const getTranslatedSubject = (name: string) => {
-    if (locale === "tr") return name;
+    if (locale === "tr") {return name;}
     const map: Record<string, string> = {
       "Matematik": "Mathematics",
       "Fizik": "Physics",
@@ -79,7 +79,7 @@ const TopicExplainerPageContent = () => {
   };
 
   const getTranslatedCategory = (category: string) => {
-    if (locale === "tr") return category;
+    if (locale === "tr") {return category;}
     const map: Record<string, string> = {
       "Sayısal": "Science & Math",
       "Fen Bilimleri": "Science",
@@ -91,7 +91,7 @@ const TopicExplainerPageContent = () => {
   };
 
   const getTranslatedDescription = (desc: string) => {
-    if (locale === "tr") return desc;
+    if (locale === "tr") {return desc;}
     const map: Record<string, string> = {
       "Temel matematik konuları: Cebir, Geometri, Analiz": "Basic math topics: Algebra, Geometry, Calculus",
       "Mekanik, Termodinamik, Elektrik ve Manyetizma": "Mechanics, Thermodynamics, Electricity and Magnetism",
@@ -422,7 +422,7 @@ const TopicExplainerPageContent = () => {
             <div className="flex flex-col gap-8">
               {activeSubjects.map((subjectItem) => {
                 const subjectTopics = filteredTopics.filter(t => t.subject === subjectItem.name);
-                if (subjectTopics.length === 0) return null;
+                if (subjectTopics.length === 0) {return null;}
                 
                 return (
                   <div key={`section-${subjectItem.id}`} className="flex flex-col gap-2">

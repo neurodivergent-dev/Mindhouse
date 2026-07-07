@@ -195,7 +195,6 @@ export default function FlashcardManagerPage() {
     };
 
     loadSubjects();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   // Load existing flashcards when subject changes
@@ -574,7 +573,6 @@ export default function FlashcardManagerPage() {
       // Save all generated flashcards with proper error handling
       const results = await Promise.allSettled(
         generatedFlashcards.map(async (flashcard) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { id: _, ...flashcardData } = flashcard;
           return UnifiedStorageService.addFlashcard(flashcardData);
         }),

@@ -145,17 +145,10 @@ export default function QuestionManager() {
 
   useEffect(() => {
     if (isHydrated) {
-      console.log("🔄 Question Manager: useEffect triggered, isHydrated:", isHydrated);
       loadSubjects();
       loadQuestions(selectedSubject);
     }
   }, [isHydrated, selectedSubject]);
-
-  // Debug: subjects değiştiğinde log
-  useEffect(() => {
-    console.log("📚 Question Manager: subjects changed:", subjects);
-    console.log("📚 Question Manager: subjects length:", subjects.length);
-  }, [subjects]);
 
   // Handler functions for the component
   const handleCreateQuestion = async () => {

@@ -290,7 +290,6 @@ export default function SettingsPage() {
     };
 
     initializeSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Sadece mount time'da çalış
 
   // Apply compact mode and font size changes instantly

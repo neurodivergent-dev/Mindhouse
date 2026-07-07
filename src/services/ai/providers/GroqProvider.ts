@@ -1,6 +1,6 @@
 import { generateObject, generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
-import { IAIProvider, GenerateObjectOptions, GenerateTextOptions } from "../core/IAIProvider";
+import type { IAIProvider, GenerateObjectOptions, GenerateTextOptions } from "../core/IAIProvider";
 
 export class GroqProvider implements IAIProvider {
   private groq;
@@ -16,18 +16,18 @@ export class GroqProvider implements IAIProvider {
 
   async generateObject<T>(options: GenerateObjectOptions<T>): Promise<T> {
     const { object } = await generateObject({
-      model: this.groq(this.model) as any,
+      model: this.groq(this.model) as unknown as Parameters<typeof generateObject>[0]["model"],
       schema: options.schema,
       prompt: options.prompt,
       ...(options.systemPrompt !== undefined && { system: options.systemPrompt }),
       ...(options.temperature !== undefined && { temperature: options.temperature }),
     });
-    return object as T;
+    return object;
   }
 
   async generateText(options: GenerateTextOptions): Promise<string> {
     const { text } = await generateText({
-      model: this.groq(this.model) as any,
+      model: this.groq(this.model) as unknown as Parameters<typeof generateObject>[0]["model"],
       prompt: options.prompt,
       ...(options.systemPrompt !== undefined && { system: options.systemPrompt }),
       ...(options.temperature !== undefined && { temperature: options.temperature }),

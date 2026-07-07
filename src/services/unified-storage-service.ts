@@ -878,7 +878,7 @@ export class UnifiedStorageService {
       ...topicToUpdate,
       ...updates,
       updatedAt: new Date().toISOString(),
-    } as SavedTopicContent;
+    };
 
     // Update in the specific subject's storage
     const subjectTopics = this.getTopicsBySubject(topicToUpdate.subject);

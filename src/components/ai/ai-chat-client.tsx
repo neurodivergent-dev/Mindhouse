@@ -94,8 +94,8 @@ export default function AiChatClient() {
 
   const getSubjectLabel = useCallback(
     (subject: string) => {
-      if (subject === GENERAL_SUBJECT) return t("general");
-      if (locale === "tr") return subject;
+      if (subject === GENERAL_SUBJECT) {return t("general");}
+      if (locale === "tr") {return subject;}
       const map: Record<string, string> = {
         "Matematik": "Mathematics",
         "Fizik": "Physics",
@@ -292,7 +292,6 @@ export default function AiChatClient() {
 
   // Debug useEffect to track currentSessionId changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSessionId]);
 
   // Debug useEffect to track currentSubject changes
@@ -307,7 +306,6 @@ export default function AiChatClient() {
       setCurrentSessionId(savedSessionId);
       sessionIdRef.current = savedSessionId;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const createNewSession = async (): Promise<string | null> => {
@@ -1018,8 +1016,6 @@ export default function AiChatClient() {
                 {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
               </Button>
 
-
-
               {isAuthenticated && (
                 <>
                   <AiChatHistory
@@ -1059,8 +1055,6 @@ export default function AiChatClient() {
             </div>
           </CardTitle>
         </CardHeader>
-
-
 
         <CardContent
           className="flex-1 overflow-y-auto p-3 md:p-6 space-y-6"

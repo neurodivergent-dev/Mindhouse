@@ -37,7 +37,7 @@ interface AnalyticsData {
     score: number;
     timestamp: string;
     subject?: string | undefined;
-    topic?: string;
+    topic?: string | undefined;
   }>;
   weeklyProgress?: Array<{
     day: string;
@@ -56,8 +56,11 @@ interface QuizResult {
   score: number;
   timeSpent?: number;
   weakTopics?: Record<string, number>;
-  completedAt: string;
+  completedAt?: string;
+  createdAt?: string;
   subject?: string;
+  topic?: string;
+  type?: string;
   isDemo?: boolean;
 }
 
@@ -73,7 +76,7 @@ interface AnalyticsDashboardProps {
 const IMPROVEMENT_THRESHOLD = 60;
 
 const translateSubject = (subject: string, locale: string) => {
-  if (locale === "tr") return subject;
+  if (locale === "tr") {return subject;}
   const map: Record<string, string> = {
     "Matematik": "Mathematics",
     "Fizik": "Physics",
@@ -91,7 +94,7 @@ const translateSubject = (subject: string, locale: string) => {
 };
 
 const translateTopic = (topic: string, locale: string) => {
-  if (locale === "tr") return topic;
+  if (locale === "tr") {return topic;}
   const map: Record<string, string> = {
     "Türev Uygulamaları": "Derivative Applications",
     "İntegral Hesabı": "Integral Calculus",
@@ -137,7 +140,7 @@ const translateTopic = (topic: string, locale: string) => {
 };
 
 const translateDay = (day: string, locale: string) => {
-  if (locale === "tr") return day;
+  if (locale === "tr") {return day;}
   const map: Record<string, string> = {
     "Pazartesi": "Monday",
     "Salı": "Tuesday",
@@ -268,14 +271,14 @@ export default function AnalyticsDashboard({
             }
 
             // Calculate analytics (exclude TopicExplainer from question counts)
-            const quizOnlyResults = filteredResults.filter((r: any) => r.type !== "TopicExplainer");
+            const quizOnlyResults = filteredResults.filter((r: QuizResult) => r.type !== "TopicExplainer");
 
             const totalQuestions = quizOnlyResults.reduce(
-              (sum: number, result: QuizResult) => sum + result.totalQuestions,
+              (sum: number, result: QuizResult) => sum + (result.totalQuestions || 0),
               0,
             );
             const correctAnswers = quizOnlyResults.reduce(
-              (sum: number, result: QuizResult) => sum + result.score,
+              (sum: number, result: QuizResult) => sum + (result.score || 0),
               0,
             );
             const averageScore =
@@ -369,10 +372,10 @@ export default function AnalyticsDashboard({
             // Recent activity
             const recentActivity = filteredResults
               .slice(-5)
-              .map((result: any) => ({
+              .map((result: QuizResult) => ({
                 type: result.type || "Quiz",
-                score: result.totalQuestions > 0 ? Math.round((result.score / result.totalQuestions) * 100) : 100,
-                timestamp: result.completedAt || result.createdAt,
+                score: (result.totalQuestions && result.totalQuestions > 0) ? Math.round((result.score / result.totalQuestions) * 100) : 100,
+                timestamp: (result as any).completedAt || result.createdAt || new Date().toISOString(),
                 subject: result.subject,
                 topic: result.topic,
               }));
@@ -436,7 +439,7 @@ export default function AnalyticsDashboard({
     }
 
     return () => { };
-  }, [useMockData]); // add useMockData as a dependency
+  }, [useMockData, locale]); // add useMockData as a dependency
 
   // add console log for debugging
   useEffect(() => { }, [analytics]);

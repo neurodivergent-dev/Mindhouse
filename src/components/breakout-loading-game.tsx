@@ -217,7 +217,7 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
          setIsPlaying(false);
          setTimeout(() => {
            toast({
-             title: "🎉 " + t("won"),
+             title: `🎉 ${  t("won")}`,
              description: t("toastScore", { score }),
            });
          }, 100);
@@ -237,7 +237,7 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
                setIsPlaying(false);
                setTimeout(() => {
                  toast({
-                   title: "💥 " + t("lost"),
+                   title: `💥 ${  t("lost")}`,
                    description: t("toastFinalScore", { score }),
                  });
                }, 100);
@@ -262,7 +262,6 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     }, 16);
 
     return () => clearInterval(gameLoop);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, gameState, paddle, bricks, score, lives, onGameComplete, toast]);
 
      // Draw functions

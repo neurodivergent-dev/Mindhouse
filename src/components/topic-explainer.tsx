@@ -32,6 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { TopicExplainerInput } from "@/ai/flows/topic-explainer-ai";
 import { generateTopicStepContent } from "@/ai/flows/topic-explainer-ai";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
+import { logError } from "@/lib/error-logger";
 
 import HuggingFaceImageGenerator from "@/components/huggingface-image-generator";
 import ReactMarkdown from "react-markdown";
@@ -42,7 +43,7 @@ import VoicePlayer from "@/components/voice-player";
 import BreakoutLoadingGame from "@/components/breakout-loading-game";
 import AIFloatingChat from "./ai-floating-chat";
 
-interface TopicData {
+type TopicData = {
   topic: string;
   subject: string;
   steps: Array<{
@@ -96,8 +97,8 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   };
 
   const getDifficultyLabel = (difficulty: string) => {
-    if (difficulty === "easy") return t("difficultyEasy");
-    if (difficulty === "medium") return t("difficultyMedium");
+    if (difficulty === "easy") {return t("difficultyEasy");}
+    if (difficulty === "medium") {return t("difficultyMedium");}
     return t("difficultyHard");
   };
 
@@ -228,21 +229,19 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     }
   };
 
-  const isStepGenerated = (step: any) => {
-    return step && step.content && step.content.trim().length > 30 && !step.content.includes("fallbackStepContent");
-  };
+  const isStepGenerated = (step: any) => step?.content && step.content.trim().length > 30 && !step.content.includes("fallbackStepContent");
 
   const ensureStepIsGenerated = async (stepIndex: number, force = false) => {
     const latestTopicData = topicDataRef.current || topicData;
-    if (!latestTopicData) return;
+    if (!latestTopicData) {return;}
 
     const currentSteps = latestTopicData.steps;
     const targetStep = currentSteps[stepIndex];
-    if (!targetStep) return;
-    if (!force && isStepGenerated(targetStep)) return;
+    if (!targetStep) {return;}
+    if (!force && isStepGenerated(targetStep)) {return;}
 
     const config = stepConfigs.find((c) => c.id === targetStep.id);
-    if (!config) return;
+    if (!config) {return;}
 
     setGeneratingStepId(targetStep.id);
     setAiGenerating(true);
@@ -251,7 +250,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
       // Build context from already generated previous steps (improves quality & coherence)
       const previousContext = currentSteps
         .slice(0, stepIndex)
-        .filter((s: any) => s && s.content && s.content.length > 30)
+        .filter((s: any) => s?.content && s.content.length > 30)
         .map((s: any) => `### ${s.title}\n${s.content.substring(0, 700)}`)
         .join("\n\n---\n\n");
 
@@ -272,7 +271,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
         } catch {}
       }
     } catch (err) {
-      console.error("Step generation failed", err);
+      logError("Step generation failed", err);
     } finally {
       setGeneratingStepId(null);
       setAiGenerating(false);
@@ -290,8 +289,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
       setCurrentSubject(subject);
     }
   }, [subject, currentSubject]);
-
-
 
   // Load topic data - first check localStorage, then generate if needed
   useEffect(() => {
@@ -335,8 +332,8 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                     id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                     userId: "guest",
                     type: "TopicExplainer",
-                    subject: subject,
-                    topic: topic,
+                    subject,
+                    topic,
                     score: 1,
                     totalQuestions: 1,
                     timeSpent: parsedData.totalTime || 300,
@@ -346,7 +343,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   localStorage.setItem(quizResultsKey, JSON.stringify(results));
                 }
               } catch (e) {
-                console.error("Failed to save explainer activity", e);
+                logError("Failed to save explainer activity", e);
               }
 
               toast({
@@ -368,7 +365,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
         // Create shell for all 5 steps, only first one populated
         const stepShells = stepConfigs.map((cfg, idx) => {
-          if (idx === 0) return firstStep;
+          if (idx === 0) {return firstStep;}
           return {
             id: cfg.id,
             title: getStepLabel(cfg.id),
@@ -432,8 +429,8 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               userId: "guest",
               type: "TopicExplainer",
-              subject: subject,
-              topic: topic,
+              subject,
+              topic,
               score: 1, // Read completely
               totalQuestions: 1, // Dummy value
               timeSpent: initialData.totalTime || 300,
@@ -443,7 +440,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             localStorage.setItem(quizResultsKey, JSON.stringify(results));
           }
         } catch (e) {
-          console.error("Failed to save explainer activity", e);
+          logError("Failed to save explainer activity", e);
         }
 
         toast({
@@ -515,10 +512,10 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
         void ensureStepIsGenerated(currentStep);
       }
     }
-  }, [currentStep, topicData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentStep, topicData]);
 
   const goToStep = async (index: number) => {
-    if (index < 0 || index >= steps.length) return;
+    if (index < 0 || index >= steps.length) {return;}
 
     // Switch to the target step *first* so the UI updates immediately.
     // This shows the loading state in the content area for ungenerated steps
@@ -876,7 +873,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                             variant="outline"
                             size="sm"
                             onClick={() => void regenerateStep(currentStep)}
-                            disabled={!!generatingStepId}
+                            disabled={Boolean(generatingStepId)}
                             className="h-7 px-2 text-xs"
                           >
                             <RotateCcw className="w-3 h-3 mr-1" />
@@ -1276,7 +1273,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
               <Button
                 onClick={handleNext}
-                disabled={currentStep === steps.length - 1 || !!generatingStepId}
+                disabled={currentStep === steps.length - 1 || Boolean(generatingStepId)}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
               >
                 {generatingStepId ? (
@@ -1318,7 +1315,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                         }
                       }
                     }}
-                    disabled={!!generatingStepId}
+                    disabled={Boolean(generatingStepId)}
                     className="text-xs"
                   >
                     {t("generateAll")}
@@ -1391,7 +1388,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                             e.stopPropagation();
                             void regenerateStep(index);
                           }}
-                          disabled={!!generatingStepId}
+                          disabled={Boolean(generatingStepId)}
                           className="h-6 px-1 text-[10px] opacity-70 hover:opacity-100"
                         >
                           <RotateCcw className="w-3 h-3 mr-0.5" />

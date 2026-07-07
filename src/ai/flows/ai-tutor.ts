@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { AIFactory, AIPreferences } from "@/services/ai/AIFactory";
+import type { AIPreferences } from "@/services/ai/AIFactory";
+import { AIFactory } from "@/services/ai/AIFactory";
 
 const AiTutorInputSchema = z.object({
   question: z
@@ -87,9 +88,9 @@ export async function getAiTutorHelp(
     if (isEnglish) {
       displayDifficulty = input.difficulty || "Unspecified";
       // If Turkish label slipped in, try reverse map (simple)
-      if (displayDifficulty === "Kolay") displayDifficulty = "Easy";
-      else if (displayDifficulty === "Orta") displayDifficulty = "Medium";
-      else if (displayDifficulty === "Zor") displayDifficulty = "Hard";
+      if (displayDifficulty === "Kolay") {displayDifficulty = "Easy";}
+      else if (displayDifficulty === "Orta") {displayDifficulty = "Medium";}
+      else if (displayDifficulty === "Zor") {displayDifficulty = "Hard";}
     } else {
       displayDifficulty = input.difficulty 
         ? (translateDifficulty(input.difficulty) || input.difficulty) 
@@ -218,7 +219,7 @@ DİKKAT: Yanıtın KESİNLİKLE ve SADECE aşağıdaki JSON formatında olmalıd
 
     const result = await provider.generateObject<any>({
       schema: LLMAiTutorOutputSchema,
-      prompt: prompt,
+      prompt,
     });
 
     // Smart extraction: Try known keys first

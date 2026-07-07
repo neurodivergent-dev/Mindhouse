@@ -180,8 +180,8 @@ Verileri analiz et ve AŞAĞIDAKİ JSON FORMATINDA (birebir aynı anahtarlarla) 
       estimatedTime: input.targetStudyTime || 30,
       confidence: 0.5,
       reasoning: isEnglish 
-        ? "Error detail: " + errorMessage
-        : "Hata detayı: " + errorMessage,
+        ? `Error detail: ${  errorMessage}`
+        : `Hata detayı: ${  errorMessage}`,
     };
   }
 }

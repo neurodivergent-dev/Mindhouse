@@ -1,6 +1,6 @@
 "use client";
 
-import { AIPreferences } from "@/services/ai/AIFactory";
+import type { AIPreferences } from "@/services/ai/AIFactory";
 
 export function getStoredAiPreferences(): Partial<AIPreferences> {
   if (typeof window === "undefined") {
@@ -8,7 +8,7 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
   }
   try {
     const stored = localStorage.getItem("aiPreferences");
-    if (!stored) return {};
+    if (!stored) {return {};}
     const parsed = JSON.parse(stored);
     // Basic sanitization
     return {
@@ -28,7 +28,7 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
 }
 
 export function saveAiPreferences(prefs: Partial<AIPreferences>) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {return;}
   try {
     localStorage.setItem("aiPreferences", JSON.stringify(prefs));
   } catch {}
@@ -43,13 +43,13 @@ export function isAiConfigured(prefs?: Partial<AIPreferences>): boolean {
     return true;
   }
   if (provider === "gemini") {
-    return !!p.geminiApiKey?.trim();
+    return Boolean(p.geminiApiKey?.trim());
   }
   if (provider === "groq") {
-    return !!p.groqApiKey?.trim();
+    return Boolean(p.groqApiKey?.trim());
   }
   if (provider === "ollama-cloud") {
-    return !!p.ollamaCloudApiKey?.trim();
+    return Boolean(p.ollamaCloudApiKey?.trim());
   }
   return false;
 }

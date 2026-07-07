@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +52,20 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  // Load available voices
+  const loadVoices = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const voices = window.speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+
+      // Select Turkish voice if available
+      const turkishVoice = voices.find(v =>
+        v.lang.includes("tr") || v.lang.includes("TR"),
+      );
+      setSelectedVoice(turkishVoice || voices[0] || null);
+    }
+  }, []);
+
   // Check if speech synthesis is supported
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -65,38 +79,16 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
         variant: "destructive",
       });
     }
-  }, [toast]);
-
-  // Load available voices
-  const loadVoices = () => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const voices = window.speechSynthesis.getVoices();
-      setAvailableVoices(voices);
-
-      // Select Turkish voice if available
-      const turkishVoice = voices.find(v =>
-        v.lang.includes("tr") || v.lang.includes("TR"),
-      );
-      setSelectedVoice(turkishVoice || voices[0] || null);
-    }
-  };
+  }, [toast, loadVoices]);
 
   // Handle voices loaded
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-  }, []);
+  }, [loadVoices]);
 
-  // Auto-play functionality
-  useEffect(() => {
-    if (autoPlay && isSupported && text) {
-      handlePlay();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoPlay, text, isSupported]);
-
-  const handlePlay = () => {
+  const handlePlay = useCallback(() => {
     if (!isSupported || !text) {return;}
 
     const plainText = markdownToPlainText(text);
@@ -164,7 +156,14 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
         variant: "destructive",
       });
     }
-  };
+  }, [isSupported, text, language, currentSpeed, isMuted, selectedVoice, onPlay, onEnd, onPause, toast]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (autoPlay && isSupported && text) {
+      handlePlay();
+    }
+  }, [autoPlay, text, isSupported, handlePlay]);
 
   const handlePause = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {

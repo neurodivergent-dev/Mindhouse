@@ -880,9 +880,9 @@ const tMap: Record<string, string> = {
   'Brang': 'Brang'
 };
 
-export const translateDemoData = (data: any, locale?: string) => {
-  if (locale !== "en" || !data) return data;
-  if (Array.isArray(data)) return data.map(item => translateDemoData(item, locale));
+export const translateDemoData = (data: any, locale?: string): any => {
+  if (locale !== "en" || !data) {return data;}
+  if (Array.isArray(data)) {return data.map(item => translateDemoData(item, locale));}
   if (typeof data === "object") {
     const translated = { ...data };
     if (translated.question && tMap[translated.question]) {
@@ -902,7 +902,7 @@ export const translateDemoData = (data: any, locale?: string) => {
     }
     if (translated.options && Array.isArray(translated.options)) {
       translated.options = translated.options.map((opt: any) => {
-        if (opt && opt.text && tMap[opt.text]) {
+        if (opt?.text && tMap[opt.text]) {
           return { ...opt, text: tMap[opt.text] };
         }
         return opt;

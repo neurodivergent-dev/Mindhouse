@@ -44,13 +44,12 @@ export default function QuizResultPage() {
       } else {
         toast({
           title: t("errorTitle") || "Hata",
-          description: "Sonuç bulunamadı." || "Result not found.",
+          description: t("resultNotFound") || "Sonuç bulunamadı.",
           variant: "destructive"
         });
         router.push("/dashboard");
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       router.push("/dashboard");
     } finally {
       setLoading(false);

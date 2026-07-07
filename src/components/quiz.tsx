@@ -461,11 +461,13 @@ const QuizComponent: React.FC<QuizProps> = ({
     if (subject && userSettings) {
       loadQuestions();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     subject,
-    userSettings.studyPreferences.questionsPerQuiz,
-    userSettings.studyPreferences.timeLimit,
+    userSettings,
+    isDemoMode,
+    locale,
+    t,
+    toast,
   ]);
 
   // Timer for elapsed time
@@ -810,8 +812,6 @@ const QuizComponent: React.FC<QuizProps> = ({
     }
   };
 
-
-
   const requestAiTutorHelp = async (
     step: "hint" | "explanation" | "step-by-step" | "concept-review",
   ) => {
@@ -835,7 +835,7 @@ const QuizComponent: React.FC<QuizProps> = ({
         question: currentQuestion.text,
         subject: currentQuestion.subject,
         topic: currentQuestion.topic,
-        difficulty: currentQuestion.difficulty,
+        difficulty: currentQuestion.difficulty as "Kolay" | "Orta" | "Zor" | undefined,
         options: currentQuestion.options,
         correctAnswer:
           currentQuestion.options.find((opt) => opt.isCorrect)?.text || "",
@@ -1203,14 +1203,14 @@ const QuizComponent: React.FC<QuizProps> = ({
         quizData={{
           questions,
           currentQuestionIndex,
-          currentQuestion: currentQuestionIndex < questions.length ? questions[currentQuestionIndex] : undefined,
+          ...(currentQuestionIndex < questions.length ? { currentQuestion: questions[currentQuestionIndex] as unknown as Record<string, unknown> } : {}),
           selectedAnswer,
           timeSpent,
           timeRemaining,
           timeLimit,
           showTimer: userSettings.studyPreferences.showTimer,
           totalQuestions,
-          aiTutorUsed: !!aiTutorHelp,
+          aiTutorUsed: Boolean(aiTutorHelp),
           showResult,
         }}
       />

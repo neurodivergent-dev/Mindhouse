@@ -62,7 +62,7 @@ function QuizPageContent() {
 
   const tSubjects = useTranslations("Subjects");
   const getTranslatedSubject = (name: string) => {
-    if (locale === "tr") return name;
+    if (locale === "tr") {return name;}
     try {
       return tSubjects(name as any);
     } catch {
@@ -71,7 +71,7 @@ function QuizPageContent() {
   };
 
   const getTranslatedCategory = (category: string) => {
-    if (locale === "tr") return category;
+    if (locale === "tr") {return category;}
     const map: Record<string, string> = {
       "Sayısal": "Science & Math",
       "Fen Bilimleri": "Science",
@@ -83,7 +83,7 @@ function QuizPageContent() {
   };
 
   const getTranslatedDifficulty = (diff: string) => {
-    if (locale === "tr") return diff;
+    if (locale === "tr") {return diff;}
     const map: Record<string, string> = {
       "Kolay": "Easy",
       "Orta": "Medium",
@@ -288,7 +288,6 @@ function QuizPageContent() {
     if (isAuthenticated !== null) {
       loadSubjects();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, isAuthenticated]);
 
   const handleStartQuiz = () => {

@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { AIFactory, AIPreferences } from "@/services/ai/AIFactory";
+import type { AIPreferences } from "@/services/ai/AIFactory";
+import { AIFactory } from "@/services/ai/AIFactory";
 import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
 
 const AiChatInputSchema = z.object({
@@ -164,7 +165,7 @@ export async function getAiChatResponse(
 
     const result = await provider.generateObject<AiChatOutput>({
       schema: AiChatOutputSchema as any,
-      prompt: prompt,
+      prompt,
     });
 
     return result;

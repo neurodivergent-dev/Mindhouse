@@ -68,8 +68,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   const getStudyModeLabel = useCallback(
     (mode: string) => {
-      if (mode === "review") return t("modeReview");
-      if (mode === "new") return t("modeNew");
+      if (mode === "review") {return t("modeReview");}
+      if (mode === "new") {return t("modeNew");}
       return t("modeDifficult");
     },
     [t],
@@ -77,8 +77,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   const formatReviewWhen = useCallback(
     (days: number) => {
-      if (days === 1) return t("reviewTomorrow");
-      if (days < 30) return t("reviewInDays", { days });
+      if (days === 1) {return t("reviewTomorrow");}
+      if (days < 30) {return t("reviewInDays", { days });}
       return t("reviewInMonth");
     },
     [t],
@@ -122,9 +122,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
           setFlashcards(demoFlashcards);
           setStats({
             total: demoFlashcards.length,
-            reviewed: demoFlashcards.filter((f) => f.reviewCount > 0).length,
-            mastered: demoFlashcards.filter((f) => f.confidence >= 4).length,
-            needsReview: demoFlashcards.filter((f) => f.confidence < 4).length,
+            reviewed: demoFlashcards.filter((f: Flashcard) => f.reviewCount > 0).length,
+            mastered: demoFlashcards.filter((f: Flashcard) => f.confidence >= 4).length,
+            needsReview: demoFlashcards.filter((f: Flashcard) => f.confidence < 4).length,
           });
           return;
         }
@@ -1418,7 +1418,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         subject={subject}
         quizData={{
           currentQuestionIndex: currentIndex,
-          currentQuestion: currentCard,
+          currentQuestion: currentCard as unknown as Record<string, unknown>,
           totalQuestions: filteredCards.length,
           aiTutorUsed: false, // Flashcards don't have separate AI Tutor like quiz, but can be extended
           showResult: showAnswer,

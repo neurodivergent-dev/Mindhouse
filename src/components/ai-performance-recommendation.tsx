@@ -4,12 +4,13 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Brain, Target, BookOpen, Sparkles, Zap, TrendingUp } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { getFlashcardRecommendation, type FlashcardRecommendationOutput } from "@/ai/flows/flashcard-recommendation";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface PerformanceData {
   subject: string;
@@ -56,6 +57,7 @@ export default function AIPerformanceRecommendation({
 }: AIPerformanceRecommendationProps) {
   const t = useTranslations("AIPerformance");
   const locale = useLocale();
+  const { toast } = useToast();
   const [aiRecommendation, setAiRecommendation] = useState<FlashcardRecommendationOutput | null>(null);
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
 
@@ -112,7 +114,7 @@ export default function AIPerformanceRecommendation({
     try {
       // Translation helper to ensure AI gets localized context
       const translateSubject = (subject: string) => {
-        if (locale === "tr" || !subject) return subject;
+        if (locale === "tr" || !subject) {return subject;}
         const map: Record<string, string> = {
           "Matematik": "Mathematics",
           "Fizik": "Physics",
@@ -192,8 +194,8 @@ export default function AIPerformanceRecommendation({
   };
 
   return (
-    <Dialog open={!!aiRecommendation} onOpenChange={(open) => {
-      if (!open) hideRecommendation();
+    <Dialog open={Boolean(aiRecommendation)} onOpenChange={(open) => {
+      if (!open) {hideRecommendation();}
     }}>
       <div className={className}>
         <div
@@ -272,7 +274,7 @@ export default function AIPerformanceRecommendation({
                     {t("whyThisRecommendation")}
                   </h4>
                   <p className="text-sm text-[#3a3a3c] dark:text-[#ebebf5] font-medium leading-relaxed italic">
-                    "{aiRecommendation.reasoning}"
+                    &quot;{aiRecommendation.reasoning}&quot;
                   </p>
                 </div>
               )}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -19,8 +19,6 @@ import {
   Target,
   TrendingUp,
   Clock,
-  CheckCircle,
-  XCircle,
   Settings,
   FileText,
   Users,
@@ -50,7 +48,6 @@ import AIFloatingChat from "./ai-floating-chat";
 import {
   shouldUseDemoData,
   toggleDemoMode,
-  loadDemoDataToLocalStorage,
   demoPerformanceData,
   demoRecentResults,
   demoTotalStats,
@@ -99,8 +96,8 @@ export default function EnhancedDashboard() {
   const t = useTranslations("Dashboard");
   const locale = useLocale();
 
-  const translateSubject = (subject: string) => {
-    if (locale === "tr") return subject;
+  const translateSubject = useCallback((subject: string) => {
+    if (locale === "tr") {return subject;}
     
     const map: Record<string, string> = {
       "Matematik": "Mathematics",
@@ -116,10 +113,10 @@ export default function EnhancedDashboard() {
     };
     
     return map[subject] || subject;
-  };
+  }, [locale]);
 
-  const translateTopic = (topic: string) => {
-    if (locale === "tr") return topic;
+  const translateTopic = useCallback((topic: string) => {
+    if (locale === "tr") {return topic;}
     
     const map: Record<string, string> = {
       "Türev Uygulamaları": "Derivative Applications",
@@ -157,7 +154,7 @@ export default function EnhancedDashboard() {
     };
     
     return map[topic] || topic;
-  };
+  }, [locale]);
 
   const translatedFeatures = useMemo(
     () =>
@@ -168,7 +165,7 @@ export default function EnhancedDashboard() {
       })),
     [t],
   );
-  const { user, loading, isGuest, isAuthenticated, clearGuestData, initializeGuestUser } = useLocalAuth();
+  const { user, loading, isGuest, isAuthenticated } = useLocalAuth();
   const { toast } = useToast();
 
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
@@ -277,12 +274,20 @@ export default function EnhancedDashboard() {
             // --- BACKWARD COMPATIBILITY MIGRATION ---
             if (typeof window !== "undefined") {
               try {
+                interface SavedTopic {
+                  id?: string;
+                  subject?: string;
+                  topic?: string;
+                  content?: string;
+                  createdAt?: string;
+                }
+
                 // Get old saved topics
-                let savedTopics: any[] = [];
+                let savedTopics: SavedTopic[] = [];
                 // Look for all keys matching mindhouse_topic_explainer_*
                 for (let i = 0; i < localStorage.length; i++) {
                   const key = localStorage.key(i);
-                  if (key && key.startsWith("mindhouse_topic_explainer_")) {
+                  if (key?.startsWith("mindhouse_topic_explainer_")) {
                     const subjectTopicsRaw = localStorage.getItem(key);
                     if (subjectTopicsRaw) {
                       const subjectTopics = JSON.parse(subjectTopicsRaw);
@@ -296,18 +301,18 @@ export default function EnhancedDashboard() {
                 if (savedTopics.length > 0) {
                   let hasNewMigrations = false;
 
-                  savedTopics.forEach((st: any) => {
+                  savedTopics.forEach((st: SavedTopic) => {
                     // Check if this topic is already in results
-                    const alreadyExists = results.find((r: any) => r.type === "TopicExplainer" && r.subject === st.subject && (r.topic === st.topic || r.topic === (st.content && JSON.parse(st.content).title)));
+                    const alreadyExists = results.find((r: QuizResult) => r.type === "TopicExplainer" && r.subject === st.subject && (r.topic === st.topic || r.topic === (st.content && JSON.parse(st.content).title)));
                     if (!alreadyExists) {
                       // Compute total time if available
                       let tTime = 300;
                       let realTopicName = st.topic;
                       try {
-                        const parsedContent = JSON.parse(st.content);
-                        if (parsedContent.totalTime) tTime = parsedContent.totalTime;
-                        if (parsedContent.title) realTopicName = parsedContent.title;
-                      } catch (e) { }
+                        const parsedContent = JSON.parse(st.content || "{}");
+                        if (parsedContent.totalTime) {tTime = parsedContent.totalTime;}
+                        if (parsedContent.title) {realTopicName = parsedContent.title;}
+                      } catch { }
 
                       results.push({
                         id: `explainer_migrated_${st.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -329,8 +334,8 @@ export default function EnhancedDashboard() {
                     localStorage.setItem(quizResultsKey, JSON.stringify(results));
                   }
                 }
-              } catch (e) {
-                console.error("Migration error", e);
+              } catch {
+                // Migration error
               }
             }
             // --- END MIGRATION ---
@@ -447,7 +452,7 @@ export default function EnhancedDashboard() {
                   .slice(0, 2);
 
                 return {
-                  subject,
+                  subject: translateSubject(subject),
                   averageScore: data.totalQuestions > 0 ? Math.round(
                     (data.totalScore / data.totalQuestions) * 100,
                   ) : 0,
@@ -455,8 +460,8 @@ export default function EnhancedDashboard() {
                   weakTopics: Object.entries(data.weakTopics)
                     .sort(([, a], [, b]) => b - a)
                     .slice(0, 3)
-                    .map(([topic]) => topic),
-                  strongTopics, // Add strong topics to performance data
+                    .map(([topic]) => translateTopic(topic)),
+                  strongTopics: strongTopics.map(translateTopic), // Add strong topics to performance data
                   lastUpdated: new Date().toISOString(),
                 };
               },
@@ -465,22 +470,22 @@ export default function EnhancedDashboard() {
             // Recent results
             const recentResults = filteredResults
               .slice(-5)
-              .map((result: any) => ({
+              .map((result: Record<string, unknown>) => ({
                 id: result.id,
                 type: result.type,
-                topic: result.topic,
-                subject: result.subject,
+                topic: result.topic ? translateTopic(result.topic as string) : undefined,
+                subject: translateSubject(result.subject as string),
                 score: result.score,
                 totalQuestions: result.totalQuestions,
                 timeSpent: result.timeSpent || 0,
                 weakTopics: result.weakTopics
-                  ? Object.keys(result.weakTopics)
+                  ? Object.keys(result.weakTopics as Record<string, unknown>).map(translateTopic)
                   : [],
                 createdAt: result.createdAt,
               }));
 
             // Total stats (exclude TopicExplainer from test counts and scores)
-            const quizOnlyResults = filteredResults.filter((r: any) => r.type !== "TopicExplainer");
+            const quizOnlyResults = filteredResults.filter((r: QuizResult) => r.type !== "TopicExplainer");
 
             const totalTests = quizOnlyResults.length;
             const totalCorrectAnswers = quizOnlyResults.reduce(
@@ -559,7 +564,7 @@ export default function EnhancedDashboard() {
     if (user && !loading) {
       loadUserData();
     }
-  }, [user, loading, useDemoData]);
+  }, [user, loading, useDemoData, translateSubject, translateTopic]);
 
   const handleExportData = () => {
     if (!isGuest) {
@@ -651,25 +656,15 @@ export default function EnhancedDashboard() {
     toggleDemoMode(newDemoMode);
 
     if (newDemoMode) {
-      loadDemoDataToLocalStorage();
       toast({
         title: t("toasts.demoActive"),
         description: t("toasts.demoActiveDesc"),
       });
       setTimeout(() => window.location.reload(), 1000);
     } else {
-      // Clear demo data when exiting demo mode
+      // Sadece demo için kullanılan anahtarı temizle
       if (typeof window !== "undefined") {
         localStorage.removeItem("exam_training_demo_quiz_results");
-        localStorage.removeItem("guestUser");
-        localStorage.removeItem("guestQuizResults");
-        localStorage.removeItem("guestFlashcardProgress");
-        localStorage.removeItem("guestPerformanceData");
-        localStorage.removeItem("guestAIRecommendations");
-
-        // Clear guest data and reinitialize with default guest user
-        clearGuestData();
-        initializeGuestUser();
       }
       toast({
         title: t("toasts.demoInactive"),

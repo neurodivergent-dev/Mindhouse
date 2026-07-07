@@ -30,11 +30,11 @@ interface AIFloatingChatProps {
   subject: string;
   context?: string;
   currentStepTitle?: string;
-  topicData?: any; // for topic explainer
+  topicData?: Record<string, unknown>; // for topic explainer
   quizData?: {
-    questions?: any[];
+    questions?: unknown[];
     currentQuestionIndex?: number;
-    currentQuestion?: any;
+    currentQuestion?: Record<string, unknown>;
     selectedAnswer?: number | null;
     timeSpent?: number;
     timeRemaining?: number | null;
@@ -61,9 +61,9 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   // Safe subject name resolution (Subjects namespace contains lesson names only).
   // "Dashboard" (and unknown values) fall back gracefully to prevent MISSING_MESSAGE.
   const getDisplaySubject = (name: string) => {
-    if (name === "Dashboard") return name;
+    if (name === "Dashboard") {return name;}
     try {
-      return tSubjects(name as any);
+      return tSubjects(name as never);
     } catch {
       return name;
     }
@@ -93,7 +93,7 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   };
 
   const handleClearClick = () => {
-    if (messages.length === 0) return;
+    if (messages.length === 0) {return;}
     setShowClearConfirm(true);
   };
 
@@ -105,19 +105,19 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
       if (quizData) {
         const qNum = (quizData.currentQuestionIndex ?? 0) + 1;
         const total = quizData.totalQuestions || quizData.questions?.length || '?';
-        const timeInfo = quizData.timeRemaining != null 
+        const timeInfo = quizData.timeRemaining !== null && quizData.timeRemaining !== undefined 
           ? `You have ${quizData.timeRemaining} seconds left.` 
           : 'No time limit.';
-        const selectedInfo = quizData.selectedAnswer != null ? 'You have selected an answer.' : 'You have not selected an answer yet.';
-        const isFlash = !!(quizData.currentQuestion && quizData.currentQuestion.answer && !quizData.currentQuestion.options);
+        const selectedInfo = quizData.selectedAnswer !== null && quizData.selectedAnswer !== undefined ? 'You have selected an answer.' : 'You have not selected an answer yet.';
+        const isFlash = Boolean(quizData.currentQuestion?.answer && !quizData.currentQuestion.options);
         if (isFlash) {
           welcomeContent = t("flashcardAiChatWelcome", {
             subject: displaySubject,
           });
         } else {
-          welcomeContent = t("quizAiChatWelcome", {
+          welcomeContent = `${t("quizAiChatWelcome", {
             subject: displaySubject,
-          }) + ` You are on question ${qNum} of ${total}. ${timeInfo} ${selectedInfo} I can see the current question, your selection, time info, and whether you used the AI Tutor. Ask away!`;
+          })  } You are on question ${qNum} of ${total}. ${timeInfo} ${selectedInfo} I can see the current question, your selection, time info, and whether you used the AI Tutor. Ask away!`;
         }
       } else if (externalContext) {
         // Dashboard or general context
@@ -141,10 +141,10 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
       };
       setMessages([welcome]);
     }
-  }, [isOpen, messages.length, subject, currentStepTitle, quizData, externalContext, t]);
+  }, [isOpen, messages.length, subject, currentStepTitle, quizData, externalContext, t, displaySubject, locale]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) {return;}
 
     const aiPreferences = getStoredAiPreferences();
     if (!isAiConfigured(aiPreferences)) {
@@ -180,8 +180,8 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
       // Build context based on where it's used
       let context = externalContext || "";
 
-      if (topicData && topicData.steps) {
-        const step = topicData.steps.find((s: any) => s.title === currentStepTitle) || topicData.steps[0];
+      if (topicData?.steps) {
+        const step = (topicData.steps as Array<Record<string, unknown>>)?.find((s) => s.title === currentStepTitle) || (topicData.steps as Array<Record<string, unknown>>)?.[0];
         context = `
 Current Topic: ${topicData.topic}
 Subject: ${topicData.subject}
@@ -192,42 +192,43 @@ Explanation Content:
 ${step?.content || ''}
 
 Examples:
-${step?.examples?.join('\n- ') || ''}
+${(step?.examples as string[] | undefined)?.join('\n- ') || ''}
 
 Tips:
-${step?.tips?.join('\n- ') || ''}
+${(step?.tips as string[] | undefined)?.join('\n- ') || ''}
 `.trim();
       } else if (quizData) {
         const q = quizData.currentQuestion;
         const selectedIdx = quizData.selectedAnswer;
         const hasAnswered = selectedIdx !== null && selectedIdx !== undefined;
-        const showResult = !!quizData.showResult;
+        const showResult = Boolean(quizData.showResult);
 
         // Sanitize options: never include isCorrect unless showResult is true
         let optionsText = 'N/A';
         if (q && Array.isArray(q.options)) {
-          optionsText = q.options.map((o: any, i: number) => {
-            const text = o.text || o;
-            if (showResult && o.isCorrect) {
+          optionsText = q.options.map((o: Record<string, unknown> | string, i: number) => {
+            const text = typeof o === 'string' ? o : (o.text as string);
+            const isCorrect = typeof o === 'string' ? false : Boolean(o.isCorrect);
+            if (showResult && isCorrect) {
               return `${i}: ${text} (correct)`;
             }
             return `${i}: ${text}`;
           }).join(' | ');
         }
 
-        const selectedText = hasAnswered && q?.options?.[selectedIdx]
-          ? (q.options[selectedIdx].text || q.options[selectedIdx])
+        const selectedText = hasAnswered && Array.isArray(q?.options) && q?.options?.[selectedIdx]
+          ? (typeof q.options[selectedIdx] === 'object' && q.options[selectedIdx] !== null ? (q.options[selectedIdx] as Record<string, unknown>).text : q.options[selectedIdx])
           : 'None yet';
 
-        const isFlashcard = !!(q && q.answer && !Array.isArray(q.options));
+        const isFlashcard = Boolean(q?.answer && !Array.isArray(q.options));
 
         if (isFlashcard) {
           context = `
 Current Subject: ${subject}
 Current Flashcard: ${(quizData.currentQuestionIndex ?? 0) + 1} / ${quizData.totalQuestions || quizData.questions?.length || '?'}
 
-Question: ${q?.question || 'N/A'}
-${showResult ? `Answer: ${q.answer}` : 'Answer: (not yet revealed by flipping)'}
+Question: ${q?.question || q?.text || 'N/A'}
+${showResult ? `Answer: ${q?.answer || q?.correctAnswer}` : 'Answer: (not yet revealed by flipping)'}
 Explanation: ${q?.explanation || 'N/A'}
 Topic: ${q?.topic || 'N/A'}
 Difficulty: ${q?.difficulty || 'N/A'}
@@ -255,9 +256,9 @@ AI Tutor was used on this question: ${quizData.aiTutorUsed ? 'Yes' : 'No'}
 
 Time Info:
 - Time Spent so far: ${quizData.timeSpent ?? 'N/A'} seconds
-- Time Remaining: ${quizData.timeRemaining != null ? quizData.timeRemaining + ' seconds' : 'No limit'}
+- Time Remaining: ${quizData.timeRemaining !== null && quizData.timeRemaining !== undefined ? `${quizData.timeRemaining  } seconds` : 'No limit'}
 - Timer is enabled: ${quizData.showTimer ? 'Yes' : 'No'}
-- Time Limit for this quiz: ${quizData.timeLimit != null ? quizData.timeLimit + ' seconds' : 'No limit'}
+- Time Limit for this quiz: ${quizData.timeLimit !== null && quizData.timeLimit !== undefined ? `${quizData.timeLimit  } seconds` : 'No limit'}
 
 IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
 - The user is in the middle of solving a quiz.
@@ -289,7 +290,7 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch {
       const errorMessage: AIChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -415,7 +416,7 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
               disabled={isLoading}
             />
             <Button
-              onClick={sendMessage}
+              onClick={() => { void sendMessage(); }}
               disabled={!input.trim() || isLoading}
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600"

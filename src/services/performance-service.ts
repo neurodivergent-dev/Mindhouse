@@ -40,7 +40,7 @@ export async function getAllPerformanceData(
 ): Promise<PerformanceData> {
   try {
     const allResults = await QuizRepository.getAllQuizResults(userId);
-    return allResults as PerformanceData;
+    return allResults;
   } catch {
     return {};
   }

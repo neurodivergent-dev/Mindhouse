@@ -210,7 +210,7 @@ export function useLocalAuth() {
   const currentUser: AuthUser = useMemo(
     () =>
       supabaseUser
-        ? ({ ...supabaseUser, isGuest: false } as SupabaseAuthUser)
+        ? ({ ...supabaseUser, isGuest: false })
         : guestUser,
     [supabaseUser, guestUser],
   );

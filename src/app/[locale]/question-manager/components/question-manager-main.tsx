@@ -166,90 +166,106 @@ export default function QuestionManagerMain({
 
       <div className="p-4">
         <div className="max-w-7xl mx-auto">
-          <Card className="mb-6 glass-card">
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          {/* PREMIUM HEADER */}
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[#007aff]/10 dark:bg-[#0a84ff]/20 rounded-2xl flex items-center justify-center border border-[#007aff]/20">
+                    <GraduationCap className="w-6 h-6 text-[#007aff] dark:text-[#0a84ff]" />
                   </div>
-                  <div>
-                    <CardTitle className="text-xl sm:text-2xl flex items-center gap-2">
-                      {t("title")}
-                      {isDemoMode && (
-                        <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                          {t("demo")}
-                        </Badge>
-                      )}
-                    </CardTitle>
-                    <p className="text-muted-foreground">{t("description")}</p>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                  {t("title")}
+                  {isDemoMode && (
+                    <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-none ml-2 align-middle">
+                      {t("demo")}
+                    </Badge>
+                  )}
+                </h1>
+                <p className="text-[#86868b] dark:text-[#a1a1a6] mt-3 text-lg font-medium tracking-wide max-w-2xl">
+                  {t("description")}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <Button
+                  onClick={() => onAIDialogOpenChange(true)}
+                  disabled={!selectedSubject && subjects.length === 0}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-sm transition-all hover:shadow-md h-11 px-6 rounded-xl"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  <span>{t("generateWithAI")}</span>
+                </Button>
+                <Link href="/subject-manager" className="w-full sm:w-auto">
                   <Button
-                    onClick={() => onAIDialogOpenChange(true)}
-                    disabled={!selectedSubject && subjects.length === 0}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 w-full sm:w-auto shadow-lg sm:mr-2"
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-[#007aff]/5 hover:text-[#007aff] border-gray-200 dark:border-gray-800 h-11 px-6 rounded-xl w-full sm:w-auto transition-colors"
                   >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">{t("generateWithAI")}</span>
-                    <span className="sm:hidden">{t("generateWithAIShort")}</span>
+                    <Database className="w-5 h-5" />
+                    <span>{t("subjectManager")}</span>
                   </Button>
-                  <Link href="/subject-manager" className="w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 w-full sm:w-auto"
-                    >
-                      <Database className="w-4 h-4" />
-                      <span className="hidden sm:inline">{t("subjectManager")}</span>
-                      <span className="sm:hidden">{t("subjectManagerShort")}</span>
-                    </Button>
-                  </Link>
-                </div>
+                </Link>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="flex items-center gap-2 p-4 border-2 border-blue-300 dark:border-blue-700 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10">
-                  <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t("totalSubjects")}</p>
-                    {isLoadingSubjects ? (
-                      <LoadingSpinner className="p-0 h-6 w-6" />
-                    ) : (
-                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{stats.totalSubjects}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-4 border-2 border-purple-300 dark:border-purple-700 rounded-lg bg-gradient-to-br from-purple-500/10 to-pink-500/10">
-                  <Brain className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t("totalCategories")}</p>
-                    {isLoadingSubjects ? (
-                      <LoadingSpinner className="p-0 h-6 w-6" />
-                    ) : (
-                      <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                        {stats.totalCategories}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-4 border-2 border-green-300 dark:border-green-700 rounded-lg bg-gradient-to-br from-green-500/10 to-emerald-500/10 md:col-span-2 lg:col-span-1">
-                  <Target className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t("totalQuestions")}</p>
-                    {isLoading ? (
-                      <LoadingSpinner className="p-0 h-6 w-6" />
-                    ) : (
-                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                        {stats.totalQuestions}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Premium Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Total Subjects */}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("totalSubjects")}
+                  </CardTitle>
+                  <BookOpen className="h-4 w-4 text-[#007aff] dark:text-[#0a84ff]" />
+                </CardHeader>
+                <CardContent>
+                  {isLoadingSubjects ? (
+                    <LoadingSpinner className="p-0 h-8 w-8 text-[#007aff]" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalSubjects}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Total Categories */}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("totalCategories")}
+                  </CardTitle>
+                  <Brain className="h-4 w-4 text-[#af52de] dark:text-[#bf5af2]" />
+                </CardHeader>
+                <CardContent>
+                  {isLoadingSubjects ? (
+                    <LoadingSpinner className="p-0 h-8 w-8 text-[#af52de]" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalCategories}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Total Questions */}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow md:col-span-2 lg:col-span-1">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("totalQuestions")}
+                  </CardTitle>
+                  <Target className="h-4 w-4 text-[#34c759] dark:text-[#30d158]" />
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <LoadingSpinner className="p-0 h-8 w-8 text-[#34c759]" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalQuestions}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 lg:items-stretch">
             <div className="lg:flex-1">

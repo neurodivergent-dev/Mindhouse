@@ -112,12 +112,9 @@ export class CloudSyncService {
 
             if (cloudQuestion) {
               syncedQuestions++;
-            } else {
-              // Log warning without console statement
-              CloudSyncService.logWarning("Failed to create cloud question for:", localQuestion.text);
             }
-          } catch (error) {
-            CloudSyncService.logError("Error creating cloud question:", error, "Question:", localQuestion);
+          } catch {
+            // Ignore individual question creation errors silently
           }
         }
       }
@@ -128,8 +125,7 @@ export class CloudSyncService {
         syncedData: { subjects: syncedSubjects, questions: syncedQuestions },
       };
 
-    } catch (error) {
-      CloudSyncService.logError("LocalToCloud sync error:", error);
+    } catch {
       return {
         success: false,
         message: "Senkronizasyon sırasında hata oluştu",
@@ -229,8 +225,7 @@ export class CloudSyncService {
         loadedData: { subjects: loadedSubjects, questions: loadedQuestions },
       };
 
-    } catch (error) {
-      CloudSyncService.logError("CloudToLocal sync error:", error);
+    } catch {
       return {
         success: false,
         message: "Bulut verisi yükleme sırasında hata oluştu",
@@ -269,8 +264,7 @@ export class CloudSyncService {
         syncData: totalSynced,
       };
 
-    } catch (error) {
-      CloudSyncService.logError("Full sync error:", error);
+    } catch {
       return {
         success: false,
         message: "Tam senkronizasyon sırasında hata oluştu",
@@ -350,8 +344,7 @@ export class CloudSyncService {
         cloudCounts,
       };
 
-    } catch (error) {
-      CloudSyncService.logError("Sync status check error:", error);
+    } catch {
       const localSubjects = UnifiedStorageService.getSubjects();
       const localQuestions = UnifiedStorageService.getQuestions();
 
@@ -378,13 +371,11 @@ export class CloudSyncService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        CloudSyncService.logError("Error fetching cloud questions:", error);
         return [];
       }
 
       return data || [];
-    } catch (error) {
-      CloudSyncService.logError("Error in getAllCloudQuestions:", error);
+    } catch {
       return [];
     }
   }
@@ -434,27 +425,6 @@ export class CloudSyncService {
         success: false,
         message: `Bağlantı testi başarısız: ${error}`,
       };
-    }
-  }
-
-  /**
-   * Private logging methods to replace console statements
-   */
-  private static logError(message: string, ...args: unknown[]): void {
-    // In production, this could send to a logging service
-    // For now, we'll use a no-op to satisfy ESLint
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.error(message, ...args);
-    }
-  }
-
-  private static logWarning(message: string, ...args: unknown[]): void {
-    // In production, this could send to a logging service
-    // For now, we'll use a no-op to satisfy ESLint
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.warn(message, ...args);
     }
   }
 }

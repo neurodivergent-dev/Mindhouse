@@ -34,12 +34,6 @@ export class ErrorLogger {
       timestamp: new Date(),
     };
 
-    // In development, still log to console for debugging
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.error(`[ErrorLogger] ${message}`, error, context);
-    }
-
     // Store error for potential reporting
     this.logs.push(errorLog);
 

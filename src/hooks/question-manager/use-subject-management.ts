@@ -72,9 +72,6 @@ export const useSubjectManagement = (
   // Load subjects - Use same simple logic as Subject Manager
   const loadSubjects = useCallback(async () => {
     try {
-      console.log("🔄 useSubjectManagement: loadSubjects started");
-      console.log("🔄 useSubjectManagement: isAuthenticated:", isAuthenticated);
-
       setIsLoadingSubjects(true);
       let loadedSubjects: Subject[] = [];
 
@@ -101,7 +98,6 @@ export const useSubjectManagement = (
         if (isAuthenticated) {
           try {
             const dbSubjects = await SubjectService.getSubjects();
-            console.log("🔄 useSubjectManagement: dbSubjects from Supabase:", dbSubjects);
             if (dbSubjects && dbSubjects.length > 0) {
               // Convert Supabase format to local format
               const mappedDbSubjects = dbSubjects.map(subject => ({
@@ -126,10 +122,8 @@ export const useSubjectManagement = (
 
               // Save to localStorage for future use
               UnifiedStorageService.saveSubjects(loadedSubjects);
-              console.log("🔄 useSubjectManagement: Saved merged to localStorage:", loadedSubjects);
             }
-          } catch (error) {
-            console.error("🔄 useSubjectManagement: Supabase error:", error);
+          } catch {
             // Silent fail - continue with local subjects
           }
         }
@@ -151,8 +145,7 @@ export const useSubjectManagement = (
     } finally {
       setIsLoadingSubjects(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, toast]); // Removed stable setter functions
+  }, [isAuthenticated, toast, setSubjects, setIsLoadingSubjects, locale, t]);
 
   return {
     loadSubjects,

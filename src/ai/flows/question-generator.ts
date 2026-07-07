@@ -1,8 +1,9 @@
 "use server";
 
 import { z } from "zod";
-import { IAIProvider } from "@/services/ai/core/IAIProvider";
-import { AIFactory, AIPreferences } from "@/services/ai/AIFactory";
+import type { IAIProvider } from "@/services/ai/core/IAIProvider";
+import type { AIPreferences } from "@/services/ai/AIFactory";
+import { AIFactory } from "@/services/ai/AIFactory";
 
 const QuestionGenerationInputSchema = z.object({
   subject: z.string().describe("The subject for which to generate questions"),
@@ -93,7 +94,7 @@ export async function generateQuestions(
   try {
     const provider = 
       providerOrPrefs && 'generateObject' in providerOrPrefs
-        ? providerOrPrefs as IAIProvider
+        ? providerOrPrefs
         : AIFactory.getProviderFromPreferences((providerOrPrefs as Partial<AIPreferences>) || {});
 
     const typeDescriptions = {
@@ -162,7 +163,7 @@ CRITICAL INSTRUCTION: You MUST output a JSON object containing the exact keys de
 
     const output = await provider.generateObject<any>({
       prompt: `Generate ${input.count} questions.`,
-      systemPrompt: systemPrompt,
+      systemPrompt,
       schema: LLMOutputSchema,
       temperature: 0.7,
     });

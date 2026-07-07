@@ -268,7 +268,7 @@ Sadece geçerli JSON döndür. Başka hiçbir şey yazma.
   const provider = AIFactory.getProviderFromPreferences(input.preferences || {});
   return await provider.generateObject<TopicExplainerOutput>({
     schema: TopicExplainerOutputSchema,
-    prompt: prompt,
+    prompt,
     temperature: 0.7,
   });
 }

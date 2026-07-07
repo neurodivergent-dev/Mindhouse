@@ -574,7 +574,6 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         onRefresh();
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Refresh when refreshTrigger changes

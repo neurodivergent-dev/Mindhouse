@@ -7,6 +7,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { shouldUseDemoData } from "@/data/demo-data";
 import { AIFactory } from "@/services/ai/AIFactory";
+import { logError } from "@/lib/error-logger";
 
 // Increase timeout for AI generation
 export const maxDuration = 120; // 2 minutes
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
         // Call the AI generation flow with the provider
         result = await generateQuestions(body, provider);
       } catch (error) {
-        console.error("AI Generation Error:", error);
+        logError("AI Generation Error:", error);
         result = generateMockQuestions(body);
       }
     }

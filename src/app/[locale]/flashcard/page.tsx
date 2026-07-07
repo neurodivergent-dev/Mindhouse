@@ -52,13 +52,13 @@ const FlashcardPageContent = () => {
 
   // Icon mapping uses canonical keys (Matematik etc.) which getDemoSubjects preserves
   const getSubjectIcon = (name: string) => {
-    if (name === "Matematik") return <Calculator className="w-6 h-6 text-white" />;
-    if (name === "Fizik") return <Atom className="w-6 h-6 text-white" />;
-    if (name === "Kimya") return <FlaskConical className="w-6 h-6 text-white" />;
-    if (name === "Tarih") return <Landmark className="w-6 h-6 text-white" />;
-    if (name === "Biyoloji") return <Dna className="w-6 h-6 text-white" />;
-    if (name === "Türk Dili ve Edebiyatı") return <BookOpenCheck className="w-6 h-6 text-white" />;
-    if (name === "İngilizce") return <Languages className="w-6 h-6 text-white" />;
+    if (name === "Matematik") {return <Calculator className="w-6 h-6 text-white" />;}
+    if (name === "Fizik") {return <Atom className="w-6 h-6 text-white" />;}
+    if (name === "Kimya") {return <FlaskConical className="w-6 h-6 text-white" />;}
+    if (name === "Tarih") {return <Landmark className="w-6 h-6 text-white" />;}
+    if (name === "Biyoloji") {return <Dna className="w-6 h-6 text-white" />;}
+    if (name === "Türk Dili ve Edebiyatı") {return <BookOpenCheck className="w-6 h-6 text-white" />;}
+    if (name === "İngilizce") {return <Languages className="w-6 h-6 text-white" />;}
     return <BookOpen className="w-6 h-6 text-white" />;
   };
   const [selectedSubject, setSelectedSubject] = useState<string>("");
@@ -218,7 +218,6 @@ const FlashcardPageContent = () => {
     } finally {
       setIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

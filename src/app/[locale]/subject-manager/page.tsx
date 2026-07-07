@@ -145,97 +145,104 @@ export default function SubjectManagerPage() {
 
       <div className="p-4">
         <div className="max-w-7xl mx-auto">
-          {/* Header Info */}
-          <Card className="mb-6 glass-card">
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          {/* PREMIUM HEADER */}
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[#007aff]/10 dark:bg-[#0a84ff]/20 rounded-2xl flex items-center justify-center border border-[#007aff]/20">
+                    <GraduationCap className="w-6 h-6 text-[#007aff] dark:text-[#0a84ff]" />
                   </div>
-                  <div>
-                    <CardTitle className="text-xl sm:text-2xl flex items-center gap-2">
-                      {t("title")}
-                      {isDemoMode && (
-                        <Badge className="ml-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                          {t("demo")}
-                        </Badge>
-                      )}
-                    </CardTitle>
-                    <p className="text-muted-foreground">
-                      {t("pageDescription")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                  <AISubjectGenerator
-                    onSubjectsGenerated={(subjects) => {
-                      void (async () => {
-                        try {
-                          await handleAIGeneratedSubjects(subjects, {
-                            successTitle: t("ai.toasts.successTitle"),
-                            successDescription: t("ai.toasts.addedDesc", {
-                              count: subjects.length,
-                            }),
-                            errorTitle: t("ai.toasts.errorTitle"),
-                            errorDescription: t("ai.toasts.addError"),
-                          });
-                          // Refresh stats and subjects after adding AI subjects
-                          await loadStats();
-                          // Force refresh of SubjectManager component
-                          setRefreshKey(prev => prev + 1);
-                        } catch {
-                          // Handle error silently or with proper error handling
-                          // You can add toast notification here if needed
-                        }
-                      })();
-                    }}
-                    className="w-full sm:w-auto sm:mr-2"
-                  />
-                  <Link href="/question-manager" className="w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 w-full sm:w-auto"
-                    >
-                      <Database className="w-4 h-4" />
-                      <span className="hidden sm:inline">{t("questionManager")}</span>
-                      <span className="sm:hidden">{t("questionsShort")}</span>
-                    </Button>
-                  </Link>
-                </div>
+                  {t("title")}
+                  {isDemoMode && (
+                    <Badge className="ml-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-none align-middle">
+                      {t("demo")}
+                    </Badge>
+                  )}
+                </h1>
+                <p className="text-[#86868b] dark:text-[#a1a1a6] mt-3 text-lg font-medium tracking-wide max-w-2xl">
+                  {t("pageDescription")}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 p-4 border-2 border-blue-300 dark:border-blue-700 rounded-lg bg-gradient-to-br from-blue-500/10 to-indigo-500/10">
-                  <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{t("totalSubjects")}</p>
-                    {isLoading ? (
-                      <LoadingSpinner className="p-0 h-6 w-6" />
-                    ) : (
-                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{stats.totalSubjects}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 p-4 border-2 border-purple-300 dark:border-purple-700 rounded-lg bg-gradient-to-br from-purple-500/10 to-pink-500/10">
-                  <Brain className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {t("totalCategories")}
-                    </p>
-                    {isLoading ? (
-                      <LoadingSpinner className="p-0 h-6 w-6" />
-                    ) : (
-                      <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                        {stats.totalCategories}
-                      </p>
-                    )}
-                  </div>
-                </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <AISubjectGenerator
+                  onSubjectsGenerated={(subjects) => {
+                    void (async () => {
+                      try {
+                        await handleAIGeneratedSubjects(subjects, {
+                          successTitle: t("ai.toasts.successTitle"),
+                          successDescription: t("ai.toasts.addedDesc", {
+                            count: subjects.length,
+                          }),
+                          errorTitle: t("ai.toasts.errorTitle"),
+                          errorDescription: t("ai.toasts.addError"),
+                        });
+                        // Refresh stats and subjects after adding AI subjects
+                        await loadStats();
+                        // Force refresh of SubjectManager component
+                        setRefreshKey(prev => prev + 1);
+                      } catch {
+                        // Handle error silently or with proper error handling
+                        // You can add toast notification here if needed
+                      }
+                    })();
+                  }}
+                  className="w-full sm:w-auto"
+                />
+                <Link href="/question-manager" className="w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 hover:bg-[#007aff]/5 hover:text-[#007aff] border-gray-200 dark:border-gray-800 h-11 px-6 rounded-xl w-full sm:w-auto transition-colors"
+                  >
+                    <Database className="w-5 h-5" />
+                    <span className="hidden sm:inline">{t("questionManager")}</span>
+                    <span className="sm:hidden">{t("questionsShort")}</span>
+                  </Button>
+                </Link>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Premium Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Total Subjects */}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("totalSubjects")}
+                  </CardTitle>
+                  <BookOpen className="h-4 w-4 text-[#007aff] dark:text-[#0a84ff]" />
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <LoadingSpinner className="p-0 h-8 w-8 text-[#007aff]" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalSubjects}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Total Categories */}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("totalCategories")}
+                  </CardTitle>
+                  <Brain className="h-4 w-4 text-[#af52de] dark:text-[#bf5af2]" />
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <LoadingSpinner className="p-0 h-8 w-8 text-[#af52de]" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats.totalCategories}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
           {/* Subject Manager Component */}
           <SubjectManager onRefresh={() => void loadStats()} refreshTrigger={refreshKey} />
