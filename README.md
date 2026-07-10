@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/badge/status-production-green.svg" alt="Status">
     <img src="https://deploy-badge.vercel.app/vercel/mindhouse?root=landing" alt="Vercel Deploy Status">
-    <img src="https://circleci.com/gh/melihcanndemir/mindhouse.svg?style=svg" alt="CircleCI">
+    <img src="https://circleci.com/gh/neurodivergent-dev/mindhouse.svg?style=svg" alt="CircleCI">
     <img src="https://img.shields.io/github/languages/top/melihcanndemir/mindhouse" alt="Top Language">
     <img src="https://img.shields.io/github/languages/code-size/melihcanndemir/mindhouse" alt="Code Size">
     <img src="https://img.shields.io/github/repo-size/melihcanndemir/mindhouse" alt="Repo Size">
