@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const fetchHeaders: Record<string, string> = {};
     if (pollinationsApiKey) {
-      fetchHeaders["Authorization"] = `Bearer ${pollinationsApiKey}`;
+      fetchHeaders.Authorization = `Bearer ${pollinationsApiKey}`;
     }
 
     // Verify if the selected model is rate-limited (429) or failing
