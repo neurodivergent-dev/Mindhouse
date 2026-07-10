@@ -166,7 +166,7 @@ export async function getAiChatResponse(
   `;
 
     const result = await provider.generateObject<AiChatOutput>({
-      schema: AiChatOutputSchema,
+      schema: AiChatOutputSchema as any,
       prompt,
     });
 
