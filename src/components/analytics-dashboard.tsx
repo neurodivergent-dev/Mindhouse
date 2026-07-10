@@ -184,7 +184,8 @@ export default function AnalyticsDashboard({ useMockData }: AnalyticsDashboardPr
 
   useEffect(() => {
     const generateMockData = () => {
-      // Use rich demo data      if (useMockData) {
+      // Use rich demo data
+      if (useMockData) {
         setAnalytics({
           ...demoAnalyticsData,
           weakTopics: demoAnalyticsData.weakTopics?.map((t) => translateTopic(t, locale)) || [],
