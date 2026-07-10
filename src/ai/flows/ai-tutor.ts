@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 
-const AiTutorInputSchema = z.object({
+export const AiTutorInputSchema = z.object({
   question: z.string().describe("The question text that the user is trying to solve."),
   subject: z.string().describe("The subject area of the question."),
   topic: z.string().describe("The specific topic of the question."),
@@ -36,7 +36,7 @@ const AiTutorInputSchema = z.object({
 
 export type AiTutorInput = z.infer<typeof AiTutorInputSchema>;
 
-const AiTutorOutputSchema = z.object({
+export const AiTutorOutputSchema = z.object({
   help: z.string().describe("The help content based on the requested step type."),
   confidence: z.number().optional().describe("AI confidence in the explanation (0-1)."),
 });
@@ -208,22 +208,22 @@ DİKKAT: Yanıtın KESİNLİKLE ve SADECE aşağıdaki JSON formatında olmalıd
       })
       .catchall(z.any());
 
-    const result = await provider.generateObject<any>({
+    const result = await provider.generateObject<Record<string, unknown>>({
       schema: LLMAiTutorOutputSchema,
       prompt,
     });
 
     // Smart extraction: Try known keys first
     let helpText =
-      result.help ||
-      result.text ||
-      result.response ||
-      result.answer ||
-      result.ipucu ||
-      result.mesaj ||
-      result.açıklama ||
-      result.content ||
-      result.data;
+      (result.help as string | undefined) ||
+      (result.text as string | undefined) ||
+      (result.response as string | undefined) ||
+      (result.answer as string | undefined) ||
+      (result.ipucu as string | undefined) ||
+      (result.mesaj as string | undefined) ||
+      (result.açıklama as string | undefined) ||
+      (result.content as string | undefined) ||
+      (result.data as string | undefined);
 
     if (!helpText && typeof result === "object" && result !== null) {
       // Find all string values
@@ -254,6 +254,7 @@ DİKKAT: Yanıtın KESİNLİKLE ve SADECE aşağıdaki JSON formatında olmalıd
       confidence: confidenceNum,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("AI Tutor Error:", error);
     // Return fallback response
     const fallback = isEnglish
