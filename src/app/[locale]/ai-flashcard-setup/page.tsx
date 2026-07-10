@@ -191,7 +191,7 @@ export default function AIFlashcardSetupPage() {
                     <div className="p-4 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02] flex flex-col justify-between">
                       <div>
                         <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">{t("setup.step1Item1Title")}</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">Google'ın en yeni modellerine ücretsiz erişim anahtarı.</p>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">Google&apos;ın en yeni modellerine ücretsiz erişim anahtarı.</p>
                       </div>
                       <a
                         href="https://aistudio.google.com/app/apikey"
@@ -276,7 +276,7 @@ export default function AIFlashcardSetupPage() {
                     className="px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg transition-all"
                   >
                     <Settings className="w-4 h-4 mr-2" />
-                    Ayarlar'a Git
+                    Ayarlar&apos;a Git
                   </Button>
                 </CardContent>
               </Card>
@@ -315,7 +315,7 @@ export default function AIFlashcardSetupPage() {
                       </div>
                       <div>
                         <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">Ayarları Kaydedin</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">Sayfanın altındaki "Ayarları Kaydet" butonuna basarak değişiklikleri tarayıcınıza kaydedin.</p>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">Sayfanın altındaki &quot;Ayarları Kaydet&quot; butonuna basarak değişiklikleri tarayıcınıza kaydedin.</p>
                       </div>
                     </div>
                   </div>

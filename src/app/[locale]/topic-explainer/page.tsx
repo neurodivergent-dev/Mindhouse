@@ -44,7 +44,6 @@ interface Subject {
   isActive: boolean;
 }
 
-
 const TopicExplainerPageContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
