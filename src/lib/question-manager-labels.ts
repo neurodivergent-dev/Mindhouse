@@ -65,3 +65,23 @@ export const mapAiDifficulty = (difficulty: string, t: TranslateFn): string => {
   };
   return mapping[difficulty] || difficulty;
 };
+
+export const getSubjectName = (name: string, tSubjects: TranslateFn): string => {
+  const demoSubjectNames = [
+    "Matematik",
+    "Fizik",
+    "Kimya",
+    "Biyoloji",
+    "Tarih",
+    "Türk Dili ve Edebiyatı",
+    "İngilizce",
+  ];
+  if (demoSubjectNames.includes(name)) {
+    try {
+      return tSubjects(name);
+    } catch {
+      return name;
+    }
+  }
+  return name;
+};

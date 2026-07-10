@@ -19,6 +19,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { demoAnalyticsData } from "@/data/demo-data";
+import { UnifiedStorageService } from "@/services/unified-storage-service";
 
 interface AnalyticsData {
   totalQuestions: number;
@@ -222,6 +223,9 @@ export default function AnalyticsDashboard({
 
     const fetchRealData = async () => {
       try {
+        // Make sure the IndexedDB-backed cache is ready before reading
+        await UnifiedStorageService.initialize();
+
         // Get data from localStorage
         const getAnalyticsFromStorage = () => {
           if (typeof window === "undefined") {
@@ -243,11 +247,8 @@ export default function AnalyticsDashboard({
               ? results
               : results.filter((result: QuizResult) => !result.isDemo);
 
-            // Get subject information from Subjects
-            const subjects = localStorage.getItem("mindhouse_subjects");
-            const subjectsData: Subject[] = subjects
-              ? JSON.parse(subjects)
-              : [];
+            // Get subject information from Subjects (IndexedDB)
+            const subjectsData: Subject[] = UnifiedStorageService.getSubjects();
 
             // Get question information from Questions (not currently used)
             // const questions = localStorage.getItem('mindhouse_questions');
@@ -535,12 +536,14 @@ export default function AnalyticsDashboard({
                 </p>
               </>
             ) : (
-              <div className="text-center py-4">
-                <Target className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-col items-center text-center py-2">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 flex items-center justify-center mb-3 border border-blue-500/20">
+                  <Target className="w-5 h-5 text-blue-500" />
+                </div>
+                <h4 className="text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noQuestionsYet")}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                </h4>
+                <p className="text-[10px] text-[#86868b] dark:text-[#a1a1a6] font-medium">
                   {t("startByTakingTests")}
                 </p>
               </div>
@@ -567,12 +570,14 @@ export default function AnalyticsDashboard({
                 </p>
               </>
             ) : (
-              <div className="text-center py-4">
-                <TrendingUp className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-col items-center text-center py-2">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 flex items-center justify-center mb-3 border border-green-500/20">
+                  <TrendingUp className="w-5 h-5 text-green-500" />
+                </div>
+                <h4 className="text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noScoreYet")}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                </h4>
+                <p className="text-[10px] text-[#86868b] dark:text-[#a1a1a6] font-medium">
                   {t("takeFirstTest")}
                 </p>
               </div>
@@ -599,12 +604,14 @@ export default function AnalyticsDashboard({
                 </p>
               </>
             ) : (
-              <div className="text-center py-4">
-                <Clock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-col items-center text-center py-2">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center mb-3 border border-purple-500/20">
+                  <Clock className="w-5 h-5 text-purple-500" />
+                </div>
+                <h4 className="text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noStudyYet")}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                </h4>
+                <p className="text-[10px] text-[#86868b] dark:text-[#a1a1a6] font-medium">
                   {t("startStudying")}
                 </p>
               </div>
@@ -678,12 +685,14 @@ export default function AnalyticsDashboard({
                 </div>
               </>
             ) : (
-              <div className="text-center py-8">
-                <LineChart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 flex items-center justify-center mb-4 border border-blue-500/20">
+                  <LineChart className="w-6 h-6 text-blue-500" />
+                </div>
+                <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noPerformanceData")}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
+                </h4>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                   {t("trackPerformanceByTests")}
                 </p>
               </div>
@@ -702,8 +711,14 @@ export default function AnalyticsDashboard({
           <CardContent className="space-y-4">
             {analytics.strongTopics.length === 0 &&
               analytics.weakTopics.length === 0 ? (
-              <div className="text-center text-gray-500 dark:text-gray-400 py-4">
-                <p>
+              <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 flex items-center justify-center mb-4 border border-green-500/20">
+                  <PieChart className="w-6 h-6 text-green-500" />
+                </div>
+                <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                  {t("topicAnalysis")}
+                </h4>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                   {t("topicAnalysisPlaceholder")}
                 </p>
               </div>
@@ -857,12 +872,14 @@ export default function AnalyticsDashboard({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <TrendingDown className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
-                <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+              <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500/10 to-pink-500/10 flex items-center justify-center mb-4 border border-red-500/20">
+                  <TrendingDown className="w-6 h-6 text-red-500" />
+                </div>
+                <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noTopicsNeedingImprovement")}
-                </p>
-                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                </h4>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                   {t("greatPerformanceAllTopics")}
                 </p>
               </div>
@@ -895,12 +912,14 @@ export default function AnalyticsDashboard({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <TrendingUp className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
-                <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+              <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 flex items-center justify-center mb-4 border border-green-500/20">
+                  <TrendingUp className="w-6 h-6 text-green-500" />
+                </div>
+                <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                   {t("noStrongTopicsYet")}
-                </p>
-                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                </h4>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                   {t("identifyStrongTopicsShort")}
                 </p>
               </div>
@@ -958,12 +977,14 @@ export default function AnalyticsDashboard({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <LineChart className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
-              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/10 to-violet-500/10 flex items-center justify-center mb-4 border border-purple-500/20">
+                <LineChart className="w-6 h-6 text-purple-500" />
+              </div>
+              <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                 {t("noWeeklyProgressData")}
-              </p>
-              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+              </h4>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                 {t("trackWeeklyProgress")}
               </p>
             </div>
@@ -1018,12 +1039,14 @@ export default function AnalyticsDashboard({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <PieChart className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
-              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center mb-4 border border-indigo-500/20">
+                <PieChart className="w-6 h-6 text-indigo-500" />
+              </div>
+              <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                 {t("noSubjectDistributionData")}
-              </p>
-              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+              </h4>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                 {t("seeDistributionByTests")}
               </p>
             </div>
@@ -1089,12 +1112,14 @@ export default function AnalyticsDashboard({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <Activity className="w-12 h-12 text-[#86868b] dark:text-[#a1a1a6] mx-auto mb-3" />
-              <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mb-2">
+            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-emerald-500/10 flex items-center justify-center mb-4 border border-blue-500/20">
+                <Activity className="w-6 h-6 text-blue-500" />
+              </div>
+              <h4 className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
                 {t("noActivityYet")}
-              </p>
-              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+              </h4>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium max-w-[250px]">
                 {t("createActivityHint")}
               </p>
             </div>

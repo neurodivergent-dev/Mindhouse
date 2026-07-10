@@ -6,9 +6,9 @@ import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getSubjectName } from "@/lib/question-manager-labels";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
@@ -53,17 +53,10 @@ interface LocalSubject {
 export default function FlashcardManagerPage() {
   const locale = useLocale();
   const t = useTranslations("FlashcardManager");
-  const tSubjects = useTranslations("Subjects");
   const tCommon = useTranslations("Common");
+  const tSubjects = useTranslations("Subjects");
   const { toast } = useToast();
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name as any);
-    } catch {
-      return name;
-    }
-  };
   const dateLocale = locale === "tr" ? "tr-TR" : "en-US";
 
   const getDifficultyLabel = useCallback(
@@ -633,42 +626,49 @@ export default function FlashcardManagerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <Link href="/flashcard">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 mb-4"
+              className="mb-4 flex items-center gap-2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               {t("backToFlashcard")}
             </Button>
           </Link>
 
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              {t("title")}
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              {t("subtitle")}
-            </p>
-            {isDemoMode && (
-              <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-2">
-                {t("demoMode")}
-              </Badge>
-            )}
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shrink-0">
+              <Brain className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {t("title")}
+                </h1>
+                {isDemoMode && (
+                  <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs px-2.5 py-0.5">
+                    {t("demoMode")}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm md:text-base font-medium mt-0.5">
+                {t("subtitle")}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 max-w-2xl mx-auto gap-2 sm:gap-0 h-auto sm:h-10 p-2 sm:p-1">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 max-w-2xl mx-auto gap-2 sm:gap-0 h-auto sm:h-12 p-1.5 bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-2xl backdrop-blur-md">
             <TabsTrigger
               value="manage"
-              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto w-full"
+              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 w-full rounded-xl transition-all text-[#86868b] dark:text-[#a1a1a6] hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 hover:border-0 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-100 data-[state=active]:to-purple-100 data-[state=active]:text-blue-900 dark:data-[state=active]:from-blue-600 dark:data-[state=active]:to-purple-600 dark:data-[state=active]:text-white"
             >
               <BookOpen className="w-4 h-4 flex-shrink-0" />
               <span className="hidden sm:inline">{t("tabManage")}</span>
@@ -676,7 +676,7 @@ export default function FlashcardManagerPage() {
             </TabsTrigger>
             <TabsTrigger
               value="manual"
-              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto w-full"
+              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 w-full rounded-xl transition-all text-[#86868b] dark:text-[#a1a1a6] hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 hover:border-0 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-100 data-[state=active]:to-purple-100 data-[state=active]:text-blue-900 dark:data-[state=active]:from-blue-600 dark:data-[state=active]:to-purple-600 dark:data-[state=active]:text-white"
             >
               <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="hidden sm:inline">{t("tabManual")}</span>
@@ -684,9 +684,9 @@ export default function FlashcardManagerPage() {
             </TabsTrigger>
             <TabsTrigger
               value="ai"
-              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto w-full"
+              className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 w-full rounded-xl transition-all text-[#86868b] dark:text-[#a1a1a6] hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 hover:border-0 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-100 data-[state=active]:to-purple-100 data-[state=active]:text-blue-900 dark:data-[state=active]:from-blue-600 dark:data-[state=active]:to-purple-600 dark:data-[state=active]:text-white"
             >
-              <Brain className="w-4 h-4 flex-shrink-0" />
+              <Sparkles className="w-4 h-4 flex-shrink-0" />
               <span className="hidden sm:inline">{t("tabAi")}</span>
               <span className="sm:hidden">{t("tabAiShort")}</span>
             </TabsTrigger>
@@ -694,38 +694,43 @@ export default function FlashcardManagerPage() {
 
           {/* Manage Existing Flashcards */}
           <TabsContent value="manage">
-            <Card className="max-w-4xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  {t("manageTitle")}
-                </CardTitle>
-                <CardDescription>
-                  {t("manageDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Subject Selector */}
+            <div className="apple-glass-card max-w-4xl mx-auto">
+              <div className="w-full relative z-10 p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm shrink-0">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">{t("selectSubject")}</label>
+                    <h2 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("manageTitle")}
+                    </h2>
+                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("manageDescription")}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Subject Selector */}
+                  <div className="p-4 rounded-xl bg-white/20 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("selectSubject")}</label>
                     {loading ? (
-                      <div className="flex items-center gap-2 p-3 border rounded-md bg-gray-50 dark:bg-gray-900">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{t("loadingSubjects")}</span>
+                      <div className="flex items-center gap-2 p-3 border border-white/20 dark:border-white/10 rounded-xl bg-white/40 dark:bg-white/5">
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                        <span className="text-sm text-[#86868b] dark:text-[#a1a1a6]">{t("loadingSubjects")}</span>
                       </div>
                     ) : (
                       <Select
                         value={selectedSubjectForManage}
                         onValueChange={setSelectedSubjectForManage}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl backdrop-blur-sm h-12 text-sm font-medium">
                           <SelectValue placeholder={t("selectSubjectPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {subjects.map((subject) => (
                             <SelectItem key={subject.id} value={subject.name}>
-                              {getSubjectName(subject.name)}
+                              {getSubjectName(subject.name, tSubjects)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -735,41 +740,40 @@ export default function FlashcardManagerPage() {
 
                   {/* Flashcards List */}
                   {selectedSubjectForManage && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {isEditing && editingFlashcard && (
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Edit className="w-4 h-4 text-blue-600" />
-                              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                                {t("editingFlashcard", { question: editingFlashcard.question.substring(0, 50) })}
-                              </span>
-                            </div>
-                            <Button
-                              onClick={() => {
-                                setIsEditing(false);
-                                setEditingFlashcard(null);
-                                setActiveTab("manage");
-                                setManualForm({
-                                  subject: "",
-                                  topic: "",
-                                  question: "",
-                                  answer: "",
-                                  explanation: "",
-                                  difficulty: "Medium",
-                                });
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="text-blue-600 border-blue-300 hover:bg-blue-100"
-                            >
-                              {t("cancelEdit")}
-                            </Button>
+                        <div className="bg-blue-500/10 dark:bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <Edit className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                              {t("editingFlashcard", { question: editingFlashcard.question.substring(0, 50) })}
+                            </span>
                           </div>
+                          <Button
+                            onClick={() => {
+                              setIsEditing(false);
+                              setEditingFlashcard(null);
+                              setActiveTab("manage");
+                              setManualForm({
+                                subject: "",
+                                topic: "",
+                                question: "",
+                                answer: "",
+                                explanation: "",
+                                difficulty: "Medium",
+                              });
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-500 border-blue-500/20 hover:bg-blue-500/10 rounded-lg"
+                          >
+                            {t("cancelEdit")}
+                          </Button>
                         </div>
                       )}
+
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">
+                        <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
                           {t("subjectFlashcardCount", { subject: selectedSubjectForManage, count: existingFlashcards.length })}
                         </h3>
                         <Button
@@ -779,124 +783,128 @@ export default function FlashcardManagerPage() {
                           }}
                           variant="outline"
                           size="sm"
+                          className="rounded-lg"
                         >
                           {t("clear")}
                         </Button>
                       </div>
 
                       {loading ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                          <p>{t("loadingFlashcards")}</p>
+                        <div className="text-center py-12 text-[#86868b] dark:text-[#a1a1a6]">
+                          <Loader2 className="w-7 h-7 animate-spin mx-auto mb-2 text-blue-500" />
+                          <p className="text-sm">{t("loadingFlashcards")}</p>
                         </div>
                       ) : existingFlashcards.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-12 text-[#86868b] dark:text-[#a1a1a6] text-sm bg-white/10 dark:bg-white/5 border border-dashed border-white/20 dark:border-white/10 rounded-2xl">
                           {t("noFlashcardsForSubject")}
                         </div>
                       ) : (
-                        <div className="grid gap-3 sm:gap-4">
+                        <div className="grid gap-4">
                           {existingFlashcards.map((flashcard) => (
-                            <Card key={flashcard.id} className="border-l-4 border-l-blue-500">
-                              <CardContent className="p-3 sm:p-4">
-                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-                                  <div className="flex-1 space-y-2 min-w-0">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                      <Badge variant="outline" className="text-xs px-2 py-1">
-                                        {flashcard.topic}
-                                      </Badge>
-                                      <Badge variant="secondary" className="text-xs px-2 py-1">
-                                        {getDifficultyLabel(flashcard.difficulty)}
-                                      </Badge>
-                                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                                        {flashcard.createdAt instanceof Date
-                                          ? flashcard.createdAt.toLocaleDateString(dateLocale)
-                                          : new Date(flashcard.createdAt).toLocaleDateString(dateLocale)
-                                        }
-                                      </span>
-                                    </div>
-                                    <h4 className="font-medium text-sm sm:text-base leading-relaxed break-words">
-                                      {flashcard.question}
-                                    </h4>
-                                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">
-                                      {flashcard.answer}
+                            <div key={flashcard.id} className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                <div className="flex-1 space-y-2 min-w-0">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400">
+                                      {flashcard.topic}
+                                    </Badge>
+                                    <Badge variant="secondary" className="text-xs px-2.5 py-0.5 font-semibold">
+                                      {getDifficultyLabel(flashcard.difficulty)}
+                                    </Badge>
+                                    <span className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                                      {flashcard.createdAt instanceof Date
+                                        ? flashcard.createdAt.toLocaleDateString(dateLocale)
+                                        : new Date(flashcard.createdAt).toLocaleDateString(dateLocale)
+                                      }
+                                    </span>
+                                  </div>
+                                  <h4 className="font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-base leading-relaxed break-words">
+                                    {flashcard.question}
+                                  </h4>
+                                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                                    {flashcard.answer}
+                                  </p>
+                                  {flashcard.explanation && (
+                                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed break-words bg-white/20 dark:bg-white/5 p-2.5 rounded-lg border border-white/10">
+                                      {flashcard.explanation}
                                     </p>
-                                    {flashcard.explanation && (
-                                      <p className="text-xs text-gray-500 leading-relaxed break-words">
-                                        {flashcard.explanation}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-2 sm:flex-col sm:gap-1 sm:ml-0 self-end sm:self-start">
-                                    <Button
-                                      onClick={() => handleEditFlashcard(flashcard)}
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-8 w-8 sm:h-7 sm:w-7 p-0 flex-shrink-0"
-                                    >
-                                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                                    </Button>
-                                    <Button
-                                      onClick={() => handleDeleteFlashcard(flashcard.id)}
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-8 w-8 sm:h-7 sm:w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                                    >
-                                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                                    </Button>
-                                  </div>
+                                  )}
                                 </div>
-                              </CardContent>
-                            </Card>
+                                <div className="flex gap-2 sm:flex-col sm:gap-1.5 shrink-0 self-end sm:self-start">
+                                  <Button
+                                    onClick={() => handleEditFlashcard(flashcard)}
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 rounded-lg border-white/20"
+                                  >
+                                    <Edit className="w-3.5 h-3.5" />
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleDeleteFlashcard(flashcard.id)}
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg border-white/20"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       )}
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
 
           {/* Manual Flashcard Creation */}
           <TabsContent value="manual">
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plus className="w-5 h-5" />
-                  {isEditing ? t("editTitle") : t("manualTitle")}
-                </CardTitle>
-                <CardDescription>
-                  {isEditing ? t("editDescription") : t("manualDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            <div className="apple-glass-card max-w-2xl mx-auto">
+              <div className="w-full relative z-10 p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-sm shrink-0">
+                    <Plus className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {isEditing ? t("editTitle") : t("manualTitle")}
+                    </h2>
+                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                      {isEditing ? t("editDescription") : t("manualDescription")}
+                    </p>
+                  </div>
+                </div>
+
                 <form onSubmit={(e) => { handleManualSubmit(e); }} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">{t("subjectLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectLabel")}</label>
                       <Select
                         value={manualForm.subject}
                         onValueChange={(value) => setManualForm(prev => ({ ...prev, subject: value }))}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                           <SelectValue placeholder={t("selectSubjectOption")} />
                         </SelectTrigger>
                         <SelectContent>
                           {subjects.map((subject) => (
                             <SelectItem key={subject.id} value={subject.name}>
-                              {getSubjectName(subject.name)}
+                              {getSubjectName(subject.name, tSubjects)}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">{t("difficultyLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLabel")}</label>
                       <Select
                         value={manualForm.difficulty}
                         onValueChange={(value) => setManualForm(prev => ({ ...prev, difficulty: value }))}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -909,46 +917,50 @@ export default function FlashcardManagerPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">{t("topicLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topicLabel")}</label>
                     <Input
                       placeholder={t("topicPlaceholder")}
                       value={manualForm.topic}
                       onChange={(e) => setManualForm(prev => ({ ...prev, topic: e.target.value }))}
+                      className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">{t("questionLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("questionLabel")}</label>
                     <Textarea
                       placeholder={t("questionPlaceholder")}
                       value={manualForm.question}
                       onChange={(e) => setManualForm(prev => ({ ...prev, question: e.target.value }))}
                       rows={3}
+                      className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">{t("answerLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("answerLabel")}</label>
                     <Textarea
                       placeholder={t("answerPlaceholder")}
                       value={manualForm.answer}
                       onChange={(e) => setManualForm(prev => ({ ...prev, answer: e.target.value }))}
                       rows={3}
+                      className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">{t("explanationLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("explanationLabel")}</label>
                     <Textarea
                       placeholder={t("explanationPlaceholder")}
                       value={manualForm.explanation}
                       onChange={(e) => setManualForm(prev => ({ ...prev, explanation: e.target.value }))}
                       rows={2}
+                      className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
-                  <div className="flex gap-3">
-                    <Button type="submit" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
+                  <div className="flex gap-3 pt-2">
+                    <Button type="submit" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl h-11 text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all border-0">
                       {isEditing ? (
                         <>
                           <Edit className="w-4 h-4 mr-2" />
@@ -978,55 +990,60 @@ export default function FlashcardManagerPage() {
                           });
                         }}
                         variant="outline"
-                        className="flex-1"
+                        className="flex-1 h-11 rounded-xl"
                       >
                         {t("cancel")}
                       </Button>
                     )}
                   </div>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
 
           {/* AI Flashcard Generation */}
           <TabsContent value="ai">
             <div className="space-y-6">
               {/* AI Generation Form */}
-              <Card className="max-w-2xl mx-auto">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="w-5 h-5" />
-                    {t("aiTitle")}
-                  </CardTitle>
-                  <CardDescription>
-                    {t("aiDescription")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              <div className="apple-glass-card max-w-2xl mx-auto">
+                <div className="w-full relative z-10 p-6 md:p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-sm shrink-0">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("aiTitle")}
+                      </h2>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("aiDescription")}
+                      </p>
+                    </div>
+                  </div>
+
                   {/* AI Status Info */}
-                  <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="mb-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-blue-500/20 backdrop-blur-sm">
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 mt-1">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                        <h4 className="font-bold text-blue-800 dark:text-blue-200 text-sm mb-2">
                           {t("aiStatusTitle")}
                         </h4>
-                        <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                        <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1 leading-relaxed">
                           <p>• {t("aiStatusGemini")}</p>
                           <p>• {t("aiStatusTurkish")}</p>
                           <p>• {t("aiStatusDynamic")}</p>
                           <p>• {t("aiStatusQuality")}</p>
                         </div>
-                        <div className="mt-3 text-xs text-blue-600 dark:text-blue-400">
-                          <p>{t("aiStatusNote")}</p>
+                        <div className="mt-3 text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed pt-2 border-t border-white/10">
+                          <p className="mb-1">{t("aiStatusNote")}</p>
                           <p>
-                            {t("aiSetupGuidePrefix")}
-                            <Link href="/ai-flashcard-setup" className="underline hover:text-blue-800">
+                            {t("aiSetupGuidePrefix")}{" "}
+                            <Link href="/ai-flashcard-setup" className="underline font-semibold text-blue-600 dark:text-blue-400">
                               {t("aiSetupGuideLink")}
-                            </Link>
+                            </Link>{" "}
                             {t("aiSetupGuideSuffix")}
                           </p>
                         </div>
@@ -1037,30 +1054,30 @@ export default function FlashcardManagerPage() {
                   <form onSubmit={(e) => { handleAIGeneration(e); }} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-medium mb-2 block">{t("subjectLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectLabel")}</label>
                         <Select
                           value={aiForm.subject}
                           onValueChange={(value) => setAiForm(prev => ({ ...prev, subject: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue placeholder={t("selectSubjectOption")} />
                           </SelectTrigger>
                           <SelectContent>
                             {subjects.map((subject) => (
                               <SelectItem key={subject.id} value={subject.name}>
-                                {getSubjectName(subject.name)}
+                                {getSubjectName(subject.name, tSubjects)}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <label className="text-sm font-medium mb-2 block">{t("difficultyLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLabel")}</label>
                         <Select
                           value={aiForm.difficulty}
                           onValueChange={(value) => setAiForm(prev => ({ ...prev, difficulty: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1073,22 +1090,23 @@ export default function FlashcardManagerPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">{t("topicLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topicLabel")}</label>
                       <Input
                         placeholder={t("topicPlaceholder")}
                         value={aiForm.topic}
                         onChange={(e) => setAiForm(prev => ({ ...prev, topic: e.target.value }))}
+                        className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-medium mb-2 block">{t("cardCountLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("cardCountLabel")}</label>
                         <Select
                           value={aiForm.count.toString()}
                           onValueChange={(value) => setAiForm(prev => ({ ...prev, count: parseInt(value) }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1100,11 +1118,12 @@ export default function FlashcardManagerPage() {
                         </Select>
                       </div>
                       <div>
-                        <label className="text-sm font-medium mb-2 block">{t("guidelinesLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("guidelinesLabel")}</label>
                         <Input
                           placeholder={t("guidelinesPlaceholder")}
                           value={aiForm.guidelines}
                           onChange={(e) => setAiForm(prev => ({ ...prev, guidelines: e.target.value }))}
+                          className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                         />
                       </div>
                     </div>
@@ -1112,7 +1131,7 @@ export default function FlashcardManagerPage() {
                     <Button
                       type="submit"
                       disabled={aiGenerating}
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0"
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl h-11 text-sm font-semibold shadow-lg shadow-purple-500/20 transition-all border-0 pt-1"
                     >
                       {aiGenerating ? (
                         <>
@@ -1127,61 +1146,60 @@ export default function FlashcardManagerPage() {
                       )}
                     </Button>
                   </form>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-                             {/* Generated Flashcards Preview */}
-               {generatedFlashcards.length > 0 && (
-                 <Card className="max-w-4xl mx-auto">
-                   <CardHeader>
-                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                       <div className="flex-1 min-w-0">
-                         <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                           <CheckCircle className="w-5 h-5 text-green-600" />
-                           {t("generatedTitle", { count: generatedFlashcards.length })}
-                         </CardTitle>
-                         <CardDescription className="text-sm sm:text-base">
-                           {t("generatedDescription")}
-                         </CardDescription>
-                       </div>
-                       {aiMetadata && (
-                         <div className="text-center sm:text-right">
-                           <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white mb-2 text-xs sm:text-sm">
-                             {t("quality", { percent: Math.round(qualityScore * 100) })}
-                           </Badge>
-                           <p className="text-xs text-gray-500">
-                             {aiMetadata.aiModel} • {aiMetadata.generationTimestamp}
-                           </p>
-                         </div>
-                       )}
-                     </div>
-                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 sm:space-y-4">
+              {/* Generated Flashcards Preview */}
+              {generatedFlashcards.length > 0 && (
+                <div className="apple-glass-card max-w-4xl mx-auto">
+                  <div className="w-full relative z-10 p-6 md:p-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-lg sm:text-xl text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          {t("generatedTitle", { count: generatedFlashcards.length })}
+                        </h3>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                          {t("generatedDescription")}
+                        </p>
+                      </div>
+                      {aiMetadata && (
+                        <div className="text-center sm:text-right shrink-0">
+                          <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm px-2.5 py-0.5 font-semibold">
+                            {t("quality", { percent: Math.round(qualityScore * 100) })}
+                          </Badge>
+                          <p className="text-[10px] sm:text-xs text-[#86868b] dark:text-[#a1a1a6] mt-1.5 font-medium">
+                            {aiMetadata.aiModel} • {aiMetadata.generationTimestamp}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
                       {generatedFlashcards.map((flashcard, index) => (
-                        <div key={flashcard.id} className="border rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-gray-800">
-                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-3">
-                            <Badge variant="outline" className="text-xs px-2 py-1 self-start">
+                        <div key={flashcard.id} className="p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                          <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                            <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold bg-white/40 border-0 text-[#1d1d1f] dark:text-[#f5f5f7]">
                               {getDifficultyLabel(flashcard.difficulty)}
                             </Badge>
-                            <span className="text-xs text-gray-500 self-end sm:self-start">#{index + 1}</span>
+                            <span className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-bold">#{index + 1}</span>
                           </div>
 
-                          <div className="space-y-2 sm:space-y-3">
+                          <div className="space-y-3">
                             <div>
-                              <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">{t("questionField")}</label>
-                              <p className="text-xs sm:text-sm text-gray-800 dark:text-white leading-relaxed break-words">{flashcard.question}</p>
+                              <label className="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 block mb-1 uppercase tracking-wider">{t("questionField")}</label>
+                              <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-relaxed break-words">{flashcard.question}</p>
                             </div>
 
                             <div>
-                              <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">{t("answerField")}</label>
-                              <p className="text-xs sm:text-sm text-gray-800 dark:text-white leading-relaxed break-words">{flashcard.answer}</p>
+                              <label className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 block mb-1 uppercase tracking-wider">{t("answerField")}</label>
+                              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words">{flashcard.answer}</p>
                             </div>
 
                             {flashcard.explanation && (
                               <div>
-                                <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">{t("explanationField")}</label>
-                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">{flashcard.explanation}</p>
+                                <label className="text-[11px] sm:text-xs font-bold text-[#86868b] dark:text-[#a1a1a6] block mb-1 uppercase tracking-wider">{t("explanationField")}</label>
+                                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed break-words bg-white/20 dark:bg-white/5 p-2.5 rounded-lg border border-white/10">{flashcard.explanation}</p>
                               </div>
                             )}
                           </div>
@@ -1189,71 +1207,71 @@ export default function FlashcardManagerPage() {
                       ))}
                     </div>
 
-                                         {/* AI Insights */}
-                     {(suggestions.length > 0 || studyTips.length > 0) && (
-                       <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg">
-                         <h4 className="font-semibold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                           <Brain className="w-4 h-4 text-purple-600" />
-                           {t("aiInsightsTitle")}
-                         </h4>
+                    {/* AI Insights */}
+                    {(suggestions.length > 0 || studyTips.length > 0) && (
+                      <div className="mt-6 p-5 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl border border-white/25">
+                        <h4 className="font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-base mb-4 flex items-center gap-2">
+                          <Brain className="w-5 h-5 text-purple-600" />
+                          {t("aiInsightsTitle")}
+                        </h4>
 
-                         {suggestions.length > 0 && (
-                           <div className="mb-4">
-                             <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">💡 {t("improvementSuggestions")}</h5>
-                             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                               {suggestions.map((suggestion, index) => (
-                                 <li key={index} className="flex items-start gap-2">
-                                   <span className="text-purple-500">•</span>
-                                   {suggestion}
-                                 </li>
-                               ))}
-                             </ul>
-                           </div>
-                         )}
+                        {suggestions.length > 0 && (
+                          <div className="mb-4">
+                            <h5 className="text-sm font-bold text-purple-700 dark:text-purple-400 mb-2">💡 {t("improvementSuggestions")}</h5>
+                            <ul className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] space-y-1.5 font-medium pl-1">
+                              {suggestions.map((suggestion, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="text-purple-500 shrink-0 font-bold">•</span>
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
-                         {studyTips.length > 0 && (
-                           <div>
-                             <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">📚 {t("studyTips")}</h5>
-                             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                               {studyTips.map((tip, index) => (
-                                 <li key={index} className="flex items-start gap-2">
-                                   <span className="text-green-500">•</span>
-                                   {tip}
-                                 </li>
-                               ))}
-                             </ul>
-                           </div>
-                         )}
-                       </div>
-                     )}
+                        {studyTips.length > 0 && (
+                          <div>
+                            <h5 className="text-sm font-bold text-green-700 dark:text-green-400 mb-2">📚 {t("studyTips")}</h5>
+                            <ul className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] space-y-1.5 font-medium pl-1">
+                              {studyTips.map((tip, index) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="text-green-500 shrink-0 font-bold">•</span>
+                                  {tip}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                     <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                       <Button
-                         onClick={() => {
-                           void saveGeneratedFlashcards();
-                         }}
-                         className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 text-sm sm:text-base py-2 sm:py-2.5"
-                       >
-                         <CheckCircle className="w-4 h-4 mr-2" />
-                         {t("saveAll")}
-                       </Button>
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                      <Button
+                        onClick={() => {
+                          void saveGeneratedFlashcards();
+                        }}
+                        className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl h-11 text-sm font-semibold shadow-lg shadow-green-500/20 transition-all border-0"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        {t("saveAll")}
+                      </Button>
 
-                       <Button
-                         onClick={() => {
-                           setGeneratedFlashcards([]);
-                           setAiMetadata(null);
-                           setQualityScore(0);
-                           setSuggestions([]);
-                           setStudyTips([]);
-                         }}
-                         variant="outline"
-                         className="flex-1 text-sm sm:text-base py-2 sm:py-2.5"
-                       >
-                         {t("clear")}
-                       </Button>
-                     </div>
-                  </CardContent>
-                </Card>
+                      <Button
+                        onClick={() => {
+                          setGeneratedFlashcards([]);
+                          setAiMetadata(null);
+                          setQualityScore(0);
+                          setSuggestions([]);
+                          setStudyTips([]);
+                        }}
+                        variant="outline"
+                        className="flex-1 h-11 rounded-xl text-sm font-semibold"
+                      >
+                        {t("clear")}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </TabsContent>
@@ -1261,41 +1279,45 @@ export default function FlashcardManagerPage() {
 
         {/* Features Section */}
         <div className="mt-12">
-          <Card className="border-gradient-question bg-white dark:bg-gray-800">
-            <CardHeader>
-              <CardTitle className="text-center text-xl">
+          <div className="apple-glass-card">
+            <div className="w-full relative z-10 p-6 md:p-8">
+              <h2 className="text-center text-xl font-bold mb-8 text-[#1d1d1f] dark:text-[#f5f5f7]">
                 <Zap className="w-6 h-6 inline mr-2 text-yellow-500" />
                 {t("featuresTitle")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <Plus className="w-12 h-12 mx-auto mb-3 text-blue-600" />
-                  <h3 className="font-semibold mb-2">{t("featureManualTitle")}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Plus className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureManualTitle")}</h3>
+                  <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureManualDesc")}
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <Brain className="w-12 h-12 mx-auto mb-3 text-purple-600" />
-                  <h3 className="font-semibold mb-2">{t("featureAiTitle")}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Brain className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureAiTitle")}</h3>
+                  <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureAiDesc")}
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <Target className="w-12 h-12 mx-auto mb-3 text-green-600" />
-                  <h3 className="font-semibold mb-2">{t("featureSmartTitle")}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Target className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureSmartTitle")}</h3>
+                  <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureSmartDesc")}
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 

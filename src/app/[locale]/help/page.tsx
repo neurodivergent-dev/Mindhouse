@@ -14,13 +14,11 @@ import {
   FileText,
   HelpCircle,
   ChevronDown,
-  ChevronUp,
   Play,
   Download,
   ExternalLink,
   Mail,
   Phone,
-  Clock,
 } from "lucide-react";
 import MobileNav from "@/components/mobile-nav";
 
@@ -46,7 +44,6 @@ type CategoryId =
   | "flashcard"
   | "premium"
   | "security"
-  | "enterprise"
   | "support";
 
 export default function HelpPage() {
@@ -63,7 +60,6 @@ export default function HelpPage() {
       { question: t("faq4Question"), answer: t("faq4Answer"), category: "flashcard" },
       { question: t("faq5Question"), answer: t("faq5Answer"), category: "premium" },
       { question: t("faq6Question"), answer: t("faq6Answer"), category: "security" },
-      { question: t("faq7Question"), answer: t("faq7Answer"), category: "enterprise" },
       { question: t("faq8Question"), answer: t("faq8Answer"), category: "support" },
     ],
     [t],
@@ -126,7 +122,6 @@ export default function HelpPage() {
       { id: "flashcard" as const, name: t("categoryFlashcard"), count: faqData.filter((f) => f.category === "flashcard").length },
       { id: "premium" as const, name: t("categoryPremium"), count: faqData.filter((f) => f.category === "premium").length },
       { id: "security" as const, name: t("categorySecurity"), count: faqData.filter((f) => f.category === "security").length },
-      { id: "enterprise" as const, name: t("categoryEnterprise"), count: faqData.filter((f) => f.category === "enterprise").length },
       { id: "support" as const, name: t("categorySupport"), count: faqData.filter((f) => f.category === "support").length },
     ],
     [t, faqData],
@@ -141,111 +136,121 @@ export default function HelpPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:bg-transparent dark:!bg-none">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:bg-transparent dark:!bg-none py-8">
       <MobileNav />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            {t("title")}
+          <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {t("title")}
+            </span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
             {t("subtitle")}
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto mb-8">
+        <div className="max-w-2xl mx-auto mb-16">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-12 h-14 rounded-2xl border-slate-200/80 bg-white/80 dark:bg-[#1c1c1e]/40 dark:border-white/[0.08] shadow-lg shadow-slate-200/40 text-base font-medium focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Video className="h-12 w-12 mx-auto mb-4 text-blue-600" />
-              <h3 className="font-semibold mb-2">{t("videoTutorialsTitle")}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+        {/* Top 3 Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+            <CardContent className="p-8 text-center flex flex-col items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-5 border border-blue-500/20 shadow-inner">
+                <Video className="h-8 w-8 text-blue-500" />
+              </div>
+              <h3 className="font-extrabold text-lg text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("videoTutorialsTitle")}</h3>
+              <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                 {t("videoTutorialsDesc")}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <MessageSquare className="h-12 w-12 mx-auto mb-4 text-green-600" />
-              <h3 className="font-semibold mb-2">{t("liveSupportTitle")}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+            <CardContent className="p-8 text-center flex flex-col items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mb-5 border border-green-500/20 shadow-inner">
+                <MessageSquare className="h-8 w-8 text-green-500" />
+              </div>
+              <h3 className="font-extrabold text-lg text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("liveSupportTitle")}</h3>
+              <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                 {t("liveSupportDesc")}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <FileText className="h-12 w-12 mx-auto mb-4 text-purple-600" />
-              <h3 className="font-semibold mb-2">{t("documentationTitle")}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+          <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+            <CardContent className="p-8 text-center flex flex-col items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-5 border border-purple-500/20 shadow-inner">
+                <FileText className="h-8 w-8 text-purple-500" />
+              </div>
+              <h3 className="font-extrabold text-lg text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("documentationTitle")}</h3>
+              <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                 {t("documentationDesc")}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+          {/* FAQ Area (Left Column - 2 Span) */}
           <div className="lg:col-span-2">
-            <Card className="border-gradient-question">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <HelpCircle className="h-5 w-5 mr-2" />
-                  {t("faqTitle")}
+            <Card className="apple-glass-card border-0 shadow-2xl rounded-3xl overflow-hidden h-full">
+              <CardHeader className="pt-8 px-8">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
+                    <HelpCircle className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-2xl font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("faqTitle")}</span>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-sm sm:text-base mt-2">
                   {t("faqDescription")}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 mb-6">
+              <CardContent className="p-8">
+                <div className="flex flex-wrap gap-2 mb-8">
                   {categories.map((category) => (
                     <Button
                       key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "outline"}
-                      size="sm"
                       onClick={() => setSelectedCategory(category.id)}
-                      className="text-xs"
+                      className={`text-xs font-bold rounded-xl transition-all h-9 px-4 ${selectedCategory === category.id
+                        ? "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white border-0 shadow-sm"
+                        : "bg-transparent border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/5 text-[#1d1d1f] dark:text-[#f5f5f7]"
+                        }`}
                     >
-                      {category.name} ({category.count})
+                      {category.name} <span className="opacity-60 ml-1 font-semibold">({category.count})</span>
                     </Button>
                   ))}
                 </div>
 
                 <div className="space-y-4">
                   {filteredFAQ.map((faq, index) => (
-                    <Card key={faq.question} className="border border-gray-200 dark:border-gray-700">
+                    <Card key={faq.question} className="border border-slate-100 dark:border-white/[0.03] bg-white/40 dark:bg-white/[0.02] shadow-sm rounded-2xl overflow-hidden transition-all duration-200">
                       <CardHeader
-                        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        className="p-5 cursor-pointer hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-colors"
                         onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
                       >
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">{faq.question}</CardTitle>
-                          {expandedFAQ === index ? (
-                            <ChevronUp className="h-4 w-4 text-gray-500" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
-                          )}
+                        <div className="flex items-center justify-between gap-4">
+                          <CardTitle className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">{faq.question}</CardTitle>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all bg-slate-100 dark:bg-white/5 ${expandedFAQ === index ? "rotate-180" : ""}`}>
+                            <ChevronDown className="h-4 w-4 text-slate-500" />
+                          </div>
                         </div>
                       </CardHeader>
                       {expandedFAQ === index && (
-                        <CardContent>
-                          <p className="text-gray-600 dark:text-gray-400">
-                            {faq.answer}
-                          </p>
+                        <CardContent className="p-5 pt-0 text-sm sm:text-base text-[#86868b] dark:text-[#a1a1a6] leading-relaxed border-t border-slate-50 dark:border-white/[0.01]">
+                          {faq.answer}
                         </CardContent>
                       )}
                     </Card>
@@ -253,44 +258,50 @@ export default function HelpPage() {
                 </div>
 
                 {filteredFAQ.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>{t("noResults")}</p>
+                  <div className="text-center py-16 text-gray-500">
+                    <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 border border-slate-200/10">
+                      <HelpCircle className="h-7 w-7 text-slate-400" />
+                    </div>
+                    <p className="text-base font-semibold">{t("noResults")}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          <div>
-            <Card className="border-gradient-question">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Video className="h-5 w-5 mr-2" />
-                  {t("tutorialsTitle")}
+          {/* Sidebar Area (Right Column) */}
+          <div className="h-full">
+            {/* Tutorials Sidebar Card */}
+            <Card className="apple-glass-card border-0 shadow-2xl rounded-3xl overflow-hidden h-full">
+              <CardHeader className="pt-8 px-8">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center shadow-md">
+                    <Video className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-xl font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("tutorialsTitle")}</span>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm mt-1">
                   {t("tutorialsDescription")}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-6 space-y-4">
                 {tutorialData.map((tutorial) => (
                   <div
                     key={tutorial.title}
-                    className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="border border-slate-100/80 dark:border-white/[0.03] bg-white/40 dark:bg-white/[0.01] rounded-2xl p-4 hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition-all duration-200"
                   >
-                    <div className="flex items-start space-x-3">
-                      <div className="w-16 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
-                        <Play className="h-4 w-4 text-gray-500" />
+                    <div className="flex items-start space-x-4">
+                      <div className="w-16 h-12 bg-slate-100 dark:bg-white/5 border border-slate-200/10 rounded-xl flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-inner">
+                        <Play className="h-4 w-4 text-slate-500 relative z-10" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm mb-1">{tutorial.title}</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1 truncate">{tutorial.title}</h4>
+                        <p className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] mb-2 leading-relaxed line-clamp-2">
                           {tutorial.description}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">{tutorial.duration}</span>
-                          <Button size="sm" variant="outline" className="text-xs">
+                        <div className="flex items-center justify-between gap-2 mt-1">
+                          <span className="text-[11px] font-bold text-indigo-500">{tutorial.duration}</span>
+                          <Button size="sm" variant="outline" className="text-xs h-7 px-3 font-extrabold rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 border-slate-200 dark:border-white/[0.08]">
                             <ExternalLink className="h-3 w-3 mr-1" />
                             {t("watch")}
                           </Button>
@@ -301,94 +312,123 @@ export default function HelpPage() {
                 ))}
               </CardContent>
             </Card>
-
-            <Card className="border-gradient-question mt-6">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MessageSquare className="h-5 w-5 mr-2" />
-                  {t("supportContactTitle")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">support@mindhouse.com</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-4 w-4 text-green-600" />
-                  <span className="text-sm">+90 (212) 555-0123</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Clock className="h-4 w-4 text-purple-600" />
-                  <span className="text-sm">{t("support247")}</span>
-                </div>
-                <Link href="/contact">
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 mt-4">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    {t("liveSupportButton")}
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
           </div>
         </div>
 
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center mb-8">
+        {/* Support Contact horizontal banner - Expanded to Full Width */}
+        <Card className="apple-glass-card border-0 shadow-2xl rounded-3xl overflow-hidden mt-10">
+          <CardContent className="p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md flex-shrink-0">
+                  <MessageSquare className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">{t("supportContactTitle")}</h3>
+                  <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    {t("support247")} — Destek ekibimiz her zaman yardıma hazır.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center space-x-3 bg-slate-100/40 dark:bg-white/[0.01] px-5 py-3 rounded-2xl border border-slate-200/10 shadow-inner">
+                  <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <Mail className="h-3.5 w-3.5 text-blue-500" />
+                  </div>
+                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">support@mindhouse.com</span>
+                </div>
+                <div className="flex items-center space-x-3 bg-slate-100/40 dark:bg-white/[0.01] px-5 py-3 rounded-2xl border border-slate-200/10 shadow-inner">
+                  <div className="w-6 h-6 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20">
+                    <Phone className="h-3.5 w-3.5 text-green-500" />
+                  </div>
+                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">+90 (212) 555-0123</span>
+                </div>
+              </div>
+
+              <Link href="/contact" className="block flex-shrink-0">
+                <Button className="h-12 px-8 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 border-0 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all hover:scale-[1.02] active:scale-[0.98] w-full lg:w-auto">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  {t("liveSupportButton")}
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Documentation Section (Bottom) */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-black text-center text-[#1d1d1f] dark:text-[#f5f5f7] mb-10 tracking-tight">
             {t("documentationSectionTitle")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <BookOpen className="h-12 w-12 mx-auto mb-4 text-blue-600" />
-                <h3 className="font-semibold mb-2">{t("gettingStartedGuide")}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {t("gettingStartedDesc")}
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Download className="h-3 w-3 mr-1" />
+            <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="p-6 text-center flex flex-col items-center justify-between h-full">
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-5 border border-blue-500/20 shadow-inner">
+                    <BookOpen className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <h3 className="font-extrabold text-base text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("gettingStartedGuide")}</h3>
+                  <p className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed mb-6">
+                    {t("gettingStartedDesc")}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full h-10 font-bold rounded-xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/5">
+                  <Download className="h-3.5 w-3.5 mr-1.5" />
                   {t("download")}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Video className="h-12 w-12 mx-auto mb-4 text-green-600" />
-                <h3 className="font-semibold mb-2">{t("videoLibrary")}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {t("videoLibraryDesc")}
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                  <ExternalLink className="h-3 w-3 mr-1" />
+            <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="p-6 text-center flex flex-col items-center justify-between h-full">
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-5 border border-green-500/20 shadow-inner">
+                    <Video className="h-6 w-6 text-green-500" />
+                  </div>
+                  <h3 className="font-extrabold text-base text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("videoLibrary")}</h3>
+                  <p className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed mb-6">
+                    {t("videoLibraryDesc")}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full h-10 font-bold rounded-xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/5">
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                   {t("view")}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-purple-600" />
-                <h3 className="font-semibold mb-2">{t("apiDocs")}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {t("apiDocsDesc")}
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                  <ExternalLink className="h-3 w-3 mr-1" />
+            <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="p-6 text-center flex flex-col items-center justify-between h-full">
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-5 border border-purple-500/20 shadow-inner">
+                    <FileText className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <h3 className="font-extrabold text-base text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("apiDocs")}</h3>
+                  <p className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed mb-6">
+                    {t("apiDocsDesc")}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full h-10 font-bold rounded-xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/5">
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                   {t("access")}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-gradient-question hover:shadow-lg cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <HelpCircle className="h-12 w-12 mx-auto mb-4 text-orange-600" />
-                <h3 className="font-semibold mb-2">{t("troubleshooting")}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {t("troubleshootingDesc")}
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                  <ExternalLink className="h-3 w-3 mr-1" />
+            <Card className="apple-glass-card border-0 shadow-xl rounded-3xl hover:scale-[1.02] transition-all duration-300">
+              <CardContent className="p-6 text-center flex flex-col items-center justify-between h-full">
+                <div className="flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-5 border border-orange-500/20 shadow-inner">
+                    <HelpCircle className="h-6 w-6 text-orange-500" />
+                  </div>
+                  <h3 className="font-extrabold text-base text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 tracking-tight">{t("troubleshooting")}</h3>
+                  <p className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed mb-6">
+                    {t("troubleshootingDesc")}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full h-10 font-bold rounded-xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/5">
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                   {t("view")}
                 </Button>
               </CardContent>

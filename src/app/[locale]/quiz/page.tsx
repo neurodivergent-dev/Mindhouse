@@ -5,13 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import QuizComponent from "@/components/quiz";
 import { Link } from "@/i18n/routing";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -62,7 +55,7 @@ function QuizPageContent() {
 
   const tSubjects = useTranslations("Subjects");
   const getTranslatedSubject = (name: string) => {
-    if (locale === "tr") {return name;}
+    if (locale === "tr") { return name; }
     try {
       return tSubjects(name as any);
     } catch {
@@ -71,25 +64,25 @@ function QuizPageContent() {
   };
 
   const getTranslatedCategory = (category: string) => {
-    if (locale === "tr") {return category;}
+    if (locale === "tr") { return category; }
     const map: Record<string, string> = {
-      "Sayısal": "Science & Math",
+      "SayÃ„Â±sal": "Science & Math",
       "Fen Bilimleri": "Science",
       "Sosyal Bilimler": "Social Sciences",
-      "Sözel": "Verbal",
-      "Yabancı Dil": "Foreign Language"
+      "SÃƒÂ¶zel": "Verbal",
+      "YabancÃ„Â± Dil": "Foreign Language"
     };
     return map[category] || category;
   };
 
   const getTranslatedDifficulty = (diff: string) => {
-    if (locale === "tr") {return diff;}
+    if (locale === "tr") { return diff; }
     const map: Record<string, string> = {
       "Kolay": "Easy",
       "Orta": "Medium",
       "Zor": "Hard",
-      "Başlangıç": "Beginner",
-      "İleri": "Advanced"
+      "BaÃ…Å¸langÃ„Â±ÃƒÂ§": "Beginner",
+      "Ã„Â°leri": "Advanced"
     };
     return map[diff] || diff;
   };
@@ -124,11 +117,14 @@ function QuizPageContent() {
     checkAuth();
   }, []);
 
-  // Load questions from both localStorage and Supabase
+  // Load questions from both IndexedDB and Supabase
   const loadAllQuestions = async (): Promise<Question[]> => {
     let allQuestions: Question[] = [];
 
     try {
+      // Make sure the IndexedDB-backed cache is ready before reading
+      await UnifiedStorageService.initialize();
+
       if (isAuthenticated) {
         // Try to load from Supabase first
         try {
@@ -168,6 +164,9 @@ function QuizPageContent() {
     const loadSubjects = async () => {
       try {
         setLoading(true);
+
+        // Make sure the IndexedDB-backed cache is ready before reading
+        await UnifiedStorageService.initialize();
 
         // Demo mode control
         const demoMode = shouldUseDemoData();
@@ -325,136 +324,127 @@ function QuizPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Back button */}
-        <div className="mb-6">
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8">
           <Button
             onClick={() => (window.location.href = "/dashboard")}
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
+            className="mb-4 flex items-center gap-2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             {t("backToDashboard")}
           </Button>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shrink-0">
+              <GraduationCap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {t("pageTitle")}
+                </h1>
+                {isDemoMode && (
+                  <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs px-2.5 py-0.5">
+                    {t("demo")}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm md:text-base font-medium mt-0.5">
+                {t("pageDescription")}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
-              {t("pageTitle")}
-            </h1>
-            {isDemoMode && (
-              <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                {t("demo")}
-              </Badge>
-            )}
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            {t("pageDescription")}
-          </p>
-        </div>
-        <Card className={`mx-auto border-gradient-question shadow-lg ${!loading && subjects.length === 0 ? "max-w-4xl" : "max-w-2xl"}`}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
-                <GraduationCap className="w-5 h-5 text-white" />
+        {/* Main Selection Card */}
+        <div className="apple-glass-card mb-8">
+          <div className="w-full relative z-10 p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm shrink-0">
+                <BookOpen className="w-5 h-5 text-white" />
               </div>
-              {t("subjectSelection")}
-            </CardTitle>
-            <CardDescription>
-              {t("subjectSelectionDesc")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+              <div>
+                <h2 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {t("subjectSelection")}
+                </h2>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                  {t("subjectSelectionDesc")}
+                </p>
+              </div>
+            </div>
+
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                <span>{t("loadingSubjects")}</span>
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-7 h-7 animate-spin mr-2 text-blue-500" />
+                <span className="text-[#86868b] dark:text-[#a1a1a6] text-sm">{t("loadingSubjects")}</span>
               </div>
             ) : subjects.length === 0 ? (
-              <div className="col-span-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {/* Card 1: Add Subject */}
-                  <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 rounded-lg p-8 text-center">
-                    <div className="mb-4 flex justify-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                        <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Card 1: Add Subject */}
+                <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group shadow-sm shadow-slate-200/60">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                    {t("addSubject")}
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                    {t("noActiveSubjects")}
+                  </p>
+                  <Link href="/subject-manager" className="mt-auto w-full">
+                    <Button className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold">
+                      <GraduationCap className="w-4 h-4 mr-2" />
                       {t("addSubject")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                      {t("noActiveSubjects")}
-                    </p>
-                    <Link href="/subject-manager">
-                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        {t("addSubject")}
-                      </Button>
-                    </Link>
-                  </div>
+                    </Button>
+                  </Link>
+                </div>
 
-                  {/* Card 2: Question Management */}
-                  <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-500 transition-all duration-300 rounded-lg p-8 text-center">
-                    <div className="mb-4 flex justify-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400" />
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {t("questionManagement")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                      {t("questionManagementDesc")}
-                    </p>
-                    <Link href="/question-manager">
-                      <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white w-full">
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        {t("addQuestion")}
-                      </Button>
-                    </Link>
+                {/* Card 2: Question Management */}
+                <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:border-green-300 dark:hover:border-green-700 transition-all duration-300 group shadow-sm shadow-slate-200/60">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/50 dark:to-emerald-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400" />
                   </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                    {t("questionManagement")}
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                    {t("questionManagementDesc")}
+                  </p>
+                  <Link href="/question-manager" className="mt-auto w-full">
+                    <Button className="w-full h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl text-sm font-semibold">
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      {t("addQuestion")}
+                    </Button>
+                  </Link>
+                </div>
 
-                  {/* Card 3: Quiz Process */}
-                  <div className="shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 rounded-lg p-8 text-center">
-                    <div className="mb-4 flex justify-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-full flex items-center justify-center">
-                        <Play className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {t("quizProcess")}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                      {t("quizProcessDesc")}
-                    </p>
-                    <div className="text-sm text-gray-400 dark:text-gray-500">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-                        <span>{t("subject")}</span>
-                      </div>
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <span className="w-4 h-4 bg-green-500 rounded-full"></span>
-                        <span>{t("question")}</span>
-                      </div>
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 bg-purple-500 rounded-full"></span>
-                        <span>{t("quiz")}</span>
-                      </div>
-                    </div>
+                {/* Card 3: Quiz Process */}
+                <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-300 group shadow-sm shadow-slate-200/60">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Play className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                   </div>
+                  <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                    {t("quizProcess")}
+                  </h3>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                    {t("quizProcessDesc")}
+                  </p>
+                  <Link href="/subject-manager" className="mt-auto w-full">
+                    <Button className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl text-sm font-semibold">
+                      <Play className="w-4 h-4 mr-2" />
+                      {t("startQuiz")}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             ) : (
-              <>
-                <Select
-                  value={selectedSubject}
-                  onValueChange={setSelectedSubject}
-                >
-                  <SelectTrigger className="hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white hover:border-0">
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                  <SelectTrigger className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm h-12 text-sm font-medium">
                     <SelectValue placeholder={t("selectSubjectPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -462,8 +452,7 @@ function QuizPageContent() {
                       <SelectItem
                         key={subject.id}
                         value={subject.name}
-                        className={`hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 data-[highlighted]:bg-gradient-to-r data-[highlighted]:from-blue-100 data-[highlighted]:to-purple-100 data-[highlighted]:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white dark:data-[highlighted]:from-blue-600 dark:data-[highlighted]:to-purple-600 dark:data-[highlighted]:text-white ${subject.name === defaultSubject ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" : ""
-                          }`}
+                        className={subject.name === defaultSubject ? "font-semibold" : ""}
                       >
                         {getTranslatedSubject(subject.name)} ({t("questionCount", { count: subject.questionCount })})
                         {subject.name === defaultSubject && t("defaultBadge")}
@@ -475,128 +464,137 @@ function QuizPageContent() {
                 <Button
                   onClick={handleStartQuiz}
                   disabled={!selectedSubject}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all text-base font-semibold disabled:opacity-40"
                   size="lg"
                 >
-                  <Play className="w-4 h-4 mr-2" />
+                  <Play className="w-5 h-5 mr-2" />
                   {selectedSubject === defaultSubject ? t("startDefaultQuiz") : t("startQuiz")}
                 </Button>
-              </>
+              </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Akıllı Öğrenme Özellikleri */}
-        <div className="mt-8">
-          <div className="border-gradient-question bg-white dark:bg-gray-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
-              <Brain className="w-5 h-5 inline mr-2 text-purple-600" />
-              {t("smartFeatures")}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300">
-              <div className="flex items-center">
-                <Target className="w-4 h-4 mr-2 text-blue-600" />
-                <span>{t("personalizedDifficulty")}</span>
+        {/* Smart Features Card */}
+        <div className="apple-glass-card mb-8">
+          <div className="w-full relative z-10 p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm shrink-0">
+                <Brain className="w-5 h-5 text-white" />
               </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2 text-green-600" />
-                <span>{t("timeLimitedModes")}</span>
+              <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                {t("smartFeatures")}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                  <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("personalizedDifficulty")}</span>
               </div>
-              <div className="flex items-center">
-                <Bot className="w-4 h-4 mr-2 text-purple-600" />
-                <span>{t("aiTutorHelp")}</span>
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("timeLimitedModes")}</span>
               </div>
-              <div className="flex items-center">
-                <BarChart3 className="w-4 h-4 mr-2 text-indigo-600" />
-                <span>{t("detailedAnalytics")}</span>
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                  <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("aiTutorHelp")}</span>
               </div>
-              <div className="flex items-center">
-                <Palette className="w-4 h-4 mr-2 text-pink-600" />
-                <span>{t("adaptiveAlgorithm")}</span>
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
+                  <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("detailedAnalytics")}</span>
               </div>
-              <div className="flex items-center">
-                <Search className="w-4 h-4 mr-2 text-orange-600" />
-                <span>{t("weakTopicDetection")}</span>
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center shrink-0">
+                  <Palette className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("adaptiveAlgorithm")}</span>
+              </div>
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
+                  <Search className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                </div>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("weakTopicDetection")}</span>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Subject Cards Grid */}
         {subjects.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 text-center">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-5 tracking-tight">
               {t("availableSubjects")}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {subjects.map((subject) => (
-                <Card
+                <div
                   key={subject.id}
-                  className="cursor-pointer border-gradient-question shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="apple-glass-card cursor-pointer group hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                   onClick={() => {
                     setSelectedSubject(subject.name);
-
-                    // Check if there are real questions for this subject using both sources
                     loadAllQuestions().then(allQuestions => {
                       const questionsForSubject = allQuestions.filter(q => {
                         const normalizedQuestionSubject = q.subject.trim().toLowerCase();
                         const normalizedSubjectName = subject.name.trim().toLowerCase();
                         return normalizedQuestionSubject === normalizedSubjectName;
                       });
-
                       const hasRealQuestions = questionsForSubject.length > 0;
-
                       if (hasRealQuestions) {
-                        // Use real questions - don't set demo mode and remove any existing demo flag
                         localStorage.removeItem("btk_demo_mode");
-                        const quizUrl = `/quiz?subject=${encodeURIComponent(subject.name)}`;
-                        router.push(quizUrl);
+                        router.push(`/quiz?subject=${encodeURIComponent(subject.name)}`);
                       } else {
-                        // No real questions - use demo mode
                         localStorage.setItem("btk_demo_mode", "true");
-                        const quizUrl = `/quiz?subject=${encodeURIComponent(subject.name)}&demo=true`;
-                        router.push(quizUrl);
+                        router.push(`/quiz?subject=${encodeURIComponent(subject.name)}&demo=true`);
                       }
                     });
                   }}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+                  <div className="w-full relative z-10 p-5 md:p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform">
                         <BookOpen className="w-5 h-5 text-white" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 dark:text-white">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base md:text-lg text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
                           {getTranslatedSubject(subject.name)}
                         </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-xs md:text-sm text-[#86868b] dark:text-[#a1a1a6]">
                           {getTranslatedCategory(subject.category || "")}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pt-2 border-t border-white/10 dark:border-white/5">
                       <Badge
                         className={
-                          subject.difficulty === "Kolay"
-                            ? "bg-green-500"
-                            : subject.difficulty === "Orta"
-                              ? "bg-yellow-500"
-                              : "bg-red-500"
+                          subject.difficulty === "Kolay" || subject.difficulty === "Easy"
+                            ? "bg-green-500/15 text-green-700 dark:text-green-400 text-xs font-semibold border-0 px-2.5 py-0.5"
+                            : subject.difficulty === "Orta" || subject.difficulty === "Medium"
+                              ? "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 text-xs font-semibold border-0 px-2.5 py-0.5"
+                              : "bg-red-500/15 text-red-700 dark:text-red-400 text-xs font-semibold border-0 px-2.5 py-0.5"
                         }
                       >
                         {getTranslatedDifficulty(subject.difficulty || "")}
                       </Badge>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                      <span className="text-xs md:text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6]">
                         {t("questionCount", { count: subject.questionCount })}
                       </span>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Quiz Özellikleri */}
+        {/* Feature Cards */}
         <FeatureCards
           title={t("quizFeatures")}
           features={translatedFeatures}

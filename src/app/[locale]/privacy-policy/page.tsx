@@ -62,9 +62,11 @@ export default async function PrivacyPolicyPage({
             </ol>
           </nav>
 
-          <div className="glass-card p-8 rounded-xl shadow-lg">
-            <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {t("title")}
+          <div className="apple-glass-card border-0 shadow-2xl p-8 sm:p-12 rounded-3xl backdrop-blur-md">
+            <h1 className="text-4xl font-black mb-6 tracking-tight">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {t("title")}
+              </span>
             </h1>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">

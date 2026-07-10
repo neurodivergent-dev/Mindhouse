@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Brain, Github, Linkedin, Youtube, Heart } from "lucide-react";
+import { Brain, Github, Youtube, Heart, Linkedin } from "lucide-react";
 
 export default function Footer() {
   const t = useTranslations("Footer");
@@ -88,7 +88,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/pricing"
+                    href="/landing#pricing"
                     className="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
                     {t("pricing")}
@@ -128,7 +128,7 @@ export default function Footer() {
               </h3>
               <div className="flex mt-4 space-x-6 justify-start md:justify-end">
                 <a
-                  href="https://www.youtube.com/@Mindhouse-Tech"
+                  href="https://www.youtube.com/@Mindhouse-ai"
                   className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -137,16 +137,7 @@ export default function Footer() {
                   <Youtube className="h-6 w-6" />
                 </a>
                 <a
-                  href="https://github.com/melihcanndemir/mindhouse"
-                  className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="sr-only">GitHub</span>
-                  <Github className="h-6 w-6" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/melihcandemir/"
+                  href="https://www.linkedin.com/in/neurodivergent-dev/"
                   className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -154,6 +145,16 @@ export default function Footer() {
                   <span className="sr-only">LinkedIn</span>
                   <Linkedin className="h-6 w-6" />
                 </a>
+                <a
+                  href="https://github.com/neurodivergent-dev"
+                  className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="sr-only">GitHub</span>
+                  <Github className="h-6 w-6" />
+                </a>
+
               </div>
             </div>
           </div>

@@ -688,8 +688,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 onClick={() => speakText(currentQuestion, "question")}
                 size="sm"
                 variant="outline"
-                className={`rounded-full w-12 h-12 shadow-lg ${isReadingQuestion ? "bg-green-100 border-green-300" : ""
-                  }`}
+                className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
+                  isReadingQuestion 
+                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30" 
+                    : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
+                }`}
                 disabled={isSpeaking && !isReadingQuestion}
               >
                 {isReadingQuestion ? (
@@ -707,8 +710,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 onClick={speakOptions}
                 size="sm"
                 variant="outline"
-                className={`rounded-full w-12 h-12 shadow-lg ${isReadingAnswer ? "bg-green-100 border-green-300" : ""
-                  }`}
+                className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
+                  isReadingAnswer 
+                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30" 
+                    : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
+                }`}
                 disabled={isSpeaking && !isReadingAnswer}
                 title={t("readAnswer")}
               >
@@ -727,8 +733,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 onClick={speakBackSide}
                 size="sm"
                 variant="outline"
-                className={`rounded-full w-12 h-12 shadow-lg ${isReadingExplanation ? "bg-blue-100 border-blue-300" : ""
-                  }`}
+                className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
+                  isReadingExplanation 
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30" 
+                    : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
+                }`}
                 disabled={isSpeaking && !isReadingExplanation}
                 title={t("readBackSide")}
               >
@@ -747,8 +756,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 onClick={() => speakText(currentExplanation, "explanation")}
                 size="sm"
                 variant="outline"
-                className={`rounded-full w-12 h-12 shadow-lg ${isReadingExplanation ? "bg-blue-100 border-blue-300" : ""
-                  }`}
+                className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
+                  isReadingExplanation 
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30" 
+                    : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
+                }`}
                 disabled={isSpeaking && !isReadingExplanation}
                 title={t("readExplanation")}
               >
@@ -770,8 +782,11 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 }}
                 size="sm"
                 variant="outline"
-                className={`rounded-full w-12 h-12 shadow-lg ${isReadingAiTutor ? "bg-purple-100 border-purple-300" : ""
-                  }`}
+                className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
+                  isReadingAiTutor 
+                    ? "bg-purple-500/20 border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/30" 
+                    : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
+                }`}
                 disabled={isSpeaking && !isReadingAiTutor}
                 title={t("aiTutorRead")}
               >
@@ -790,7 +805,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 onClick={stopSpeaking}
                 size="sm"
                 variant="outline"
-                className="rounded-full w-12 h-12 shadow-lg bg-red-100 border-red-300"
+                className="rounded-full w-12 h-12 shadow-lg backdrop-blur-sm bg-red-500/20 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/30 transition-all"
               >
                 <VolumeX className="w-4 h-4" />
               </Button>

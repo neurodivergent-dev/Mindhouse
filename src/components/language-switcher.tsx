@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { usePathname, Link } from "@/i18n/routing";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,18 +13,10 @@ import { Globe } from "lucide-react";
 
 export function LanguageSwitcher() {
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("Navigation");
 
-  const handleLanguageChange = (newLocale: string) => {
-    if (newLocale === locale) {
-      return;
-    }
-    router.replace(pathname, { locale: newLocale });
-  };
-
-  // Light mode için daha açık, dark mode için canlı gradient
+  // Lighter gradient for light mode, vibrant gradient for dark mode.
   const gradientClass = "hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white transition-all";
   const activeClass = "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white";
 
@@ -42,16 +34,20 @@ export function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
-          onClick={() => handleLanguageChange("tr")}
+          asChild
           className={`${gradientClass} ${locale === "tr" ? activeClass : ""}`}
         >
-          {t("turkish")}
+          <Link href={pathname} locale="tr" scroll={false} className="w-full cursor-pointer">
+            {t("turkish")}
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleLanguageChange("en")}
+          asChild
           className={`${gradientClass} ${locale === "en" ? activeClass : ""}`}
         >
-          {t("english")}
+          <Link href={pathname} locale="en" scroll={false} className="w-full cursor-pointer">
+            {t("english")}
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

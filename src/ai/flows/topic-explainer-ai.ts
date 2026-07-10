@@ -205,7 +205,7 @@ Return ONLY valid JSON. No extra text.
   "content": "Detailed, topic-specific educational content in Markdown. Focus exclusively on real ideas from '${input.topic}'. Use headings, bold for key terms, lists, and examples.",
   "examples": ["3-5 concrete, specific examples that actually belong to '${input.topic}' (not generic)"],
   "tips": ["3-5 practical learning tips, common mistakes, or strategies specific to learning '${input.topic}'"],
-  "visualDescription": "Detailed description for an AI image generator that is highly specific to '${input.topic}' (include symbols, diagrams, or visual elements unique to it)",
+  "visualDescription": "Detailed description for an AI image generator representing '${input.topic}'. CRITICAL: Do NOT request readable text, letters, or words as AI generators garble them. Instead, describe a highly aesthetic, clean, abstract 3D illustration, digital art, or a minimalist conceptual metaphor representing the topic (e.g. glowing geometry, sleek nodes, or visual equations without text). Keep the style modern, premium, and clean, like Apple or Stripe graphics.",
   "confidence": 0.85
 }
 
@@ -251,7 +251,7 @@ Sadece geçerli JSON döndür. Başka hiçbir şey yazma.
   "content": "Markdown formatında, konuya özel detaylı eğitim içeriği. Sadece '${input.topic}' konusunun gerçek kavramlarını anlat.",
   "examples": ["'${input.topic}' konusuna ait 3-5 somut ve gerçek örnek (jenerik olmasın)"],
   "tips": ["'${input.topic}' öğrenirken işe yarayacak 3-5 ipucu, sık hata veya strateji"],
-  "visualDescription": "'${input.topic}' konusuna özel, detaylı görsel tanımı (semboller, diyagramlar, konuyla ilgili unsurlar içermeli)",
+  "visualDescription": "'${input.topic}' konusunu temsil eden yapay zeka görsel açıklaması. KRİTİK: Kesinlikle okunabilir metin, harf veya kelimeler talep etme (görsel yapay zekaları harfleri bozar). Bunun yerine, konuyu simgeleyen yüksek estetikli, temiz, soyut bir 3D illüstrasyon, dijital sanat veya minimalist kavramsal bir metafor tanımla (örn: ışıklı geometrik yapılar, modern bağlantı noktaları veya metinsiz şık diyagramlar). Tarzı Apple veya Stripe grafiklerine benzer şekilde modern, premium ve sade tut.",
   "confidence": 0.85
 }
 

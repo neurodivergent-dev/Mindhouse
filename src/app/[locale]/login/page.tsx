@@ -5,13 +5,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -25,6 +18,7 @@ import {
   Brain,
   Users,
   Target,
+  Loader2,
 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
 import {
@@ -158,22 +152,22 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-xl">
-              <Brain className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-center mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Brain className="h-7 w-7 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
             {tCommon("appName")}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm font-medium mt-1.5">
             {t("tagline")}
           </p>
         </motion.div>
@@ -183,16 +177,17 @@ function LoginPageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="shadow-xl border-0 glass-card">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">
-                {isLogin ? t("welcome") : t("createAccount")}
-              </CardTitle>
-              <CardDescription>
-                {isLogin ? t("loginDescription") : t("registerDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="apple-glass-card">
+            <div className="w-full relative z-10 p-6 md:p-8 space-y-6">
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {isLogin ? t("welcome") : t("createAccount")}
+                </h2>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-1">
+                  {isLogin ? t("loginDescription") : t("registerDescription")}
+                </p>
+              </div>
+
               <form
                 onSubmit={(e) => {
                   void handleSubmit(e);
@@ -200,38 +195,42 @@ function LoginPageContent() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="email">{tCommon("email")}</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder={tCommon("emailPlaceholder")}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
+                   <Label htmlFor="email" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                     {tCommon("email")}
+                   </Label>
+                   <div className="relative">
+                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6]" />
+                     <Input
+                       id="email"
+                       type="email"
+                       placeholder={tCommon("emailPlaceholder")}
+                       value={email}
+                       onChange={(e) => setEmail(e.target.value)}
+                       className="pl-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl text-sm font-medium"
+                       required
+                     />
+                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">{t("password")}</Label>
+                  <Label htmlFor="password" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("password")}
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10"
-                      required
-                    />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6]" />
+                     <Input
+                       id="password"
+                       type={showPassword ? "text" : "password"}
+                       placeholder="••••••••"
+                       value={password}
+                       onChange={(e) => setPassword(e.target.value)}
+                       className="pl-10 pr-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl text-sm font-medium"
+                       required
+                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -244,24 +243,26 @@ function LoginPageContent() {
 
                 {!isLogin && (
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+                    <Label htmlFor="confirmPassword" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("confirmPassword")}
+                    </Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pl-10 pr-10"
-                        required
-                      />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6]" />
+                       <Input
+                         id="confirmPassword"
+                         type={showConfirmPassword ? "text" : "password"}
+                         placeholder="••••••••"
+                         value={confirmPassword}
+                         onChange={(e) => setConfirmPassword(e.target.value)}
+                         className="pl-10 pr-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl text-sm font-medium"
+                         required
+                       />
                       <button
                         type="button"
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
                         }
-                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                       >
                         {showConfirmPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -271,12 +272,12 @@ function LoginPageContent() {
                       </button>
                     </div>
                     {confirmPassword && password !== confirmPassword && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className="text-xs text-red-500 mt-1">
                         {t("passwordMismatch")}
                       </p>
                     )}
                     {confirmPassword && password === confirmPassword && (
-                      <p className="text-sm text-green-500 mt-1">
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
                         {t("passwordMatch")}
                       </p>
                     )}
@@ -285,7 +286,7 @@ function LoginPageContent() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 text-sm font-semibold disabled:opacity-40"
                   disabled={
                     isLoading ||
                     (!isLogin &&
@@ -293,14 +294,12 @@ function LoginPageContent() {
                   }
                 >
                   {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>
-                        {isLogin ? t("signingIn") : t("signingUp")}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>{isLogin ? t("signingIn") : t("signingUp")}</span>
                     </div>
                   ) : (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
                       <span>{isLogin ? t("signIn") : t("signUp")}</span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
@@ -312,30 +311,30 @@ function LoginPageContent() {
                 <div className="text-center">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
                   >
                     {t("forgotPassword")}
                   </Link>
                 </div>
               )}
 
-              <Separator />
+              <Separator className="bg-white/20 dark:bg-white/10" />
 
               <Button
                 variant="outline"
-                className="w-full hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 transition-all"
+                className="w-full h-11 rounded-xl bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold text-sm transition-all"
                 onClick={() => {
                   void handleGoogleSignIn();
                 }}
                 disabled={isGoogleLoading}
               >
                 {isGoogleLoading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span>{t("signingInWithGoogle")}</span>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 48 48"
@@ -365,12 +364,12 @@ function LoginPageContent() {
                 )}
               </Button>
 
-              <Separator />
+              <Separator className="bg-white/20 dark:bg-white/10" />
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Button
                   variant="ghost"
-                  className="w-full hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 transition-all"
+                  className="w-full h-11 rounded-xl text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-white/40 dark:hover:bg-white/5 font-medium text-sm transition-all"
                   onClick={handleGuestMode}
                 >
                   <Users className="h-4 w-4 mr-2" />
@@ -379,7 +378,7 @@ function LoginPageContent() {
 
                 <Button
                   variant="ghost"
-                  className="w-full hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 transition-all"
+                  className="w-full h-11 rounded-xl text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-white/40 dark:hover:bg-white/5 font-medium text-sm transition-all"
                   onClick={handleLiveDemo}
                 >
                   <Play className="h-4 w-4 mr-2" />
@@ -387,13 +386,14 @@ function LoginPageContent() {
                 </Button>
               </div>
 
-              <div className="text-center text-sm">
+              <div className="text-center text-sm text-[#86868b] dark:text-[#a1a1a6]">
                 {isLogin ? (
                   <p>
                     {t("noAccount")}{" "}
                     <button
+                      type="button"
                       onClick={() => handleToggleMode(false)}
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold transition-colors"
                     >
                       {t("registerNow")}
                     </button>
@@ -402,44 +402,45 @@ function LoginPageContent() {
                   <p>
                     {t("hasAccount")}{" "}
                     <button
+                      type="button"
                       onClick={() => handleToggleMode(true)}
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold transition-colors"
                     >
                       {t("signInNow")}
                     </button>
                   </p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-8 grid grid-cols-2 gap-4"
+          className="mt-6 grid grid-cols-2 gap-4"
         >
-          <motion.div
-            className="text-center p-4 rounded-lg border-gradient-question bg-white dark:bg-gray-800"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <GraduationCap className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-            <p className="text-sm font-medium text-gray-800 dark:text-white">
-              {t("aiLearning")}
-            </p>
-          </motion.div>
-          <motion.div
-            className="text-center p-4 rounded-lg border-gradient-question bg-white dark:bg-gray-800"
-            whileHover={{ scale: 1.05, y: -5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Target className="h-6 w-6 mx-auto mb-2 text-indigo-600" />
-            <p className="text-sm font-medium text-gray-800 dark:text-white">
-              {t("personalized")}
-            </p>
-          </motion.div>
+          <div className="apple-glass-card hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+            <div className="p-4 text-center relative z-10">
+              <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center mx-auto mb-2">
+                <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <p className="text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                {t("aiLearning")}
+              </p>
+            </div>
+          </div>
+          <div className="apple-glass-card hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+            <div className="p-4 text-center relative z-10">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center mx-auto mb-2">
+                <Target className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <p className="text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                {t("personalized")}
+              </p>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
@@ -447,10 +448,14 @@ function LoginPageContent() {
 }
 
 export default function LoginPage() {
-  const tCommon = useTranslations("Common");
-
   return (
-    <Suspense fallback={<div>{tCommon("loading")}</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center">
+          <Loader2 className="w-7 h-7 animate-spin text-blue-500" />
+        </div>
+      }
+    >
       <LoginPageContent />
     </Suspense>
   );

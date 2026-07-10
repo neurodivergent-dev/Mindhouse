@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+import { getSubjectName } from "@/lib/question-manager-labels";
 import { mapDifficulty } from "@/lib/question-manager-labels";
 import {
   Dialog,
@@ -73,13 +74,7 @@ export default function AIQuestionDialog({
   const t = useTranslations("QuestionManager");
   const tSubjects = useTranslations("Subjects");
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name as any);
-    } catch {
-      return name;
-    }
-  };
+  const getSubjectNameFormatted = (name: string) => getSubjectName(name, tSubjects);
   const [activeAITab, setActiveAITab] = useState<string>("generate");
   const [showAnswers, setShowAnswers] = useState(false);
   const [selectedAIQuestions, setSelectedAIQuestions] = useState<Set<number>>(
@@ -180,10 +175,10 @@ export default function AIQuestionDialog({
         }
       }}
     >
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] w-[98vw] max-w-[98vw] h-[95vh] sm:h-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+      <DialogContent className="w-[94vw] !max-w-4xl h-auto !max-h-[92vh] flex flex-col p-6 border-0 rounded-[32px] overflow-hidden shadow-2xl bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl">
+        <DialogHeader className="pb-3 border-b border-slate-100 dark:border-white/[0.05]">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+            <Sparkles className="w-5 h-5 text-blue-600" />
             {t("aiDialogTitle")}
           </DialogTitle>
         </DialogHeader>
@@ -205,32 +200,32 @@ export default function AIQuestionDialog({
 
           <TabsContent
             value="generate"
-            className="space-y-2 sm:space-y-4 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto"
+            className="space-y-2 sm:space-y-4 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto px-2 py-1"
           >
             <div className="grid gap-2 sm:gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="ai-subject">{t("subject")}</Label>
+                  <Label htmlFor="ai-subject" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subject")}</Label>
                   <Select
                     value={aiFormData.subject}
                     onValueChange={(value) => {
                       setAIFormData({ ...aiFormData, subject: value });
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium">
                       <SelectValue placeholder={t("selectSubject")} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
                       {subjects.map((subject) => (
                         <SelectItem key={subject.id} value={subject.name}>
-                          {getSubjectName(subject.name)}
+                          {getSubjectNameFormatted(subject.name)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-topic">{t("topic")}</Label>
+                  <Label htmlFor="ai-topic" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topic")}</Label>
                   <Input
                     id="ai-topic"
                     value={aiFormData.topic}
@@ -238,13 +233,14 @@ export default function AIQuestionDialog({
                       setAIFormData({ ...aiFormData, topic: e.target.value })
                     }
                     placeholder={t("aiTopicPlaceholder")}
+                    className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="ai-type">{t("questionType")}</Label>
+                  <Label htmlFor="ai-type" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("questionType")}</Label>
                   <Select
                     value={aiFormData.type}
                     onValueChange={(value) =>
@@ -258,10 +254,10 @@ export default function AIQuestionDialog({
                       })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
                       <SelectItem value="multiple-choice">
                         {t("typeMultipleChoice")}
                       </SelectItem>
@@ -274,7 +270,7 @@ export default function AIQuestionDialog({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-difficulty">{t("difficulty")}</Label>
+                  <Label htmlFor="ai-difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficulty")}</Label>
                   <Select
                     value={aiFormData.difficulty}
                     onValueChange={(value) =>
@@ -284,10 +280,10 @@ export default function AIQuestionDialog({
                       })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
                       <SelectItem value="Easy">{t("difficultyEasy")}</SelectItem>
                       <SelectItem value="Medium">{t("difficultyMedium")}</SelectItem>
                       <SelectItem value="Hard">{t("difficultyHard")}</SelectItem>
@@ -295,7 +291,7 @@ export default function AIQuestionDialog({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-count">{t("aiQuestionCount")}</Label>
+                  <Label htmlFor="ai-count" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("aiQuestionCount")}</Label>
                   <Input
                     id="ai-count"
                     type="number"
@@ -309,6 +305,7 @@ export default function AIQuestionDialog({
                         count: Math.min(Math.max(value, 1), 25),
                       });
                     }}
+                    className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     {t("aiTokenLimit")}
@@ -317,7 +314,7 @@ export default function AIQuestionDialog({
               </div>
 
               <div>
-                <Label htmlFor="ai-guidelines" className="text-sm">
+                <Label htmlFor="ai-guidelines" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
                   {t("aiGuidelines")}
                 </Label>
                 <Textarea
@@ -331,23 +328,23 @@ export default function AIQuestionDialog({
                   }
                   placeholder={t("aiGuidelinesPlaceholder")}
                   rows={2}
-                  className="min-h-[60px] sm:min-h-[80px]"
+                  className="min-h-[60px] sm:min-h-[80px] rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] focus:ring-2 focus:ring-blue-500/20 font-medium"
                 />
               </div>
 
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 text-blue-900 dark:text-blue-200">
+                <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-semibold leading-relaxed">
                   {t("aiQualityNote")}
-                </AlertDescription>
-              </Alert>
+                </p>
+              </div>
 
               <Button
                 onClick={handleGenerateClick}
                 disabled={
                   isGenerating || !aiFormData.subject || !aiFormData.topic
                 }
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 h-10 sm:h-10 shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 border-0 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {isGenerating ? (
                   <>
@@ -366,7 +363,7 @@ export default function AIQuestionDialog({
 
           <TabsContent
             value="review"
-            className="space-y-4 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto"
+            className="space-y-4 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto px-2 py-1"
           >
             {aiGenerationResult && aiGeneratedQuestions.length > 0 ? (
               <>
@@ -532,46 +529,46 @@ export default function AIQuestionDialog({
                   </div>
                 </ScrollArea>
 
-                <div className="flex flex-col gap-3 pt-3 sm:pt-4 border-t">
+                <div className="flex flex-col gap-3 pt-3 sm:pt-4 border-t border-slate-100 dark:border-white/[0.05]">
                   {!aiFormData.subject && (
-                    <Alert className="mb-2">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
+                    <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/10 dark:border-amber-500/20 text-amber-900 dark:text-amber-200 mb-2">
+                      <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm font-semibold leading-relaxed">
                         {t("selectSubjectWarning")}
-                      </AlertDescription>
-                    </Alert>
+                      </p>
+                    </div>
                   )}
 
-                  <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                  <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left font-semibold">
                     {t("questionsSelected", {
                       selected: selectedAIQuestions.size,
                       total: aiGeneratedQuestions.length,
                     })}
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Button
                       variant="outline"
                       onClick={() => onOpenChange(false)}
-                      className="w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm"
+                      className="flex-1 h-12 text-base font-extrabold rounded-2xl border-slate-200 dark:border-white/[0.08] transition-all hover:scale-[1.01] active:scale-[0.99]"
                     >
                       {t("cancel")}
                     </Button>
                     <Button
                       onClick={handleApproveClick}
                       disabled={selectedAIQuestions.size === 0 || isCreating || !aiFormData.subject}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm shadow-lg"
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
                     >
                       {isCreating ? (
                         <>
-                          <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1 sm:mr-2" />
-                          <span className="text-xs sm:text-sm">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          <span className="text-base font-extrabold">
                             {t("adding")}
                           </span>
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          <span className="text-xs sm:text-sm">
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          <span className="text-base font-extrabold">
                             {t("addQuestions")}
                           </span>
                         </>

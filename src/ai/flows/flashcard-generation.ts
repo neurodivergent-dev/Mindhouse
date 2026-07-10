@@ -35,20 +35,29 @@ const GeneratedFlashcardSchema = z.object({
   answer: z.string().describe("The answer text for the back of the flashcard"),
   explanation: z
     .string()
+    .optional()
+    .default("")
     .describe("Detailed explanation of the answer for better understanding"),
-  topic: z.string().describe("The specific topic this flashcard covers"),
+  topic: z.string().optional().default("").describe("The specific topic this flashcard covers"),
   difficulty: z
     .enum(["Easy", "Medium", "Hard"])
+    .optional()
+    .default("Medium")
     .describe("Actual difficulty of the generated flashcard"),
   keywords: z
     .array(z.string())
+    .optional()
+    .default([])
     .describe("Key concepts covered in the flashcard"),
   learningObjective: z
     .string()
+    .optional()
+    .default("")
     .describe("What the student should learn from this flashcard"),
   relatedConcepts: z
     .array(z.string())
     .optional()
+    .default([])
     .describe("Related concepts that connect to this flashcard"),
 });
 
@@ -101,13 +110,18 @@ export async function generateFlashcards(
 
     ${guidelines ? `Special guidelines: ${guidelines}` : ""}
 
-    For each flashcard:
-    - Question: Visible on the front, clear and understandable
-    - Answer: Visible on the back, correct and comprehensive
-    - Explanation: Detailed explanation for the student to better understand the topic
-    - Difficulty: Appropriate to ${difficulty} level
-    - Keywords: Important concepts covered in the flashcard
-    - Learning objective: What will be learned from this flashcard
+    You must output a JSON object containing a "flashcards" array with exactly ${count} flashcard objects.
+    Each flashcard object in the array must follow this JSON schema:
+    {
+      "question": "Clear and understandable question text",
+      "answer": "Correct and comprehensive answer text",
+      "explanation": "Detailed explanation of the answer",
+      "topic": "${topic}",
+      "difficulty": "Easy" | "Medium" | "Hard",
+      "keywords": ["keyword1", "keyword2"],
+      "learningObjective": "What the student learns from this card",
+      "relatedConcepts": ["concept1", "concept2"]
+    }
 
     Language: English
     Topic: ${topic}
@@ -120,13 +134,18 @@ export async function generateFlashcards(
 
     ${guidelines ? `Özel yönergeler: ${guidelines}` : ""}
 
-    Her flashcard için:
-    - Soru: Ön yüzde görünecek, net ve anlaşılır
-    - Cevap: Arka yüzde görünecek, doğru ve kapsamlı
-    - Açıklama: Öğrencinin konuyu daha iyi anlaması için detaylı açıklama
-    - Zorluk: ${difficulty} seviyesine uygun
-    - Anahtar kelimeler: Flashcard'da geçen önemli kavramlar
-    - Öğrenme hedefi: Bu flashcard'dan ne öğrenilecek
+    Tam olarak ${count} adet flashcard nesnesi içeren bir "flashcards" dizisine sahip bir JSON nesnesi üretmelisin.
+    Dizideki her flashcard nesnesi şu JSON şemasına uymalıdır:
+    {
+      "question": "Net ve anlaşılır soru metni",
+      "answer": "Doğru ve kapsamlı cevap metni",
+      "explanation": "Cevabın detaylı açıklaması",
+      "topic": "${topic}",
+      "difficulty": "Easy" | "Medium" | "Hard",
+      "keywords": ["kelime1", "kelime2"],
+      "learningObjective": "Öğrencinin bu karttan ne öğreneceği",
+      "relatedConcepts": ["kavram1", "kavram2"]
+    }
 
     Dil: Türkçe
     Konu: ${topic}

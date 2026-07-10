@@ -3,6 +3,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
+import { getSubjectName } from "@/lib/question-manager-labels";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -81,13 +82,7 @@ export function SubjectSelectField({
 }: SubjectSelectFieldProps) {
   const tSubjects = useTranslations("Subjects");
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name.trim() as any);
-    } catch {
-      return name;
-    }
-  };
+  const resolveSubjectName = (name: string) => getSubjectName(name, tSubjects);
 
   return (
     <div>
@@ -104,7 +99,7 @@ export function SubjectSelectField({
           ) : (
             subjects.map((subject) => (
               <SelectItem key={subject.id} value={subject.name}>
-                {getSubjectName(subject.name)}
+                {resolveSubjectName(subject.name)}
               </SelectItem>
             ))
           )}

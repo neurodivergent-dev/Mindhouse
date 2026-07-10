@@ -24,8 +24,10 @@ export default function BreakoutGamePage() {
               {t("back") || "Geri"}
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            🎮 {t("title")}
+          <h1 className="text-3xl font-black tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              🎮 {t("title")}
+            </span>
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">
             {t("loading")} sırasında eğlenceli bir oyun oynayın!

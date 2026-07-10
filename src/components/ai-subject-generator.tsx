@@ -26,7 +26,6 @@ import { getStoredAiPreferences } from "@/lib/ai-preferences";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface AIGeneratedSubject {
@@ -225,9 +224,9 @@ export default function AISubjectGenerator({
           }
         }}
       >
-        <DialogContent className="w-[90vw] sm:w-[95vw] max-w-4xl h-[90vh] sm:h-[95vh] max-h-[90vh] sm:max-h-[95vh] flex flex-col p-0">
-          <DialogHeader className="p-4 sm:p-5 pb-3 border-b">
-            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+        <DialogContent className="w-[90vw] sm:w-[95vw] max-w-2xl h-auto max-h-[85vh] flex flex-col p-0 border-0 rounded-[32px] overflow-hidden shadow-2xl bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl">
+          <DialogHeader className="p-4 sm:p-5 pb-3 border-b border-slate-100 dark:border-white/[0.05]">
+            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               {t("dialogTitle")}
             </DialogTitle>
@@ -238,7 +237,7 @@ export default function AISubjectGenerator({
               <div className="space-y-4 sm:space-y-5 py-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">{tRoot("category")}</Label>
+                    <Label htmlFor="category" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{tRoot("category")}</Label>
                     <Input
                       id="category"
                       value={formData.category}
@@ -246,11 +245,11 @@ export default function AISubjectGenerator({
                         setFormData({ ...formData, category: e.target.value })
                       }
                       placeholder={tRoot("exampleScience")}
-                      className="h-11"
+                      className="h-11 rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] focus:ring-2 focus:ring-blue-500/20 font-medium"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="difficulty">{tRoot("difficultyLevel")}</Label>
+                    <Label htmlFor="difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{tRoot("difficultyLevel")}</Label>
                     <Select
                       value={formData.difficulty}
                       onValueChange={(value) =>
@@ -260,10 +259,10 @@ export default function AISubjectGenerator({
                         })
                       }
                     >
-                      <SelectTrigger className="h-11">
+                      <SelectTrigger className="h-11 rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] font-medium">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
                         <SelectItem value="Başlangıç">{tRoot("difficultyBeginner")}</SelectItem>
                         <SelectItem value="Orta">{tRoot("difficultyMedium")}</SelectItem>
                         <SelectItem value="İleri">{tRoot("difficultyAdvanced")}</SelectItem>
@@ -273,7 +272,7 @@ export default function AISubjectGenerator({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="count">{t("subjectCount")}</Label>
+                  <Label htmlFor="count" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectCount")}</Label>
                   <Input
                     id="count"
                     type="number"
@@ -286,12 +285,12 @@ export default function AISubjectGenerator({
                         count: parseInt(e.target.value) || 1,
                       })
                     }
-                    className="h-11 max-w-xs"
+                    className="h-11 max-w-xs rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] font-medium"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="guidelines">
+                  <Label htmlFor="guidelines" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
                     {t("guidelinesOptional")}
                   </Label>
                   <Textarea
@@ -305,16 +304,16 @@ export default function AISubjectGenerator({
                     }
                     placeholder={t("guidelinesPlaceholder")}
                     rows={4}
-                    className="min-h-[100px] resize-none"
+                    className="min-h-[100px] resize-none rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] focus:ring-2 focus:ring-blue-500/20 font-medium"
                   />
                 </div>
 
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 text-blue-900 dark:text-blue-200">
+                  <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm font-semibold leading-relaxed">
                     {t("qualityNotice")}
-                  </AlertDescription>
-                </Alert>
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col h-full py-3">
@@ -385,9 +384,8 @@ export default function AISubjectGenerator({
                     </div>
 
                     {/* Subjects List */}
-                    <div className="flex-1 min-h-0">
-                      <ScrollArea className="h-full max-h-[350px] pr-4">
-                        <div className="space-y-3">
+                    <div className="overflow-y-auto max-h-[420px] pr-1">
+                    <div className="space-y-3 pb-4">
                           {aiGeneratedSubjects.map((subject, idx) => (
                             <Card
                               key={idx}
@@ -430,8 +428,7 @@ export default function AISubjectGenerator({
                                   {subject.description}
                                 </p>
 
-                                <ScrollArea className="max-h-[300px] pr-4">
-                                  <div className="space-y-4">
+                                <div className="space-y-4">
                                     {subject.topics.length > 0 && (
                                       <div>
                                         <p className="text-sm font-medium mb-2">
@@ -494,13 +491,11 @@ export default function AISubjectGenerator({
                                       <strong>{t("estimatedDuration")}</strong>{" "}
                                       {subject.estimatedDuration}
                                     </div>
-                                  </div>
-                                </ScrollArea>
+                                </div>
                               </CardContent>
                             </Card>
                           ))}
-                        </div>
-                      </ScrollArea>
+                    </div>
                     </div>
                   </>
                 ) : (
@@ -525,14 +520,14 @@ export default function AISubjectGenerator({
           </div>
 
           {/* Footer Actions */}
-          <div className="border-t p-4 sm:p-5 pt-3">
+          <div className="border-t border-slate-100 dark:border-white/[0.05] p-4 sm:p-5 pt-3">
             {activeTab === "generate" ? (
               <Button
                 onClick={() => {
                   void handleAIGenerate();
                 }}
                 disabled={isGenerating || !formData.category}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 h-11 shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 border-0 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {isGenerating ? (
                   <>
@@ -548,7 +543,7 @@ export default function AISubjectGenerator({
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-sm text-muted-foreground text-center font-semibold">
                   {t("selectedCount", {
                     selected: selectedAISubjects.size,
                     total: aiGeneratedSubjects.length,
@@ -558,7 +553,7 @@ export default function AISubjectGenerator({
                   <Button
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
-                    className="flex-1 h-11"
+                    className="flex-1 h-12 text-base font-extrabold rounded-2xl border-slate-200 dark:border-white/[0.08] transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     {tRoot("cancel")}
                   </Button>
@@ -567,7 +562,7 @@ export default function AISubjectGenerator({
                       void handleApproveAISubjects();
                     }}
                     disabled={selectedAISubjects.size === 0}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-11 shadow-lg"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     {t("addSubjects", { count: selectedAISubjects.size })}

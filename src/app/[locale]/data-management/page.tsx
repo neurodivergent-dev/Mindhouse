@@ -174,8 +174,10 @@ function DataManagementContent() {
                 {t("backToProfile")}
               </Button>
             </Link>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {t("title")}
+            <h1 className="text-4xl font-black tracking-tight">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                {t("title")}
+              </span>
             </h1>
             <p className="text-muted-foreground mt-2">
               {t("subtitle")}

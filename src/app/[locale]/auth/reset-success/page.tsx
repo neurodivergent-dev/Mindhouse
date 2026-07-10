@@ -41,8 +41,10 @@ export default function ResetSuccessPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-            {tCommon("appName")}
+          <h1 className="text-3xl font-black mb-2 tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              {tCommon("appName")}
+            </span>
           </h1>
 
           <div className="flex items-center justify-center mb-6">

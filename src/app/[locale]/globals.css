@@ -517,7 +517,7 @@ html:not(.dark) .border-gradient-pink {
   background: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(32px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
     0 4px 12px -4px rgba(0, 0, 0, 0.03),
     0 16px 40px -8px rgba(0, 0, 0, 0.04) !important;
@@ -526,15 +526,15 @@ html:not(.dark) .border-gradient-pink {
 }
 
 /* Force inner cards to be completely transparent to inherit the premium glass blur */
-html:not(.dark) .border-gradient-active > *,
-html:not(.dark) .border-gradient-question > *,
-html:not(.dark) .border-gradient-green > *,
-html:not(.dark) .border-gradient-blue > *,
-html:not(.dark) .border-gradient-purple > *,
-html:not(.dark) .border-gradient-orange > *,
-html:not(.dark) .border-gradient-yellow > *,
-html:not(.dark) .border-gradient-teal > *,
-html:not(.dark) .border-gradient-pink > * {
+html:not(.dark) .border-gradient-active>*,
+html:not(.dark) .border-gradient-question>*,
+html:not(.dark) .border-gradient-green>*,
+html:not(.dark) .border-gradient-blue>*,
+html:not(.dark) .border-gradient-purple>*,
+html:not(.dark) .border-gradient-orange>*,
+html:not(.dark) .border-gradient-yellow>*,
+html:not(.dark) .border-gradient-teal>*,
+html:not(.dark) .border-gradient-pink>* {
   background: transparent !important;
   border-radius: 23px !important;
   border: none !important;
@@ -553,7 +553,7 @@ html:not(.dark) .border-gradient-teal:hover,
 html:not(.dark) .border-gradient-pink:hover {
   border-color: rgba(0, 0, 0, 0.08) !important;
   background: rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 1),
     0 8px 20px -4px rgba(0, 0, 0, 0.04),
     0 32px 64px -12px rgba(0, 0, 0, 0.08) !important;
@@ -572,26 +572,29 @@ html.dark .border-gradient-yellow,
 html.dark .border-gradient-teal,
 html.dark .border-gradient-pink {
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  background: rgba(17, 24, 39, 0.65) !important; /* Premium dark glass */
+  background: rgba(17, 24, 39, 0.65) !important;
+  /* Premium dark glass */
   backdrop-filter: blur(40px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), /* Volumetric top edge glow */
-    0 8px 32px -8px rgba(0, 0, 0, 0.6) !important; /* Deep ambient shadow */
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    /* Volumetric top edge glow */
+    0 8px 32px -8px rgba(0, 0, 0, 0.6) !important;
+  /* Deep ambient shadow */
   border-radius: 24px !important;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 /* Force inner cards to be completely transparent to inherit the premium glass blur */
-html.dark .border-gradient-active > *,
-html.dark .border-gradient-question > *,
-html.dark .border-gradient-green > *,
-html.dark .border-gradient-blue > *,
-html.dark .border-gradient-purple > *,
-html.dark .border-gradient-orange > *,
-html.dark .border-gradient-yellow > *,
-html.dark .border-gradient-teal > *,
-html.dark .border-gradient-pink > * {
+html.dark .border-gradient-active>*,
+html.dark .border-gradient-question>*,
+html.dark .border-gradient-green>*,
+html.dark .border-gradient-blue>*,
+html.dark .border-gradient-purple>*,
+html.dark .border-gradient-orange>*,
+html.dark .border-gradient-yellow>*,
+html.dark .border-gradient-teal>*,
+html.dark .border-gradient-pink>* {
   background: transparent !important;
   border-radius: 23px !important;
   border: none !important;
@@ -609,8 +612,9 @@ html.dark .border-gradient-yellow:hover,
 html.dark .border-gradient-teal:hover,
 html.dark .border-gradient-pink:hover {
   border-color: rgba(255, 255, 255, 0.15) !important;
-  background: rgba(31, 41, 55, 0.75) !important; /* Slightly lighter on hover to simulate moving closer to light */
-  box-shadow: 
+  background: rgba(31, 41, 55, 0.75) !important;
+  /* Slightly lighter on hover to simulate moving closer to light */
+  box-shadow:
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
     0 16px 48px -12px rgba(0, 0, 0, 0.8) !important;
   transform: translateY(-4px) scale(1.005) !important;
@@ -651,11 +655,13 @@ html.dark .border-gradient-pink:hover {
 
 /* APPLE QUALITY PROGRESS BAR */
 .progress-gradient {
-  background: #007aff !important; /* Apple Blue */
+  background: #007aff !important;
+  /* Apple Blue */
 }
 
 .dark .progress-gradient {
-  background: #0a84ff !important; /* Apple Blue Dark */
+  background: #0a84ff !important;
+  /* Apple Blue Dark */
 }
 
 .progress-gradient-bg {
@@ -668,21 +674,24 @@ html.dark .border-gradient-pink:hover {
 
 /* APPLE QUALITY BADGES */
 .badge-gradient-high {
-  background: #34c759 !important; /* Apple Green */
+  background: #34c759 !important;
+  /* Apple Green */
   color: white !important;
   border: none !important;
   box-shadow: 0 2px 5px rgba(52, 199, 89, 0.3) !important;
 }
 
 .badge-gradient-medium {
-  background: #ff9500 !important; /* Apple Orange */
+  background: #ff9500 !important;
+  /* Apple Orange */
   color: white !important;
   border: none !important;
   box-shadow: 0 2px 5px rgba(255, 149, 0, 0.3) !important;
 }
 
 .badge-gradient-low {
-  background: #ff3b30 !important; /* Apple Red */
+  background: #ff3b30 !important;
+  /* Apple Red */
   color: white !important;
   border: none !important;
   box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3) !important;

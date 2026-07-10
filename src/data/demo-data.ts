@@ -467,7 +467,34 @@ export const shouldUseDemoData = (): boolean => {
 // Demo mode on/off
 export const toggleDemoMode = (enabled: boolean) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem("btk_demo_mode", enabled.toString());
+    if (enabled) {
+      localStorage.setItem("btk_demo_mode", "true");
+      // Demo açıldığında demo sayfasındaki Start'ı da tetikle
+      localStorage.setItem("btk_demo_playing", "true");
+    } else {
+      // Demo kapatıldığında hem mode'u hem de demo sayfasındaki play state'ini sıfırla
+      localStorage.removeItem("btk_demo_mode");
+      localStorage.setItem("btk_demo_playing", "false");
+      // Clear demo subjects and questions from localStorage to prevent them from showing up
+      try {
+        const subjects = localStorage.getItem("mindhouse_subjects");
+        if (subjects) {
+          const parsed = JSON.parse(subjects);
+          const filtered = parsed.filter((s: any) => s.createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_"));
+          localStorage.setItem("mindhouse_subjects", JSON.stringify(filtered));
+        }
+        const questions = localStorage.getItem("mindhouse_questions");
+        if (questions) {
+          const parsed = JSON.parse(questions);
+          const filtered = parsed.filter((q: any) => !q.id.startsWith("q_") && q.createdBy !== "demo_user_btk_2025");
+          localStorage.setItem("mindhouse_questions", JSON.stringify(filtered));
+        }
+        // Force reload/rehydrate page to propagate cleaned storage changes
+        window.location.reload();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 };
 

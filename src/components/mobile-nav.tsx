@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  Zap,
   BookOpen,
   Brain,
   Database,
   GraduationCap,
-  Users,
   Play,
   Menu,
   LogOut,
@@ -24,8 +24,8 @@ import {
   Settings,
   Home,
   UserCircle,
-  Lightbulb,
   MoreHorizontal,
+  MessageSquare,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -49,11 +49,10 @@ export default function MobileNav() {
     { href: "/landing", label: t("landing"), icon: Home },
     { href: "/demo", label: t("demo"), icon: Play },
     { href: "/dashboard", label: t("dashboard"), icon: Brain },
-    { href: "/quiz", label: t("quiz"), icon: BookOpen },
+    { href: "/quiz", label: t("quiz"), icon: Zap },
     { href: "/flashcard", label: t("flashcard"), icon: Brain },
-    { href: "/topic-explainer", label: t("topicExplainer"), icon: Lightbulb },
-    { href: "/ai-chat", label: t("aiChat"), icon: Users },
-    { href: "/ai-3d-education", label: t("ai3dEducation"), icon: Brain },
+    { href: "/topic-explainer", label: t("topicExplainer"), icon: BookOpen },
+    { href: "/ai-chat", label: t("aiChat"), icon: MessageSquare },
     { href: "/question-manager", label: t("questionManager"), icon: Database },
     { href: "/subject-manager", label: t("subjectManager"), icon: GraduationCap },
     { href: "/settings", label: t("settings"), icon: Settings },
@@ -63,11 +62,10 @@ export default function MobileNav() {
     { href: "/landing", label: t("landing"), icon: Home },
     { href: "/demo", label: t("demo"), icon: Play },
     { href: "/dashboard", label: t("dashboardShort"), icon: Brain },
-    { href: "/quiz", label: t("quizShort"), icon: BookOpen },
+    { href: "/quiz", label: t("quizShort"), icon: Zap },
     { href: "/flashcard", label: t("flashcard"), icon: Brain },
-    { href: "/topic-explainer", label: t("topicExplainerShort"), icon: Lightbulb },
-    { href: "/ai-chat", label: t("aiChatShort"), icon: Users },
-    { href: "/ai-3d-education", label: t("ai3dEducationShort"), icon: Brain },
+    { href: "/topic-explainer", label: t("topicExplainerShort"), icon: BookOpen },
+    { href: "/ai-chat", label: t("aiChatShort"), icon: MessageSquare },
     { href: "/question-manager", label: t("questionManagerShort"), icon: Database },
     { href: "/subject-manager", label: t("subjectManagerShort"), icon: GraduationCap },
   ] as const;
@@ -99,7 +97,7 @@ export default function MobileNav() {
                 </Button>
               </Link>
             ))}
-            
+
             {desktopNavLinks.length > 5 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -172,8 +170,8 @@ export default function MobileNav() {
                       />
                       <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium">
                         {user?.user_metadata?.full_name
-                            ?.charAt(0)
-                            .toUpperCase() ||
+                          ?.charAt(0)
+                          .toUpperCase() ||
                           user?.email?.charAt(0).toUpperCase() ||
                           "U"}
                       </AvatarFallback>
@@ -264,10 +262,10 @@ export default function MobileNav() {
                       className="flex items-center gap-2 group"
                       onClick={() => setIsOpen(false)}
                     >
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                         <Brain className="h-8 w-8 text-white" />
                       </div>
-                      <span className="font-headline font-bold text-2xl bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      <span className="font-headline font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         {tCommon("appName")}
                       </span>
                     </Link>
@@ -287,8 +285,8 @@ export default function MobileNav() {
                               />
                               <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium">
                                 {user?.user_metadata?.full_name
-                                    ?.charAt(0)
-                                    .toUpperCase() ||
+                                  ?.charAt(0)
+                                  .toUpperCase() ||
                                   user?.email?.charAt(0).toUpperCase() ||
                                   "U"}
                               </AvatarFallback>

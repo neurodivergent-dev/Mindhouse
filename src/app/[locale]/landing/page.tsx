@@ -50,6 +50,7 @@ import MobileNav from "@/components/mobile-nav";
 import AIFeaturesShowcase from "@/components/ai-features-showcase";
 import PerformanceMetrics from "@/components/performance-metrics";
 import MobileDemo from "@/components/mobile-demo";
+import PricingSection from "@/components/pricing-section";
 
 export default function LandingPage() {
   const t = useTranslations("Landing");
@@ -168,8 +169,10 @@ export default function LandingPage() {
           {/* Features Section */}
           <section id="features" className="py-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                {t("featuresTitle")}
+              <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t("featuresTitle")}
+                </span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t("featuresSubtitle")}
@@ -320,8 +323,10 @@ export default function LandingPage() {
           {/* AI Subject Creation Section */}
           <section id="ai-subject-creation" className="py-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {t("subjectCreationTitle")}
+              <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t("subjectCreationTitle")}
+                </span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t("subjectCreationSubtitle")}
@@ -470,11 +475,13 @@ export default function LandingPage() {
 
             {/* CTA for AI Subject Creation */}
             <div className="text-center mt-12">
-              <div className="glass-card p-8 rounded-xl max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {t("subjectCtaTitle")}
+              <div className="apple-glass-card border-0 shadow-2xl p-8 sm:p-12 rounded-3xl max-w-4xl mx-auto backdrop-blur-md">
+                <h3 className="text-2xl font-extrabold mb-4">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {t("subjectCtaTitle")}
+                  </span>
                 </h3>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                <p className="text-base font-semibold text-[#86868b] dark:text-[#a1a1a6] mb-8 max-w-2xl mx-auto">
                   {t("subjectCtaSubtitle")}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -483,7 +490,7 @@ export default function LandingPage() {
                       router.push("/subject-manager");
                     }}
                     size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 border-0 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Sparkles className="h-5 w-5 mr-2" />
                     {t("createSubjectWithAi")}
@@ -492,7 +499,7 @@ export default function LandingPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 transition-all duration-300 hover:scale-105"
+                      className="h-12 text-base font-extrabold rounded-2xl hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 border-slate-200 dark:border-white/[0.08] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <Play className="h-5 w-5 mr-2" />
                       {t("tryDemoNow")}
@@ -506,8 +513,10 @@ export default function LandingPage() {
           {/* Technology Stack Section */}
           <section id="technology" className="py-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {t("techStackTitle")}
+              <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t("techStackTitle")}
+                </span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t("techStackSubtitle")}
@@ -622,7 +631,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800/50">
                       <Bot className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <span className="font-semibold text-purple-700 dark:text-purple-200">
-                        Google Gemini
+                        BYOK (Gemini, Groq, Ollama)
                       </span>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800/50">
@@ -710,50 +719,57 @@ export default function LandingPage() {
           {/* Mobile Responsiveness Demo */}
           <MobileDemo />
 
+          {/* Pricing Section */}
+          <PricingSection />
+
           {/* Demo CTA Section */}
           <section id="demo" className="py-16">
-            <div className="glass-card p-8 rounded-xl text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {t("demoCtaTitle")}
+            <div className="apple-glass-card border-0 shadow-2xl p-8 sm:p-12 rounded-3xl text-center backdrop-blur-md">
+              <h2 className="text-3xl md:text-4xl font-black mb-6 tracking-tight">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t("demoCtaTitle")}
+                </span>
               </h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <p className="text-lg sm:text-xl text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-10 max-w-2xl mx-auto">
                 {t("demoCtaSubtitle")}
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 max-w-4xl mx-auto">
-                <div className="border-gradient-question p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl">
-                  <div className="h-full w-full border-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 rounded-[11px] p-6 text-center">
-                    <Users className="h-8 w-8 mx-auto mb-3 text-blue-600 dark:text-blue-400" />
-                    <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                      {t("demoNoSignup")}
-                    </h3>
-                    <p className="text-sm font-medium text-blue-900/80 dark:text-blue-100/90">
-                      {t("demoNoSignupDesc")}
-                    </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 max-w-4xl mx-auto">
+                <Card className="apple-glass-card border-0 shadow-lg rounded-2xl p-6 text-center hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4 border border-blue-500/20 shadow-inner">
+                    <Users className="h-6 w-6 text-blue-500" />
                   </div>
-                </div>
-                <div className="border-gradient-green p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl">
-                  <div className="h-full w-full border-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 rounded-[11px] p-6 text-center">
-                    <Clock className="h-8 w-8 mx-auto mb-3 text-green-600 dark:text-green-400" />
-                    <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
-                      {t("demoFiveMinutes")}
-                    </h3>
-                    <p className="text-sm font-medium text-green-900/80 dark:text-green-100/90">
-                      {t("demoFiveMinutesDesc")}
-                    </p>
+                  <h3 className="font-extrabold text-lg mb-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("demoNoSignup")}
+                  </h3>
+                  <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    {t("demoNoSignupDesc")}
+                  </p>
+                </Card>
+
+                <Card className="apple-glass-card border-0 shadow-lg rounded-2xl p-6 text-center hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto mb-4 border border-green-500/20 shadow-inner">
+                    <Clock className="h-6 w-6 text-green-500" />
                   </div>
-                </div>
-                <div className="border-gradient-purple p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl">
-                  <div className="h-full w-full border-0 bg-gradient-to-br from-purple-500/10 to-violet-500/10 dark:from-purple-500/20 dark:to-violet-500/20 rounded-[11px] p-6 text-center">
-                    <CheckCircle className="h-8 w-8 mx-auto mb-3 text-purple-600 dark:text-purple-400" />
-                    <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
-                      {t("demoRealData")}
-                    </h3>
-                    <p className="text-sm font-medium text-purple-900/80 dark:text-purple-100/90">
-                      {t("demoRealDataDesc")}
-                    </p>
+                  <h3 className="font-extrabold text-lg mb-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("demoFiveMinutes")}
+                  </h3>
+                  <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    {t("demoFiveMinutesDesc")}
+                  </p>
+                </Card>
+
+                <Card className="apple-glass-card border-0 shadow-lg rounded-2xl p-6 text-center hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center mx-auto mb-4 border border-purple-500/20 shadow-inner">
+                    <CheckCircle className="h-6 w-6 text-purple-500" />
                   </div>
-                </div>
+                  <h3 className="font-extrabold text-lg mb-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("demoRealData")}
+                  </h3>
+                  <p className="text-sm font-semibold text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    {t("demoRealDataDesc")}
+                  </p>
+                </Card>
               </div>
 
               <Button
@@ -761,7 +777,7 @@ export default function LandingPage() {
                   router.push("/demo");
                 }}
                 size="lg"
-                className="text-lg px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="text-base h-12 px-8 font-extrabold rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
               >
                 <Play className="h-5 w-5 mr-2" />
                 {t("startDemo")}
@@ -773,13 +789,45 @@ export default function LandingPage() {
           {/* Quick Actions - Dashboard Style */}
           <section className="py-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {t("quickStartTitle")}
+              <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {t("quickStartTitle")}
+                </span>
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 {t("quickStartSubtitle")}
               </p>
             </div>
+
+            {/* SVG Gradient Definitions */}
+            <svg width="0" height="0" className="absolute pointer-events-none">
+              <defs>
+                <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#2563eb" offset="0%" />
+                  <stop stopColor="#4f46e5" offset="100%" />
+                </linearGradient>
+                <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#16a34a" offset="0%" />
+                  <stop stopColor="#059669" offset="100%" />
+                </linearGradient>
+                <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#9333ea" offset="0%" />
+                  <stop stopColor="#7c3aed" offset="100%" />
+                </linearGradient>
+                <linearGradient id="indigo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#4f46e5" offset="0%" />
+                  <stop stopColor="#2563eb" offset="100%" />
+                </linearGradient>
+                <linearGradient id="yellow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#ca8a04" offset="0%" />
+                  <stop stopColor="#d97706" offset="100%" />
+                </linearGradient>
+                <linearGradient id="teal-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop stopColor="#0d9488" offset="0%" />
+                  <stop stopColor="#0891b2" offset="100%" />
+                </linearGradient>
+              </defs>
+            </svg>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-8">
               <div className="border-gradient-question p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl">
@@ -791,7 +839,7 @@ export default function LandingPage() {
                     className="cursor-pointer"
                   >
                     <CardContent className="p-6 text-center">
-                      <Zap className="h-8 w-8 mx-auto mb-3 text-blue-600 dark:text-blue-400" />
+                      <Zap className="h-8 w-8 mx-auto mb-3" stroke="url(#blue-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                         {t("quickQuiz")}
                       </h3>
@@ -807,7 +855,7 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 cursor-pointer">
                   <Link href="/flashcard">
                     <CardContent className="p-6 text-center">
-                      <Brain className="h-8 w-8 mx-auto mb-3 text-green-600 dark:text-green-400" />
+                      <Brain className="h-8 w-8 mx-auto mb-3" stroke="url(#green-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
                         {tNav("flashcard")}
                       </h3>
@@ -823,7 +871,7 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-purple-500/10 to-violet-500/10 dark:from-purple-500/20 dark:to-violet-500/20 cursor-pointer">
                   <Link href="/ai-chat">
                     <CardContent className="p-6 text-center">
-                      <BookOpen className="h-8 w-8 mx-auto mb-3 text-purple-600 dark:text-purple-400" />
+                      <MessageSquare className="h-8 w-8 mx-auto mb-3" stroke="url(#purple-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
                         {t("quickAiTutor")}
                       </h3>
@@ -839,7 +887,7 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 dark:from-indigo-500/20 dark:to-blue-500/20 cursor-pointer">
                   <Link href="/question-manager">
                     <CardContent className="p-6 text-center">
-                      <Database className="h-8 w-8 mx-auto mb-3 text-indigo-600 dark:text-indigo-400" />
+                      <Database className="h-8 w-8 mx-auto mb-3" stroke="url(#indigo-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-indigo-600 to-blue-600 dark:from-indigo-400 dark:to-blue-400 bg-clip-text text-transparent">
                         {t("quickQuestionManager")}
                       </h3>
@@ -855,7 +903,7 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 dark:from-yellow-500/20 dark:to-amber-500/20 cursor-pointer">
                   <Link href="/topic-explainer">
                     <CardContent className="p-6 text-center">
-                      <BookOpen className="h-8 w-8 mx-auto mb-3 text-yellow-600 dark:text-yellow-400" />
+                      <BookOpen className="h-8 w-8 mx-auto mb-3" stroke="url(#yellow-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-yellow-600 to-amber-600 dark:from-yellow-400 dark:to-amber-400 bg-clip-text text-transparent">
                         {t("quickTopicExplainer")}
                       </h3>
@@ -871,7 +919,7 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 dark:from-teal-500/20 dark:to-cyan-500/20 cursor-pointer">
                   <Link href="/subject-manager">
                     <CardContent className="p-6 text-center">
-                      <GraduationCap className="h-8 w-8 mx-auto mb-3 text-teal-600 dark:text-teal-400" />
+                      <GraduationCap className="h-8 w-8 mx-auto mb-3" stroke="url(#teal-gradient)" />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent">
                         {t("quickSubjectManager")}
                       </h3>

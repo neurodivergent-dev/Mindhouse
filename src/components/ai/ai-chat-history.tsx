@@ -24,7 +24,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import localStorageService from "@/services/localStorage-service";
+import { aiChatSessionRepository } from "@/services/ai-chat-session-storage";
 
 interface AiChatSession {
   id: string;
@@ -44,6 +44,7 @@ interface AiChatSession {
 
 interface AiChatHistoryProps {
   onSessionSelect: (sessionId: string) => void;
+  onSessionDelete?: (sessionId: string) => void;
   currentSessionId?: string | undefined;
 }
 
@@ -51,6 +52,7 @@ const GENERAL_SUBJECT = "Genel";
 
 export default function AiChatHistory({
   onSessionSelect,
+  onSessionDelete,
   currentSessionId,
 }: AiChatHistoryProps) {
   const t = useTranslations("AIChat");
@@ -70,8 +72,9 @@ export default function AiChatHistory({
     try {
       setIsLoading(true);
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
 
       let allSessions: AiChatSession[] = [];
 
@@ -90,9 +93,7 @@ export default function AiChatHistory({
         } catch {}
       }
 
-      const localSessions = user
-        ? localStorageService.getAIChatSessionsByUser(user.id)
-        : localStorageService.getAIChatSessions();
+      const localSessions = await aiChatSessionRepository.getSessions(user?.id);
 
       let localFormattedSessions: AiChatSession[] = localSessions.map(
         (session) => {
@@ -161,52 +162,64 @@ export default function AiChatHistory({
   };
 
   const deleteSession = async (sessionId: string) => {
+    console.log("deleteSession called with ID:", sessionId);
+    let deletedFromSupabase = false;
+    let userId: string | null = null;
+
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      let deletedFromSupabase = false;
-
-      if (user) {
-        try {
-          const response = await fetch(
-            `/api/ai-chat/${sessionId}?userId=${user.id}`,
-            {
-              method: "DELETE",
-            },
-          );
-
-          if (response.ok) {
-            deletedFromSupabase = true;
-          }
-        } catch {}
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        userId = session.user.id;
       }
+    } catch (e) {
+      console.warn("Could not get user for database delete, proceeding locally:", e);
+    }
 
+    if (userId) {
       try {
-        const deletedFromLocal =
-          localStorageService.deleteAIChatSession(sessionId);
-        if (deletedFromLocal || deletedFromSupabase) {
-          toast({
-            title: t("success"),
-            description: t("deleteSuccess"),
-          });
-          fetchSessions(searchTerm);
+        console.log("Attempting to delete from Supabase for user:", userId);
+        const response = await fetch(
+          `/api/ai-chat/${sessionId}?userId=${userId}`,
+          {
+            method: "DELETE",
+          },
+        );
+
+        if (response.ok) {
+          deletedFromSupabase = true;
+          console.log("Successfully deleted from Supabase");
         } else {
-          toast({
-            title: tCommon("error"),
-            description: t("deleteNotFound"),
-            variant: "destructive",
-          });
+          console.warn("Supabase delete response not OK:", response.status);
         }
-      } catch {
+      } catch (e) {
+        console.error("Failed to delete session from Supabase:", e);
+      }
+    }
+
+    try {
+      console.log("Attempting to delete from IndexedDB local repo...");
+      const deletedFromLocal = await aiChatSessionRepository.deleteSession(sessionId);
+      console.log("IndexedDB delete result:", deletedFromLocal);
+      
+      if (deletedFromLocal || deletedFromSupabase) {
+        toast({
+          title: t("success"),
+          description: t("deleteSuccess"),
+        });
+        if (onSessionDelete) {
+          onSessionDelete(sessionId);
+        }
+        await fetchSessions(searchTerm);
+      } else {
+        console.warn("Session not found in local IndexedDB or Supabase");
         toast({
           title: tCommon("error"),
-          description: t("deleteError"),
+          description: t("deleteNotFound"),
           variant: "destructive",
         });
       }
-    } catch {
+    } catch (e) {
+      console.error("Failed to delete session from local storage:", e);
       toast({
         title: tCommon("error"),
         description: t("deleteError"),
@@ -256,14 +269,13 @@ export default function AiChatHistory({
       </DialogTrigger>
       <DialogContent
         className="
-          max-w-7xl
-          max-h-[128vh]
+          max-w-2xl
+          h-[600px]
           overflow-hidden
           flex
           flex-col
           w-[94vw] mx-auto
-          lg:w-[90vw] lg:max-w-[90vw] lg:mx-auto
-          p-3 sm:p-4 lg:p-6
+          p-4 sm:p-6
         "
       >
         <DialogHeader className="border-b border-gray-200 dark:border-gray-700 pb-4">
@@ -315,14 +327,14 @@ export default function AiChatHistory({
               </p>
             </div>
           ) : sessions.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-10 h-10 lg:w-12 lg:h-12 text-gray-400" />
+            <div className="flex flex-col items-center justify-center py-12 h-[350px] text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-500/20 dark:border-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <MessageSquare className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
               </div>
-              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {searchTerm ? t("noSearchResults") : t("noHistory")}
               </h3>
-              <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-center leading-relaxed">
                 {searchTerm ? t("noSearchResultsDesc") : t("noHistoryDesc")}
               </p>
             </div>
@@ -330,17 +342,17 @@ export default function AiChatHistory({
             sessions.map((session) => (
               <Card
                 key={session.sessionId}
-                className={`group cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
+                className={`group cursor-pointer transition-all duration-300 hover:shadow-md border ${
                   currentSessionId === session.sessionId
-                    ? "ring-2 ring-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700"
-                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600"
+                    ? "bg-gradient-to-r from-blue-500/[0.03] to-purple-500/[0.03] dark:from-blue-500/[0.06] dark:to-purple-500/[0.04] border-blue-400/50 dark:border-blue-800/60 shadow-sm"
+                    : "bg-white/[0.4] dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] hover:border-blue-500/30 dark:hover:border-blue-500/20"
                 }`}
                 onClick={() => {
                   onSessionSelect(session.sessionId);
                   setIsDialogOpen(false);
                 }}
               >
-                <CardContent className="p-4 lg:p-6">
+                <CardContent className="p-4 lg:p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
@@ -415,15 +427,16 @@ export default function AiChatHistory({
                     </div>
 
                     <Button
+                      type="button"
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteSession(session.sessionId);
                       }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 lg:p-2"
+                      className="opacity-70 hover:opacity-100 text-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 w-8 h-8 rounded-lg transition-all"
                     >
-                      <Trash2 className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </CardContent>

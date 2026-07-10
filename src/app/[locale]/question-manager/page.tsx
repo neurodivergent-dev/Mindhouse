@@ -128,6 +128,7 @@ export default function QuestionManager() {
     setSubjects,
     setQuestions,
     calculateRealQuestionCount,
+    setIsAIDialogOpen,
   );
 
   // Use custom hook for form management

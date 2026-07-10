@@ -1,59 +1,8 @@
 import { toast } from "@/hooks/use-toast";
-import { shouldUseDemoData } from "@/data/demo-data";
 import { SubjectService } from "@/services/supabase-service";
 import { supabase } from "@/lib/supabase";
-import type { AIGeneratedSubject, AiSubjectDifficulty } from "@/types/subject";
-
-// Subject type for localStorage operations
-interface LocalStorageSubject {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  difficulty: AiSubjectDifficulty;
-  questionCount: number;
-  isActive: boolean;
-}
-
-// LocalStorage service for subjects
-class SubjectLocalStorageService {
-  private static readonly STORAGE_KEY = "mindhouse_subjects";
-
-  static getSubjects(): LocalStorageSubject[] {
-    if (typeof window === "undefined") {
-      return [];
-    }
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  static saveSubjects(subjects: LocalStorageSubject[]): void {
-    if (typeof window === "undefined") {
-      return;
-    }
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(subjects));
-    } catch {
-      //do nothing
-    }
-  }
-
-  static addSubject(subject: Omit<LocalStorageSubject, "id">): LocalStorageSubject {
-    const newSubject: LocalStorageSubject = {
-      ...subject,
-      id: `subj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    };
-
-    const subjects = this.getSubjects();
-    subjects.push(newSubject);
-    this.saveSubjects(subjects);
-    return newSubject;
-  }
-}
+import { UnifiedStorageService } from "@/services/unified-storage-service";
+import type { AIGeneratedSubject } from "@/types/subject";
 
 interface SubjectToastMessages {
   successTitle: string;
@@ -67,6 +16,10 @@ export const handleAIGeneratedSubjects = async (
   messages?: SubjectToastMessages,
 ) => {
   try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     for (const aiSubject of aiSubjects) {
       const subjectData = {
         name: aiSubject.name,
@@ -77,41 +30,35 @@ export const handleAIGeneratedSubjects = async (
         isActive: true,
       };
 
-      if (shouldUseDemoData()) {
-        SubjectLocalStorageService.addSubject(subjectData);
+      if (session) {
+        // Logged-in user: save to Supabase
+        await SubjectService.createSubject({
+          name: subjectData.name,
+          description: subjectData.description,
+          category: subjectData.category,
+          difficulty: subjectData.difficulty,
+          question_count: 0,
+          is_active: true,
+        });
       } else {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (!session) {
-          SubjectLocalStorageService.addSubject(subjectData);
-        } else {
-          await SubjectService.createSubject({
-            name: subjectData.name,
-            description: subjectData.description,
-            category: subjectData.category,
-            difficulty: subjectData.difficulty,
-            question_count: 0,
-            is_active: true,
-          });
-        }
+        // Guest / no session: save to IndexedDB via UnifiedStorageService
+        UnifiedStorageService.addSubject(subjectData);
       }
     }
 
     toast({
-      title: messages?.successTitle ?? "Success!",
+      title: messages?.successTitle ?? "Başarılı!",
       description:
         messages?.successDescription ??
-        `${aiSubjects.length} subjects added successfully`,
+        `${aiSubjects.length} ders başarıyla eklendi`,
     });
 
     return true;
   } catch {
     toast({
-      title: messages?.errorTitle ?? "Error!",
+      title: messages?.errorTitle ?? "Hata!",
       description:
-        messages?.errorDescription ?? "An error occurred while adding subjects",
+        messages?.errorDescription ?? "Dersler eklenirken bir hata oluştu",
       variant: "destructive",
     });
     return false;

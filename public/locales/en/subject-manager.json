@@ -11,8 +11,6 @@
   "success_subject_updated": "Subject updated successfully",
   "error_message": "An error occurred. Please try again.",
   "no_subjects": "No subjects found",
-  "subject_name_placeholder": "Enter subject name",
-  "category_placeholder": "Select category",
   "active": "Active",
   "inactive": "Inactive",
   "confirm_delete": "Are you sure you want to delete this subject?",
@@ -52,4 +50,4 @@
   "example_math": "Example: Mathematics",
   "subject_description": "Subject description",
   "example_science": "Example: Science"
-} 
+}

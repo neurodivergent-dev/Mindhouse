@@ -19,13 +19,11 @@ import {
   Target,
   TrendingUp,
   Clock,
-  Settings,
   FileText,
   Users,
   Database,
   Download,
   Upload,
-  HardDrive,
   UserCheck,
   UserX,
   Zap,
@@ -52,6 +50,7 @@ import {
   demoRecentResults,
   demoTotalStats,
 } from "@/data/demo-data";
+import { UnifiedStorageService } from "@/services/unified-storage-service";
 
 interface PerformanceData {
   subject: string;
@@ -97,8 +96,8 @@ export default function EnhancedDashboard() {
   const locale = useLocale();
 
   const translateSubject = useCallback((subject: string) => {
-    if (locale === "tr") {return subject;}
-    
+    if (locale === "tr") { return subject; }
+
     const map: Record<string, string> = {
       "Matematik": "Mathematics",
       "Fizik": "Physics",
@@ -111,13 +110,13 @@ export default function EnhancedDashboard() {
       "Felsefe": "Philosophy",
       "Din Kültürü": "Religion"
     };
-    
+
     return map[subject] || subject;
   }, [locale]);
 
   const translateTopic = useCallback((topic: string) => {
-    if (locale === "tr") {return topic;}
-    
+    if (locale === "tr") { return topic; }
+
     const map: Record<string, string> = {
       "Türev Uygulamaları": "Derivative Applications",
       "İntegral Hesabı": "Integral Calculus",
@@ -152,7 +151,7 @@ export default function EnhancedDashboard() {
       "Edebiyat": "Literature",
       "Çağdaş Edebiyat": "Modern Literature"
     };
-    
+
     return map[topic] || topic;
   }, [locale]);
 
@@ -175,11 +174,6 @@ export default function EnhancedDashboard() {
     averageScore: 0,
     totalTimeSpent: 0,
     totalSubjects: 0,
-  });
-  const [storageInfo, setStorageInfo] = useState({
-    used: 0,
-    available: 0,
-    percentage: 0,
   });
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -231,6 +225,9 @@ export default function EnhancedDashboard() {
 
       setIsLoading(true);
       try {
+        // Make sure the IndexedDB-backed cache is ready before reading
+        await UnifiedStorageService.initialize();
+
         // BTK Hackathon Demo Mode
         if (useDemoData) {
           setPerformanceData(
@@ -249,8 +246,6 @@ export default function EnhancedDashboard() {
             }))
           );
           setTotalStats(demoTotalStats);
-          setStorageInfo({ used: 2048, available: 5242880, percentage: 0.04 });
-
           setIsLoading(false);
           return;
         }
@@ -310,8 +305,8 @@ export default function EnhancedDashboard() {
                       let realTopicName = st.topic;
                       try {
                         const parsedContent = JSON.parse(st.content || "{}");
-                        if (parsedContent.totalTime) {tTime = parsedContent.totalTime;}
-                        if (parsedContent.title) {realTopicName = parsedContent.title;}
+                        if (parsedContent.totalTime) { tTime = parsedContent.totalTime; }
+                        if (parsedContent.title) { realTopicName = parsedContent.title; }
                       } catch { }
 
                       results.push({
@@ -345,9 +340,8 @@ export default function EnhancedDashboard() {
               ? results
               : results.filter((result: QuizResult) => !result.isDemo);
 
-            // Get subject information from Subjects
-            const subjects = localStorage.getItem("mindhouse_subjects");
-            const subjectsData = subjects ? JSON.parse(subjects) : [];
+            // Get subject information from Subjects (IndexedDB)
+            const subjectsData = UnifiedStorageService.getSubjects();
 
             if (filteredResults.length === 0) {
               // If there are no quiz results, return empty data
@@ -541,7 +535,6 @@ export default function EnhancedDashboard() {
           setPerformanceData(data.performanceData);
           setRecentResults(data.recentResults);
           setTotalStats(data.totalStats);
-          setStorageInfo(data.storageInfo);
         } else {
           // Fallback boş data
           setPerformanceData([]);
@@ -552,7 +545,6 @@ export default function EnhancedDashboard() {
             totalTimeSpent: 0,
             totalSubjects: 0,
           });
-          setStorageInfo({ used: 0, available: 5242880, percentage: 0 });
         }
       } catch {
         //do nothing
@@ -660,7 +652,6 @@ export default function EnhancedDashboard() {
         title: t("toasts.demoActive"),
         description: t("toasts.demoActiveDesc"),
       });
-      setTimeout(() => window.location.reload(), 1000);
     } else {
       // Sadece demo için kullanılan anahtarı temizle
       if (typeof window !== "undefined") {
@@ -668,12 +659,10 @@ export default function EnhancedDashboard() {
       }
       toast({
         title: t("toasts.demoInactive"),
-        description:
-          t("toasts.demoInactiveDesc"),
+        description: t("toasts.demoInactiveDesc"),
       });
-      // Reload immediately to ensure user data is updated
-      window.location.reload();
     }
+    // useEffect [useDemoData] dep'i sayesinde veri otomatik yenilenir — reload gerekmez
   };
 
   if (loading || isLoading) {
@@ -714,17 +703,17 @@ Total Study Time: ${totalStats.totalTimeSpent} minutes
 Number of Subjects: ${performanceData.length}
 
 Recent Activity:
-${recentResults.slice(0, 5).map(r => 
-  `- ${r.subject}: ${r.score}/${r.totalQuestions} (${Math.round(r.timeSpent/60)} min)`
-).join('\n')}
+${recentResults.slice(0, 5).map(r =>
+    `- ${r.subject}: ${r.score}/${r.totalQuestions} (${Math.round(r.timeSpent / 60)} min)`
+  ).join('\n')}
 
 Subject Performance:
-${performanceData.map(p => 
-  `- ${p.subject}: Average ${p.averageScore}%, ${p.totalTests} tests`
-).join('\n')}
+${performanceData.map(p =>
+    `- ${p.subject}: Average ${p.averageScore}%, ${p.totalTests} tests`
+  ).join('\n')}
 
-Weak Topics Overall: ${performanceData.flatMap(p => p.weakTopics).slice(0,10).join(', ')}
-Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10).join(', ')}
+Weak Topics Overall: ${performanceData.flatMap(p => p.weakTopics).slice(0, 10).join(', ')}
+Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 10).join(', ')}
 `.trim();
 
   return (
@@ -761,7 +750,6 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                 )}
               </p>
             </div>
-
             {/* Controls Section - Mobile: Stacked, Desktop: Right aligned */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               {/* Switches Group */}
@@ -795,24 +783,8 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                   </Label>
                 </div>
               </div>
-
-              {/* Settings Button - Separate Group */}
-              <div className="flex justify-start sm:justify-end">
-                <Link href="/settings">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    {t("settings")}
-                  </Button>
-                </Link>
-              </div>
             </div>
           </div>
-          {/* UPDATED SECTION END */}
-
           {/* Demo Mode Alert */}
           {useDemoData && (
             <div className="mb-6 border-gradient-question p-[1px] rounded-xl">
@@ -828,7 +800,6 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
               </Alert>
             </div>
           )}
-
           {/* Guest User Alert */}
           {isGuest && !useDemoData && (
             <div className="mb-6 border-gradient-question p-[1px] rounded-xl">
@@ -871,44 +842,7 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
               </Alert>
             </div>
           )}
-
-          {/* Storage Usage for Guest Users */}
-          {isGuest && !useDemoData && (
-            <Card className="mb-6">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">
-                    {t("storageUsage")}
-                  </CardTitle>
-                  <HardDrive className="h-4 w-4 text-gray-500" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>
-                      {t("used")}: {(storageInfo.used / 1024).toFixed(1)} KB
-                    </span>
-                    <span>{storageInfo.percentage.toFixed(1)}%</span>
-                  </div>
-                  <div className="progress-gradient-bg rounded-full h-2">
-                    <div
-                      className="progress-gradient h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${storageInfo.percentage}%` }}
-                    />
-                  </div>
-                  {storageInfo.percentage > 80 && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400">
-                      Depolama alanınız dolmak üzere. Eski verileri silin veya
-                      yedekleyin.
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
-
         {showAnalytics ? (
           <AnalyticsDashboard useMockData={useDemoData} />
         ) : (
@@ -997,7 +931,7 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                         <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("subjectPerformanceDesc")}</p>
                       </div>
                     </div>
-                    
+
                     {performanceData.length > 0 ? (
                       <div className="space-y-6">
                         {performanceData.map((subject, index) => (
@@ -1011,10 +945,10 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                               </h4>
                               <Badge
                                 className={`text-sm ${subject.averageScore >= 80
-                                    ? "badge-gradient-high"
-                                    : subject.averageScore >= 70
-                                      ? "badge-gradient-medium"
-                                      : "badge-gradient-low"
+                                  ? "badge-gradient-high"
+                                  : subject.averageScore >= 70
+                                    ? "badge-gradient-medium"
+                                    : "badge-gradient-low"
                                   }`}
                               >
                                 %{subject.averageScore.toFixed(0)}
@@ -1036,60 +970,60 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                             </div>
                             {subject.weakTopics.length > 0 && (
                               <div className="mt-2">
-                                  <p className="text-xs font-medium text-[#ff3b30] mb-2">
-                                    {t("topicsToImprove")}
+                                <p className="text-xs font-medium text-[#ff3b30] mb-2">
+                                  {t("topicsToImprove")}
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {subject.weakTopics
+                                    .slice(0, 3)
+                                    .map((topic, i) => (
+                                      <Badge
+                                        key={i}
+                                        variant="outline"
+                                        className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
+                                      >
+                                        {topic}
+                                      </Badge>
+                                    ))}
+                                  {subject.weakTopics.length > 3 && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
+                                    >
+                                      +{subject.weakTopics.length - 3} {t("others")}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {subject.strongTopics &&
+                              subject.strongTopics.length > 0 && (
+                                <div className="mt-3">
+                                  <p className="text-xs font-medium text-[#34c759] mb-2">
+                                    {t("strongTopics")}
                                   </p>
                                   <div className="flex flex-wrap gap-1.5">
-                                    {subject.weakTopics
-                                      .slice(0, 3)
+                                    {subject.strongTopics
+                                      .slice(0, 2)
                                       .map((topic, i) => (
                                         <Badge
                                           key={i}
                                           variant="outline"
-                                          className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
+                                          className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
                                         >
                                           {topic}
                                         </Badge>
                                       ))}
-                                    {subject.weakTopics.length > 3 && (
+                                    {subject.strongTopics.length > 2 && (
                                       <Badge
                                         variant="outline"
-                                        className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
+                                        className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
                                       >
-                                        +{subject.weakTopics.length - 3} {t("others")}
+                                        +{subject.strongTopics.length - 2} {t("others") || (locale === "tr" ? "diğer" : "other")}
                                       </Badge>
                                     )}
                                   </div>
                                 </div>
-                              )}
-                              {subject.strongTopics &&
-                                subject.strongTopics.length > 0 && (
-                                  <div className="mt-3">
-                                    <p className="text-xs font-medium text-[#34c759] mb-2">
-                                      {t("strongTopics")}
-                                    </p>
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {subject.strongTopics
-                                        .slice(0, 2)
-                                        .map((topic, i) => (
-                                          <Badge
-                                            key={i}
-                                            variant="outline"
-                                            className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
-                                          >
-                                            {topic}
-                                          </Badge>
-                                        ))}
-                                      {subject.strongTopics.length > 2 && (
-                                        <Badge
-                                          variant="outline"
-                                          className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
-                                        >
-                                          +{subject.strongTopics.length - 2} {t("others") || (locale === "tr" ? "diğer" : "other")}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </div>
                               )}
                           </div>
                         ))}
@@ -1131,18 +1065,20 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                             <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
                               {t("performanceTrackingDesc")}
                             </p>
-                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full">
-                              <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="w-4 h-4 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
-                                <span>{t("takeTest")}</span>
-                              </div>
-                              <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="w-4 h-4 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
-                                <span>{t("seeResults")}</span>
-                              </div>
-                              <div className="flex items-center justify-center gap-2">
-                                <span className="w-4 h-4 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
-                                <span>{t("trackProgress")}</span>
+                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full flex flex-col items-center">
+                              <div className="w-fit flex flex-col items-start gap-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
+                                  <span>{t("takeTest")}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
+                                  <span>{t("seeResults")}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
+                                  <span>{t("trackProgress")}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1161,18 +1097,20 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                             <p className="text-[#86868b] dark:text-[#a1a1a6] mb-6 font-medium">
                               {t("developmentProcessDesc")}
                             </p>
-                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full">
-                              <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="w-4 h-4 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
-                                <span>{t("selectSubject")}</span>
-                              </div>
-                              <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="w-4 h-4 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
-                                <span>{t("takeTest")}</span>
-                              </div>
-                              <div className="flex items-center justify-center gap-2">
-                                <span className="w-4 h-4 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
-                                <span>{t("watchProgress")}</span>
+                            <div className="text-sm text-[#86868b] dark:text-[#a1a1a6] font-medium mt-auto w-full flex flex-col items-center">
+                              <div className="w-fit flex flex-col items-start gap-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#007aff] rounded-full shadow-[0_0_8px_rgba(0,122,255,0.4)]"></span>
+                                  <span>{t("selectSubject")}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#34c759] rounded-full shadow-[0_0_8px_rgba(52,199,89,0.4)]"></span>
+                                  <span>{t("takeTest")}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-3 h-3 bg-[#af52de] rounded-full shadow-[0_0_8px_rgba(175,82,222,0.4)]"></span>
+                                  <span>{t("watchProgress")}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1235,13 +1173,12 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0,10
                                 {result.type === "TopicExplainer" ? (
                                   <Badge className="badge-gradient-high shadow-none">{t("read")}</Badge>
                                 ) : (
-                                  <Badge className={`text-sm px-2 py-0.5 shadow-none ${
-                                    result.score / result.totalQuestions >= 0.8
-                                      ? "badge-gradient-high"
-                                      : result.score / result.totalQuestions >= 0.7
-                                        ? "badge-gradient-medium"
-                                        : "badge-gradient-low"
-                                  }`}>
+                                  <Badge className={`text-sm px-2 py-0.5 shadow-none ${result.score / result.totalQuestions >= 0.8
+                                    ? "badge-gradient-high"
+                                    : result.score / result.totalQuestions >= 0.7
+                                      ? "badge-gradient-medium"
+                                      : "badge-gradient-low"
+                                    }`}>
                                     %{Math.round((result.score / result.totalQuestions) * 100)}
                                   </Badge>
                                 )}

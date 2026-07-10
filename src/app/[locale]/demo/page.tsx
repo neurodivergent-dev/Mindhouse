@@ -168,8 +168,10 @@ export default function DemoPage() {
                 <Brain className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              {t("title")}
+            <h1 className="text-4xl font-black mb-4 tracking-tight">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {t("title")}
+              </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
               {t("subtitle")}
@@ -272,14 +274,14 @@ export default function DemoPage() {
             </motion.div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 items-stretch max-w-full overflow-x-hidden p-4 -mx-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 items-stretch max-w-full overflow-x-hidden p-4">
             {demoSteps.map((step, index) => (
               <motion.div
                 key={step.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="h-full"
+                className="h-full w-full max-w-sm mx-auto md:max-w-none"
               >
                 <div className="relative h-full rounded-xl p-[2px] group">
                   {/* Dynamic Gradient Layer */}

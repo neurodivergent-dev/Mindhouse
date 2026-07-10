@@ -38,7 +38,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { supabase } from "@/lib/supabase";
 import AiChatHistory from "./ai-chat-history";
-import localStorageService from "@/services/localStorage-service";
+import { aiChatSessionRepository } from "@/services/ai-chat-session-storage";
 import VoiceAssistant from "../voice-assistant";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
 import { SubjectService } from "@/services/supabase-service";
@@ -94,8 +94,8 @@ export default function AiChatClient() {
 
   const getSubjectLabel = useCallback(
     (subject: string) => {
-      if (subject === GENERAL_SUBJECT) {return t("general");}
-      if (locale === "tr") {return subject;}
+      if (subject === GENERAL_SUBJECT) { return t("general"); }
+      if (locale === "tr") { return subject; }
       const map: Record<string, string> = {
         "Matematik": "Mathematics",
         "Fizik": "Physics",
@@ -164,6 +164,95 @@ export default function AiChatClient() {
     [t],
   );
 
+  const starterPrompts = useMemo(() => {
+    if (locale === "tr") {
+      return [
+        {
+          title: "Karmaşık Konuları Açıkla",
+          description: "Kuantum fiziğini 5 yaşındaki birine anlatır gibi kolayca açıkla.",
+          prompt: "Kuantum fiziğini 5 yaşındaki bir çocuğun anlayabileceği şekilde en sade haliyle açıkla.",
+          icon: Lightbulb,
+          color: "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
+          glow: "from-blue-500/[0.04] to-indigo-500/[0.03] dark:from-blue-500/[0.06] dark:to-indigo-500/[0.04]",
+          iconBg: "bg-blue-500/10 dark:bg-blue-500/20",
+          iconColor: "text-blue-600 dark:text-blue-400",
+        },
+        {
+          title: "Çalışma Planı Hazırla",
+          description: "Sınavlarım için verimli bir haftalık çalışma programı oluştur.",
+          prompt: "Önümüzdeki hafta yapacağım sınavlar için bana verimli, adımlı ve dengeli bir ders çalışma planı hazırlar mısın?",
+          icon: Target,
+          color: "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
+          glow: "from-emerald-500/[0.04] to-teal-500/[0.03] dark:from-emerald-500/[0.06] dark:to-teal-500/[0.04]",
+          iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+          iconColor: "text-emerald-600 dark:text-emerald-400",
+        },
+        {
+          title: "Beni Test Et",
+          description: "Genel kültür veya tarih konularında bilgi seviyemi ölçecek sorular sor.",
+          prompt: "Genel kültür ve tarih konularında benim bilgi seviyemi test etmek için sırayla 5 soru sorar mısın?",
+          icon: Brain,
+          color: "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
+          glow: "from-purple-500/[0.04] to-pink-500/[0.03] dark:from-purple-500/[0.06] dark:to-pink-500/[0.04]",
+          iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
+          iconColor: "text-purple-600 dark:text-purple-400",
+        },
+        {
+          title: "Özet ve Analiz Yap",
+          description: "Ders çalışma tekniklerini veya zor konuları özetle.",
+          prompt: "Verimli ders çalışma tekniklerini (Pomodoro, Feynman vb.) kısaca özetle ve analiz et.",
+          icon: Sparkles,
+          color: "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
+          glow: "from-amber-500/[0.04] to-orange-500/[0.03] dark:from-amber-500/[0.06] dark:to-orange-500/[0.04]",
+          iconBg: "bg-amber-500/10 dark:bg-amber-500/20",
+          iconColor: "text-amber-600 dark:text-amber-400",
+        }
+      ];
+    }
+    return [
+      {
+        title: "Explain Complex Topics",
+        description: "Explain quantum physics like I am a 5-year-old.",
+        prompt: "Explain quantum physics in the simplest terms possible, like I'm a 5-year-old child.",
+        icon: Lightbulb,
+        color: "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
+        glow: "from-blue-500/[0.04] to-indigo-500/[0.03] dark:from-blue-500/[0.06] dark:to-indigo-500/[0.04]",
+        iconBg: "bg-blue-500/10 dark:bg-blue-500/20",
+        iconColor: "text-blue-600 dark:text-blue-400",
+      },
+      {
+        title: "Create a Study Plan",
+        description: "Prepare a custom study schedule for my upcoming exams.",
+        prompt: "Can you create a productive, step-by-step, balanced study schedule for my exams next week?",
+        icon: Target,
+        color: "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
+        glow: "from-emerald-500/[0.04] to-teal-500/[0.03] dark:from-emerald-500/[0.06] dark:to-teal-500/[0.04]",
+        iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
+        iconColor: "text-emerald-600 dark:text-emerald-400",
+      },
+      {
+        title: "Quiz Me",
+        description: "Ask questions to test my knowledge on any topic.",
+        prompt: "Can you ask me 5 questions one by one to test my knowledge in history and general science?",
+        icon: Brain,
+        color: "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
+        glow: "from-purple-500/[0.04] to-pink-500/[0.03] dark:from-purple-500/[0.06] dark:to-pink-500/[0.04]",
+        iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
+        iconColor: "text-purple-600 dark:text-purple-400",
+      },
+      {
+        title: "Summarize & Analyze",
+        description: "Summarize difficult concepts or articles quickly.",
+        prompt: "Briefly summarize and analyze the most effective study techniques (e.g., Pomodoro, Feynman).",
+        icon: Sparkles,
+        color: "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
+        glow: "from-amber-500/[0.04] to-orange-500/[0.03] dark:from-amber-500/[0.06] dark:to-orange-500/[0.04]",
+        iconBg: "bg-amber-500/10 dark:bg-amber-500/20",
+        iconColor: "text-amber-600 dark:text-amber-400",
+      }
+    ];
+  }, [locale]);
+
   const imageKeywords = useMemo(
     () =>
       locale === "tr"
@@ -193,6 +282,9 @@ export default function AiChatClient() {
   // Fetch subjects
   const fetchSubjects = async () => {
     try {
+      const { shouldUseDemoData, getDemoSubjects } = await import("@/data/demo-data");
+      const demoMode = shouldUseDemoData();
+
       // Check authentication
       const guestUser = localStorage.getItem("guestUser");
       const supabaseToken = localStorage.getItem("sb-gjdjjwvhxlhlftjwykcj-auth-token");
@@ -200,7 +292,17 @@ export default function AiChatClient() {
 
       let loadedSubjects: Subject[] = [];
 
-      if (isAuth) {
+      if (demoMode) {
+        const demoData = getDemoSubjects(locale);
+        loadedSubjects = demoData.map(subject => ({
+          id: subject.id,
+          name: subject.name,
+          description: subject.description,
+          category: subject.category,
+          difficulty: subject.difficulty,
+          isActive: subject.isActive,
+        }));
+      } else if (isAuth) {
         try {
           // Try loading from Supabase first
           const dbSubjects = await SubjectService.getSubjects();
@@ -316,7 +418,7 @@ export default function AiChatClient() {
       if (!session) {
         // Create local session if not authenticated
         const sessionId = `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorageService.saveAIChatSession({
+        await aiChatSessionRepository.saveSession({
           sessionId,
           userId: "guest",
           subject: currentSubjectRef.current,
@@ -353,7 +455,7 @@ export default function AiChatClient() {
 
       // Fallback to localStorage if Supabase fails
       const sessionId = `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorageService.saveAIChatSession({
+      await aiChatSessionRepository.saveSession({
         sessionId,
         userId: session.user.id,
         subject: currentSubjectRef.current,
@@ -461,7 +563,7 @@ export default function AiChatClient() {
           messageData.image = image;
         }
 
-        localStorageService.addMessageToSession(targetSessionId, messageData);
+        await aiChatSessionRepository.addMessage(targetSessionId, messageData);
       } catch {
         //do nothing
       }
@@ -529,7 +631,7 @@ export default function AiChatClient() {
 
       // Fallback to localStorage
       try {
-        const localSession = localStorageService.getAIChatSession(sessionId);
+        const localSession = await aiChatSessionRepository.getSession(sessionId);
         if (localSession) {
           const formattedMessages: Message[] = localSession.messages.map(
             (msg) => ({
@@ -964,9 +1066,8 @@ export default function AiChatClient() {
                               <BookOpen className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
                               <span className="break-words whitespace-normal text-left">{t("general")}</span>
                               <Check
-                                className={`ml-auto h-4 w-4 ${
-                                  currentSubject === GENERAL_SUBJECT ? "opacity-100" : "opacity-0"
-                                }`}
+                                className={`ml-auto h-4 w-4 ${currentSubject === GENERAL_SUBJECT ? "opacity-100" : "opacity-0"
+                                  }`}
                               />
                             </CommandItem>
                             {subjects.map((subject) => (
@@ -990,9 +1091,8 @@ export default function AiChatClient() {
                                   {getSubjectLabel(subject.name?.split(":")[0]?.trim() || "") || t("unknown")}
                                 </span>
                                 <Check
-                                  className={`ml-auto h-4 w-4 flex-shrink-0 ${
-                                    currentSubject === subject.name ? "opacity-100" : "opacity-0"
-                                  }`}
+                                  className={`ml-auto h-4 w-4 flex-shrink-0 ${currentSubject === subject.name ? "opacity-100" : "opacity-0"
+                                    }`}
                                 />
                               </CommandItem>
                             ))}
@@ -1016,42 +1116,52 @@ export default function AiChatClient() {
                 {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
               </Button>
 
-              {isAuthenticated && (
-                <>
-                  <AiChatHistory
-                    onSessionSelect={handleSessionSelect}
-                    currentSessionId={currentSessionId || undefined}
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
+              <AiChatHistory
+                onSessionSelect={handleSessionSelect}
+                onSessionDelete={(deletedId) => {
+                  if (currentSessionId === deletedId) {
+                    setCurrentSessionId(null);
+                    sessionIdRef.current = null;
+                    localStorage.removeItem('currentAIChatSessionId');
+                    setMessages([
+                      {
+                        id: "init",
+                        role: "assistant",
+                        content: getWelcomeMessage(currentSubject),
+                      },
+                    ]);
+                  }
+                }}
+                currentSessionId={currentSessionId || undefined}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
 
-                      // Clear all session references
-                      setCurrentSessionId(null);
-                      sessionIdRef.current = null;
-                      localStorage.removeItem('currentAIChatSessionId');
+                  // Clear all session references
+                  setCurrentSessionId(null);
+                  sessionIdRef.current = null;
+                  localStorage.removeItem('currentAIChatSessionId');
 
-                      // Use current state value instead of ref for UI consistency
-                      const subjectToUse = currentSubject;
+                  // Use current state value instead of ref for UI consistency
+                  const subjectToUse = currentSubject;
 
-                      // Reset messages with current subject
-                      setMessages([
-                        {
-                          id: "init",
-                          role: "assistant",
-                          content: getWelcomeMessage(subjectToUse),
-                        },
-                      ]);
+                  // Reset messages with current subject
+                  setMessages([
+                    {
+                      id: "init",
+                      role: "assistant",
+                      content: getWelcomeMessage(subjectToUse),
+                    },
+                  ]);
 
-                    }}
-                    className="gap-1 sm:gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 text-xs sm:text-sm h-8 sm:h-9"
-                  >
-                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">{t("newChat")}</span>
-                  </Button>
-                </>
-              )}
+                }}
+                className="gap-1 sm:gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 text-xs sm:text-sm h-8 sm:h-9"
+              >
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">{t("newChat")}</span>
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>
@@ -1197,6 +1307,37 @@ export default function AiChatClient() {
               )}
             </div>
           ))}
+          {messages.length === 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl mx-auto pt-4 w-full">
+              {starterPrompts.map((p, i) => {
+                const IconComponent = p.icon;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleSendMessage(p.prompt)}
+                    className={`relative overflow-hidden flex flex-col items-start justify-between text-left p-6 sm:p-7 min-h-[190px] sm:min-h-[210px] rounded-2xl bg-white/[0.4] dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] ${p.color} transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] group`}
+                  >
+                    {/* Subtle Gradient Glow on Hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${p.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+
+                    <div className="relative z-10 w-full h-full flex flex-col justify-between items-start">
+                      <div className="w-full">
+                        <div className={`w-11 h-11 rounded-xl ${p.iconBg} ${p.iconColor} flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform`}>
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                        <h4 className="font-bold text-base text-gray-900 dark:text-gray-100 mb-2">
+                          {p.title}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed mt-2">
+                        {p.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {isLoading && (
             <div className="flex items-start gap-4">
               <Avatar className="w-10 h-10 border-2 border-blue-200">

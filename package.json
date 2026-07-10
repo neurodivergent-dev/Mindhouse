@@ -80,6 +80,7 @@
     "framer-motion": "^12.23.7",
     "genkit": "^1.15.5",
     "jsonwebtoken": "^9.0.2",
+    "localforage": "^1.10.0",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",
     "next-intl": "^4.13.1",

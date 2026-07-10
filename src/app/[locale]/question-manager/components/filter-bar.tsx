@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
+import { getSubjectName } from "@/lib/question-manager-labels";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -26,13 +27,7 @@ interface SubjectFilterProps {
 function SubjectFilter({ value, onChange, subjects, placeholder }: SubjectFilterProps) {
   const tSubjects = useTranslations("Subjects");
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name.trim() as any);
-    } catch {
-      return name;
-    }
-  };
+  const getSubjectNameFormatted = (name: string) => getSubjectName(name, tSubjects);
 
   return (
     <Select value={value} onValueChange={onChange}>
@@ -45,7 +40,7 @@ function SubjectFilter({ value, onChange, subjects, placeholder }: SubjectFilter
         ) : (
           subjects.map((subject) => (
             <SelectItem key={subject.id} value={subject.name}>
-              {getSubjectName(subject.name)}
+              {getSubjectNameFormatted(subject.name)}
             </SelectItem>
           ))
         )}

@@ -5,13 +5,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import {
   Lock,
@@ -27,6 +20,12 @@ import { Link, useRouter } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { supabase, updatePassword } from "@/lib/supabase";
 import { useTranslations } from "next-intl";
+
+const inputClassName =
+  "pl-10 pr-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm text-sm font-medium";
+
+const pageShell =
+  "min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center px-4 py-8";
 
 function ResetPasswordContent() {
   const t = useTranslations("ResetPassword");
@@ -113,86 +112,81 @@ function ResetPasswordContent() {
   // Invalid token state
   if (!isValidToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={pageShell}>
         <div className="w-full max-w-md">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
             <div className="flex items-center justify-center mb-6">
-              <div className="bg-red-100 dark:bg-red-900 p-3 rounded-full">
+              <div className="w-16 h-16 rounded-2xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
                 <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
             </div>
 
-            <Card className="shadow-xl border-0 glass-card">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold text-red-600 dark:text-red-400">
+            <div className="apple-glass-card">
+              <div className="w-full relative z-10 p-6 md:p-8 space-y-4 text-center">
+                <h2 className="text-xl font-bold text-red-600 dark:text-red-400">
                   {t("invalidLink")}
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-sm text-[#86868b] dark:text-[#a1a1a6]">
                   {t("invalidLinkDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
                 <Button
                   onClick={() => router.push("/forgot-password")}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 text-sm font-semibold"
                 >
                   {t("requestNewLink")}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/login")}
-                  className="w-full"
+                  className="w-full h-11 rounded-xl bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold text-sm"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   {t("backToLogin")}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
     );
   }
 
-  // Success state
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={pageShell}>
         <div className="w-full max-w-md">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
             <div className="flex items-center justify-center mb-6">
-              <div className="bg-green-100 dark:bg-green-900 p-3 rounded-full">
+              <div className="w-16 h-16 rounded-2xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
                 <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
             </div>
 
-            <Card className="shadow-xl border-0 glass-card">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className="apple-glass-card">
+              <div className="w-full relative z-10 p-6 md:p-8 space-y-4 text-center">
+                <h2 className="text-xl font-bold text-green-600 dark:text-green-400">
                   {t("passwordUpdatedSuccess")}
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-sm text-[#86868b] dark:text-[#a1a1a6]">
                   {t("passwordUpdatedDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </p>
                 <Button
                   onClick={() => router.push("/login")}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 text-sm font-semibold"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   {t("goToLogin")}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -200,43 +194,42 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className={pageShell}>
       <div className="w-full max-w-md">
-        {/* Logo and Title */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-xl">
-              <Brain className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-center mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Brain className="h-7 w-7 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
             {tCommon("appName")}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm font-medium mt-1.5">
             {t("newPasswordSetup")}
           </p>
         </motion.div>
 
-        {/* Main card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="shadow-xl border-0 glass-card">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">
-                {t("setNewPassword")}
-              </CardTitle>
-              <CardDescription>
-                {t("setNewPasswordDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <div className="apple-glass-card">
+            <div className="w-full relative z-10 p-6 md:p-8 space-y-6">
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  {t("setNewPassword")}
+                </h2>
+                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-1">
+                  {t("setNewPasswordDescription")}
+                </p>
+              </div>
+
               <form
                 onSubmit={(e) => {
                   void handleSubmit(e);
@@ -244,23 +237,25 @@ function ResetPasswordContent() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="password">{t("newPassword")}</Label>
+                  <Label htmlFor="password" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("newPassword")}
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6]" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder={t("passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10"
+                      className={inputClassName}
                       required
                       minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -272,16 +267,18 @@ function ResetPasswordContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+                  <Label htmlFor="confirmPassword" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("confirmPassword")}
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6]" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder={t("confirmPasswordPlaceholder")}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10 pr-10"
+                      className={inputClassName}
                       required
                     />
                     <button
@@ -289,7 +286,7 @@ function ResetPasswordContent() {
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -302,12 +299,12 @@ function ResetPasswordContent() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 text-sm font-semibold disabled:opacity-40"
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       <span>{t("updating")}</span>
                     </div>
                   ) : (
@@ -319,14 +316,14 @@ function ResetPasswordContent() {
               <div className="text-center">
                 <Link
                   href="/login"
-                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center justify-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium inline-flex items-center gap-1 transition-colors"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  <ArrowLeft className="h-4 w-4" />
                   {t("backToLogin")}
                 </Link>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
@@ -336,9 +333,9 @@ function ResetPasswordContent() {
 function ResetPasswordLoading() {
   const tCommon = useTranslations("Common");
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="flex items-center gap-2">
-        <Loader2 className="h-6 w-6 animate-spin" />
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center">
+      <div className="flex items-center gap-2 text-[#86868b] dark:text-[#a1a1a6] text-sm">
+        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
         <span>{tCommon("loading")}</span>
       </div>
     </div>

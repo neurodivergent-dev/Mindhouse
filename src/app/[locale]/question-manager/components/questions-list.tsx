@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { getSubjectName } from "@/lib/question-manager-labels";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -38,6 +39,8 @@ interface QuestionsListProps {
   onEditQuestion: (question: Question) => void;
   onDeleteQuestion: (questionId: string) => Promise<void>;
   onAIDialogOpenChange: (open: boolean) => void;
+  onToggleFocus?: () => void;
+  isFocused?: boolean;
 }
 
 export default function QuestionsList({
@@ -54,18 +57,14 @@ export default function QuestionsList({
   onEditQuestion,
   onDeleteQuestion,
   onAIDialogOpenChange,
+  onToggleFocus,
+  isFocused,
 }: QuestionsListProps) {
   const t = useTranslations("QuestionManager");
   const tSubjects = useTranslations("Subjects");
   const locale = useLocale();
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name as any);
-    } catch {
-      return name;
-    }
-  };
+  const resolveSubjectName = (name: string) => getSubjectName(name, tSubjects);
   const searchLocale = locale === "tr" ? "tr-TR" : "en-US";
 
   const filteredQuestions = questions.filter((question) => {
@@ -93,14 +92,30 @@ export default function QuestionsList({
   );
 
   return (
-    <Card className="border-gradient-question shadow-lg w-full h-full">
-      <CardHeader>
-        <CardTitle>{t("questions")}</CardTitle>
-        <CardDescription>
-          {selectedSubject 
-            ? t("questionsInSubject", { subject: getSubjectName(selectedSubject) }) 
-            : t("selectSubject")}
-        </CardDescription>
+    <Card className="border-gradient-question shadow-lg w-full h-full transition-all duration-300">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+        <div className="space-y-1">
+          <CardTitle className="text-base sm:text-xl">{t("questions")}</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            {selectedSubject 
+              ? t("questionsInSubject", { subject: resolveSubjectName(selectedSubject) })
+              : t("selectSubject")}
+          </CardDescription>
+        </div>
+        {onToggleFocus && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleFocus}
+            className="h-8 w-8 text-[#86868b] dark:text-[#a1a1a6] hover:bg-slate-100 dark:hover:bg-white/[0.05] rounded-xl flex-shrink-0 transition-colors"
+          >
+            {isFocused ? (
+              <Minimize2 className="w-4 h-4" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <FilterBar
@@ -129,7 +144,7 @@ export default function QuestionsList({
           <NoQuestionsState onAIDialogOpenChange={onAIDialogOpenChange} />
         ) : (
           <div className="flex flex-col h-full">
-            <div className="space-y-4 w-full overflow-y-auto flex-grow" style={{ maxHeight: "850px" }}>
+            <div className="space-y-4 w-full overflow-y-auto overflow-x-hidden flex-grow px-4 py-1" style={{ maxHeight: "850px" }}>
               {paginatedQuestions.map((question) => (
                 <QuestionCard
                   key={question.id}

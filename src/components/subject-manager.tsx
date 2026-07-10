@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { getFormDifficultyLabel } from "@/lib/question-manager-labels";
+import { getFormDifficultyLabel, getSubjectName } from "@/lib/question-manager-labels";
 import type { Question } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -67,14 +66,6 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
   const tSubjects = useTranslations("Subjects");
   const locale = useLocale();
 
-  const getSubjectName = (name: string) => {
-    try {
-      return tSubjects(name as any);
-    } catch {
-      return name;
-    }
-  };
-
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,6 +85,9 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
   const loadSubjects = async () => {
     try {
       setIsLoading(true);
+
+      // Make sure the IndexedDB-backed cache is ready before reading
+      await UnifiedStorageService.initialize();
 
       // Use demo data for demo mode
       if (shouldUseDemoData()) {
@@ -166,22 +160,18 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               }
             }
 
-            // Also get local questions and merge
-            const stored = localStorage.getItem("mindhouse_questions");
-            if (stored) {
-              const localQuestions = JSON.parse(stored);
-              localQuestions.forEach((localQ: Question) => {
-                if (!allQuestions.find((cloudQ: Question) => cloudQ.id === localQ.id)) {
-                  allQuestions.push(localQ);
-                }
-              });
-            }
+            // Also get local questions from IndexedDB and merge
+            const localQuestions = UnifiedStorageService.getQuestions();
+            localQuestions.forEach((localQ: Question) => {
+              if (!allQuestions.find((cloudQ: Question) => cloudQ.id === localQ.id)) {
+                allQuestions.push(localQ);
+              }
+            });
 
             return allQuestions;
           } catch {
-            // Fallback to localStorage only
-            const stored = localStorage.getItem("mindhouse_questions");
-            return stored ? JSON.parse(stored) : [];
+            // Fallback to IndexedDB only
+            return UnifiedStorageService.getQuestions();
           }
         };
 
@@ -244,8 +234,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
           return [];
         }
         try {
-          const stored = localStorage.getItem("mindhouse_questions");
-          return stored ? JSON.parse(stored) : [];
+          return UnifiedStorageService.getQuestions();
         } catch {
           return [];
         }
@@ -272,9 +261,10 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                 questionCount: count || 0,
               };
             } else {
-              // Guest user - use localStorage fallback
+              // Guest user - use local IndexedDB fallback
               const questionCount = questions.filter(
-                (q: { subject: string }) => q.subject === subject.name,
+                (q: { subject: string }) =>
+                  q.subject?.trim().toLowerCase() === subject.name.trim().toLowerCase(),
               ).length;
 
               return {
@@ -283,9 +273,10 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               };
             }
           } catch {
-            // Fallback to localStorage on error
+            // Fallback to local IndexedDB data on error
             const questionCount = questions.filter(
-              (q: { subject: string }) => q.subject === subject.name,
+              (q: { subject: string }) =>
+                q.subject?.trim().toLowerCase() === subject.name.trim().toLowerCase(),
             ).length;
 
             return { ...subject, questionCount };
@@ -600,7 +591,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
   const filteredSubjects = subjects.filter((subject) => {
     const query = searchQuery.toLowerCase();
-    const displayName = getSubjectName(subject.name).toLowerCase();
+    const displayName = getSubjectName(subject.name, tSubjects).toLowerCase();
     const displayCategory = subject.category.toLowerCase();
     const displayDescription = (subject.description || "").toLowerCase();
 
@@ -646,15 +637,15 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                 {t("addNewSubject")}
               </Button>
             </DialogTrigger>
-            <DialogContent className="mx-auto max-w-[90%] sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>
+            <DialogContent className="w-[90vw] sm:w-[95vw] max-w-md h-auto max-h-[85vh] flex flex-col p-6 border-0 rounded-[32px] overflow-hidden shadow-2xl bg-white/95 dark:bg-[#1c1c1e]/95 backdrop-blur-xl">
+              <DialogHeader className="pb-3 border-b border-slate-100 dark:border-white/[0.05]">
+                <DialogTitle className="text-base sm:text-lg font-black tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
                   {editingSubject ? t("editSubject") : t("addNewSubject")}
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">{t("subjectName")}</Label>
+              <div className="space-y-4 pt-3">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectName")}</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -662,11 +653,11 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                       setFormData((prev) => ({ ...prev, name: e.target.value }))
                     }
                     placeholder={t("exampleMath")}
-                    className="w-full"
+                    className="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="description">{t("description")}</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("description")}</Label>
                   <Input
                     id="description"
                     value={formData.description}
@@ -677,11 +668,11 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                       }))
                     }
                     placeholder={t("subjectDescription")}
-                    className="w-full"
+                    className="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="category">{t("category")}</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="category" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("category")}</Label>
                   <Input
                     id="category"
                     value={formData.category}
@@ -692,28 +683,28 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                       }))
                     }
                     placeholder={t("exampleScience")}
-                    className="w-full"
+                    className="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="difficulty">{t("difficultyLevel")}</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLevel")}</Label>
                   <Select
                     value={formData.difficulty}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, difficulty: value }))
                     }
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
                       <SelectItem value="Kolay">{t("difficultyEasy")}</SelectItem>
                       <SelectItem value="Orta">{t("difficultyMedium")}</SelectItem>
                       <SelectItem value="Zor">{t("difficultyHard")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <Button
                     onClick={
                       editingSubject
@@ -724,14 +715,14 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                           void handleAddSubject();
                         }
                     }
-                    className="flex-1"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     {editingSubject ? t("update") : t("add")}
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
-                    className="flex-1"
+                    className="flex-1 h-12 text-base font-extrabold rounded-2xl border-slate-200 dark:border-white/[0.08] transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
                     {t("cancel")}
                   </Button>
@@ -762,8 +753,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                           {subject.category}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight line-clamp-2" title={getSubjectName(subject.name)}>
-                        {getSubjectName(subject.name)}
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight line-clamp-2" title={getSubjectName(subject.name, tSubjects)}>
+                        {getSubjectName(subject.name, tSubjects)}
                       </h3>
                     </div>
                   </div>
@@ -884,89 +875,82 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         )}
 
         {subjects.length === 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-6 sm:mx-0">
-            <Card className="border-gradient-question shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                    <Plus className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("addFirstSubjectTitle")}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  {t("addFirstSubjectDesc")}
-                </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-6 sm:mx-0">
+            {/* Card 1: Add Subject */}
+            <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <Plus className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                {t("addFirstSubjectTitle")}
+              </h3>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                {t("addFirstSubjectDesc")}
+              </p>
+              <div className="mt-auto w-full">
                 <Button
                   onClick={openAddDialog}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full"
+                  className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
+                  <Plus className="w-4 h-4 mr-2" />
                   {t("addSubject")}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-gradient-question shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-500 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full flex items-center justify-center">
-                    <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400" />
-                  </div>
+            {/* Card 2: How It Works */}
+            <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 hover:border-green-300 dark:hover:border-green-700 transition-all duration-300 group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/50 dark:to-emerald-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                {t("howItWorksTitle")}
+              </h3>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                {t("howItWorksDesc")}
+              </p>
+              <div className="mt-auto w-full flex flex-col gap-2 text-left">
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksAdd")}</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("howItWorksTitle")}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  {t("howItWorksDesc")}
-                </p>
-                <div className="text-sm text-gray-400 dark:text-gray-500">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <BookOpen className="w-4 h-4" />
-                    <span>{t("howItWorksAdd")}</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Target className="w-4 h-4" />
-                    <span>{t("howItWorksCategory")}</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <Brain className="w-4 h-4" />
-                    <span>{t("howItWorksAi")}</span>
-                  </div>
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <Target className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksCategory")}</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <Brain className="w-4 h-4 text-purple-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksAi")}</span>
+                </div>
+              </div>
+            </div>
 
-            <Card className="border-gradient-question shadow-lg border-dashed border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <div className="mb-4 flex justify-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-full flex items-center justify-center">
-                    <GraduationCap className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                  </div>
+            {/* Card 3: Learning Process */}
+            <div className="flex flex-col items-center text-center p-8 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-300 group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <GraduationCap className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                {t("learningProcessTitle")}
+              </h3>
+              <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
+                {t("learningProcessDesc")}
+              </p>
+              <div className="mt-auto w-full flex flex-col gap-2 text-left">
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <Plus className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessAdd")}</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("learningProcessTitle")}
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  {t("learningProcessDesc")}
-                </p>
-                <div className="text-sm text-gray-400 dark:text-gray-500">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-                    <span>{t("learningProcessAdd")}</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="w-4 h-4 bg-green-500 rounded-full"></span>
-                    <span>{t("learningProcessQuestions")}</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="w-4 h-4 bg-purple-500 rounded-full"></span>
-                    <span>{t("learningProcessStart")}</span>
-                  </div>
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessQuestions")}</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <GraduationCap className="w-4 h-4 text-purple-500 shrink-0" />
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessStart")}</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

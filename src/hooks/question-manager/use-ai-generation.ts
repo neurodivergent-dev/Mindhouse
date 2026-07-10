@@ -20,6 +20,7 @@ export const useAIGeneration = (
   setSubjects: (subjects: Subject[]) => void,
   setQuestions: (questions: Question[] | ((prev: Question[]) => Question[])) => void,
   calculateRealQuestionCount: (subjects: Subject[]) => Promise<Subject[]>,
+  setIsAIDialogOpen: (open: boolean) => void,
 ) => {
   const t = useTranslations("QuestionManager");
   const locale = useLocale();
@@ -215,6 +216,11 @@ export const useAIGeneration = (
         description: t("aiQuestionsAdded", { count: questionsToAdd.length }),
       });
 
+      // Close dialog and reset state to prevent duplicate submissions
+      setIsAIDialogOpen(false);
+      setAIGeneratedQuestions([]);
+      setAIGenerationResult(null);
+
       return true;
     } catch {
       toast({
@@ -226,7 +232,7 @@ export const useAIGeneration = (
     } finally {
       setIsCreating(false);
     }
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setIsCreating, setQuestions, setSubjects, t]); 
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setIsCreating, setQuestions, setSubjects, t, setIsAIDialogOpen, setAIGeneratedQuestions, setAIGenerationResult]); 
 
   return {
     generateQuestions,

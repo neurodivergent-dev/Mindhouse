@@ -44,6 +44,7 @@ interface AIFloatingChatProps {
     aiTutorUsed?: boolean;
     showResult?: boolean;
   };
+  onOpenChange?: (open: boolean) => void;
 }
 
 const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
@@ -52,6 +53,7 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   currentStepTitle,
   topicData,
   quizData,
+  onOpenChange,
 }) => {
   const tTopic = useTranslations("TopicExplainer");
   const tQuiz = useTranslations("Quiz");
@@ -62,6 +64,18 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   // "Dashboard" (and unknown values) fall back gracefully to prevent MISSING_MESSAGE.
   const getDisplaySubject = (name: string) => {
     if (name === "Dashboard") {return name;}
+    const demoSubjectNames = [
+      "Matematik",
+      "Fizik",
+      "Kimya",
+      "Biyoloji",
+      "Tarih",
+      "Türk Dili ve Edebiyatı",
+      "İngilizce",
+    ];
+    if (!demoSubjectNames.includes(name)) {
+      return name;
+    }
     try {
       return tSubjects(name as never);
     } catch {
@@ -96,6 +110,11 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
     if (messages.length === 0) {return;}
     setShowClearConfirm(true);
   };
+
+  // Notify parent on open state changes
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  }, [isOpen, onOpenChange]);
 
   // Initialize welcome message
   useEffect(() => {
@@ -323,7 +342,7 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
           className={`${
             isFullscreen
               ? "fixed inset-0 z-[100] bg-white dark:bg-gray-900 flex flex-col"
-              : "fixed bottom-6 right-6 z-50 w-96 h-[520px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+              : "fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-96 z-50 h-[520px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden"
           }`}
         >
           {/* Header */}

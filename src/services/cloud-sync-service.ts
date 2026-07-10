@@ -393,6 +393,11 @@ export class CloudSyncService {
    */
   static clearLocalData(): void {
     if (typeof window !== "undefined") {
+      // Clear IndexedDB-backed stores
+      UnifiedStorageService.saveQuestions([]);
+      UnifiedStorageService.saveSubjects([]);
+      UnifiedStorageService.saveFlashcards([]);
+      // Clean up legacy localStorage copies
       localStorage.removeItem("mindhouse_questions");
       localStorage.removeItem("mindhouse_subjects");
       localStorage.removeItem("mindhouse_flashcards");

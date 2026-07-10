@@ -12,14 +12,24 @@ export async function POST(request: NextRequest) {
     // URL çok uzun olmaması için 1000 karaktere kadar izin ver (Önceki 200 çok kısaydı)
     const shortPrompt = prompt.length > 1000 ? `${prompt.substring(0, 1000)}...` : prompt;
 
-    // AI zaten çok detaylı bir prompt ürettiği için ekstra İngilizce kelimelerle kafasını karıştırmıyoruz
     const cleanPrompt = shortPrompt;
 
     const seed = Math.floor(Math.random() * 1000000);
 
-    // enhance=false yapıyoruz çünkü bizim AI'ımız zaten yeterince detaylı bir prompt verdi.
-    // enhance=true olunca Pollinations kendi kafasına göre promptu tamamen değiştirip alakasız şeyler üretebiliyor.
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
+    const fluxUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
+    const defaultUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
+
+    let imageUrl = fluxUrl;
+
+    // Verify if the high-quality Flux model is rate-limited (429) or failing
+    try {
+      const response = await fetch(fluxUrl, { method: "HEAD", signal: AbortSignal.timeout(2000) });
+      if (response.status === 429 || !response.ok) {
+        imageUrl = defaultUrl;
+      }
+    } catch {
+      imageUrl = defaultUrl;
+    }
 
     return NextResponse.json({
       imageUrl,

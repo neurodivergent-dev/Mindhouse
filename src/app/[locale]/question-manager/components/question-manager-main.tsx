@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, BookOpen, Target, Brain, Database, GraduationCap, Users, BarChart3 } from "lucide-react";
 import FeatureCards from "@/components/ui/feature-cards";
 import QuestionForm from "./question-form";
@@ -117,6 +117,7 @@ export default function QuestionManagerMain({
   onUpdateQuestion,
 }: QuestionManagerMainProps) {
   const t = useTranslations("QuestionManager");
+  const [focusMode, setFocusMode] = useState<"form" | "list" | null>(null);
 
   const questionManagerFeatures = useMemo(
     () => [
@@ -209,66 +210,77 @@ export default function QuestionManagerMain({
             {/* Premium Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Total Subjects */}
-              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                    {t("totalSubjects")}
-                  </CardTitle>
-                  <BookOpen className="h-4 w-4 text-[#007aff] dark:text-[#0a84ff]" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingSubjects ? (
-                    <LoadingSpinner className="p-0 h-8 w-8 text-[#007aff]" />
-                  ) : (
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats.totalSubjects}
-                    </div>
-                  )}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-[#86868b] dark:text-[#a1a1a6] tracking-wide">
+                      {t("totalSubjects")}
+                    </p>
+                    {isLoadingSubjects ? (
+                      <LoadingSpinner className="p-0 h-8 w-8 text-[#007aff]" />
+                    ) : (
+                      <div className="text-3xl font-black tracking-tight text-gray-900 dark:text-gray-100">
+                        {stats.totalSubjects}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-12 h-12 bg-[#007aff]/10 dark:bg-[#0a84ff]/20 rounded-2xl flex items-center justify-center border border-[#007aff]/20 dark:border-[#0a84ff]/30 transition-transform group-hover:scale-110 duration-300 flex-shrink-0">
+                    <BookOpen className="h-6 w-6 text-[#007aff] dark:text-[#0a84ff]" />
+                  </div>
                 </CardContent>
               </Card>
 
               {/* Total Categories */}
-              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                    {t("totalCategories")}
-                  </CardTitle>
-                  <Brain className="h-4 w-4 text-[#af52de] dark:text-[#bf5af2]" />
-                </CardHeader>
-                <CardContent>
-                  {isLoadingSubjects ? (
-                    <LoadingSpinner className="p-0 h-8 w-8 text-[#af52de]" />
-                  ) : (
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats.totalCategories}
-                    </div>
-                  )}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-[#86868b] dark:text-[#a1a1a6] tracking-wide">
+                      {t("totalCategories")}
+                    </p>
+                    {isLoadingSubjects ? (
+                      <LoadingSpinner className="p-0 h-8 w-8 text-[#af52de]" />
+                    ) : (
+                      <div className="text-3xl font-black tracking-tight text-gray-900 dark:text-gray-100">
+                        {stats.totalCategories}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-12 h-12 bg-[#af52de]/10 dark:bg-[#bf5af2]/20 rounded-2xl flex items-center justify-center border border-[#af52de]/20 dark:border-[#bf5af2]/30 transition-transform group-hover:scale-110 duration-300 flex-shrink-0">
+                    <Brain className="h-6 w-6 text-[#af52de] dark:text-[#bf5af2]" />
+                  </div>
                 </CardContent>
               </Card>
 
               {/* Total Questions */}
-              <Card className="apple-glass-card border-0 hover:shadow-lg transition-shadow md:col-span-2 lg:col-span-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                    {t("totalQuestions")}
-                  </CardTitle>
-                  <Target className="h-4 w-4 text-[#34c759] dark:text-[#30d158]" />
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <LoadingSpinner className="p-0 h-8 w-8 text-[#34c759]" />
-                  ) : (
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats.totalQuestions}
-                    </div>
-                  )}
+              <Card className="apple-glass-card border-0 hover:shadow-lg transition-all duration-300 relative overflow-hidden group md:col-span-2 lg:col-span-1">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-[#86868b] dark:text-[#a1a1a6] tracking-wide">
+                      {t("totalQuestions")}
+                    </p>
+                    {isLoading ? (
+                      <LoadingSpinner className="p-0 h-8 w-8 text-[#34c759]" />
+                    ) : (
+                      <div className="text-3xl font-black tracking-tight text-gray-900 dark:text-gray-100">
+                        {stats.totalQuestions}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-12 h-12 bg-[#34c759]/10 dark:bg-[#30d158]/20 rounded-2xl flex items-center justify-center border border-[#34c759]/20 dark:border-[#30d158]/30 transition-transform group-hover:scale-110 duration-300 flex-shrink-0">
+                    <Target className="h-6 w-6 text-[#34c759] dark:text-[#30d158]" />
+                  </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 lg:items-stretch">
-            <div className="lg:flex-1">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 lg:items-stretch transition-all duration-500">
+            <div className={`transition-all duration-500 ease-in-out ${focusMode === "form"
+                ? "w-full lg:w-full lg:flex-none"
+                : focusMode === "list"
+                  ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
+                  : "lg:flex-1 w-full"
+              }`}>
               <QuestionForm
                 subjects={subjects}
                 formData={formData}
@@ -279,10 +291,17 @@ export default function QuestionManagerMain({
                 onSubmit={onSubmit}
                 onReset={onReset}
                 isCreating={isCreating}
+                onToggleFocus={() => setFocusMode(focusMode === "form" ? null : "form")}
+                isFocused={focusMode === "form"}
               />
             </div>
 
-            <div className="lg:flex-1">
+            <div className={`transition-all duration-500 ease-in-out ${focusMode === "list"
+                ? "w-full lg:w-full lg:flex-none"
+                : focusMode === "form"
+                  ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
+                  : "lg:flex-1 w-full"
+              }`}>
               <QuestionsList
                 subjects={subjects}
                 questions={questions}
@@ -297,6 +316,8 @@ export default function QuestionManagerMain({
                 onEditQuestion={onEditQuestion}
                 onDeleteQuestion={onDeleteQuestion}
                 onAIDialogOpenChange={onAIDialogOpenChange}
+                onToggleFocus={() => setFocusMode(focusMode === "list" ? null : "list")}
+                isFocused={focusMode === "list"}
               />
             </div>
           </div>
