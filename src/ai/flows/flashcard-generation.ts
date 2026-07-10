@@ -5,7 +5,7 @@ import { logError } from "@/lib/error-logger";
 import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 
-export const FlashcardGenerationInputSchema = z.object({
+const FlashcardGenerationInputSchema = z.object({
   subject: z.string().describe("The subject for which to generate flashcards"),
   topic: z.string().describe("The specific topic within the subject"),
   difficulty: z
@@ -60,7 +60,7 @@ const AIResponseSchema = z.object({
   flashcards: z.array(GeneratedFlashcardSchema).describe("The generated flashcards"),
 });
 
-export const FlashcardGenerationOutputSchema = z.object({
+const FlashcardGenerationOutputSchema = z.object({
   flashcards: z.array(GeneratedFlashcardSchema).describe("Generated flashcards"),
   metadata: z.object({
     totalGenerated: z.number().describe("Total number of flashcards generated"),

@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 
-export const AiTutorInputSchema = z.object({
+const AiTutorInputSchema = z.object({
   question: z.string().describe("The question text that the user is trying to solve."),
   subject: z.string().describe("The subject area of the question."),
   topic: z.string().describe("The specific topic of the question."),
@@ -36,7 +36,7 @@ export const AiTutorInputSchema = z.object({
 
 export type AiTutorInput = z.infer<typeof AiTutorInputSchema>;
 
-export const AiTutorOutputSchema = z.object({
+const AiTutorOutputSchema = z.object({
   help: z.string().describe("The help content based on the requested step type."),
   confidence: z.number().optional().describe("AI confidence in the explanation (0-1)."),
 });

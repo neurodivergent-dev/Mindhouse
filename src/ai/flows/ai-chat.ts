@@ -5,7 +5,7 @@ import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
 
-export const AiChatInputSchema = z.object({
+const AiChatInputSchema = z.object({
   message: z.string().describe("Kullanıcının gönderdiği mesaj"),
   subject: z.string().describe("Hangi ders konusunda konuşuyoruz"),
   conversationHistory: z
