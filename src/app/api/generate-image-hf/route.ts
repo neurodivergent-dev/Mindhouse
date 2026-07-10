@@ -18,9 +18,6 @@ export async function POST(request: NextRequest) {
     const model = pollinationsModel || "flux";
 
     const fluxUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=${model}&enhance=false&nologo=true`;
-    const defaultUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
-
-    let imageUrl = fluxUrl;
 
     const fetchHeaders: Record<string, string> = {};
     if (pollinationsApiKey) {
