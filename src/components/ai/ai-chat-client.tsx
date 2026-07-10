@@ -824,10 +824,8 @@ export default function AiChatClient() {
 
       let imageUrl = null;
       if (shouldGenerateImage) {
-        // Generate image based on the AI response or user request
-        const imagePrompt =
-          result.response.length > 50 ? result.response.substring(0, 200) : messageContent;
-        imageUrl = await generateImage(imagePrompt, currentSubject);
+        // Use the user's explicit message request directly for the image prompt rather than the assistant's verbal response
+        imageUrl = await generateImage(messageContent, currentSubject);
       }
 
       const assistantMessage: Message = {
