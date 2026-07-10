@@ -16,8 +16,6 @@ import {
   RotateCcw,
   ArrowLeft,
   ArrowRight,
-  Volume2,
-  VolumeX,
   Loader2,
   Save,
   Trash2,
@@ -104,7 +102,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(() => new Set());
   const [userNotes, setUserNotes] = useState<string>("");
@@ -561,14 +558,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     setIsPlaying(!isPlaying);
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    toast({
-      title: isMuted ? t("soundEnabled") : t("soundDisabled"),
-      description: isMuted ? t("soundEnabledDesc") : t("soundDisabledDesc"),
-    });
-  };
-
   // Save current topic content
   const handleSaveTopic = async () => {
     if (!topicData) {
@@ -792,16 +781,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               <span className="hidden sm:inline">{isPlaying ? t("pause") : t("autoPlay")}</span>
-            </Button>
-
-            <Button
-              onClick={toggleMute}
-              variant="outline"
-              size="sm"
-              className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title={isMuted ? t("unmute") : t("mute")}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
 
             <Button
