@@ -15,6 +15,7 @@ export interface AIPreferences {
   ollamaCloudModel: string;
   pollinationsApiKey?: string;
   pollinationsModel?: string;
+  imageGenerationEnabled?: boolean;
 }
 
 export class AIFactory {

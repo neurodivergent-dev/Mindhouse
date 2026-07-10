@@ -18,31 +18,16 @@ export async function POST(request: NextRequest) {
     const model = pollinationsModel || "flux";
 
     const fluxUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=${model}&enhance=false&nologo=true`;
-    const defaultUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
-
-    let imageUrl = fluxUrl;
 
     const fetchHeaders: Record<string, string> = {};
     if (pollinationsApiKey) {
       fetchHeaders.Authorization = `Bearer ${pollinationsApiKey}`;
     }
 
-    // Verify if the selected model is rate-limited (429) or failing
-    try {
-      const response = await fetch(fluxUrl, { 
-        method: "HEAD", 
-        headers: fetchHeaders,
-        signal: AbortSignal.timeout(2000) 
-      });
-      if (response.status === 429 || !response.ok) {
-        imageUrl = defaultUrl;
-      }
-    } catch {
-      imageUrl = defaultUrl;
-    }
-
+    // Directly return the generated URL without checking it via HEAD request first.
+    // This avoids latency issues, timeouts, and authorization header pre-fetch failures.
     return NextResponse.json({
-      imageUrl,
+      imageUrl: fluxUrl,
       success: true,
       confidence: 0.9,
     });

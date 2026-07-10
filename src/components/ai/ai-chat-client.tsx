@@ -823,11 +823,12 @@ export default function AiChatClient() {
       const shouldGenerateImage = imageKeywords.some((keyword) => lowerMessage.includes(keyword));
 
       let imageUrl = null;
-      if (shouldGenerateImage) {
-        // Generate image based on the AI response or user request
-        const imagePrompt =
-          result.response.length > 50 ? result.response.substring(0, 200) : messageContent;
-        imageUrl = await generateImage(imagePrompt, currentSubject);
+      // Trigger image generation if user requested it OR if the AI model determined that a visual explanation is highly relevant and produced a prompt
+      const imageGenerationEnabled = aiPreferences.imageGenerationEnabled !== false;
+      const targetImagePrompt = imageGenerationEnabled ? (result.imagePrompt || (shouldGenerateImage ? messageContent : null)) : null;
+      
+      if (targetImagePrompt) {
+        imageUrl = await generateImage(targetImagePrompt, currentSubject);
       }
 
       const assistantMessage: Message = {
@@ -1200,14 +1201,24 @@ export default function AiChatClient() {
                   <div className="max-w-none text-white">
                     {/* Display image if available */}
                     {message.image && (
-                      <div className="mb-3">
+                      <div className="mb-4 overflow-hidden rounded-xl border border-white/10 shadow-lg bg-black/20 group relative transition-transform duration-300 hover:scale-[1.02]">
                         <Image
                           src={message.image}
                           alt={t("generatedImageAlt")}
                           width={768}
-                          height={300}
-                          className="rounded-lg max-w-full h-auto shadow-md object-contain"
-                          style={{ maxHeight: "300px" }}
+                          height={432}
+                          className="w-full h-auto object-cover max-h-[350px] transition-opacity duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                          <span className="text-xs text-white/90 font-medium drop-shadow-md">
+                            {t("openImageInNewTab")}
+                          </span>
+                        </div>
+                        <a 
+                          href={message.image} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="absolute inset-0 z-10"
                         />
                       </div>
                     )}

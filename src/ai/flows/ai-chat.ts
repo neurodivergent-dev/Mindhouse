@@ -28,6 +28,12 @@ const AiChatOutputSchema = z.object({
   suggestedTopics: z.array(z.string()).describe("Önerilen konular"),
   followUpQuestions: z.array(z.string()).describe("Öğrencinin AI'ya sorabileceği takip soruları"),
   learningTips: z.array(z.string()).describe("Öğrenme ipuçları"),
+  imagePrompt: z
+    .string()
+    .optional()
+    .describe(
+      "Eğer konu görsel bir anlatım gerektiriyorsa (biyoloji, fizik, kimya vb.) veya kullanıcı resim istediyse, görsel oluşturucu (Pollinations) için İngilizce, detaylı ve sanatsal bir resim açıklaması (prompt) üretin. Örneğin: 'A detailed 3D render of a quantum atom showing electron orbitals, physics concept, dark background, neon glow'. Görsel gerekmiyorsa boş bırakın."
+    ),
 });
 
 export type AiChatOutput = z.infer<typeof AiChatOutputSchema>;
@@ -88,7 +94,8 @@ export async function getAiChatResponse(
       "confidence": 0.9,
       "suggestedTopics": ["Suggested topic 1", "Suggested topic 2"],
       "followUpQuestions": ["Follow-up question 1 that the STUDENT CAN ASK YOU", "Another question the student can ask you"],
-      "learningTips": ["Learning tip 1", "Learning tip 2"]
+      "learningTips": ["Learning tip 1", "Learning tip 2"],
+      "imagePrompt": "A detailed 3D render of a quantum atom showing electron orbitals, physics concept, dark background, neon glow (or empty if no image needed)"
     }
 
     ---
@@ -118,16 +125,16 @@ export async function getAiChatResponse(
     1.  Öğrencinin son mesajını ("ÖĞRENCİNİN SORUSU" bölümündeki) analiz et.
     2.  Bu soruya **DOĞRUDAN, NET ve EKSİKSİZ** bir cevap ver.
     3.  Cevabını verdikten sonra, konuyu pekiştirmek için ek bilgiler, örnekler veya sorular sun.
-    4.  Eğer konu görsel açıklama gerektiriyorsa, "Bu konu için bir görsel oluşturabilirim" gibi ifadeler kullan.
+    4.  Eğer konu görsel açıklama gerektiriyorsa veya öğrenci açıkça resim/görsel istiyorsa mutlaka 'imagePrompt' alanını doldur.
 
     ## İŞLEM ADIMLARI
     - **ADIM 1: SORUYU CEVAPLA:** İlk olarak, öğrencinin sorusuna odaklan ve tatmin edici bir yanıt oluştur. Bilmiyorsan, bilmediğini söyle ama konuyu araştırmasına yardımcı ol.
     - **ADIM 2: ÖĞRETMEN GİBİ DAVRAN:** Cevabını verdikten sonra samimi, teşvik edici ve öğretmen tarzı bir dil kullan. Konuyu pekiştirmek için ek materyaller sun.
-    - **ADIM 3: GÖRSEL ÖNERİSİ:** Eğer konu matematik formülleri, biyoloji diyagramları, fizik şemaları, kimya molekülleri gibi görsel açıklama gerektiriyorsa, "Bu konu için bir görsel oluşturabilirim" veya "Bu konuyu görsel olarak açıklayabilirim" gibi ifadeler kullan.
+    - **ADIM 3: GÖRSEL ÖNERİSİ:** Eğer konu görsel açıklama gerektiriyorsa veya öğrenci resim istiyorsa 'imagePrompt' alanına Pollinations için İngilizce, detaylı resim açıklaması yaz.
     - **ADIM 4: ETKİLEŞİMİ SÜRDÜR:** Öğrencinin sorabileceği mantıklı takip soruları ('followUpQuestions') ve ilgili konular ('suggestedTopics') önererek sohbeti canlı tut.
 
     ## DİKKAT EDİLECEKLER
-    - **ASLA** soruyu görmezden gelip genel bir "Merhaba, nasıfsın?" mesajı atma.
+    - **ASLA** soruyu görmezden gelip genel bir "Merhaba, nasılsın?" mesajı atma.
     - **ÖNCELİK HER ZAMAN SORUYU CEVAPLAMAKTIR.** Rol yapmak ikincil görevindir.
     - Konuşma geçmişini ('conversationHistory') dikkate alarak tutarlı ol.
     - Asla "Ben bir yapay zekayım" deme.
@@ -142,7 +149,8 @@ export async function getAiChatResponse(
       "confidence": 0.9,
       "suggestedTopics": ["Önerilen konu 1", "Önerilen konu 2"],
       "followUpQuestions": ["ÖĞRENCİNİN SANA sorabileceği takip sorusu 1", "Öğrencinin sana sorabileceği diğer bir soru"],
-      "learningTips": ["Öğrenme ipucu 1", "Öğrenme ipucu 2"]
+      "learningTips": ["Öğrenme ipucu 1", "Öğrenme ipucu 2"],
+      "imagePrompt": "Elektron orbitallerini ve kuantum yapısını gösteren detaylı bir 3D atom renderı (veya resim gerekmiyorsa boş bırakın)"
     }
 
     ---

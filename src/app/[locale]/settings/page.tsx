@@ -115,6 +115,7 @@ export default function SettingsPage() {
     ollamaCloudModel: "llama3",
     pollinationsApiKey: "",
     pollinationsModel: "flux",
+    imageGenerationEnabled: true,
   });
 
   const provider = aiPreferences.provider;
@@ -1000,6 +1001,25 @@ export default function SettingsPage() {
                     🎨 {t("pollinations_heading") || "Pollinations.ai (BYOK)"}
                   </h3>
                   <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-purple-50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="image-generation-toggle" className="text-sm font-semibold cursor-pointer">
+                          {t("image_generation_enabled") || "Görsel Üretimini Etkinleştir"}
+                        </Label>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                          {t("image_generation_enabled_desc") || "Yapay zeka konu anlatımları veya resim istekleri için görseller oluştursun."}
+                        </p>
+                      </div>
+                      <Switch
+                        id="image-generation-toggle"
+                        checked={aiPreferences.imageGenerationEnabled}
+                        onCheckedChange={(checked) => {
+                          const updated = { ...aiPreferences, imageGenerationEnabled: checked };
+                          setAiPreferences(updated);
+                          persistAiPreferences(updated);
+                        }}
+                      />
+                    </div>
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wide">
                         {t("pollinations_api_key") || "Pollinations API Key"}
@@ -1009,6 +1029,7 @@ export default function SettingsPage() {
                         type="password"
                         placeholder="sk-pol-..."
                         value={aiPreferences.pollinationsApiKey || ""}
+                        disabled={!aiPreferences.imageGenerationEnabled}
                         onChange={(e) => {
                           const updated = { ...aiPreferences, pollinationsApiKey: e.target.value };
                           setAiPreferences(updated);
@@ -1028,6 +1049,7 @@ export default function SettingsPage() {
                         id="pollinations-model"
                         placeholder="flux, turbo, unity vs."
                         value={aiPreferences.pollinationsModel || "flux"}
+                        disabled={!aiPreferences.imageGenerationEnabled}
                         onChange={(e) => {
                           const updated = { ...aiPreferences, pollinationsModel: e.target.value };
                           setAiPreferences(updated);
