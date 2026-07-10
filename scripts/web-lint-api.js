@@ -339,7 +339,7 @@ app.get('/api/health', (req, res) => {
 
 // Server başlatma
 app.listen(PORT, () => {
-    console.log(`🧠 AkılHane Web Lint Checker API`);
+    console.log(`🧠 Mindhouse Web Lint Checker API`);
     console.log(`🌐 Server: http://localhost:${PORT}`);
     console.log(`📊 Health: http://localhost:${PORT}/api/health`);
     console.log(`🔧 API Endpoints:`);

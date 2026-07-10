@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getFlashcardRecommendation,
   type FlashcardRecommendationOutput,
 } from "../ai/flows/flashcard-recommendation";
+import { getSubjectName } from "@/lib/question-manager-labels";
+import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -23,6 +26,7 @@ import { getDemoFlashcards } from "@/data/demo-data";
 import MobileNav from "@/components/mobile-nav";
 import { useToast } from "@/hooks/use-toast";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
+import AIFloatingChat from "./ai-floating-chat";
 
 interface Flashcard {
   id: string;
@@ -50,6 +54,28 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
   onBack,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("Flashcard");
+  const tCommon = useTranslations("Common");
+  const tSubjects = useTranslations("Subjects");
+  const locale = useLocale();
+
+  const getStudyModeLabel = useCallback(
+    (mode: string) => {
+      if (mode === "review") {return t("modeReview");}
+      if (mode === "new") {return t("modeNew");}
+      return t("modeDifficult");
+    },
+    [t],
+  );
+
+  const formatReviewWhen = useCallback(
+    (days: number) => {
+      if (days === 1) {return t("reviewTomorrow");}
+      if (days < 30) {return t("reviewInDays", { days });}
+      return t("reviewInMonth");
+    },
+    [t],
+  );
   // Check demo mode from localStorage
   const demoModeActive =
     isDemoMode ||
@@ -83,15 +109,15 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     const loadFlashcards = async () => {
       try {
         if (demoModeActive) {
-          // Demo mode - load demo flashcards
-          const demoFlashcards = getDemoFlashcards(subject);
+          // Demo mode - load demo flashcards (localized for current locale)
+          const demoFlashcards = getDemoFlashcards(subject, locale);
 
           setFlashcards(demoFlashcards);
           setStats({
             total: demoFlashcards.length,
-            reviewed: demoFlashcards.filter((f) => f.reviewCount > 0).length,
-            mastered: demoFlashcards.filter((f) => f.confidence >= 4).length,
-            needsReview: demoFlashcards.filter((f) => f.confidence < 4).length,
+            reviewed: demoFlashcards.filter((f: Flashcard) => f.reviewCount > 0).length,
+            mastered: demoFlashcards.filter((f: Flashcard) => f.confidence >= 4).length,
+            needsReview: demoFlashcards.filter((f: Flashcard) => f.confidence < 4).length,
           });
           return;
         }
@@ -99,7 +125,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         const flashcards = UnifiedStorageService.getFlashcardsBySubject(subject);
 
         if (flashcards.length === 0) {
-          throw new Error("Bu ders için henüz flashcard bulunamadı. Flashcard Yöneticisi&apos;nden flashcard ekleyebilirsiniz.");
+          throw new Error(t("noFlashcardsForSubject"));
         }
 
         // Flashcard'ları component interface'ine uygun hale getir
@@ -137,8 +163,10 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
       } catch (error) {
         // Show user-friendly error message
         toast({
-          title: "Hata",
-          description: `Flashcard yüklenirken hata oluştu: ${error instanceof Error ? error.message : "Bilinmeyen hata"}`,
+          title: tCommon("error"),
+          description: t("loadError", {
+            message: error instanceof Error ? error.message : t("unknownError"),
+          }),
           variant: "destructive",
         });
       }
@@ -147,7 +175,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     if (subject) {
       loadFlashcards();
     }
-  }, [subject, demoModeActive, toast]);
+  }, [subject, demoModeActive, toast, t, tCommon, locale]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -272,8 +300,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
     // Show success message
     toast({
-      title: "Başarılı!",
-      description: "Tüm kartlar sıfırlandı. Spaced repetition sistemi yeniden başlatıldı.",
+      title: t("resetSuccess"),
+      description: t("resetSuccessDesc"),
       variant: "default",
     });
   };
@@ -329,6 +357,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
       };
 
       const flashcardData = JSON.stringify(combinedData);
+      
+      const preferences = getStoredAiPreferences();
+      if (!isAiConfigured(preferences)) {
+        // silently skip or set empty, since it's optional rec
+        return;
+      }
 
       const recommendation = await getFlashcardRecommendation({
         userId: "user-123",
@@ -337,6 +371,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         currentFlashcardData: flashcardData,
         studyMode,
         targetStudyTime: 30, // 30 minutes default
+        preferences,
+        language: locale === "en" ? "en" : "tr",
       });
 
       setAiRecommendation(recommendation);
@@ -346,8 +382,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
       }
       // Show user-friendly error message
       toast({
-        title: "AI Önerisi Alınamadı",
-        description: "Lütfen daha sonra tekrar deneyin.",
+        title: t("aiRecommendationFailed"),
+        description: t("aiRecommendationFailedDesc"),
         variant: "destructive",
       });
     } finally {
@@ -503,11 +539,11 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     } */
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              Flashcard Sistemi - {subject}
+              {t("systemTitle", { subject: getSubjectName(subject, tSubjects) })}
             </h1>
 
             {(allCardsCompleted || currentModeCompleted) ? (
@@ -579,7 +615,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4 px-4"
                     style={{ lineHeight: '1.2', height: 'auto', overflow: 'visible' }}
                   >
-                    Başarıyla Tamamlandı!
+                    {t("completedTitle")}
                   </motion.h2>
 
                   <motion.p
@@ -589,8 +625,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 font-medium px-4"
                   >
                     {allCardsCompleted
-                      ? `${subject} konusundaki tüm flashcard'ları başarıyla öğrendiniz!`
-                      : "Harika bir iş çıkardınız!"}
+                      ? t("completedAllDesc", { subject: getSubjectName(subject, tSubjects) })
+                      : t("completedGreatJob")}
                   </motion.p>
                 </div>
 
@@ -611,7 +647,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent mb-2">
                         {flashcards.length}
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">Toplam Kart</div>
+                      <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{t("totalCards")}</div>
                     </div>
                   </div>
 
@@ -625,7 +661,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-br from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
                         {Math.round((flashcards.filter(c => c.confidence >= 4).length / flashcards.length) * 100)}%
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-green-400">Başarı Oranı</div>
+                      <div className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-green-400">{t("successRate")}</div>
                     </div>
                   </div>
 
@@ -639,7 +675,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent mb-2">
                         {flashcards.reduce((sum, c) => sum + c.reviewCount, 0)}
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-purple-600 dark:text-purple-400">Toplam Tekrar</div>
+                      <div className="text-xs sm:text-sm font-semibold text-purple-600 dark:text-purple-400">{t("totalReviews")}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -662,7 +698,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span>Yeni Baştan Başla</span>
+                    <span>{t("startFresh")}</span>
                   </motion.button>
 
                   <motion.button
@@ -674,7 +710,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span>Ders Seçimine Dön</span>
+                    <span>{t("backToSubjectSelection")}</span>
                   </motion.button>
                 </motion.div>
               </motion.div>
@@ -690,8 +726,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="text-6xl mb-4">🔍</div>
                   <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
                     {filteredCards.length === 0 && flashcards.length > 0
-                      ? `${studyMode === "review" ? "Tekrar" : studyMode === "new" ? "Yeni" : "Zor"} modunda gösterilecek kart bulunamadı`
-                      : "Bu konu için flashcard bulunamadı"}
+                      ? t("noCardsInMode", { mode: getStudyModeLabel(studyMode) })
+                      : t("noCardsForTopic")}
                   </h3>
                 </div>
 
@@ -704,10 +740,10 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-2xl">💡</span>
-                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">İpucu</h4>
+                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">{t("tip")}</h4>
                     </div>
                     <p className="text-blue-700 dark:text-blue-300">
-                      Mevcut modda kart bulunamadı. Aşağıdaki butonlardan birini kullanarak farklı modları deneyebilir veya tüm kartları görebilirsiniz.
+                      {t("noCardsInModeTip")}
                     </p>
                   </motion.div>
                 )}
@@ -721,30 +757,30 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                 >
                   <h4 className="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                     <span className="text-xl">🔍</span>
-                    Debug Bilgileri
+                    {t("debugInfo")}
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
                       <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{flashcards.length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Toplam</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugTotal")}</div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
                       <div className="text-xl font-bold text-green-600 dark:text-green-400">{flashcards.filter(c => c.confidence >= 4).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Tamamlanan</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugCompleted")}</div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
                       <div className="text-xl font-bold text-red-600 dark:text-red-400">{flashcards.filter(c => c.confidence <= 2).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Zor</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugDifficult")}</div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
                       <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{flashcards.filter(c => !c.lastReviewed).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Yeni</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugNew")}</div>
                     </div>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div><strong>Güven Dağılımı:</strong> {flashcards.map(c => `${c.confidence}/5`).join(' • ')}</div>
-                    <div><strong>Mevcut Mod:</strong> {studyMode === "review" ? "🔄 Tekrar" : studyMode === "new" ? "🆕 Yeni" : "⚠️ Zor"}</div>
-                    <div><strong>Filtrelenmiş Kartlar:</strong> {filteredCards.length}</div>
+                    <div><strong>{t("confidenceDistribution")}</strong> {flashcards.map(c => `${c.confidence}/5`).join(' • ')}</div>
+                    <div><strong>{t("currentMode")}</strong> {studyMode === "review" ? `🔄 ${getStudyModeLabel("review")}` : studyMode === "new" ? `🆕 ${getStudyModeLabel("new")}` : `⚠️ ${getStudyModeLabel("difficult")}`}</div>
+                    <div><strong>{t("filteredCards")}</strong> {filteredCards.length}</div>
                   </div>
                 </motion.div>
 
@@ -756,9 +792,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     className="text-center"
                   >
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                      {studyMode === "review" && "🔄 Tekrar modu: Zamanı gelen kartları gösterir"}
-                      {studyMode === "new" && "🆕 Yeni modu: Henüz incelenmemiş kartları gösterir"}
-                      {studyMode === "difficult" && "⚠️ Zor modu: Güven seviyesi düşük kartları gösterir"}
+                      {studyMode === "review" && `🔄 ${t("modeReviewDesc")}`}
+                      {studyMode === "new" && `🆕 ${t("modeNewDesc")}`}
+                      {studyMode === "difficult" && `⚠️ ${t("modeDifficultDesc")}`}
                     </p>
 
                     <div className="flex flex-wrap gap-3 justify-center">
@@ -771,7 +807,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                         }}
                         className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
                       >
-                        🔄 Tüm Kartları Göster
+                        🔄 {t("showAllCards")}
                       </motion.button>
 
                       <motion.button
@@ -783,7 +819,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                         }}
                         className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
                       >
-                        🆕 Yeni Kartlar
+                        🆕 {t("newCards")}
                       </motion.button>
 
                       <motion.button
@@ -795,7 +831,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                         }}
                         className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
                       >
-                        ⚠️ Zor Kartlar
+                        ⚠️ {t("difficultCards")}
                       </motion.button>
                     </div>
                   </motion.div>
@@ -809,7 +845,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none">
       {/* Responsive Navigation Bar */}
       <MobileNav />
 
@@ -820,147 +856,151 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <Button
                 onClick={onBack}
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="flex items-center gap-2 min-h-[44px] px-4 text-base hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
+                className="flex items-center gap-2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors text-sm"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Ders Seçimine Dön
+                {t("backToSubjectSelection")}
               </Button>
               <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Flashcard Sistemi - {subject}
+                {t("systemTitle", { subject: getSubjectName(subject, tSubjects) })}
               </h1>
             </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md text-center">
-              <div className="flex items-center justify-center mb-2">
+            <div className="apple-glass-card p-5 text-center flex flex-col items-center justify-center border-0 shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mb-3">
                 <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400 mb-1">
                 {stats.total}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                Toplam
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {t("statsTotal")}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+
+            <div className="apple-glass-card p-5 text-center flex flex-col items-center justify-center border-0 shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 flex items-center justify-center mb-3">
+                <Eye className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
               </div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-3xl font-extrabold text-cyan-600 dark:text-cyan-400 mb-1">
                 {stats.reviewed}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                İncelenen
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {t("statsReviewed")}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+
+            <div className="apple-glass-card p-5 text-center flex flex-col items-center justify-center border-0 shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center mb-3">
+                <Target className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+              <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mb-1">
                 {stats.mastered}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                Öğrenilen
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {t("statsMastered")}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md text-center">
-              <div className="flex items-center justify-center mb-2">
-                <RotateCcw className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+
+            <div className="apple-glass-card p-5 text-center flex flex-col items-center justify-center border-0 shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 dark:bg-amber-500/20 flex items-center justify-center mb-3">
+                <RotateCcw className="w-5 h-5 text-amber-600 dark:text-amber-500" />
               </div>
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-500 mb-1">
                 {stats.needsReview}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                Tekrar Gerekli
+              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {t("statsNeedsReview")}
               </div>
             </div>
           </div>
 
           {/* Reset All Cards Button */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
             <button
               onClick={() => setShowResetDialog(true)}
-              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
-              title="Tüm kartların spaced repetition verilerini sıfırla"
+              className="px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 dark:border-red-500/30 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-sm text-sm"
+              title={t("resetAllCardsTitle")}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Tüm Kartları Sıfırla
+              <RotateCcw className="w-4 h-4" />
+              {t("resetAllCards")}
             </button>
           </div>
 
           {/* Study Mode Selector */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-6">
-            <button
-              onClick={() => {
-                setStudyMode("review");
-                setCurrentIndex(0);
-                setIsFlipped(false);
-                setShowAnswer(false);
-                setConfidence(null);
-              }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                studyMode === "review"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              }`}
-            >
-              Tekrar
-            </button>
-            <button
-              onClick={() => {
-                setStudyMode("new");
-                setCurrentIndex(0);
-                setIsFlipped(false);
-                setShowAnswer(false);
-                setConfidence(null);
-              }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                studyMode === "new"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              }`}
-            >
-              Yeni
-            </button>
-            <button
-              onClick={() => {
-                setStudyMode("difficult");
-                setCurrentIndex(0);
-                setIsFlipped(false);
-                setShowAnswer(false);
-                setConfidence(null);
-              }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                studyMode === "difficult"
-                  ? "bg-red-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-              }`}
-            >
-              Zor
-            </button>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8">
+            <div className="inline-flex p-1 bg-gray-200/50 dark:bg-gray-800/50 backdrop-blur-md rounded-2xl border border-black/5 dark:border-white/5 shadow-inner">
+              <button
+                onClick={() => {
+                  setStudyMode("review");
+                  setCurrentIndex(0);
+                  setIsFlipped(false);
+                  setShowAnswer(false);
+                  setConfidence(null);
+                }}
+                className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  studyMode === "review"
+                    ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                }`}
+              >
+                {t("modeReview")}
+              </button>
+              <button
+                onClick={() => {
+                  setStudyMode("new");
+                  setCurrentIndex(0);
+                  setIsFlipped(false);
+                  setShowAnswer(false);
+                  setConfidence(null);
+                }}
+                className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  studyMode === "new"
+                    ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                }`}
+              >
+                {t("modeNew")}
+              </button>
+              <button
+                onClick={() => {
+                  setStudyMode("difficult");
+                  setCurrentIndex(0);
+                  setIsFlipped(false);
+                  setShowAnswer(false);
+                  setConfidence(null);
+                }}
+                className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  studyMode === "difficult"
+                    ? "bg-white dark:bg-gray-700 text-red-500 dark:text-red-400 shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                }`}
+              >
+                {t("modeDifficult")}
+              </button>
+            </div>
+
             <button
               onClick={() => {
                 void getAiRecommendation();
               }}
               disabled={isLoadingRecommendation}
-              className="px-4 py-2 bg-indigo-600 dark:bg-indigo-700 text-white rounded-lg font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-sm font-semibold shadow-lg hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-200 disabled:opacity-50 flex items-center gap-2 border border-indigo-400/20"
             >
               {isLoadingRecommendation ? (
                 <>
-                  <Brain className="w-4 h-4 animate-pulse" />
-                  <span>AI Düşünüyor...</span>
+                  <Brain className="w-4 h-4 animate-pulse text-indigo-200" />
+                  <span>{t("aiThinking")}</span>
                 </>
               ) : (
                 <>
-                  <Brain className="w-4 h-4" />
-                  <span>AI Önerisi</span>
+                  <Brain className="w-4 h-4 text-indigo-100" />
+                  <span>{t("aiRecommendation")}</span>
                 </>
               )}
             </button>
@@ -978,16 +1018,16 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               <div className="flex items-center gap-3">
                 <Brain className="w-5 h-5 text-indigo-600" />
                 <h3 className="text-lg font-semibold text-indigo-800 dark:text-indigo-300">
-                  AI Önerisi
+                  {t("aiRecommendation")}
                 </h3>
                 <span className="text-sm text-indigo-600 dark:text-indigo-400">
-                  Güven: {Math.round(aiRecommendation.confidence * 100)}%
+                  {t("confidenceLabel", { percent: Math.round(aiRecommendation.confidence * 100) })}
                 </span>
               </div>
               <button
                 onClick={() => setAiRecommendation(null)}
                 className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors p-1"
-                title="Öneriyi gizle"
+                title={t("hideRecommendation")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -998,12 +1038,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <h4 className="font-medium text-indigo-700 dark:text-indigo-300 mb-2">
-                  Önerilen Mod:{" "}
-                  {aiRecommendation.recommendedStudyMode === "review"
-                    ? "Tekrar"
-                    : aiRecommendation.recommendedStudyMode === "new"
-                      ? "Yeni"
-                      : "Zor"}
+                  {t("recommendedMode")}{" "}
+                  {getStudyModeLabel(aiRecommendation.recommendedStudyMode)}
                 </h4>
                 <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-3">
                   {aiRecommendation.reasoning}
@@ -1012,7 +1048,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
               <div>
                 <h4 className="font-medium text-indigo-700 dark:text-indigo-300 mb-2">
-                  Odaklanılacak Konular:
+                  {t("focusTopics")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {aiRecommendation.recommendedTopics
@@ -1031,13 +1067,13 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
             <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded border">
               <h4 className="font-medium text-gray-800 dark:text-white mb-2">
-                📚 Çalışma Stratejisi
+                📚 {t("studyStrategy")}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 {aiRecommendation.studyStrategy}
               </p>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Tahmini süre: {aiRecommendation.estimatedTime} dakika
+                {t("estimatedTime", { time: aiRecommendation.estimatedTime })}
               </div>
             </div>
 
@@ -1051,7 +1087,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               }}
               className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              Öneriyi Uygula
+              {t("applyRecommendation")}
             </button>
           </motion.div>
         )}
@@ -1069,19 +1105,17 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               className="relative w-full h-auto min-h-[31rem] sm:min-h-[35rem]"
               animate={{ rotateY: isFlipped ? 180 : 0 }}
               transition={{
-                duration: 0.8,
-                type: "spring",
-                stiffness: 100,
-                damping: 15,
+                duration: 0.4,
+                ease: "easeOut",
               }}
-              style={{ transformStyle: "preserve-3d" }}
+              style={{ transformStyle: "preserve-3d", willChange: "transform" }}
             >
               {/* Front of card - Modern Design */}
               <div
-                className={`absolute w-full h-full bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center border border-gray-100 dark:border-gray-600 ${
+                className={`absolute w-full h-full bg-white/85 dark:bg-gray-900/65 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[24px] shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center ${
                   isFlipped ? "backface-hidden" : ""
                 }`}
-                style={{ backfaceVisibility: "hidden" }}
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translate3d(0, 0, 0)" }}
               >
                 {/* Header with modern badges */}
                 <div className="mb-6 flex flex-wrap justify-center gap-3">
@@ -1131,7 +1165,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-400/20 dark:to-purple-400/20 rounded-2xl p-4 border border-blue-200/30 dark:border-blue-600/30">
                     <p className="text-sm text-blue-600 dark:text-blue-400 font-medium flex items-center justify-center gap-2">
                       <MousePointer2 className="w-4 h-4 animate-pulse text-blue-600 dark:text-blue-400" />
-                      <span>Cevabı görmek için tıklayın</span>
+                      <span>{t("clickToSeeAnswer")}</span>
                     </p>
                   </div>
                 </div>
@@ -1148,19 +1182,20 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
               {/* Back of card - Modern Design */}
               <div
-                className={`absolute w-full h-full bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center border border-gray-100 dark:border-gray-600 ${
+                className={`absolute w-full h-full bg-white/85 dark:bg-gray-900/65 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[24px] shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center ${
                   !isFlipped ? "backface-hidden" : ""
                 }`}
                 style={{
                   backfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
+                  WebkitBackfaceVisibility: "hidden",
+                  transform: "rotateY(180deg) translate3d(0, 0, 0)",
                 }}
               >
                 {/* Answer header */}
                 <div className="mb-4 sm:mb-6">
                   <span className="inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg gap-2">
                     <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>Cevap</span>
+                    <span>{t("answer")}</span>
                   </span>
                 </div>
 
@@ -1176,9 +1211,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
                     <div className="flex items-center gap-2 mb-2 sm:mb-3">
                       <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-                      <h4 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">Açıklama</h4>
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">{t("explanation")}</h4>
                     </div>
-                    <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                       {currentCard.explanation}
                     </p>
                   </div>
@@ -1189,7 +1224,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-400/20 dark:to-emerald-400/20 rounded-2xl p-4 border border-green-200/30 dark:border-green-600/30">
                     <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center justify-center gap-2">
                       <MousePointer2 className="w-4 h-4 animate-pulse text-green-600 dark:text-green-400" />
-                      <span>Geri dönmek için tıklayın</span>
+                      <span>{t("clickToGoBack")}</span>
                     </p>
                   </div>
                 </div>
@@ -1206,15 +1241,15 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 border border-gray-200/50 dark:border-gray-600/50"
+              className="bg-white/85 dark:bg-gray-900/65 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[24px] shadow-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8"
             >
               <div className="text-center mb-6 sm:mb-8">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2 flex items-center justify-center gap-2">
                   <Target className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0" />
-                  <span className="leading-none">Bu soruyu ne kadar iyi biliyorsunuz?</span>
+                  <span className="leading-none">{t("confidenceQuestion")}</span>
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
-                  Güven seviyenizi seçin ve öğrenme yolculuğunuza devam edin
+                  {t("confidenceSubtitle")}
                 </p>
               </div>
 
@@ -1224,14 +1259,30 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     key={level}
                     onClick={() => handleConfidence(level)}
                     disabled={confidence !== null}
-                    whileHover={{ scale: 1.1, y: -3 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg ${
+                    whileHover={confidence === null ? { scale: 1.08, y: -2 } : {}}
+                    whileTap={confidence === null ? { scale: 0.95 } : {}}
+                    className={`relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-[16px] font-bold text-base sm:text-lg transition-all duration-200 border bg-transparent ${
                       confidence === level
-                        ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white scale-110 shadow-2xl"
+                        ? level === 1
+                          ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/25 scale-105"
+                          : level === 2
+                            ? "bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/25 scale-105"
+                            : level === 3
+                              ? "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/25 scale-105"
+                              : level === 4
+                                ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/25 scale-105"
+                                : "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/25 scale-105"
                         : confidence !== null
-                          ? "bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl"
+                          ? "opacity-30 cursor-not-allowed border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-600"
+                          : level === 1
+                            ? "border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-lg hover:shadow-red-500/10"
+                            : level === 2
+                              ? "border-orange-500/30 text-orange-500 hover:bg-orange-500 hover:text-white hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10"
+                              : level === 3
+                                ? "border-amber-500/30 text-amber-500 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/10"
+                                : level === 4
+                                  ? "border-emerald-500/30 text-emerald-500 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/10"
+                                  : "border-indigo-500/30 text-indigo-500 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10"
                     }`}
                   >
                     {level}
@@ -1239,9 +1290,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center"
+                        className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-white text-emerald-600 border border-emerald-500 rounded-full flex items-center justify-center shadow-md font-extrabold text-2xs"
                       >
-                        <span className="text-xs">✓</span>
+                        ✓
                       </motion.div>
                     )}
                   </motion.button>
@@ -1249,48 +1300,46 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               </div>
 
               <div className="text-center">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-gray-200/50 dark:border-gray-600/50">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-black/5 dark:border-white/10 shadow-sm">
                   <p className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200 flex items-center justify-center gap-2">
                     {confidence === 1 && (
                       <>
                         <Frown className="w-5 h-5 text-red-500" />
-                        <span>Hiç bilmiyorum</span>
+                        <span>{t("confidence1")}</span>
                       </>
                     )}
                     {confidence === 2 && (
                       <>
                         <Meh className="w-5 h-5 text-orange-500" />
-                        <span>Biraz biliyorum</span>
+                        <span>{t("confidence2")}</span>
                       </>
                     )}
                     {confidence === 3 && (
                       <>
                         <Meh className="w-5 h-5 text-yellow-500" />
-                        <span>Orta seviyede biliyorum</span>
+                        <span>{t("confidence3")}</span>
                       </>
                     )}
                     {confidence === 4 && (
                       <>
                         <Smile className="w-5 h-5 text-green-500" />
-                        <span>İyi biliyorum</span>
+                        <span>{t("confidence4")}</span>
                       </>
                     )}
                     {confidence === 5 && (
                       <>
                         <Star className="w-5 h-5 text-blue-500" />
-                        <span>Çok iyi biliyorum</span>
+                        <span>{t("confidence5")}</span>
                       </>
                     )}
                   </p>
                   {confidence && (
                     <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
-                      Bu seviye ile kartınız {(() => {
-                        const days = calculateNextReview(confidence, (currentCard?.reviewCount || 0) + 1);
-                        if (days === 1) {return "yarın";}
-                        if (days < 7) {return `${days} gün sonra`;}
-                        if (days < 30) {return `${days} gün sonra`;}
-                        return "1 ay sonra";
-                      })()} tekrar gösterilecek
+                      {t("cardReviewSchedule", {
+                        when: formatReviewWhen(
+                          calculateNextReview(confidence, (currentCard?.reviewCount || 0) + 1),
+                        ),
+                      })}
                     </p>
                   )}
                 </div>
@@ -1306,20 +1355,20 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             disabled={currentIndex === 0}
             whileHover={{ scale: 1.05, x: -3 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+            className="px-8 py-4 bg-white/70 dark:bg-gray-800/70 border border-black/5 dark:border-white/10 text-gray-700 dark:text-gray-200 rounded-[16px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 backdrop-blur-sm"
           >
             <span className="text-xl">←</span>
-            <span>Önceki</span>
+            <span>{t("previous")}</span>
           </motion.button>
 
           <motion.button
             onClick={shuffleCards}
             whileHover={{ scale: 1.05, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white rounded-2xl font-semibold hover:from-indigo-600 hover:to-purple-700 dark:hover:from-indigo-700 dark:hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+            className="px-8 py-4 bg-indigo-600 text-white rounded-[16px] font-semibold hover:bg-indigo-700 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-indigo-500/20 flex items-center gap-2"
           >
             <Shuffle className="w-5 h-5 text-white" />
-            <span>Karıştır</span>
+            <span>{t("shuffle")}</span>
           </motion.button>
 
           <motion.button
@@ -1327,18 +1376,18 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             disabled={currentIndex === filteredCards.length - 1}
             whileHover={{ scale: 1.05, x: 3 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 dark:from-gray-600 dark:to-gray-700 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:from-gray-600 hover:to-gray-700 dark:hover:from-gray-700 dark:hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+            className="px-8 py-4 bg-white/70 dark:bg-gray-800/70 border border-black/5 dark:border-white/10 text-gray-700 dark:text-gray-200 rounded-[16px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 backdrop-blur-sm"
           >
-            <span>Sonraki</span>
+            <span>{t("next")}</span>
             <span className="text-xl">→</span>
           </motion.button>
         </div>
 
         {/* Modern Progress Bar */}
         <div className="mt-8">
-          <div className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl h-4 shadow-inner border border-gray-200/50 dark:border-gray-600/50 overflow-hidden">
+          <div className="bg-gray-200/55 dark:bg-gray-800/55 rounded-full h-3 border border-black/5 dark:border-white/5 overflow-hidden shadow-inner">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 rounded-2xl shadow-lg"
+              className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-sm"
               initial={{ width: 0 }}
               animate={{
                 width: `${((currentIndex + 1) / filteredCards.length) * 100}%`,
@@ -1347,10 +1396,10 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             />
           </div>
           <div className="text-center mt-4">
-            <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
+            <div className="inline-flex items-center gap-3 bg-white/85 dark:bg-gray-900/65 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[16px] px-6 py-3 shadow-md">
               <span className="text-lg font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-blue-600" />
-                <span>İlerleme</span>
+                <span>{t("progress")}</span>
               </span>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {currentIndex + 1} / {filteredCards.length}
@@ -1376,24 +1425,36 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         mode="flashcard"
       />
 
+      {/* AI Floating Chat - accesses flashcard data */}
+      <AIFloatingChat
+        subject={subject}
+        quizData={{
+          currentQuestionIndex: currentIndex,
+          currentQuestion: currentCard as unknown as Record<string, unknown>,
+          totalQuestions: filteredCards.length,
+          aiTutorUsed: false, // Flashcards don't have separate AI Tutor like quiz, but can be extended
+          showResult: showAnswer,
+        }}
+      />
+
       {/* Reset Confirmation Dialog */}
       <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Tüm Kartları Sıfırla</AlertDialogTitle>
+            <AlertDialogTitle>{t("resetDialogTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tüm kartların ilerleme durumunu sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz.
+              {t("resetDialogDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowResetDialog(false)}>
-              İptal
+              {t("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => {
               resetAllCards();
               setShowResetDialog(false);
             }} className="bg-red-600 hover:bg-red-700">
-              Sıfırla
+              {t("confirmReset")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

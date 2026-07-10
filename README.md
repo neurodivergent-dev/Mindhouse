@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="public/favicon.svg" alt="AkılHane Logo" width="150">
-  <h1>AkılHane - AI Destekli Eğitim Platformu</h1>
+  <img src="public/favicon.svg" alt="Mindhouse Logo" width="150">
+  <h1>Mindhouse - AI Destekli Eğitim Platformu</h1>
   <p>
     <strong>Öğrenme deneyiminizi kişiselleştiren, yapay zeka destekli yeni nesil eğitim platformu... Ama bu sadece başlangıç. Gerçek soru: Eğitim nedir? Bilinç nedir? Öğrenmek nedir?</strong>
   </p>
   <p>
-    <a href="https://akilhane.vercel.app/"><strong>Canlı Demoyu Ziyaret Et »</strong></a>
+    <a href="https://mindhouse.vercel.app/"><strong>Canlı Demoyu Ziyaret Et »</strong></a>
   </p>
   
   <!-- Project Status Badges -->
@@ -13,11 +13,11 @@
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/badge/status-production-green.svg" alt="Status">
-    <img src="https://deploy-badge.vercel.app/vercel/akilhane?root=landing" alt="Vercel Deploy Status">
-    <img src="https://circleci.com/gh/melihcanndemir/akilhane.svg?style=svg" alt="CircleCI">
-    <img src="https://img.shields.io/github/languages/top/melihcanndemir/akilhane" alt="Top Language">
-    <img src="https://img.shields.io/github/languages/code-size/melihcanndemir/akilhane" alt="Code Size">
-    <img src="https://img.shields.io/github/repo-size/melihcanndemir/akilhane" alt="Repo Size">
+    <img src="https://deploy-badge.vercel.app/vercel/mindhouse?root=landing" alt="Vercel Deploy Status">
+    <img src="https://circleci.com/gh/melihcanndemir/mindhouse.svg?style=svg" alt="CircleCI">
+    <img src="https://img.shields.io/github/languages/top/melihcanndemir/mindhouse" alt="Top Language">
+    <img src="https://img.shields.io/github/languages/code-size/melihcanndemir/mindhouse" alt="Code Size">
+    <img src="https://img.shields.io/github/repo-size/melihcanndemir/mindhouse" alt="Repo Size">
     <img src="https://img.shields.io/badge/AI-Powered-orange.svg" alt="AI Powered">
     <img src="https://img.shields.io/badge/Voice-Assistant-blue.svg" alt="Voice Assistant">
   </p>
@@ -26,13 +26,13 @@
 
 <!-- Landing Page Demo GIF -->
 <div align="center">
-  <img src="assets/demo/landing-demo.gif" alt="AkılHane Landing Page Demo" width="800">
-  <p><em>🎬 Canlı demo görüntüsü - AkılHane ana sayfası etkileşimleri</em></p>
+  <img src="assets/demo/landing-demo.gif" alt="Mindhouse Landing Page Demo" width="800">
+  <p><em>🎬 Canlı demo görüntüsü - Mindhouse ana sayfası etkileşimleri</em></p>
 </div>
 
-## ✨ Neden AkılHane?
+## ✨ Neden Mindhouse?
 
-AkılHane, standart eğitim platformlarının ötesine geçerek her öğrencinin bireysel ihtiyaçlarına odaklanır. Sadece soru çözmekle kalmaz, **zayıf yönlerinizi tespit eder, size özel çalışma stratejileri sunar ve öğrenme sürecinizi akıllı bir asistanla destekler.** Amacımız, eğitimi daha verimli, erişilebilir ve kişisel hale getirmektir.
+Mindhouse, standart eğitim platformlarının ötesine geçerek her öğrencinin bireysel ihtiyaçlarına odaklanır. Sadece soru çözmekle kalmaz, **zayıf yönlerinizi tespit eder, size özel çalışma stratejileri sunar ve öğrenme sürecinizi akıllı bir asistanla destekler.** Amacımız, eğitimi daha verimli, erişilebilir ve kişisel hale getirmektir.
 
 Bu proje, modern eğitim teknolojileri ve yapay zeka kullanarak öğrenme deneyimini dönüştürmek amacıyla geliştirilmiştir.
 
@@ -345,8 +345,8 @@ flowchart TD
 
 1.  **Projeyi klonlayın:**
     ```bash
-    git clone https://github.com/melihcanndemir/akilhane.git
-    cd akilhane
+    git clone https://github.com/melihcanndemir/mindhouse.git
+    cd mindhouse
     ```
 2.  **Bağımlılıkları yükleyin:**
 ```bash
@@ -461,5 +461,5 @@ Bu proje eğitime ve teknolojiye meraklı herkesin katkısına açıktır.
 
 ---
 <div align="center">
-  <p><strong>AkılHane</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
+  <p><strong>Mindhouse</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
 </div>

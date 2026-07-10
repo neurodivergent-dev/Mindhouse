@@ -32,6 +32,7 @@ import MobileNav from "./mobile-nav";
 import LoadingSpinner from "./loading-spinner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
 
 interface PerformanceData {
   subject: string;
@@ -112,6 +113,8 @@ const mockRecentResults: QuizResult[] = [
 ];
 
 export default function Dashboard() {
+  const t = useTranslations("Dashboard");
+
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
   const [recentResults, setRecentResults] = useState<QuizResult[]>([]);
   const [totalStats, setTotalStats] = useState<TotalStats>({
@@ -534,7 +537,7 @@ export default function Dashboard() {
                     className="w-full h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
                   >
                     <BookOpen className="w-6 h-6" />
-                    <span>Test Çöz</span>
+                    <span>{t("takeTest")}</span>
                   </Button>
                 </Link>
                 <Link href="/flashcard">

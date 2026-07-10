@@ -1,8 +1,9 @@
 import { useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useToast } from "@/hooks/use-toast";
 import { SubjectService, QuestionService } from "@/services/supabase-service";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
-import { shouldUseDemoData, demoSubjects } from "@/data/demo-data";
+import { shouldUseDemoData, getDemoSubjects } from "@/data/demo-data";
 import type { Subject } from "@/types/question-manager";
 import type { Question } from "@/lib/types";
 
@@ -11,6 +12,8 @@ export const useSubjectManagement = (
   setSubjects: (subjects: Subject[]) => void,
   setIsLoadingSubjects: (loading: boolean) => void,
 ) => {
+  const t = useTranslations("QuestionManager");
+  const locale = useLocale();
   const { toast } = useToast();
 
   // Function to calculate real question count for subjects
@@ -69,9 +72,6 @@ export const useSubjectManagement = (
   // Load subjects - Use same simple logic as Subject Manager
   const loadSubjects = useCallback(async () => {
     try {
-      console.log("🔄 useSubjectManagement: loadSubjects started");
-      console.log("🔄 useSubjectManagement: isAuthenticated:", isAuthenticated);
-      
       setIsLoadingSubjects(true);
       let loadedSubjects: Subject[] = [];
 
@@ -79,7 +79,9 @@ export const useSubjectManagement = (
       const isDemoMode = shouldUseDemoData();
       if (isDemoMode) {
         // Load demo subjects
-        loadedSubjects = demoSubjects.map(demoSubject => ({
+        const localizedDemoSubjects = getDemoSubjects(locale);
+        
+        loadedSubjects = localizedDemoSubjects.map((demoSubject: any) => ({
           id: demoSubject.id,
           name: demoSubject.name,
           description: demoSubject.description,
@@ -88,29 +90,42 @@ export const useSubjectManagement = (
           questionCount: demoSubject.questionCount,
           isActive: demoSubject.isActive,
         }));
-      } else if (isAuthenticated) {
-        try {
-          const dbSubjects = await SubjectService.getSubjects();
-          console.log("🔄 useSubjectManagement: dbSubjects from Supabase:", dbSubjects);
-          if (dbSubjects && dbSubjects.length > 0) {
-            // Convert Supabase format to local format
-            loadedSubjects = dbSubjects.map(subject => ({
-              id: subject.id,
-              name: subject.name,
-              description: subject.description,
-              category: subject.category,
-              difficulty: subject.difficulty,
-              questionCount: subject.question_count,
-              isActive: subject.is_active,
-            }));
-            
-            // Save to localStorage for future use
-            localStorage.setItem("akilhane_subjects", JSON.stringify(loadedSubjects));
-            console.log("🔄 useSubjectManagement: Saved to localStorage:", loadedSubjects);
+      } else {
+        // Always load local subjects first
+        const localSubjects = UnifiedStorageService.getSubjects();
+        loadedSubjects = [...localSubjects];
+
+        if (isAuthenticated) {
+          try {
+            const dbSubjects = await SubjectService.getSubjects();
+            if (dbSubjects && dbSubjects.length > 0) {
+              // Convert Supabase format to local format
+              const mappedDbSubjects = dbSubjects.map(subject => ({
+                id: subject.id,
+                name: subject.name,
+                description: subject.description,
+                category: subject.category,
+                difficulty: subject.difficulty,
+                questionCount: subject.question_count,
+                isActive: subject.is_active,
+              }));
+
+              // Merge local and db subjects
+              mappedDbSubjects.forEach(dbSub => {
+                const existingIndex = loadedSubjects.findIndex(ls => ls.id === dbSub.id);
+                if (existingIndex !== -1) {
+                  loadedSubjects[existingIndex] = dbSub;
+                } else {
+                  loadedSubjects.push(dbSub);
+                }
+              });
+
+              // Save to localStorage for future use
+              UnifiedStorageService.saveSubjects(loadedSubjects);
+            }
+          } catch {
+            // Silent fail - continue with local subjects
           }
-        } catch (error) {
-          console.error("🔄 useSubjectManagement: Supabase error:", error);
-          // Silent fail - continue with empty subjects
         }
       }
       // Calculate real question count for all subjects (skip in demo mode)
@@ -123,15 +138,14 @@ export const useSubjectManagement = (
       }
     } catch {
       toast({
-        title: "Hata",
-        description: "Dersler yüklenirken bir hata oluştu.",
+        title: t("error"),
+        description: t("loadSubjectsError"),
         variant: "destructive",
       });
     } finally {
       setIsLoadingSubjects(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, toast]); // Removed stable setter functions
+  }, [isAuthenticated, toast, setSubjects, setIsLoadingSubjects, locale, t]);
 
   return {
     loadSubjects,

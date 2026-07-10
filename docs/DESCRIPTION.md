@@ -1,8 +1,8 @@
 # 🏆 BTK Hackathon 2025 - AI Eğitim Kategorisi
 
-## AkılHane - AI Destekli Eğitim Platformu
+## Mindhouse - AI Destekli Eğitim Platformu
 
-AkılHane, yapay zeka destekli, öğrenci odaklı bir öğrenme platformudur.
+Mindhouse, yapay zeka destekli, öğrenci odaklı bir öğrenme platformudur.
 
 ### 🤖 AI Destekli Özellikler
 
@@ -43,12 +43,12 @@ Platform; **Next.js 15.3.3**, **TypeScript Strict Mode**, **Supabase** ve **Tail
 
 ---
 
-**Canlı demo:** https://akilhane.vercel.app/
+**Canlı demo:** https://mindhouse.vercel.app/
 
 **BTK Hackathon 2025** için geliştirilen bu proje, Türkiye'de eğitim teknolojileri alanına **yenilikçi ve sürdürülebilir bir katkı** sunmayı hedeflemektedir.
 
 ---
 
 <div align="center">
-  <p><strong>AkılHane</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
+  <p><strong>Mindhouse</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
 </div> 

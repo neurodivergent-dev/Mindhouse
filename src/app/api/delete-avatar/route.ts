@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
     const formats = [
       publicId,
       publicId.replace(/\.[^/.]+$/, ""), // Without extension
-      publicId.replace(/^akilhane-avatars\//, ""), // Remove folder prefix
-      `akilhane-avatars/${publicId}`, // With folder
-      `akilhane-avatars/${publicId.replace(/\.[^/.]+$/, "")}`, // Folder + no extension
+      publicId.replace(/^mindhouse-avatars\//, ""), // Remove folder prefix
+      `mindhouse-avatars/${publicId}`, // With folder
+      `mindhouse-avatars/${publicId.replace(/\.[^/.]+$/, "")}`, // Folder + no extension
     ];
 
     let deleted = false;

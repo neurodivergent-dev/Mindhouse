@@ -1,4 +1,4 @@
-# 🧠 AkılHane Checker - GUI Version
+# 🧠 Mindhouse Checker - GUI Version
 
 PyQt5 ile geliştirilmiş glassmorphism tasarımlı, gelişmiş test özellikleri ve dark/light mode destekli GUI versiyonu.
 
@@ -37,7 +37,7 @@ pip install -r requirements-gui.txt
 
 ### 2. GUI'yi Çalıştırın
 ```bash
-python akilhane-checker-gui.py
+python mindhouse-checker-gui.py
 ```
 
 ## 🎯 Kullanım
@@ -126,7 +126,7 @@ backdrop-filter: blur(10px);
 
 ## 📝 Lisans
 
-MIT License - AkılHane Project
+MIT License - Mindhouse Project
 
 ## 🤝 Katkıda Bulunma
 
@@ -137,4 +137,4 @@ MIT License - AkılHane Project
 
 ---
 
-**🧠 AkılHane Checker GUI - Modern Test Aracı**
+**🧠 Mindhouse Checker GUI - Modern Test Aracı**

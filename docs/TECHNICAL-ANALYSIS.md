@@ -1,4 +1,4 @@
-# 🏗️ AkılHane - Comprehensive Project Analysis
+# 🏗️ Mindhouse - Comprehensive Project Analysis
 
 ## 📋 Table of Contents
 1. [General Architecture Structure](#1--general-architecture-structure)
@@ -337,8 +337,8 @@ export function validateEnv() {
 ### **Quick Start:**
 ```bash
 # 1. Clone repository
-git clone https://github.com/melihcanndemir/akilhane.git
-cd akilhane
+git clone https://github.com/melihcanndemir/mindhouse.git
+cd mindhouse
 
 # 2. Install dependencies
 npm install

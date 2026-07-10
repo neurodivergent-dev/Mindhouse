@@ -12,12 +12,12 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-We take security vulnerabilities seriously. If you discover a security vulnerability in AkılHane, please follow these steps:
+We take security vulnerabilities seriously. If you discover a security vulnerability in Mindhouse, please follow these steps:
 
 ### 🚨 How to Report
 
 1. **DO NOT** create a public GitHub issue for security vulnerabilities
-2. **DO** email us at: `security@akilhane.com` (or create a private security advisory)
+2. **DO** email us at: `security@mindhouse.com` (or create a private security advisory)
 3. **Include** the following information:
    - Description of the vulnerability
    - Steps to reproduce
@@ -129,13 +129,13 @@ contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 
 ## 📞 Contact Information
 
-- **Security Team:** security@akilhane.com
+- **Security Team:** security@mindhouse.com
 - **Project Maintainer:** [GitHub Profile](https://github.com/melihcanndemir)
 - **Emergency Contact:** Available through GitHub issues (private)
 
 ## 📄 License
 
-This security policy is part of the AkılHane project and is covered under the same MIT license as the main project.
+This security policy is part of the Mindhouse project and is covered under the same MIT license as the main project.
 
 ---
 

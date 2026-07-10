@@ -32,7 +32,6 @@ export class UserService {
       .single();
 
     if (error) {
-      console.error("🔴 User creation error:", error);
       return null;
     }
 
@@ -46,15 +45,13 @@ export class UserService {
         .select("*")
         .eq("id", id)
         .single();
-      
+
       if (error) {
-        console.error("🔴 Get user error:", error);
         return null;
       }
 
       return data;
-    } catch (error) {
-      console.error("🔴 Get user exception:", error);
+    } catch {
       return null;
     }
   }
@@ -79,7 +76,6 @@ export class SubjectService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get subjects error:", error);
       return [];
     }
 
@@ -110,7 +106,6 @@ export class SubjectService {
       .single();
 
     if (error) {
-      console.error("🔴 Subject creation error:", error);
       return null;
     }
 
@@ -126,7 +121,6 @@ export class SubjectService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for subject update");
       return null;
     }
 
@@ -142,7 +136,6 @@ export class SubjectService {
       .single();
 
     if (error) {
-      console.error("🔴 Subject update error:", error);
       return null;
     }
 
@@ -155,7 +148,6 @@ export class SubjectService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for subject deletion");
       return false;
     }
 
@@ -166,7 +158,6 @@ export class SubjectService {
       .eq("created_by", user.id);
 
     if (error) {
-      console.error("🔴 Subject deletion error:", error);
       return false;
     }
 
@@ -213,7 +204,6 @@ export class QuestionService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for questions query");
       return [];
     }
 
@@ -226,7 +216,6 @@ export class QuestionService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get questions error:", error);
       return [];
     }
 
@@ -241,7 +230,6 @@ export class QuestionService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for question creation");
       return null;
     }
 
@@ -257,7 +245,6 @@ export class QuestionService {
       .single();
 
     if (error) {
-      console.error("🔴 Question creation error:", error);
       return null;
     }
 
@@ -270,22 +257,18 @@ export class QuestionService {
     updates: UpdateTables<"questions">,
   ): Promise<Question | null> {
     try {
-      console.log("🔍 QuestionService.updateQuestion started");
-      
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (!user) {
-        console.error("🔴 No authenticated user found");
         return null;
       }
 
-      console.log("🔍 Updating question:", { id, user: user.id });
-
       // 🎯 FIX: Remove created_by from updates to avoid RLS conflicts
-      const { created_by, ...cleanUpdates } = updates as any;
-      
+      const cleanUpdates = { ...updates } as Record<string, unknown>;
+      delete cleanUpdates.created_by;
+
       const { data, error } = await supabase
         .from("questions")
         .update({
@@ -298,24 +281,15 @@ export class QuestionService {
         .single();
 
       if (error) {
-        console.error("🔴 Update error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
         return null;
       }
 
       if (!data) {
-        console.error("🔴 No data returned from update - question not found or not owned by user");
         return null;
       }
 
-      console.log("✅ Question updated successfully:", data);
       return data;
-    } catch (error) {
-      console.error("🔴 QuestionService.updateQuestion exception:", error);
+    } catch {
       return null;
     }
   }
@@ -327,7 +301,6 @@ export class QuestionService {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("🔴 No authenticated user for question deletion");
       return false;
     }
 
@@ -339,11 +312,9 @@ export class QuestionService {
       .eq("created_by", user.id); // Only delete questions owned by current user
 
     if (error) {
-      console.error("🔴 Delete error:", error);
       return false;
     }
 
-    console.log("✅ Question deleted successfully");
     return true;
   }
 }
@@ -363,7 +334,6 @@ export class QuizResultService {
       .single();
 
     if (error) {
-      console.error("🔴 Quiz result save error:", error);
       return null;
     }
 
@@ -378,7 +348,6 @@ export class QuizResultService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get quiz results error:", error);
       return [];
     }
 
@@ -393,7 +362,6 @@ export class QuizResultService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get quiz results by subject error:", error);
       return [];
     }
 
@@ -416,7 +384,6 @@ export class PerformanceAnalyticsService {
       .single();
 
     if (error) {
-      console.error("🔴 Analytics save error:", error);
       return null;
     }
 
@@ -433,7 +400,6 @@ export class PerformanceAnalyticsService {
       .order("last_updated", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get analytics error:", error);
       return [];
     }
 
@@ -456,7 +422,6 @@ export class AIRecommendationService {
       .single();
 
     if (error) {
-      console.error("🔴 Recommendation save error:", error);
       return null;
     }
 
@@ -473,7 +438,6 @@ export class AIRecommendationService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get recommendations error:", error);
       return [];
     }
 
@@ -497,7 +461,6 @@ export class FlashcardProgressService {
       .single();
 
     if (error) {
-      console.error("🔴 Progress save error:", error);
       return null;
     }
 
@@ -512,7 +475,6 @@ export class FlashcardProgressService {
       .order("updated_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get progress error:", error);
       return [];
     }
 
@@ -531,7 +493,6 @@ export class FlashcardProgressService {
       .order("updated_at", { ascending: false });
 
     if (error) {
-      console.error("🔴 Get progress by subject error:", error);
       return [];
     }
 

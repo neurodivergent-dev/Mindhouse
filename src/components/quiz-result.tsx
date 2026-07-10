@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Award, Target, Clock, BookCopy, RefreshCw, Home } from "lucide-react";
@@ -14,42 +15,39 @@ interface QuizResultProps {
   onRetake: () => void;
 }
 
-const getFeedback = (percentage: number) => {
+const getFeedback = (percentage: number, t: any) => {
   if (percentage >= 80) {
     return {
-      title: "Mükemmel!",
-      description: "Konulara hakimsin. Bu harika performansı devam ettir!",
+      title: t("feedback.excellentTitle"),
+      description: t("feedback.excellentDesc"),
       iconColor: "text-green-500",
     };
   }
   if (percentage >= 60) {
     return {
-      title: "Harika İş!",
-      description:
-        "İyi bir sonuç. Geliştirilmesi gereken konulara odaklanarak daha da iyi olabilirsin.",
+      title: t("feedback.greatTitle"),
+      description: t("feedback.greatDesc"),
       iconColor: "text-blue-500",
     };
   }
   if (percentage >= 40) {
     return {
-      title: "Fena Değil",
-      description:
-        "Temel bilgileri aldın ama tekrar yapman gerekiyor. Zayıf konularına göz at.",
+      title: t("feedback.notBadTitle"),
+      description: t("feedback.notBadDesc"),
       iconColor: "text-yellow-500",
     };
   }
   return {
-    title: "Tekrar Gerekli",
-    description:
-      "Endişelenme, bu bir öğrenme süreci. Zayıf konularını tekrar ederek başlayabilirsin.",
+    title: t("feedback.needsReviewTitle"),
+    description: t("feedback.needsReviewDesc"),
     iconColor: "text-red-500",
   };
 };
 
-const formatTime = (seconds: number) => {
+const formatTime = (seconds: number, t: any) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  return `${minutes}dk ${remainingSeconds.toString().padStart(2, "0")}sn`;
+  return `${minutes}${t("minutes")} ${remainingSeconds.toString().padStart(2, "0")}${t("seconds")}`;
 };
 
 export const QuizResult: React.FC<QuizResultProps> = ({
@@ -59,13 +57,14 @@ export const QuizResult: React.FC<QuizResultProps> = ({
   weakTopics,
   onRetake,
 }) => {
+  const t = useTranslations("Quiz");
   const percentage =
     totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
-  const feedback = getFeedback(percentage);
+  const feedback = getFeedback(percentage, t);
   const weakTopicList = Object.keys(weakTopics);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none">
       <div className="p-4 sm:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -76,7 +75,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
               transition={{ duration: 0.6 }}
               className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
             >
-              Quiz Sonucu
+              {t("quizResult")}
             </motion.h1>
           </div>
 
@@ -169,7 +168,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent mb-2">
                     {score} / {totalQuestions}
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">Doğru Sayısı</div>
+                  <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{t("correctCount")}</div>
                 </div>
               </div>
 
@@ -179,9 +178,9 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                     <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-600 bg-clip-text text-transparent mb-2">
-                    {formatTime(timeSpent)}
+                    {formatTime(timeSpent, t)}
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-yellow-600 dark:text-yellow-400">Toplam Süre</div>
+                  <div className="text-xs sm:text-sm font-semibold text-yellow-600 dark:text-yellow-400">{t("totalTime")}</div>
                 </div>
               </div>
 
@@ -193,7 +192,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-2">
                     {percentage}%
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">Başarı Oranı</div>
+                  <div className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">{t("successRate")}</div>
                 </div>
               </div>
             </motion.div>
@@ -215,7 +214,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
               </div>
               <div className="text-center mt-4">
                 <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-lg font-bold text-gray-700 dark:text-gray-200">İlerleme</span>
+                  <span className="text-lg font-bold text-gray-700 dark:text-gray-200">{t("progress")}</span>
                   <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     {percentage}%
                   </span>
@@ -233,7 +232,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
               >
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3 flex items-center justify-center gap-2">
                   <BookCopy className="w-5 h-5 text-red-500" />
-                  Geliştirilmesi Gereken Konular
+                  {t("topicsToImprove")}
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2 mt-4">
                   {weakTopicList.map((topic) => (
@@ -259,7 +258,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
               >
                 <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>Testi Tekrar Çöz</span>
+                <span>{t("retakeTest")}</span>
               </motion.button>
 
               <Link href="/quiz" className="w-full sm:w-auto">
@@ -269,7 +268,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   className="w-full px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
                 >
                   <Home className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>Test Sayfasına Dön</span>
+                  <span>{t("backToTestPage")}</span>
                 </motion.button>
               </Link>
             </motion.div>

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+
 import {
   BookOpen,
   Lightbulb,
@@ -23,11 +24,16 @@ import {
   Save,
   Trash2,
   Volume,
+
 } from "lucide-react";
-import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
+import { Link, useRouter } from "@/i18n/routing";
 import { useToast } from "@/hooks/use-toast";
 import type { TopicExplainerInput } from "@/ai/flows/topic-explainer-ai";
 import { generateTopicStepContent } from "@/ai/flows/topic-explainer-ai";
+import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
+import { logError } from "@/lib/error-logger";
+
 import HuggingFaceImageGenerator from "@/components/huggingface-image-generator";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -35,8 +41,9 @@ import rehypeHighlight from "rehype-highlight";
 import TopicExplainerLocalStorageService from "@/services/topic-explainer-service";
 import VoicePlayer from "@/components/voice-player";
 import BreakoutLoadingGame from "@/components/breakout-loading-game";
+import AIFloatingChat from "./ai-floating-chat";
 
-interface TopicData {
+type TopicData = {
   topic: string;
   subject: string;
   steps: Array<{
@@ -67,10 +74,34 @@ interface TopicExplainerProps {
 const TopicExplainer: React.FC<TopicExplainerProps> = ({
   topic,
   subject,
+  isDemoMode = false,
   hasSavedContent = false,
   savedTopicId = null,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("TopicExplainer");
+  const tCommon = useTranslations("Common");
+  const locale = useLocale();
+  const router = useRouter();
+  const voiceLanguage = locale === "tr" ? "tr-TR" : "en-US";
+
+  const getStepLabel = (stepId: string) => {
+    const labels: Record<string, string> = {
+      introduction: t("stepIntroduction"),
+      core_learning: t("stepLearning"),
+      reinforcement: t("stepReinforcement"),
+      application: t("stepApplication"),
+      assessment: t("stepEvaluation"),
+    };
+    return labels[stepId] ?? stepId;
+  };
+
+  const getDifficultyLabel = (difficulty: string) => {
+    if (difficulty === "easy") {return t("difficultyEasy");}
+    if (difficulty === "medium") {return t("difficultyMedium");}
+    return t("difficultyHard");
+  };
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -88,6 +119,168 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentSubject, setCurrentSubject] = useState<string>(subject);
+  const [generatingStepId, setGeneratingStepId] = useState<string | null>(null);
+
+  // Refs to avoid stale closures in async generators
+  const topicDataRef = useRef<TopicData | null>(null);
+  const notesKeyRef = useRef<string>("");
+
+  // Keep refs in sync
+  useEffect(() => {
+    topicDataRef.current = topicData;
+  }, [topicData]);
+
+  useEffect(() => {
+    notesKeyRef.current = notesKey;
+  }, [notesKey]);
+
+  // Step configuration + generators (defined early to avoid TDZ in effects)
+  const stepConfigs = [
+    { id: "introduction", difficulty: "easy" as const, estimatedTime: 8 },
+    { id: "core_learning", difficulty: "easy" as const, estimatedTime: 12 },
+    { id: "reinforcement", difficulty: "easy" as const, estimatedTime: 15 },
+    { id: "application", difficulty: "medium" as const, estimatedTime: 18 },
+    { id: "assessment", difficulty: "medium" as const, estimatedTime: 20 },
+  ] as const;
+
+  const generateSingleStep = async (
+    topicName: string,
+    subjectName: string,
+    config: { id: string; difficulty: "easy" | "medium" | "hard"; estimatedTime: number },
+    previousContext?: string,
+  ) => {
+    const prefsForStep = getStoredAiPreferences();
+    if (!isAiConfigured(prefsForStep)) {
+      // Return fallback content instead of throwing to server
+      return {
+        id: config.id,
+        title: `${config.id} (Configuration needed)`,
+        content: "AI service configuration error. Please check your API key in Settings.",
+        examples: [],
+        tips: [],
+        difficulty: config.difficulty,
+        estimatedTime: config.estimatedTime,
+        visualDescription: "",
+        confidence: 0,
+      };
+    }
+
+    try {
+      const aiInput: TopicExplainerInput = {
+        topic: topicName,
+        subject: subjectName,
+        step: config.id as
+          | "introduction"
+          | "core_learning"
+          | "reinforcement"
+          | "application"
+          | "assessment",
+        difficulty: config.difficulty,
+        estimatedTime: config.estimatedTime,
+        preferences: prefsForStep,
+        language: locale === "en" ? "en" : "tr",
+        previousStepsContext: previousContext,
+      };
+
+      const aiOutput = await generateTopicStepContent(aiInput);
+
+      return {
+        id: config.id,
+        title: aiOutput.title,
+        content: aiOutput.content,
+        examples: aiOutput.examples,
+        tips: aiOutput.tips,
+        difficulty: config.difficulty,
+        estimatedTime: config.estimatedTime,
+        visualDescription: aiOutput.visualDescription,
+        confidence: aiOutput.confidence,
+      };
+    } catch {
+      // Rich fallback (matches improved AI fallback)
+      const stepLabel = getStepLabel(config.id);
+      const isAssessment = config.id === "assessment";
+      const topic = topicName;
+
+      const content = isAssessment
+        ? (locale === "en"
+            ? `## Self-Assessment for ${topic}\n\nTest yourself:\n\n1. Key definitions and formulas in ${topic}?\n2. Solve a basic problem with ${topic}.\n3. Common mistakes with ${topic}?\n4. Real-world use of ${topic}?\n5. Explain ${topic} as if teaching someone.\n\n**Mastery tip:** Review earlier steps first.`
+            : `## ${topic} İçin Ustalık Kontrolü\n\nKendini test et:\n\n1. ${topic} tanımlar ve formüller?\n2. Basit bir ${topic} problemi çöz.\n3. ${topic} ile ilgili yaygın hatalar?\n4. ${topic} günlük hayatta nerede kullanılır?\n5. ${topic} konusunu birine anlat.\n\n**İpucu:** Önceki adımları gözden geçir.`)
+        : t("fallbackStepContent", { topic: topicName, step: stepLabel });
+
+      return {
+        id: config.id,
+        title: `${topic} - ${stepLabel}`,
+        content,
+        examples: [
+          t("fallbackExample1", { topic: topicName }),
+          t("fallbackExample2", { topic: topicName }),
+          t("fallbackExample3", { topic: topicName }),
+        ],
+        tips: [
+          t("fallbackTip1", { topic: topicName }),
+          t("fallbackTip2"),
+          t("fallbackTip3"),
+        ],
+        difficulty: config.difficulty,
+        estimatedTime: config.estimatedTime,
+        visualDescription: `${topicName} - ${stepLabel} için detaylı görsel`,
+        confidence: 0.3,
+      };
+    }
+  };
+
+  const isStepGenerated = (step: any) => step?.content && step.content.trim().length > 30 && !step.content.includes("fallbackStepContent");
+
+  const ensureStepIsGenerated = async (stepIndex: number, force = false) => {
+    const latestTopicData = topicDataRef.current || topicData;
+    if (!latestTopicData) {return;}
+
+    const currentSteps = latestTopicData.steps;
+    const targetStep = currentSteps[stepIndex];
+    if (!targetStep) {return;}
+    if (!force && isStepGenerated(targetStep)) {return;}
+
+    const config = stepConfigs.find((c) => c.id === targetStep.id);
+    if (!config) {return;}
+
+    setGeneratingStepId(targetStep.id);
+    setAiGenerating(true);
+
+    try {
+      // Build context from already generated previous steps (improves quality & coherence)
+      const previousContext = currentSteps
+        .slice(0, stepIndex)
+        .filter((s: any) => s?.content && s.content.length > 30)
+        .map((s: any) => `### ${s.title}\n${s.content.substring(0, 700)}`)
+        .join("\n\n---\n\n");
+
+      const generatedStep = await generateSingleStep(topic, subject, config, previousContext.length > 100 ? previousContext : undefined);
+      const updatedSteps = [...currentSteps];
+      updatedSteps[stepIndex] = generatedStep;
+
+      const updatedTopicData: TopicData = { ...latestTopicData, steps: updatedSteps };
+      setTopicData(updatedTopicData);
+
+      const latestNotesKey = notesKeyRef.current || notesKey;
+      if (latestNotesKey) {
+        try {
+          TopicExplainerLocalStorageService.updateTopic(latestNotesKey, {
+            content: JSON.stringify(updatedTopicData),
+            stepData: updatedSteps,
+          });
+        } catch {}
+      }
+    } catch (err) {
+      logError("Step generation failed", err);
+    } finally {
+      setGeneratingStepId(null);
+      setAiGenerating(false);
+    }
+  };
+
+  const regenerateStep = async (stepIndex: number) => {
+    await ensureStepIsGenerated(stepIndex, true);
+  };
 
   // 🔄 SUBJECT CHANGE DETECTION (NO CLEARING)
   useEffect(() => {
@@ -114,14 +307,48 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               setNotesKey(savedTopicId);
 
               // Load saved notes
-              const savedNotes = localStorage.getItem(`akilhane_notes_${savedTopicId}`);
+              const savedNotes = localStorage.getItem(`mindhouse_notes_${savedTopicId}`);
               if (savedNotes) {
                 setUserNotes(savedNotes);
               }
 
+              // Log this activity so it shows up in Dashboard
+              try {
+                const quizResultsKey = isDemoMode
+                  ? "exam_training_demo_quiz_results"
+                  : "exam_training_quiz_results";
+                const quizResultsStr = localStorage.getItem(quizResultsKey);
+                const results = quizResultsStr ? JSON.parse(quizResultsStr) : [];
+                
+                const existingRecentActivity = results.find((r: any) => 
+                  r.type === "TopicExplainer" && 
+                  r.subject === subject && 
+                  r.topic === topic &&
+                  (new Date().getTime() - new Date(r.createdAt).getTime()) < 4 * 60 * 60 * 1000
+                );
+                
+                if (!existingRecentActivity) {
+                  results.push({
+                    id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    userId: "guest",
+                    type: "TopicExplainer",
+                    subject,
+                    topic,
+                    score: 1,
+                    totalQuestions: 1,
+                    timeSpent: parsedData.totalTime || 300,
+                    weakTopics: [],
+                    createdAt: new Date().toISOString()
+                  });
+                  localStorage.setItem(quizResultsKey, JSON.stringify(results));
+                }
+              } catch (e) {
+                logError("Failed to save explainer activity", e);
+              }
+
               toast({
-                title: "Kaydedilen İçerik Yüklendi",
-                description: `${topic} konusu için ${subject} dersinde kaydedilen içerik kullanılıyor.`,
+                title: t("savedContentLoaded"),
+                description: t("savedContentLoadedDesc", { topic, subject }),
               });
               return;
             } else {
@@ -130,30 +357,100 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
           }
         }
 
-        // If no saved content, generate with AI
+        // If no saved content, generate ONLY THE FIRST STEP (page-by-page / lazy)
+        // This avoids long waiting for all 5 steps at once.
         setAiGenerating(true);
-        const aiGeneratedData = await generateAITopicData(topic, subject);
-        setTopicData(aiGeneratedData);
+        const firstConfig = stepConfigs[0];
+        const firstStep = await generateSingleStep(topic, subject, firstConfig, undefined);
 
-        // Auto-save the generated content
-        const content = JSON.stringify(aiGeneratedData);
+        // Create shell for all 5 steps, only first one populated
+        const stepShells = stepConfigs.map((cfg, idx) => {
+          if (idx === 0) {return firstStep;}
+          return {
+            id: cfg.id,
+            title: getStepLabel(cfg.id),
+            content: "", // pending - will be generated on demand
+            examples: [],
+            tips: [],
+            difficulty: cfg.difficulty,
+            estimatedTime: cfg.estimatedTime,
+            visualDescription: "",
+            confidence: 0,
+          };
+        });
+
+        const initialData: TopicData = {
+          topic,
+          subject,
+          steps: stepShells,
+          totalTime: stepShells.reduce((sum, s) => sum + s.estimatedTime, 0),
+          difficulty: "medium" as const,
+          prerequisites: [
+            t("prerequisiteBasics", { subject }),
+            t("prerequisiteActiveLearning"),
+          ],
+          learningObjectives: [
+            t("objectiveUnderstand", { topic }),
+            t("objectiveApply", { topic }),
+            t("objectiveProblemSolving", { topic }),
+            t("objectiveConnect", { topic }),
+          ],
+        };
+
+        setTopicData(initialData);
+
+        // Auto-save the partial content
+        const content = JSON.stringify(initialData);
         const savedTopic = TopicExplainerLocalStorageService.saveTopic(
           topic,
           subject,
           content,
-          aiGeneratedData.steps,
+          initialData.steps,
         );
         setNotesKey(savedTopic.id);
 
+        // Log this activity so it shows up in Dashboard
+        try {
+          const quizResultsKey = isDemoMode
+            ? "exam_training_demo_quiz_results"
+            : "exam_training_quiz_results";
+          const quizResultsStr = localStorage.getItem(quizResultsKey);
+          const results = quizResultsStr ? JSON.parse(quizResultsStr) : [];
+          
+          const existingRecentActivity = results.find((r: any) => 
+            r.type === "TopicExplainer" && 
+            r.subject === subject && 
+            r.topic === topic &&
+            (new Date().getTime() - new Date(r.createdAt).getTime()) < 4 * 60 * 60 * 1000
+          );
+          
+          if (!existingRecentActivity) {
+            results.push({
+              id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              userId: "guest",
+              type: "TopicExplainer",
+              subject,
+              topic,
+              score: 1, // Read completely
+              totalQuestions: 1, // Dummy value
+              timeSpent: initialData.totalTime || 300,
+              weakTopics: [],
+              createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(quizResultsKey, JSON.stringify(results));
+          }
+        } catch (e) {
+          logError("Failed to save explainer activity", e);
+        }
+
         toast({
-          title: "AI İçerik Hazır",
-          description: `${topic} konusu için AI destekli içerik başarıyla oluşturuldu ve kaydedildi.`,
+          title: t("aiContentReady"),
+          description: t("aiContentReadyDesc", { topic }),
         });
       } catch {
         toast({
-          title: "AI Hatası",
-          description:
-            "AI içerik üretilirken bir hata oluştu. Fallback içerik kullanılıyor.",
+          title: t("aiError"),
+          description: t("aiErrorDesc"),
           variant: "destructive",
         });
       } finally {
@@ -163,116 +460,19 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     };
 
     loadTopicData();
-  }, [topic, subject, hasSavedContent, savedTopicId, toast]);
+  }, [topic, subject, hasSavedContent, savedTopicId, toast, t, isDemoMode]);
 
   // Auto-save notes when userNotes changes
   useEffect(() => {
     if (notesKey) {
       const timeoutId = setTimeout(() => {
-        localStorage.setItem(`akilhane_notes_${notesKey}`, userNotes);
+        localStorage.setItem(`mindhouse_notes_${notesKey}`, userNotes);
       }, 500); // Debounce 500ms
 
       return () => clearTimeout(timeoutId);
     }
     return undefined;
   }, [userNotes, notesKey]);
-
-  // Real AI-powered topic data generation
-  const generateAITopicData = async (
-    topicName: string,
-    subjectName: string,
-  ): Promise<TopicData> => {
-    const stepConfigs = [
-      { id: "tanitim", difficulty: "easy" as const, estimatedTime: 8 },
-      { id: "ogrenme", difficulty: "easy" as const, estimatedTime: 12 },
-      { id: "pekistirme", difficulty: "easy" as const, estimatedTime: 15 },
-      { id: "uygulama", difficulty: "medium" as const, estimatedTime: 18 },
-      { id: "degerlendirme", difficulty: "medium" as const, estimatedTime: 20 },
-    ];
-
-    const steps = [];
-
-    // Generate each step using real AI
-    for (const config of stepConfigs) {
-      try {
-        const aiInput: TopicExplainerInput = {
-          topic: topicName,
-          subject: subjectName,
-          step: config.id as
-            | "tanitim"
-            | "ogrenme"
-            | "pekistirme"
-            | "uygulama"
-            | "degerlendirme",
-          difficulty: config.difficulty,
-          estimatedTime: config.estimatedTime,
-        };
-
-        const aiOutput = await generateTopicStepContent(aiInput);
-
-        steps.push({
-          id: config.id,
-          title: aiOutput.title,
-          content: aiOutput.content,
-          examples: aiOutput.examples,
-          tips: aiOutput.tips,
-          difficulty: config.difficulty,
-          estimatedTime: config.estimatedTime,
-          visualDescription: aiOutput.visualDescription,
-          confidence: aiOutput.confidence,
-        });
-      } catch {
-        // Fallback content for this step
-        steps.push({
-          id: config.id,
-          title: `${topicName} ${
-            config.id === "tanitim"
-              ? "Tanıtım"
-              : config.id === "ogrenme"
-                ? "Öğrenme"
-                : config.id === "pekistirme"
-                  ? "Pekiştirme"
-                  : config.id === "uygulama"
-                    ? "Uygulama"
-                    : "Değerlendirme"
-          }`,
-          content: `${topicName} konusunun ${config.id} aşamasında öğrenilmesi gereken temel kavramlar ve uygulamalar.`,
-          examples: [
-            `${topicName} konusunun günlük hayattaki uygulamaları`,
-            `${topicName} ile ilgili temel kavramlar`,
-            `${topicName} konusunun diğer konularla ilişkisi`,
-          ],
-          tips: [
-            `${topicName} konusunu adım adım öğrenin`,
-            "Her kavramı tam anlamadan geçmeyin",
-            "Bol bol pratik yapın",
-          ],
-          difficulty: config.difficulty,
-          estimatedTime: config.estimatedTime,
-          visualDescription: `${topicName} konusu için görsel yardımcı`,
-          confidence: 0.3,
-        });
-      }
-    }
-
-    return {
-      topic: topicName,
-      subject: subjectName,
-      steps,
-      totalTime: steps.reduce((sum, step) => sum + step.estimatedTime, 0),
-      difficulty: "medium" as const,
-      prerequisites: [
-        `${subjectName} temel bilgileri`,
-        "Aktif öğrenme becerisi",
-      ],
-      learningObjectives: [
-        `${topicName} konusunun temel kavramlarını anlamak`,
-        `${topicName} konusunu günlük hayatta uygulayabilmek`,
-        `${topicName} konusu ile ilgili problem çözme becerilerini geliştirmek`,
-        `${topicName} konusunu diğer konularla ilişkilendirebilmek`,
-      ],
-    };
-  };
 
   const steps = topicData?.steps || [];
 
@@ -303,12 +503,36 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     setProgress(((currentStep + 1) / steps.length) * 100);
   }, [currentStep, steps.length]);
 
-  const handleNext = () => {
+  // When currentStep changes (e.g. from saved state or direct), ensure content
+  useEffect(() => {
+    if (topicData && steps.length > currentStep) {
+      const step = steps[currentStep];
+      if (step && !isStepGenerated(step)) {
+        // fire and forget - will show loading state
+        void ensureStepIsGenerated(currentStep);
+      }
+    }
+  }, [currentStep, topicData]);
+
+  const goToStep = async (index: number) => {
+    if (index < 0 || index >= steps.length) {return;}
+
+    // Switch to the target step *first* so the UI updates immediately.
+    // This shows the loading state in the content area for ungenerated steps
+    // (prevents the "Next does nothing" feeling).
+    const prevId = steps[currentStep]?.id;
+    setCurrentStep(index);
+    if (prevId) {
+      setCompletedSteps((prev: Set<string>) => new Set([...prev, prevId]));
+    }
+
+    // Then ensure the content is generated (will show spinner + "generating..." in the new step view)
+    await ensureStepIsGenerated(index);
+  };
+
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      setCompletedSteps(
-        (prev: Set<string>) => new Set([...prev, steps[currentStep]?.id || ""]),
-      );
+      await goToStep(currentStep + 1);
     }
   };
 
@@ -332,20 +556,16 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   const toggleMute = () => {
     setIsMuted(!isMuted);
     toast({
-      title: isMuted ? "Ses Açıldı" : "Ses Kapatıldı",
-      description: isMuted
-        ? "Ses efektleri tekrar aktif"
-        : "Ses efektleri kapatıldı",
+      title: isMuted ? t("soundEnabled") : t("soundDisabled"),
+      description: isMuted ? t("soundEnabledDesc") : t("soundDisabledDesc"),
     });
   };
 
   const toggleVisuals = () => {
     setShowVisuals(!showVisuals);
     toast({
-      title: showVisuals ? "Görseller Kapatıldı" : "Görseller Açıldı",
-      description: showVisuals
-        ? "Görsel yardımcılar gizlendi"
-        : "Görsel yardımcılar gösteriliyor",
+      title: showVisuals ? t("visualsHidden") : t("visualsShown"),
+      description: showVisuals ? t("visualsHiddenDesc") : t("visualsShownDesc"),
     });
   };
 
@@ -365,13 +585,13 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
       );
 
       toast({
-        title: "Başarılı!",
-        description: `${topic} konusu başarıyla kaydedildi.`,
+        title: t("success"),
+        description: t("topicSavedDesc", { topic }),
       });
     } catch {
       toast({
-        title: "Hata!",
-        description: "Konu kaydedilirken bir hata oluştu.",
+        title: tCommon("error"),
+        description: t("topicSaveError"),
         variant: "destructive",
       });
     } finally {
@@ -390,19 +610,18 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
       if (success) {
         toast({
-          title: "Başarılı!",
-          description: "Konu başarıyla silindi.",
+          title: t("success"),
+          description: t("topicDeletedDesc"),
         });
 
-        // Redirect back to topic list
-        window.location.href = "/topic-explainer";
+        router.push("/topic-explainer");
       } else {
         throw new Error("Failed to delete topic");
       }
     } catch {
       toast({
-        title: "Hata!",
-        description: "Konu silinirken bir hata oluştu.",
+        title: tCommon("error"),
+        description: t("topicDeleteError"),
         variant: "destructive",
       });
     } finally {
@@ -413,11 +632,11 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8">
         <div className="max-w-4xl mx-auto">
           <BreakoutLoadingGame
             isLoading={true}
-            loadingText={aiGenerating ? "AI içerik üretiliyor..." : "Konu verileri yükleniyor..."}
+            loadingText={aiGenerating ? t("generatingAiContent") : t("loadingTopicData")}
             onGameComplete={() => {
               if (!isLoading && !aiGenerating) {
                 // Game completed, but we're still loading
@@ -433,17 +652,17 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   // Error state
   if (!topicData || steps.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-            Konu Bulunamadı
+            {t("topicNotFound")}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            &quot;{topic}&quot; konusu için veri bulunamadı.
+            {t("topicNotFoundDesc", { topic })}
           </p>
           <Link href="/topic-explainer">
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-              Konulara Dön
+              {t("backToTopics")}
             </Button>
           </Link>
         </div>
@@ -456,19 +675,19 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   // Safety check for currentStepData
   if (!currentStepData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none p-8 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-            Adım Bulunamadı
+            {t("stepNotFound")}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Seçilen adım bulunamadı.
+            {t("stepNotFoundDesc")}
           </p>
           <Button
             onClick={() => setCurrentStep(0)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
           >
-            Baştan Başla
+            {t("restart")}
           </Button>
         </div>
       </div>
@@ -476,7 +695,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-transparent dark:!bg-none">
       <div className="container mx-auto p-4 md:p-8">
         {/* Header */}
         <div className="mb-8">
@@ -488,17 +707,17 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                 className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Konulara Dön
+                {t("backToTopics")}
               </Button>
             </Link>
             <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              AI Konu Anlatımı - {topic}
+              {t("aiExplainerTitle", { topic })}
             </h1>
             <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
               {subject}
             </Badge>
             <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-              🤖 AI Tutor
+              🤖 {t("aiTutorBadge")}
             </Badge>
             <Link href="/breakout-game">
               <Button
@@ -506,12 +725,14 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                 size="sm"
                 className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-600 hover:text-white hover:border-0"
               >
-                🎮 Breakout Oyunu
+                🎮 {t("breakoutGame")}
               </Button>
             </Link>
             {currentStepData.confidence && (
               <Badge variant="outline" className="text-xs">
-                AI Güven: %{Math.round(currentStepData.confidence * 100)}
+                {t("aiConfidence", {
+                  percent: Math.round(currentStepData.confidence * 100),
+                })}
               </Badge>
             )}
             <div className="flex items-center gap-2">
@@ -529,7 +750,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                 ) : (
                   <Save className="w-4 h-4" />
                 )}
-                Kaydet
+                {t("save")}
               </Button>
               {savedTopicId && (
                 <Button
@@ -546,7 +767,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   ) : (
                     <Trash2 className="w-4 h-4" />
                   )}
-                  Sil
+                  {t("delete")}
                 </Button>
               )}
             </div>
@@ -556,10 +777,10 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                İlerleme: {currentStep + 1} / {steps.length}
+                {t("progress", { current: currentStep + 1, total: steps.length })}
               </span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {Math.round(progress)}% tamamlandı
+                {t("progressComplete", { percent: Math.round(progress) })}
               </span>
             </div>
             <Progress value={progress} className="h-3" />
@@ -577,7 +798,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               ) : (
                 <Play className="w-4 h-4" />
               )}
-              <span className="hidden sm:inline">{isPlaying ? "Duraklat" : "Otomatik Oynat"}</span>
+              <span className="hidden sm:inline">{isPlaying ? t("pause") : t("autoPlay")}</span>
             </Button>
 
             <Button
@@ -585,7 +806,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               variant="outline"
               size="sm"
               className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title={isMuted ? "Sesi Aç" : "Sesi Kapat"}
+              title={isMuted ? t("unmute") : t("mute")}
             >
               {isMuted ? (
                 <VolumeX className="w-4 h-4" />
@@ -599,14 +820,14 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               variant="outline"
               size="sm"
               className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title={showVisuals ? "Görselleri Gizle" : "Görselleri Göster"}
+              title={showVisuals ? t("hideVisuals") : t("showVisuals")}
             >
               {showVisuals ? (
                 <EyeOff className="w-4 h-4" />
               ) : (
                 <Eye className="w-4 h-4" />
               )}
-              <span className="hidden sm:inline">Görseller</span>
+              <span className="hidden sm:inline">{t("visuals")}</span>
             </Button>
 
             <Button
@@ -614,10 +835,10 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               variant="outline"
               size="sm"
               className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title="Baştan Başla"
+              title={t("restart")}
             >
               <RotateCcw className="w-4 h-4" />
-              <span className="hidden sm:inline">Baştan Başla</span>
+              <span className="hidden sm:inline">{t("restart")}</span>
             </Button>
           </div>
         </div>
@@ -641,9 +862,24 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
-                          {currentStepData.title}
-                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
+                            {currentStepData.title}
+                            {generatingStepId === currentStepData.id && (
+                              <span className="ml-2 text-sm font-normal text-blue-100">(generating...)</span>
+                            )}
+                          </CardTitle>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => void regenerateStep(currentStep)}
+                            disabled={Boolean(generatingStepId)}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <RotateCcw className="w-3 h-3 mr-1" />
+                            {t("regenerate")}
+                          </Button>
+                        </div>
                         <div className="flex items-center gap-2 mt-2">
                           <Badge
                             variant={
@@ -654,39 +890,59 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                                   : "destructive"
                             }
                           >
-                            {currentStepData.difficulty === "easy"
-                              ? "Kolay"
-                              : currentStepData.difficulty === "medium"
-                                ? "Orta"
-                                : "Zor"}
+                            {getDifficultyLabel(currentStepData.difficulty)}
                           </Badge>
                           <span className="text-sm text-gray-500 dark:text-gray-400">
-                            ~{currentStepData.estimatedTime} dakika
+                            {t("minutesApprox", { time: currentStepData.estimatedTime })}
                           </span>
                         </div>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Per-step lazy loading state */}
+                    {(generatingStepId === currentStepData.id || !isStepGenerated(currentStepData)) && !currentStepData.content ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
+                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                          {t("generatingAiContent")}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                          {t("loadingOnDemand")}
+                        </p>
+                        {generatingStepId !== currentStepData.id && (
+                          <Button
+                            onClick={() => void ensureStepIsGenerated(currentStep)}
+                            className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                            size="sm"
+                          >
+                            {t("generateNow")}
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <>
                     {/* Voice Player */}
                     <div className="mb-6">
                       <VoicePlayer
                         text={currentStepData.content}
                         autoPlay={false}
                         speed={1}
-                        language="tr-TR"
+                        language={voiceLanguage}
                         showControls={true}
                         className="mb-4"
                         onPlay={() => {
                           toast({
-                            title: "Seslendirme Başladı",
-                            description: `${currentStepData.title} adımı seslendiriliyor...`,
+                            title: t("voiceStarted"),
+                            description: t("voiceStartedDesc", {
+                              title: currentStepData.title,
+                            }),
                           });
                         }}
                         onEnd={() => {
                           toast({
-                            title: "Seslendirme Tamamlandı",
-                            description: "Konu anlatımı tamamlandı.",
+                            title: t("voiceCompleted"),
+                            description: t("voiceCompletedDesc"),
                           });
                         }}
                       />
@@ -784,7 +1040,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                         <HuggingFaceImageGenerator
                           description={
                             currentStepData.visualDescription ||
-                            `${topic} konusu için AI destekli görsel`
+                            t("aiVisualFallback", { topic })
                           }
                           topic={topic}
                           subject={subject}
@@ -799,7 +1055,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                         <Target className="w-5 h-5 text-green-600" />
-                        Örnekler
+                        {t("examples")}
                       </h3>
                       <div className="grid gap-3">
                         {currentStepData.examples.map((example, index) => (
@@ -908,7 +1164,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                       >
                         <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 flex items-center gap-2 mb-4">
                           <Lightbulb className="w-5 h-5" />
-                          AI Öğrenme İpuçları
+                          {t("aiLearningTips")}
                         </h3>
                         <div className="space-y-3">
                           {currentStepData.tips.map((tip, index) => (
@@ -996,6 +1252,8 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                         </div>
                       </motion.div>
                     )}
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -1010,16 +1268,25 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                 className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Önceki
+                {t("previous")}
               </Button>
 
               <Button
                 onClick={handleNext}
-                disabled={currentStep === steps.length - 1}
+                disabled={currentStep === steps.length - 1 || Boolean(generatingStepId)}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
               >
-                Sonraki
-                <ArrowRight className="w-4 h-4 ml-2" />
+                {generatingStepId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {t("generating") || "Generating..."}
+                  </>
+                ) : (
+                  <>
+                    {t("next")}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -1029,9 +1296,31 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             {/* Steps Overview */}
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                  Konu Adımları
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
+                      {t("topicSteps")}
+                    </CardTitle>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t("learningPathExplanation")}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      for (let i = 0; i < steps.length; i++) {
+                        if (!isStepGenerated(steps[i])) {
+                          await ensureStepIsGenerated(i);
+                        }
+                      }
+                    }}
+                    disabled={Boolean(generatingStepId)}
+                    className="text-xs"
+                  >
+                    {t("generateAll")}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -1041,7 +1330,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      onClick={() => setCurrentStep(index)}
+                      onClick={() => goToStep(index)}
                       className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                         index === currentStep
                           ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
@@ -1060,7 +1349,13 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                                 : "bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
                           }`}
                         >
-                          {completedSteps?.has(step.id) ? "✓" : index + 1}
+                          {generatingStepId === step.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : completedSteps?.has(step.id) ? (
+                            "✓"
+                          ) : (
+                            index + 1
+                          )}
                         </div>
                         <div className="flex-1">
                           <h4
@@ -1071,6 +1366,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                             }`}
                           >
                             {step.title}
+                            {!isStepGenerated(step) && generatingStepId !== step.id && (
+                              <span className="ml-1 text-[10px] opacity-70">⚡</span>
+                            )}
                           </h4>
                           <p
                             className={`text-xs ${
@@ -1079,9 +1377,23 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                                 : "text-gray-500 dark:text-gray-400"
                             }`}
                           >
-                            {step.estimatedTime} dakika
+                            {t("minutes", { time: step.estimatedTime })}
+                            {!isStepGenerated(step) && " • on demand"}
                           </p>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void regenerateStep(index);
+                          }}
+                          disabled={Boolean(generatingStepId)}
+                          className="h-6 px-1 text-[10px] opacity-70 hover:opacity-100"
+                        >
+                          <RotateCcw className="w-3 h-3 mr-0.5" />
+                          {t("regenerate")}
+                        </Button>
                       </div>
                     </motion.div>
                   ))}
@@ -1093,18 +1405,18 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                  Notlarım
+                  {t("myNotes")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <textarea
                   value={userNotes}
                   onChange={(e) => setUserNotes(e.target.value)}
-                  placeholder="Bu konu hakkında notlarınızı buraya yazabilirsiniz..."
+                  placeholder={t("notesPlaceholder")}
                   className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
                 />
                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  Notlarınız otomatik olarak kaydedilir
+                  {t("notesAutoSave")}
                 </div>
               </CardContent>
             </Card>
@@ -1113,7 +1425,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-800 dark:text-white">
-                  Hızlı İşlemler
+                  {t("quickActions")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1124,7 +1436,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   className="w-full justify-start"
                 >
                   <Lightbulb className="w-4 h-4 mr-2" />
-                  {showTips ? "İpuçlarını Gizle" : "İpuçlarını Göster"}
+                  {showTips ? t("hideTips") : t("showTips")}
                 </Button>
                 <Button
                   onClick={() => setShowVisuals(!showVisuals)}
@@ -1133,14 +1445,13 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   className="w-full justify-start"
                 >
                   <Eye className="w-4 h-4 mr-2" />
-                  {showVisuals ? "Görselleri Gizle" : "Görselleri Göster"}
+                  {showVisuals ? t("hideVisuals") : t("showVisuals")}
                 </Button>
                 <Button
                   onClick={() => {
-                    // Voice player will be controlled by the component itself
                     toast({
-                      title: "Seslendirme",
-                      description: "Seslendirme kontrolleri ana içerik alanında bulunmaktadır.",
+                      title: t("voiceNarration"),
+                      description: t("voiceControlsDesc"),
                     });
                   }}
                   variant="outline"
@@ -1148,7 +1459,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   className="w-full justify-start"
                 >
                   <Volume className="w-4 h-4 mr-2" />
-                  Seslendirme Kontrolleri
+                  {t("voiceControls")}
                 </Button>
                 <Button
                   onClick={handleRestart}
@@ -1157,12 +1468,19 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   className="w-full justify-start"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  Baştan Başla
+                  {t("restart")}
                 </Button>
               </CardContent>
             </Card>
           </div>
         </div>
+
+        {/* Reusable AI Floating Chat - accesses current topic data */}
+        <AIFloatingChat
+          subject={subject}
+          topicData={topicData}
+          currentStepTitle={currentStepData?.title}
+        />
       </div>
     </div>
   );

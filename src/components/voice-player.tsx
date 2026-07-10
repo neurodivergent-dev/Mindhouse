@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,8 @@ import {
   Settings,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
+import { markdownToPlainText } from "@/lib/utils";
 
 interface VoicePlayerProps {
   text: string;
@@ -39,6 +41,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   onEnd,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("VoicePlayer");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentSpeed, setCurrentSpeed] = useState(speed);
@@ -48,6 +51,20 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   const [isSupported, setIsSupported] = useState(false);
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Load available voices
+  const loadVoices = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const voices = window.speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+
+      // Select Turkish voice if available
+      const turkishVoice = voices.find(v =>
+        v.lang.includes("tr") || v.lang.includes("TR"),
+      );
+      setSelectedVoice(turkishVoice || voices[0] || null);
+    }
+  }, []);
 
   // Check if speech synthesis is supported
   useEffect(() => {
@@ -62,46 +79,26 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
         variant: "destructive",
       });
     }
-  }, [toast]);
-
-  // Load available voices
-  const loadVoices = () => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const voices = window.speechSynthesis.getVoices();
-      setAvailableVoices(voices);
-
-      // Select Turkish voice if available
-      const turkishVoice = voices.find(v =>
-        v.lang.includes("tr") || v.lang.includes("TR"),
-      );
-      setSelectedVoice(turkishVoice || voices[0] || null);
-    }
-  };
+  }, [toast, loadVoices]);
 
   // Handle voices loaded
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-  }, []);
+  }, [loadVoices]);
 
-  // Auto-play functionality
-  useEffect(() => {
-    if (autoPlay && isSupported && text) {
-      handlePlay();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoPlay, text, isSupported]);
-
-  const handlePlay = () => {
+  const handlePlay = useCallback(() => {
     if (!isSupported || !text) {return;}
+
+    const plainText = markdownToPlainText(text);
 
     try {
       // Stop any current speech
       window.speechSynthesis.cancel();
 
-      // Create new utterance
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Create new utterance with cleaned text (no more "asterisk asterisk" for **bold** etc.)
+      const utterance = new SpeechSynthesisUtterance(plainText);
       utteranceRef.current = utterance;
 
       // Set properties
@@ -159,7 +156,14 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
         variant: "destructive",
       });
     }
-  };
+  }, [isSupported, text, language, currentSpeed, isMuted, selectedVoice, onPlay, onEnd, onPause, toast]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (autoPlay && isSupported && text) {
+      handlePlay();
+    }
+  }, [autoPlay, text, isSupported, handlePlay]);
 
   const handlePause = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -235,7 +239,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             ) : (
               <Play className="w-4 h-4" />
             )}
-            {isPlaying ? "Duraklat" : "Oynat"}
+            {isPlaying ? t("pause") : t("play")}
           </Button>
 
           <Button
@@ -246,7 +250,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             className="hover:bg-gradient-to-r hover:from-red-600 hover:to-pink-600 hover:text-white"
           >
             <RotateCcw className="w-4 h-4" />
-            Durdur
+            {t("stop")}
           </Button>
 
           <Button

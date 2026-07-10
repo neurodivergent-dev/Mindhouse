@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🎮 AkılHane CI/CD Game Score Tracker
+🎮 Mindhouse CI/CD Game Score Tracker
 Tracks XP, achievements, and mission completion
 """
 
@@ -81,7 +81,7 @@ class GameScoreTracker:
     
     def display_score(self):
         """Display current score and stats"""
-        print("\n🎮 AKILHANE CI/CD GAME SCORE")
+        print("\n🎮 MINDHOUSE CI/CD GAME SCORE")
         print("=" * 40)
         print(f"🏆 Total XP: {self.scores['total_xp']}")
         print(f"⭐ Level: {self.scores['level']}")
@@ -105,7 +105,7 @@ def main():
     tracker = GameScoreTracker()
     
     # Example usage
-    print("🎮 AkılHane CI/CD Game Score Tracker")
+    print("🎮 Mindhouse CI/CD Game Score Tracker")
     print("=" * 50)
     
     # Simulate some missions
