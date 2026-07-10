@@ -6,7 +6,16 @@ import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles, BookOpen, Target, Brain, Database, GraduationCap, Users, BarChart3 } from "lucide-react";
+import {
+  Sparkles,
+  BookOpen,
+  Target,
+  Brain,
+  Database,
+  GraduationCap,
+  Users,
+  BarChart3,
+} from "lucide-react";
 import FeatureCards from "@/components/ui/feature-cards";
 import QuestionForm from "./question-form";
 import QuestionsList from "./questions-list";
@@ -275,12 +284,15 @@ export default function QuestionManagerMain({
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 lg:items-stretch transition-all duration-500">
-            <div className={`transition-all duration-500 ease-in-out ${focusMode === "form"
-                ? "w-full lg:w-full lg:flex-none"
-                : focusMode === "list"
-                  ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
-                  : "lg:flex-1 w-full"
-              }`}>
+            <div
+              className={`transition-all duration-500 ease-in-out ${
+                focusMode === "form"
+                  ? "w-full lg:w-full lg:flex-none"
+                  : focusMode === "list"
+                    ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
+                    : "lg:flex-1 w-full"
+              }`}
+            >
               <QuestionForm
                 subjects={subjects}
                 formData={formData}
@@ -296,12 +308,15 @@ export default function QuestionManagerMain({
               />
             </div>
 
-            <div className={`transition-all duration-500 ease-in-out ${focusMode === "list"
-                ? "w-full lg:w-full lg:flex-none"
-                : focusMode === "form"
-                  ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
-                  : "lg:flex-1 w-full"
-              }`}>
+            <div
+              className={`transition-all duration-500 ease-in-out ${
+                focusMode === "list"
+                  ? "w-full lg:w-full lg:flex-none"
+                  : focusMode === "form"
+                    ? "hidden lg:hidden w-0 opacity-0 pointer-events-none"
+                    : "lg:flex-1 w-full"
+              }`}
+            >
               <QuestionsList
                 subjects={subjects}
                 questions={questions}

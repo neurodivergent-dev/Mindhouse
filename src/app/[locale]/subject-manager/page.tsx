@@ -6,7 +6,16 @@ import SubjectManager from "@/components/subject-manager";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Database, BookOpen, Brain, GraduationCap, Target, Zap, Users, BarChart3 } from "lucide-react";
+import {
+  Database,
+  BookOpen,
+  Brain,
+  GraduationCap,
+  Target,
+  Zap,
+  Users,
+  BarChart3,
+} from "lucide-react";
 import { Link } from "@/i18n/routing";
 import MobileNav from "@/components/mobile-nav";
 import LoadingSpinner from "@/components/loading-spinner";
@@ -25,12 +34,32 @@ interface Stats {
 }
 
 const SUBJECT_MANAGER_FEATURES = [
-  { key: "easy_management", icon: BookOpen, iconBgColor: "bg-gradient-to-r from-blue-600 to-indigo-600" },
-  { key: "category_organization", icon: Target, iconBgColor: "bg-gradient-to-r from-purple-600 to-pink-600" },
-  { key: "ai_generation", icon: Brain, iconBgColor: "bg-gradient-to-r from-green-600 to-emerald-600" },
+  {
+    key: "easy_management",
+    icon: BookOpen,
+    iconBgColor: "bg-gradient-to-r from-blue-600 to-indigo-600",
+  },
+  {
+    key: "category_organization",
+    icon: Target,
+    iconBgColor: "bg-gradient-to-r from-purple-600 to-pink-600",
+  },
+  {
+    key: "ai_generation",
+    icon: Brain,
+    iconBgColor: "bg-gradient-to-r from-green-600 to-emerald-600",
+  },
   { key: "quick_actions", icon: Zap, iconBgColor: "bg-gradient-to-r from-orange-600 to-red-600" },
-  { key: "active_status", icon: Users, iconBgColor: "bg-gradient-to-r from-indigo-600 to-purple-600" },
-  { key: "detailed_stats", icon: BarChart3, iconBgColor: "bg-gradient-to-r from-teal-600 to-cyan-600" },
+  {
+    key: "active_status",
+    icon: Users,
+    iconBgColor: "bg-gradient-to-r from-indigo-600 to-purple-600",
+  },
+  {
+    key: "detailed_stats",
+    icon: BarChart3,
+    iconBgColor: "bg-gradient-to-r from-teal-600 to-cyan-600",
+  },
 ] as const;
 
 export default function SubjectManagerPage() {
@@ -71,13 +100,8 @@ export default function SubjectManagerPage() {
         // Use demo data for statistics
         const demoData = getDemoSubjects(locale);
         const totalSubjects = demoData.length;
-        const totalQuestions = demoData.reduce(
-          (sum, subject) => sum + subject.questionCount,
-          0,
-        );
-        const categories = new Set(
-          demoData.map((subject) => subject.category),
-        );
+        const totalQuestions = demoData.reduce((sum, subject) => sum + subject.questionCount, 0);
+        const categories = new Set(demoData.map((subject) => subject.category));
         const totalCategories = categories.size;
 
         setStats({
@@ -97,9 +121,7 @@ export default function SubjectManagerPage() {
           const allQuestions = UnifiedStorageService.getQuestions();
           const totalQuestions = allQuestions.length;
 
-          const categories = new Set(
-            localSubjects.map((subject: Subject) => subject.category),
-          );
+          const categories = new Set(localSubjects.map((subject: Subject) => subject.category));
           const totalCategories = categories.size;
 
           setStats({
@@ -117,9 +139,7 @@ export default function SubjectManagerPage() {
           const allQuestions = UnifiedStorageService.getQuestions();
           const totalQuestions = allQuestions.length;
 
-          const categories = new Set(
-            cloudSubjects.map((subject) => subject.category),
-          );
+          const categories = new Set(cloudSubjects.map((subject) => subject.category));
           const totalCategories = categories.size;
 
           setStats({
@@ -178,7 +198,7 @@ export default function SubjectManagerPage() {
                         // Refresh stats and subjects after adding AI subjects
                         await loadStats();
                         // Force refresh of SubjectManager component
-                        setRefreshKey(prev => prev + 1);
+                        setRefreshKey((prev) => prev + 1);
                       } catch {
                         // Handle error silently or with proper error handling
                         // You can add toast notification here if needed
@@ -250,11 +270,7 @@ export default function SubjectManagerPage() {
           <SubjectManager onRefresh={() => void loadStats()} refreshTrigger={refreshKey} />
 
           {/* Subject Manager Özellikleri */}
-          <FeatureCards
-            title={t("platformFeatures")}
-            features={translatedFeatures}
-            columns={3}
-          />
+          <FeatureCards title={t("platformFeatures")} features={translatedFeatures} columns={3} />
         </div>
       </div>
     </div>

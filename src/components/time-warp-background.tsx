@@ -124,35 +124,17 @@ export default function TimeWarpBackground() {
 
         {/* Gradient Definitions */}
         <defs>
-          <linearGradient
-            id="timeWarpGradient1"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id="timeWarpGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
             <stop offset="50%" stopColor="#a855f7" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#ec4899" stopOpacity="0.8" />
           </linearGradient>
-          <linearGradient
-            id="timeWarpGradient2"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id="timeWarpGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.6" />
             <stop offset="50%" stopColor="#10b981" stopOpacity="0.4" />
             <stop offset="100%" stopColor="#f97316" stopOpacity="0.6" />
           </linearGradient>
-          <linearGradient
-            id="timeWarpGradient3"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id="timeWarpGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.4" />
             <stop offset="50%" stopColor="#14b8a6" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#ef4444" stopOpacity="0.4" />

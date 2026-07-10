@@ -51,43 +51,54 @@ const TopicExplainerPageContent = () => {
   const locale = useLocale();
 
   const getTranslatedSubject = (name: string) => {
-    if (locale === "tr") {return name;}
+    if (locale === "tr") {
+      return name;
+    }
     const map: Record<string, string> = {
-      "Matematik": "Mathematics",
-      "Fizik": "Physics",
-      "Kimya": "Chemistry",
-      "Biyoloji": "Biology",
-      "Tarih": "History",
+      Matematik: "Mathematics",
+      Fizik: "Physics",
+      Kimya: "Chemistry",
+      Biyoloji: "Biology",
+      Tarih: "History",
       "Türk Dili ve Edebiyatı": "Turkish Literature",
       "Türk Dili": "Turkish Literature",
-      "İngilizce": "English",
-      "Coğrafya": "Geography"
+      İngilizce: "English",
+      Coğrafya: "Geography",
     };
     return map[name] || name;
   };
 
   const getTranslatedCategory = (category: string) => {
-    if (locale === "tr") {return category;}
+    if (locale === "tr") {
+      return category;
+    }
     const map: Record<string, string> = {
-      "Sayısal": "Science & Math",
+      Sayısal: "Science & Math",
       "Fen Bilimleri": "Science",
       "Sosyal Bilimler": "Social Sciences",
-      "Sözel": "Verbal",
-      "Yabancı Dil": "Foreign Language"
+      Sözel: "Verbal",
+      "Yabancı Dil": "Foreign Language",
     };
     return map[category] || category;
   };
 
   const getTranslatedDescription = (desc: string) => {
-    if (locale === "tr") {return desc;}
+    if (locale === "tr") {
+      return desc;
+    }
     const map: Record<string, string> = {
-      "Temel matematik konuları: Cebir, Geometri, Analiz": "Basic math topics: Algebra, Geometry, Calculus",
-      "Mekanik, Termodinamik, Elektrik ve Manyetizma": "Mechanics, Thermodynamics, Electricity and Magnetism",
-      "Genel Kimya, Organik ve Anorganik Kimya": "General Chemistry, Organic and Inorganic Chemistry",
+      "Temel matematik konuları: Cebir, Geometri, Analiz":
+        "Basic math topics: Algebra, Geometry, Calculus",
+      "Mekanik, Termodinamik, Elektrik ve Manyetizma":
+        "Mechanics, Thermodynamics, Electricity and Magnetism",
+      "Genel Kimya, Organik ve Anorganik Kimya":
+        "General Chemistry, Organic and Inorganic Chemistry",
       "Hücre Biyolojisi, Genetik, Ekoloji": "Cell Biology, Genetics, Ecology",
-      "Türk Tarihi, Dünya Tarihi, Çağdaş Tarih": "Turkish History, World History, Contemporary History",
-      "Dil Bilgisi, Klasik Edebiyat, Çağdaş Edebiyat": "Grammar, Classical Literature, Contemporary Literature",
-      "Grammar, Vocabulary, Reading Comprehension": "Grammar, Vocabulary, Reading Comprehension"
+      "Türk Tarihi, Dünya Tarihi, Çağdaş Tarih":
+        "Turkish History, World History, Contemporary History",
+      "Dil Bilgisi, Klasik Edebiyat, Çağdaş Edebiyat":
+        "Grammar, Classical Literature, Contemporary Literature",
+      "Grammar, Vocabulary, Reading Comprehension": "Grammar, Vocabulary, Reading Comprehension",
     };
     return map[desc] || desc;
   };
@@ -238,21 +249,22 @@ const TopicExplainerPageContent = () => {
     return realTopics;
   }, [subjects, generateTopicsForSubject]);
 
-  const activeSubjects = useMemo(() => subjects.filter(s => s.isActive), [subjects]);
+  const activeSubjects = useMemo(() => subjects.filter((s) => s.isActive), [subjects]);
 
   const filteredTopics = useMemo(() => {
     let result = availableTopics;
 
     if (selectedSubjectFilter !== "all") {
-      result = result.filter(t => t.subject === selectedSubjectFilter);
+      result = result.filter((t) => t.subject === selectedSubjectFilter);
     }
 
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      result = result.filter(t => 
-        t.name.toLowerCase().includes(query) || 
-        t.subject.toLowerCase().includes(query) ||
-        getTranslatedSubject(t.subject).toLowerCase().includes(query)
+      result = result.filter(
+        (t) =>
+          t.name.toLowerCase().includes(query) ||
+          t.subject.toLowerCase().includes(query) ||
+          getTranslatedSubject(t.subject).toLowerCase().includes(query),
       );
     }
 
@@ -284,9 +296,7 @@ const TopicExplainerPageContent = () => {
       <div className="min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-7 h-7 animate-spin mx-auto mb-3 text-blue-500" />
-          <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm">
-            {t("loadingTopics")}
-          </p>
+          <p className="text-[#86868b] dark:text-[#a1a1a6] text-sm">{t("loadingTopics")}</p>
         </div>
       </div>
     );
@@ -373,8 +383,12 @@ const TopicExplainerPageContent = () => {
                   <Brain className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">{t("featureAiLearning")}</span>
-                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("featureAiLearningDesc")}</span>
+                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">
+                    {t("featureAiLearning")}
+                  </span>
+                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("featureAiLearningDesc")}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60">
@@ -382,8 +396,12 @@ const TopicExplainerPageContent = () => {
                   <Target className="w-4 h-4 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">{t("featureStepByStep")}</span>
-                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("featureStepByStepDesc")}</span>
+                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">
+                    {t("featureStepByStep")}
+                  </span>
+                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("featureStepByStepDesc")}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60">
@@ -391,8 +409,12 @@ const TopicExplainerPageContent = () => {
                   <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">{t("featureInteractive")}</span>
-                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("featureInteractiveDesc")}</span>
+                  <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold block">
+                    {t("featureInteractive")}
+                  </span>
+                  <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("featureInteractiveDesc")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -409,7 +431,10 @@ const TopicExplainerPageContent = () => {
               {subjects
                 .filter((subjectItem) => subjectItem.isActive)
                 .map((subjectItem) => (
-                  <div key={subjectItem.id} className="apple-glass-card group hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+                  <div
+                    key={subjectItem.id}
+                    className="apple-glass-card group hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  >
                     <div className="w-full relative z-10 p-5 md:p-6">
                       <div className="flex items-center gap-4 mb-3">
                         <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform">
@@ -487,13 +512,13 @@ const TopicExplainerPageContent = () => {
             </div>
 
             <div className="mb-6">
-                <div className="relative w-full md:max-w-md">
+              <div className="relative w-full md:max-w-md">
                 <Input
                   type="text"
                   placeholder={t("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-full bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 rounded-xl backdrop-blur-sm h-11 text-sm font-medium shadow-sm shadow-slate-200/60"
+                  className="pl-10 w-full bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 rounded-xl backdrop-blur-sm h-11 text-sm font-medium shadow-sm shadow-slate-200/60"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b] dark:text-[#a1a1a6] pointer-events-none z-10" />
               </div>
@@ -502,8 +527,12 @@ const TopicExplainerPageContent = () => {
             {availableTopics.length > 0 ? (
               <div className="flex flex-col gap-8">
                 {activeSubjects.map((subjectItem) => {
-                  const subjectTopics = filteredTopics.filter((topicItem) => topicItem.subject === subjectItem.name);
-                  if (subjectTopics.length === 0) { return null; }
+                  const subjectTopics = filteredTopics.filter(
+                    (topicItem) => topicItem.subject === subjectItem.name,
+                  );
+                  if (subjectTopics.length === 0) {
+                    return null;
+                  }
 
                   return (
                     <div key={`section-${subjectItem.id}`} className="flex flex-col gap-4">
@@ -605,15 +634,21 @@ const TopicExplainerPageContent = () => {
                   <div className="mt-auto w-full flex flex-col gap-2 text-left">
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <Brain className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("featureAiLearning")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("featureAiLearning")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <Target className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("featureStepByStep")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("featureStepByStep")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <Lightbulb className="w-4 h-4 text-purple-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("featureInteractive")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("featureInteractive")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -631,15 +666,21 @@ const TopicExplainerPageContent = () => {
                   <div className="mt-auto w-full flex flex-col gap-2 text-left">
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <Plus className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("addSubject")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("addSubject")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("selectTopic")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("selectTopic")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                       <GraduationCap className="w-4 h-4 text-purple-500 shrink-0" />
-                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learnWithAi")}</span>
+                      <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                        {t("learnWithAi")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -654,44 +695,53 @@ const TopicExplainerPageContent = () => {
             <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-6 text-center">
               {t("howItWorksTitle")}
             </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
               {[
                 { step: "1", color: "blue", title: t("step1Title"), desc: t("step1Desc") },
                 { step: "2", color: "green", title: t("step2Title"), desc: t("step2Desc") },
                 { step: "3", color: "yellow", title: t("step3Title"), desc: t("step3Desc") },
                 { step: "4", color: "purple", title: t("step4Title"), desc: t("step4Desc") },
               ].map((item) => (
-                <div key={item.step} className="text-center p-4 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-3 ${
-                    item.color === "blue" ? "bg-blue-100 dark:bg-blue-900/40" :
-                    item.color === "green" ? "bg-green-100 dark:bg-green-900/40" :
-                    item.color === "yellow" ? "bg-yellow-100 dark:bg-yellow-900/40" :
-                    "bg-purple-100 dark:bg-purple-900/40"
-                  }`}>
-                    <span className={`font-bold text-sm ${
-                      item.color === "blue" ? "text-blue-600 dark:text-blue-400" :
-                      item.color === "green" ? "text-green-600 dark:text-green-400" :
-                      item.color === "yellow" ? "text-yellow-600 dark:text-yellow-400" :
-                      "text-purple-600 dark:text-purple-400"
-                    }`}>{item.step}</span>
+                <div
+                  key={item.step}
+                  className="text-center p-4 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60"
+                >
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                      item.color === "blue"
+                        ? "bg-blue-100 dark:bg-blue-900/40"
+                        : item.color === "green"
+                          ? "bg-green-100 dark:bg-green-900/40"
+                          : item.color === "yellow"
+                            ? "bg-yellow-100 dark:bg-yellow-900/40"
+                            : "bg-purple-100 dark:bg-purple-900/40"
+                    }`}
+                  >
+                    <span
+                      className={`font-bold text-sm ${
+                        item.color === "blue"
+                          ? "text-blue-600 dark:text-blue-400"
+                          : item.color === "green"
+                            ? "text-green-600 dark:text-green-400"
+                            : item.color === "yellow"
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-purple-600 dark:text-purple-400"
+                      }`}
+                    >
+                      {item.step}
+                    </span>
                   </div>
                   <h4 className="font-semibold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
-                    {item.desc}
-                  </p>
+                  <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <FeatureCards
-          title={t("featuresTitle")}
-          features={topicFeatures}
-          columns={3}
-        />
+        <FeatureCards title={t("featuresTitle")} features={topicFeatures} columns={3} />
       </div>
     </div>
   );

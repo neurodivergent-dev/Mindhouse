@@ -31,15 +31,11 @@ export default function QuestionOptions({
           <div key={index} className="flex items-center gap-3">
             <CheckboxField
               checked={option.isCorrect}
-              onCheckedChange={(checked) =>
-                onOptionChange(index, "isCorrect", checked)
-              }
+              onCheckedChange={(checked) => onOptionChange(index, "isCorrect", checked)}
             />
             <Input
               value={option.text}
-              onChange={(e) =>
-                onOptionChange(index, "text", e.target.value)
-              }
+              onChange={(e) => onOptionChange(index, "text", e.target.value)}
               placeholder={t("optionN", { n: index + 1 })}
               className="flex-1 h-10 sm:h-11"
             />

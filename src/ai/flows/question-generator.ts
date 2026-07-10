@@ -15,10 +15,7 @@ const QuestionGenerationInputSchema = z.object({
     .enum(["multiple-choice", "true-false", "calculation", "case-study"])
     .describe("The type of questions to generate"),
   count: z.number().min(1).max(25).describe("Number of questions to generate"),
-  language: z
-    .enum(["tr", "en"])
-    .default("tr")
-    .describe("Language for the questions"),
+  language: z.enum(["tr", "en"]).default("tr").describe("Language for the questions"),
   existingQuestions: z
     .array(z.string())
     .optional()
@@ -29,9 +26,7 @@ const QuestionGenerationInputSchema = z.object({
     .describe("Additional guidelines or requirements for question generation"),
 });
 
-export type QuestionGenerationInput = z.infer<
-  typeof QuestionGenerationInputSchema
->;
+export type QuestionGenerationInput = z.infer<typeof QuestionGenerationInputSchema>;
 
 const GeneratedQuestionSchema = z.object({
   text: z.string().describe("The question text"),
@@ -43,19 +38,14 @@ const GeneratedQuestionSchema = z.object({
       }),
     )
     .describe("Answer options for multiple choice questions"),
-  explanation: z
-    .string()
-    .describe("Detailed explanation of the correct answer"),
+  explanation: z.string().describe("Detailed explanation of the correct answer"),
   topic: z.string().optional().describe("The specific topic this question covers"),
   formula: z.string().optional().describe("Mathematical formula if applicable"),
   difficulty: z
     .enum(["Easy", "Medium", "Hard"])
     .optional()
     .describe("Actual difficulty of the generated question"),
-  keywords: z
-    .array(z.string())
-    .optional()
-    .describe("Key concepts covered in the question"),
+  keywords: z.array(z.string()).optional().describe("Key concepts covered in the question"),
   learningObjective: z
     .string()
     .optional()
@@ -64,45 +54,38 @@ const GeneratedQuestionSchema = z.object({
 
 const QuestionGenerationOutputSchema = z.object({
   questions: z.array(GeneratedQuestionSchema).describe("Generated questions"),
-  metadata: z.object({
-    totalGenerated: z.number().describe("Total number of questions generated"),
-    subject: z.string().describe("Subject of the questions"),
-    topic: z.string().describe("Topic of the questions"),
-    averageDifficulty: z.string().describe("Average difficulty level"),
-    generationTimestamp: z
-      .string()
-      .describe("When the questions were generated"),
-  }).optional(),
-  qualityScore: z
-    .number()
-    .optional()
-    .describe("Overall quality score of generated questions"),
+  metadata: z
+    .object({
+      totalGenerated: z.number().describe("Total number of questions generated"),
+      subject: z.string().describe("Subject of the questions"),
+      topic: z.string().describe("Topic of the questions"),
+      averageDifficulty: z.string().describe("Average difficulty level"),
+      generationTimestamp: z.string().describe("When the questions were generated"),
+    })
+    .optional(),
+  qualityScore: z.number().optional().describe("Overall quality score of generated questions"),
   suggestions: z
     .union([z.array(z.string()), z.string()])
     .optional()
     .describe("Suggestions for improving question quality"),
 });
 
-export type QuestionGenerationOutput = z.infer<
-  typeof QuestionGenerationOutputSchema
->;
+export type QuestionGenerationOutput = z.infer<typeof QuestionGenerationOutputSchema>;
 
 export async function generateQuestions(
   input: QuestionGenerationInput,
-  providerOrPrefs?: IAIProvider | Partial<AIPreferences>
+  providerOrPrefs?: IAIProvider | Partial<AIPreferences>,
 ): Promise<QuestionGenerationOutput> {
   try {
-    const provider = 
-      providerOrPrefs && 'generateObject' in providerOrPrefs
+    const provider =
+      providerOrPrefs && "generateObject" in providerOrPrefs
         ? providerOrPrefs
         : AIFactory.getProviderFromPreferences((providerOrPrefs as Partial<AIPreferences>) || {});
 
     const typeDescriptions = {
-      "multiple-choice":
-        "multiple choice questions with 4 options where exactly one is correct",
+      "multiple-choice": "multiple choice questions with 4 options where exactly one is correct",
       "true-false": "true/false questions",
-      calculation:
-        "calculation-based questions requiring mathematical problem solving",
+      calculation: "calculation-based questions requiring mathematical problem solving",
       "case-study": "case study questions with real-world scenarios",
     };
 
@@ -140,26 +123,33 @@ CRITICAL INSTRUCTION: You MUST output a JSON object containing the exact keys de
 
     // We use a simplified and highly permissive schema for the LLM to prevent Zod validation errors
     // because local models often hallucinate slightly different key names (e.g. questionText instead of question).
-    const LLMQuestionSchema = z.object({
-      question: z.string().optional().describe("The question text"),
-      questionText: z.string().optional(),
-      text: z.string().optional(),
-      
-      options: z.array(z.any()).optional().describe("Answer options as an array of strings"),
-      
-      correctAnswer: z.string().optional().describe("The correct answer exactly matching one of the options"),
-      correctOption: z.string().optional(),
-      correct_answer: z.string().optional(),
-      
-      explanation: z.string().optional().describe("Detailed explanation of the correct answer"),
-    }).catchall(z.any());
+    const LLMQuestionSchema = z
+      .object({
+        question: z.string().optional().describe("The question text"),
+        questionText: z.string().optional(),
+        text: z.string().optional(),
 
-    const LLMOutputSchema = z.object({
-      questions: z.array(LLMQuestionSchema).optional().describe("Generated questions"),
-      metadata: z.any().optional(),
-      qualityScore: z.any().optional(),
-      suggestions: z.any().optional()
-    }).catchall(z.any());
+        options: z.array(z.any()).optional().describe("Answer options as an array of strings"),
+
+        correctAnswer: z
+          .string()
+          .optional()
+          .describe("The correct answer exactly matching one of the options"),
+        correctOption: z.string().optional(),
+        correct_answer: z.string().optional(),
+
+        explanation: z.string().optional().describe("Detailed explanation of the correct answer"),
+      })
+      .catchall(z.any());
+
+    const LLMOutputSchema = z
+      .object({
+        questions: z.array(LLMQuestionSchema).optional().describe("Generated questions"),
+        metadata: z.any().optional(),
+        qualityScore: z.any().optional(),
+        suggestions: z.any().optional(),
+      })
+      .catchall(z.any());
 
     const output = await provider.generateObject<any>({
       prompt: `Generate ${input.count} questions.`,
@@ -172,13 +162,14 @@ CRITICAL INSTRUCTION: You MUST output a JSON object containing the exact keys de
     const mappedQuestions = (output?.questions || []).map((q: any) => {
       // Sometimes local models return options as objects despite the string array schema
       const mappedOptions = (q.options || []).map((opt: any) => {
-        const textStr = typeof opt === 'string' ? opt : (opt.optionText || opt.text || String(opt));
+        const textStr = typeof opt === "string" ? opt : opt.optionText || opt.text || String(opt);
         const correctStr = q.correctAnswer || q.correctOption || q.correct_answer;
         return {
           text: textStr,
-          isCorrect: typeof opt === 'object' && typeof opt.isCorrect === 'boolean' 
-            ? opt.isCorrect 
-            : textStr === correctStr
+          isCorrect:
+            typeof opt === "object" && typeof opt.isCorrect === "boolean"
+              ? opt.isCorrect
+              : textStr === correctStr,
         };
       });
 
@@ -200,10 +191,10 @@ CRITICAL INSTRUCTION: You MUST output a JSON object containing the exact keys de
         subject: input.subject,
         topic: input.topic,
         averageDifficulty: input.difficulty,
-        generationTimestamp: new Date().toISOString()
+        generationTimestamp: new Date().toISOString(),
       },
       qualityScore: 1.0,
-      suggestions: []
+      suggestions: [],
     };
 
     return validateGeneratedQuestions(finalOutput, input);
@@ -225,7 +216,11 @@ function validateGeneratedQuestions(
   // Validate each question
   output.questions = output.questions.map((question: any) => {
     // Ensure multiple choice questions have exactly 4 options
-    if (input.type === "multiple-choice" && Array.isArray(question.options) && question.options.length !== 4) {
+    if (
+      input.type === "multiple-choice" &&
+      Array.isArray(question.options) &&
+      question.options.length !== 4
+    ) {
       // Pad or trim options
       while (question.options.length < 4) {
         question.options.push({
@@ -238,9 +233,7 @@ function validateGeneratedQuestions(
 
     // Ensure exactly one correct answer for multiple choice
     if (input.type === "multiple-choice" && Array.isArray(question.options)) {
-      const correctCount = question.options.filter(
-        (opt: any) => opt.isCorrect,
-      ).length;
+      const correctCount = question.options.filter((opt: any) => opt.isCorrect).length;
       if (correctCount !== 1) {
         // Reset all to false and set first as correct
         question.options.forEach((opt: any) => (opt.isCorrect = false));
@@ -279,7 +272,7 @@ function validateGeneratedQuestions(
       subject: input.subject,
       topic: input.topic,
       averageDifficulty: input.difficulty,
-      generationTimestamp: new Date().toISOString()
+      generationTimestamp: new Date().toISOString(),
     };
   }
 
@@ -293,7 +286,7 @@ function validateGeneratedQuestions(
   // Normalize suggestions
   if (!output.suggestions) {
     output.suggestions = [];
-  } else if (typeof output.suggestions === 'string') {
+  } else if (typeof output.suggestions === "string") {
     output.suggestions = [output.suggestions];
   }
 

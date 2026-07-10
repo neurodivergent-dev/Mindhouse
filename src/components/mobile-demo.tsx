@@ -29,7 +29,7 @@ export default function MobileDemo() {
       icon: <Layout className="h-6 w-6 text-blue-500" />,
       color: "border-gradient-blue",
       bgHover: "hover:shadow-blue-500/10",
-    }
+    },
   ];
 
   return (
@@ -43,16 +43,14 @@ export default function MobileDemo() {
                 {t("title")}
               </span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t("subtitle")}
-            </p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("subtitle")}</p>
           </div>
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`${feature.color} p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl ${feature.bgHover}`}
               >
                 <Card className="h-full w-full border-0 bg-white dark:bg-gray-900/50 rounded-[11px] backdrop-blur-sm">
@@ -60,9 +58,7 @@ export default function MobileDemo() {
                     <div className="w-14 h-14 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-sm">
                       {feature.icon}
                     </div>
-                    <CardTitle className="text-lg font-bold">
-                      {feature.title}
-                    </CardTitle>
+                    <CardTitle className="text-lg font-bold">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center pt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">

@@ -5,7 +5,8 @@ Thank you for your interest in contributing to Mindhouse! This document provides
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 - Git
 - Supabase account (for database features)
@@ -14,31 +15,35 @@ Thank you for your interest in contributing to Mindhouse! This document provides
 ### Development Setup
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/melihcanndemir/mindhouse.git
    cd mindhouse
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Fill in your environment variables:
+
    ```bash
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   
+
    # AI Configuration
    GOOGLE_GENAI_API_KEY=your_gemini_api_key
-   
+
    # Cloudinary Configuration
    CLOUDINARY_CLOUD_NAME=your_cloudinary_name
    CLOUDINARY_API_KEY=your_cloudinary_key
@@ -46,6 +51,7 @@ Thank you for your interest in contributing to Mindhouse! This document provides
    ```
 
 4. **Database Setup**
+
    ```bash
    npm run db:generate
    npm run db:push
@@ -63,12 +69,14 @@ Thank you for your interest in contributing to Mindhouse! This document provides
 We follow strict TypeScript and ESLint rules. Please ensure your code follows these standards:
 
 #### TypeScript
+
 - Use strict TypeScript mode
 - Define proper types for all functions and variables
 - Use interfaces for object shapes
 - Prefer `const` over `let` when possible
 
 #### React Components
+
 ```typescript
 // ✅ Good
 interface ButtonProps {
@@ -77,13 +85,13 @@ interface ButtonProps {
   onClick?: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  children, 
-  variant = 'primary', 
-  onClick 
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
+  onClick
 }) => {
   return (
-    <button 
+    <button
       className={`btn btn-${variant}`}
       onClick={onClick}
     >
@@ -99,6 +107,7 @@ export const Button = ({ children, variant, onClick }) => {
 ```
 
 #### File Naming
+
 - Components: `PascalCase.tsx` (e.g., `UserProfile.tsx`)
 - Utilities: `camelCase.ts` (e.g., `formatDate.ts`)
 - Pages: `kebab-case.tsx` (e.g., `user-settings.tsx`)
@@ -128,6 +137,7 @@ src/
 ### Git Workflow
 
 1. **Create a Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -138,6 +148,7 @@ src/
    - Test your changes locally
 
 3. **Commit Your Changes**
+
    ```bash
    git add .
    git commit -m "feat: add user profile component"
@@ -168,7 +179,7 @@ chore(deps): update dependencies to latest versions
 ### Pull Request Guidelines
 
 1. **Title**: Use conventional commit format
-2. **Description**: 
+2. **Description**:
    - Explain what the PR does
    - Include screenshots for UI changes
    - Link related issues
@@ -184,6 +195,7 @@ chore(deps): update dependencies to latest versions
 ## 🧪 Testing
 
 ### Running Tests
+
 ```bash
 # Type checking
 npm run typecheck
@@ -196,11 +208,13 @@ npm run check-all
 ```
 
 ### Manual Testing Checklist
+
 Refer to [QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md) for comprehensive testing guidelines.
 
 ## 🔧 Development Tools
 
 ### Available Scripts
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -213,7 +227,9 @@ npm run db:studio    # Open Drizzle Studio
 ```
 
 ### VS Code Extensions
+
 We recommend these extensions for development:
+
 - TypeScript and JavaScript Language Features
 - ESLint
 - Prettier
@@ -223,12 +239,14 @@ We recommend these extensions for development:
 ## 🎨 UI/UX Guidelines
 
 ### Design System
+
 - Use Tailwind CSS for styling
 - Follow the existing gradient design language
 - Implement glassmorphism effects where appropriate
 - Ensure responsive design for all components
 
 ### Component Guidelines
+
 ```typescript
 // ✅ Good - Reusable component with proper props
 interface CardProps {
@@ -238,11 +256,11 @@ interface CardProps {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  title, 
-  children, 
+export const Card: React.FC<CardProps> = ({
+  title,
+  children,
   variant = 'default',
-  className 
+  className
 }) => {
   return (
     <div className={cn(
@@ -258,6 +276,7 @@ export const Card: React.FC<CardProps> = ({
 ```
 
 ### Accessibility
+
 - Use semantic HTML elements
 - Include proper ARIA labels
 - Ensure keyboard navigation works
@@ -267,28 +286,30 @@ export const Card: React.FC<CardProps> = ({
 ## 🤖 AI Integration Guidelines
 
 ### Adding AI Features
+
 1. **Use Genkit Framework**: All AI features should use Google Genkit
 2. **Error Handling**: Implement proper error handling for AI requests
 3. **Rate Limiting**: Respect API rate limits
 4. **Validation**: Validate all inputs before sending to AI services
 
 ### Example AI Integration
+
 ```typescript
 // ✅ Good - Proper AI integration
-import { genkit } from '@genkit-ai/core';
+import { genkit } from "@genkit-ai/core";
 
 export async function generateQuestion(topic: string, difficulty: string) {
   try {
-    const result = await genkit.run('generate-question', {
+    const result = await genkit.run("generate-question", {
       topic,
       difficulty,
-      format: 'multiple-choice'
+      format: "multiple-choice",
     });
-    
+
     return result;
   } catch (error) {
-    console.error('AI generation failed:', error);
-    throw new Error('Failed to generate question');
+    console.error("AI generation failed:", error);
+    throw new Error("Failed to generate question");
   }
 }
 ```
@@ -296,11 +317,13 @@ export async function generateQuestion(topic: string, difficulty: string) {
 ## 📚 Documentation
 
 ### Code Documentation
+
 - Use JSDoc for complex functions
 - Include examples in component documentation
 - Document API endpoints with proper descriptions
 
 ### Example Documentation
+
 ```typescript
 /**
  * Calculates the user's performance score based on quiz results
@@ -312,8 +335,8 @@ export async function generateQuestion(topic: string, difficulty: string) {
  * console.log(score); // 85.5
  */
 export function calculatePerformanceScore(
-  quizResults: QuizResult[], 
-  totalQuestions: number
+  quizResults: QuizResult[],
+  totalQuestions: number,
 ): number {
   // Implementation
 }
@@ -322,17 +345,20 @@ export function calculatePerformanceScore(
 ## 🐛 Bug Reports
 
 ### Before Reporting
+
 1. Check existing issues
 2. Test on latest version
 3. Try to reproduce the issue
 4. Check browser console for errors
 
 ### Bug Report Template
+
 ```markdown
 **Bug Description**
 Brief description of the issue
 
 **Steps to Reproduce**
+
 1. Go to '...'
 2. Click on '...'
 3. Scroll down to '...'
@@ -345,6 +371,7 @@ What should happen
 What actually happens
 
 **Environment**
+
 - OS: [e.g. Windows 10]
 - Browser: [e.g. Chrome 120]
 - Version: [e.g. 1.0.0]
@@ -356,11 +383,13 @@ Screenshots, console logs, etc.
 ## 💡 Feature Requests
 
 ### Before Requesting
+
 1. Check if the feature already exists
 2. Consider if it aligns with project goals
 3. Think about implementation complexity
 
 ### Feature Request Template
+
 ```markdown
 **Feature Description**
 Brief description of the feature
@@ -381,6 +410,7 @@ Any other relevant information
 ## 🏷️ Labels
 
 We use these labels to categorize issues and PRs:
+
 - `bug` - Something isn't working
 - `enhancement` - New feature or request
 - `documentation` - Improvements to documentation
@@ -398,6 +428,7 @@ We use these labels to categorize issues and PRs:
 ## 🎉 Recognition
 
 Contributors will be:
+
 - Listed in the README.md contributors section
 - Mentioned in release notes
 - Given credit in commit history
@@ -408,4 +439,4 @@ By contributing to Mindhouse, you agree that your contributions will be licensed
 
 ---
 
-**Thank you for contributing to Mindhouse! 🚀** 
+**Thank you for contributing to Mindhouse! 🚀**

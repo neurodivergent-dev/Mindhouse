@@ -187,11 +187,7 @@ interface CheckboxFieldProps {
   className?: string;
 }
 
-export function CheckboxField({
-  checked,
-  onCheckedChange,
-  className,
-}: CheckboxFieldProps) {
+export function CheckboxField({ checked, onCheckedChange, className }: CheckboxFieldProps) {
   return (
     <Checkbox
       checked={checked}

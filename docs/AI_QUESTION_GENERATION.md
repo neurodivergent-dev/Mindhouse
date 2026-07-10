@@ -7,6 +7,7 @@ The AI-powered question generation feature enables automatic creation of high-qu
 ## Features
 
 ### 1. AI Question Generation
+
 - **Multiple Question Types**: Supports multiple-choice, true/false, calculation, and case study questions
 - **Difficulty Levels**: Generate questions at Easy, Medium, or Hard difficulty levels
 - **Language Support**: Currently supports Turkish (tr) and English (en)
@@ -14,6 +15,7 @@ The AI-powered question generation feature enables automatic creation of high-qu
 - **Custom Guidelines**: Provide additional instructions to the AI for specific requirements
 
 ### 2. Quality Validation
+
 - **Automatic Quality Scoring**: Each generated question receives a quality score (0-100%)
 - **Validation Checks**:
   - Multiple-choice questions must have exactly 4 options with 1 correct answer
@@ -23,12 +25,14 @@ The AI-powered question generation feature enables automatic creation of high-qu
 - **Improvement Suggestions**: AI provides suggestions for improving question quality
 
 ### 3. Review and Approval Interface
+
 - **Preview Generated Questions**: Review all AI-generated questions before adding them
 - **Selective Approval**: Choose which questions to add to the question bank
 - **Edit Capability**: Questions can be edited after generation if needed
 - **Batch Operations**: Select all/none functionality for efficient review
 
 ### 4. Logging and Monitoring
+
 - **Generation Logs**: All AI generation activities are logged in the `ai_generation_logs` table
 - **Tracked Metrics**:
   - User ID (for authenticated users)

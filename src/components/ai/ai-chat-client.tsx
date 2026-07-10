@@ -14,7 +14,14 @@ import type { AiChatInput } from "@/ai/flows/ai-chat";
 import { getAiChatResponse } from "@/ai/flows/ai-chat";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   User,
   Sparkles,
@@ -86,25 +93,27 @@ export default function AiChatClient() {
 
   // Voice Assistant states
   const [isListening, setIsListening] = useState(false);
-  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(
-    null,
-  );
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const getSubjectLabel = useCallback(
     (subject: string) => {
-      if (subject === GENERAL_SUBJECT) { return t("general"); }
-      if (locale === "tr") { return subject; }
+      if (subject === GENERAL_SUBJECT) {
+        return t("general");
+      }
+      if (locale === "tr") {
+        return subject;
+      }
       const map: Record<string, string> = {
-        "Matematik": "Mathematics",
-        "Fizik": "Physics",
-        "Kimya": "Chemistry",
-        "Biyoloji": "Biology",
-        "Tarih": "History",
+        Matematik: "Mathematics",
+        Fizik: "Physics",
+        Kimya: "Chemistry",
+        Biyoloji: "Biology",
+        Tarih: "History",
         "Türk Dili ve Edebiyatı": "Turkish Literature",
         "Türk Dili": "Turkish Literature",
-        "İngilizce": "English",
-        "Coğrafya": "Geography"
+        İngilizce: "English",
+        Coğrafya: "Geography",
       };
       return map[subject] || subject;
     },
@@ -169,9 +178,11 @@ export default function AiChatClient() {
         {
           title: "Karmaşık Konuları Açıkla",
           description: "Kuantum fiziğini 5 yaşındaki birine anlatır gibi kolayca açıkla.",
-          prompt: "Kuantum fiziğini 5 yaşındaki bir çocuğun anlayabileceği şekilde en sade haliyle açıkla.",
+          prompt:
+            "Kuantum fiziğini 5 yaşındaki bir çocuğun anlayabileceği şekilde en sade haliyle açıkla.",
           icon: Lightbulb,
-          color: "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
+          color:
+            "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
           glow: "from-blue-500/[0.04] to-indigo-500/[0.03] dark:from-blue-500/[0.06] dark:to-indigo-500/[0.04]",
           iconBg: "bg-blue-500/10 dark:bg-blue-500/20",
           iconColor: "text-blue-600 dark:text-blue-400",
@@ -179,9 +190,11 @@ export default function AiChatClient() {
         {
           title: "Çalışma Planı Hazırla",
           description: "Sınavlarım için verimli bir haftalık çalışma programı oluştur.",
-          prompt: "Önümüzdeki hafta yapacağım sınavlar için bana verimli, adımlı ve dengeli bir ders çalışma planı hazırlar mısın?",
+          prompt:
+            "Önümüzdeki hafta yapacağım sınavlar için bana verimli, adımlı ve dengeli bir ders çalışma planı hazırlar mısın?",
           icon: Target,
-          color: "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
+          color:
+            "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
           glow: "from-emerald-500/[0.04] to-teal-500/[0.03] dark:from-emerald-500/[0.06] dark:to-teal-500/[0.04]",
           iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
           iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -189,9 +202,11 @@ export default function AiChatClient() {
         {
           title: "Beni Test Et",
           description: "Genel kültür veya tarih konularında bilgi seviyemi ölçecek sorular sor.",
-          prompt: "Genel kültür ve tarih konularında benim bilgi seviyemi test etmek için sırayla 5 soru sorar mısın?",
+          prompt:
+            "Genel kültür ve tarih konularında benim bilgi seviyemi test etmek için sırayla 5 soru sorar mısın?",
           icon: Brain,
-          color: "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
+          color:
+            "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
           glow: "from-purple-500/[0.04] to-pink-500/[0.03] dark:from-purple-500/[0.06] dark:to-pink-500/[0.04]",
           iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
           iconColor: "text-purple-600 dark:text-purple-400",
@@ -199,22 +214,26 @@ export default function AiChatClient() {
         {
           title: "Özet ve Analiz Yap",
           description: "Ders çalışma tekniklerini veya zor konuları özetle.",
-          prompt: "Verimli ders çalışma tekniklerini (Pomodoro, Feynman vb.) kısaca özetle ve analiz et.",
+          prompt:
+            "Verimli ders çalışma tekniklerini (Pomodoro, Feynman vb.) kısaca özetle ve analiz et.",
           icon: Sparkles,
-          color: "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
+          color:
+            "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
           glow: "from-amber-500/[0.04] to-orange-500/[0.03] dark:from-amber-500/[0.06] dark:to-orange-500/[0.04]",
           iconBg: "bg-amber-500/10 dark:bg-amber-500/20",
           iconColor: "text-amber-600 dark:text-amber-400",
-        }
+        },
       ];
     }
     return [
       {
         title: "Explain Complex Topics",
         description: "Explain quantum physics like I am a 5-year-old.",
-        prompt: "Explain quantum physics in the simplest terms possible, like I'm a 5-year-old child.",
+        prompt:
+          "Explain quantum physics in the simplest terms possible, like I'm a 5-year-old child.",
         icon: Lightbulb,
-        color: "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
+        color:
+          "hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:shadow-md hover:shadow-blue-500/[0.02]",
         glow: "from-blue-500/[0.04] to-indigo-500/[0.03] dark:from-blue-500/[0.06] dark:to-indigo-500/[0.04]",
         iconBg: "bg-blue-500/10 dark:bg-blue-500/20",
         iconColor: "text-blue-600 dark:text-blue-400",
@@ -222,9 +241,11 @@ export default function AiChatClient() {
       {
         title: "Create a Study Plan",
         description: "Prepare a custom study schedule for my upcoming exams.",
-        prompt: "Can you create a productive, step-by-step, balanced study schedule for my exams next week?",
+        prompt:
+          "Can you create a productive, step-by-step, balanced study schedule for my exams next week?",
         icon: Target,
-        color: "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
+        color:
+          "hover:border-emerald-500/30 dark:hover:border-emerald-400/30 hover:shadow-md hover:shadow-emerald-500/[0.02]",
         glow: "from-emerald-500/[0.04] to-teal-500/[0.03] dark:from-emerald-500/[0.06] dark:to-teal-500/[0.04]",
         iconBg: "bg-emerald-500/10 dark:bg-emerald-500/20",
         iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -232,9 +253,11 @@ export default function AiChatClient() {
       {
         title: "Quiz Me",
         description: "Ask questions to test my knowledge on any topic.",
-        prompt: "Can you ask me 5 questions one by one to test my knowledge in history and general science?",
+        prompt:
+          "Can you ask me 5 questions one by one to test my knowledge in history and general science?",
         icon: Brain,
-        color: "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
+        color:
+          "hover:border-purple-500/30 dark:hover:border-purple-400/30 hover:shadow-md hover:shadow-purple-500/[0.02]",
         glow: "from-purple-500/[0.04] to-pink-500/[0.03] dark:from-purple-500/[0.06] dark:to-pink-500/[0.04]",
         iconBg: "bg-purple-500/10 dark:bg-purple-500/20",
         iconColor: "text-purple-600 dark:text-purple-400",
@@ -242,13 +265,15 @@ export default function AiChatClient() {
       {
         title: "Summarize & Analyze",
         description: "Summarize difficult concepts or articles quickly.",
-        prompt: "Briefly summarize and analyze the most effective study techniques (e.g., Pomodoro, Feynman).",
+        prompt:
+          "Briefly summarize and analyze the most effective study techniques (e.g., Pomodoro, Feynman).",
         icon: Sparkles,
-        color: "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
+        color:
+          "hover:border-amber-500/30 dark:hover:border-amber-400/30 hover:shadow-md hover:shadow-amber-500/[0.02]",
         glow: "from-amber-500/[0.04] to-orange-500/[0.03] dark:from-amber-500/[0.06] dark:to-orange-500/[0.04]",
         iconBg: "bg-amber-500/10 dark:bg-amber-500/20",
         iconColor: "text-amber-600 dark:text-amber-400",
-      }
+      },
     ];
   }, [locale]);
 
@@ -295,7 +320,7 @@ export default function AiChatClient() {
 
       if (demoMode) {
         const demoData = getDemoSubjects(locale);
-        loadedSubjects = demoData.map(subject => ({
+        loadedSubjects = demoData.map((subject) => ({
           id: subject.id,
           name: subject.name,
           description: subject.description,
@@ -309,7 +334,7 @@ export default function AiChatClient() {
           const dbSubjects = await SubjectService.getSubjects();
 
           if (dbSubjects && dbSubjects.length > 0) {
-            loadedSubjects = dbSubjects.map(subject => ({
+            loadedSubjects = dbSubjects.map((subject) => ({
               id: subject.id,
               name: subject.name,
               description: subject.description,
@@ -332,7 +357,7 @@ export default function AiChatClient() {
       }
 
       // Only show active subjects
-      const activeSubjects = loadedSubjects.filter(subject => subject.isActive);
+      const activeSubjects = loadedSubjects.filter((subject) => subject.isActive);
       setSubjects(activeSubjects);
     } catch {
       setSubjects([]);
@@ -375,8 +400,7 @@ export default function AiChatClient() {
   }, [currentSubject, getWelcomeMessage]);
 
   // Debug useEffect to track currentSessionId changes
-  useEffect(() => {
-  }, [currentSessionId]);
+  useEffect(() => {}, [currentSessionId]);
 
   // Debug useEffect to track currentSubject changes
   useEffect(() => {
@@ -385,7 +409,7 @@ export default function AiChatClient() {
 
   // Load sessionId from localStorage on mount
   useEffect(() => {
-    const savedSessionId = localStorage.getItem('currentAIChatSessionId');
+    const savedSessionId = localStorage.getItem("currentAIChatSessionId");
     if (savedSessionId && !currentSessionId) {
       setCurrentSessionId(savedSessionId);
       sessionIdRef.current = savedSessionId;
@@ -503,22 +527,19 @@ export default function AiChatClient() {
       // Try to save to Supabase first (only if user is authenticated)
       if (userId !== "guest") {
         try {
-          const response = await fetch(
-            `/api/ai-chat/${targetSessionId}/messages`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                role,
-                content,
-                subject: currentSubject,
-                userId,
-                image,
-              }),
+          const response = await fetch(`/api/ai-chat/${targetSessionId}/messages`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-          );
+            body: JSON.stringify({
+              role,
+              content,
+              subject: currentSubject,
+              userId,
+              image,
+            }),
+          });
 
           if (response.ok) {
             return; // Successfully saved to Supabase
@@ -579,9 +600,7 @@ export default function AiChatClient() {
 
       if (userId) {
         try {
-          const response = await fetch(
-            `/api/ai-chat/${sessionId}?userId=${userId}`,
-          );
+          const response = await fetch(`/api/ai-chat/${sessionId}?userId=${userId}`);
 
           if (response.ok) {
             const data = await response.json();
@@ -608,21 +627,19 @@ export default function AiChatClient() {
             return formattedMessages;
           } else {
           }
-        } catch { }
+        } catch {}
       }
 
       // Fallback to localStorage
       try {
         const localSession = await aiChatSessionRepository.getSession(sessionId);
         if (localSession) {
-          const formattedMessages: Message[] = localSession.messages.map(
-            (msg) => ({
-              id: msg.id,
-              role: msg.role,
-              content: msg.content,
-              ...(msg.image && { image: msg.image }), // Only include image if it exists
-            }),
-          );
+          const formattedMessages: Message[] = localSession.messages.map((msg) => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            ...(msg.image && { image: msg.image }), // Only include image if it exists
+          }));
 
           // Add initial message if session has messages, with correct subject
           const messagesWithInit = [
@@ -705,7 +722,8 @@ export default function AiChatClient() {
 
     // Create new session if no current session (for both authenticated and guest users)
     // Check both state and ref, also localStorage as fallback
-    const existingSessionId = currentSessionId || sessionIdRef.current || localStorage.getItem('currentAIChatSessionId');
+    const existingSessionId =
+      currentSessionId || sessionIdRef.current || localStorage.getItem("currentAIChatSessionId");
     let sessionIdToUse = existingSessionId;
 
     if (!existingSessionId) {
@@ -713,7 +731,7 @@ export default function AiChatClient() {
       if (newSessionId) {
         setCurrentSessionId(newSessionId);
         sessionIdRef.current = newSessionId; // Also store in ref for immediate access
-        localStorage.setItem('currentAIChatSessionId', newSessionId); // Persist to localStorage
+        localStorage.setItem("currentAIChatSessionId", newSessionId); // Persist to localStorage
         sessionIdToUse = newSessionId;
       } else {
         return; // Exit if session creation fails
@@ -780,7 +798,8 @@ export default function AiChatClient() {
     try {
       const aiPreferences = getStoredAiPreferences();
       if (!isAiConfigured(aiPreferences)) {
-        const errorContent = "AI service configuration error. Please check your API key in Settings.";
+        const errorContent =
+          "AI service configuration error. Please check your API key in Settings.";
         // add as assistant message
         const errorMsg = {
           id: Date.now().toString(),
@@ -796,16 +815,13 @@ export default function AiChatClient() {
 
       // Check if user is asking for an image
       const lowerMessage = messageContent.toLowerCase();
-      const shouldGenerateImage = imageKeywords.some((keyword) =>
-        lowerMessage.includes(keyword),
-      );
+      const shouldGenerateImage = imageKeywords.some((keyword) => lowerMessage.includes(keyword));
 
       let imageUrl = null;
       if (shouldGenerateImage) {
         // Generate image based on the AI response or user request
-        const imagePrompt = result.response.length > 50
-          ? result.response.substring(0, 200)
-          : messageContent;
+        const imagePrompt =
+          result.response.length > 50 ? result.response.substring(0, 200) : messageContent;
         imageUrl = await generateImage(imagePrompt, currentSubject);
       }
 
@@ -860,8 +876,7 @@ export default function AiChatClient() {
     if (!messagesContainerRef.current) {
       return true;
     }
-    const { scrollTop, scrollHeight, clientHeight } =
-      messagesContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
     const threshold = 150; // pixels from bottom - increased threshold
     return scrollHeight - scrollTop - clientHeight < threshold;
   };
@@ -995,16 +1010,18 @@ export default function AiChatClient() {
   };
 
   return (
-    <div className={`flex flex-col justify-center items-center min-h-screen bg-transparent dark:bg-transparent dark:!bg-none ${isFullscreen ? 'p-0' : 'p-2 sm:p-4 pt-0'}`}>
-      <Card className={`w-full flex flex-col shadow-2xl transition-all duration-300 p-0 ${isFullscreen ? 'fixed inset-0 z-[100] rounded-none h-screen max-w-full m-0' : 'max-w-[96.25rem] h-[calc(100vh-6rem)] mt-2 border-gradient-question'}`}>
+    <div
+      className={`flex flex-col justify-center items-center min-h-screen bg-transparent dark:bg-transparent dark:!bg-none ${isFullscreen ? "p-0" : "p-2 sm:p-4 pt-0"}`}
+    >
+      <Card
+        className={`w-full flex flex-col shadow-2xl transition-all duration-300 p-0 ${isFullscreen ? "fixed inset-0 z-[100] rounded-none h-screen max-w-full m-0" : "max-w-[96.25rem] h-[calc(100vh-6rem)] mt-2 border-gradient-question"}`}
+      >
         <CardHeader className="border-b">
           <CardTitle className="flex items-center justify-between text-lg md:text-xl">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <BrainCircuit className="text-blue-500 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
               <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
-                <span className="text-sm sm:text-base flex-shrink-0">
-                  {t("aiTutor")}
-                </span>
+                <span className="text-sm sm:text-base flex-shrink-0">{t("aiTutor")}</span>
                 <div className="relative subject-selector flex-1 min-w-0">
                   <Popover open={showSubjectSelector} onOpenChange={setShowSubjectSelector}>
                     <PopoverTrigger asChild>
@@ -1024,7 +1041,10 @@ export default function AiChatClient() {
                         <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[300px] sm:w-[500px] md:w-[600px] p-0" align="start">
+                    <PopoverContent
+                      className="w-[300px] sm:w-[500px] md:w-[600px] p-0"
+                      align="start"
+                    >
                       <Command>
                         <CommandInput placeholder={t("searchSubject")} />
                         <CommandList>
@@ -1046,10 +1066,13 @@ export default function AiChatClient() {
                               }}
                             >
                               <BookOpen className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
-                              <span className="break-words whitespace-normal text-left">{t("general")}</span>
+                              <span className="break-words whitespace-normal text-left">
+                                {t("general")}
+                              </span>
                               <Check
-                                className={`ml-auto h-4 w-4 ${currentSubject === GENERAL_SUBJECT ? "opacity-100" : "opacity-0"
-                                  }`}
+                                className={`ml-auto h-4 w-4 ${
+                                  currentSubject === GENERAL_SUBJECT ? "opacity-100" : "opacity-0"
+                                }`}
                               />
                             </CommandItem>
                             {subjects.map((subject) => (
@@ -1070,11 +1093,13 @@ export default function AiChatClient() {
                               >
                                 <BookOpen className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
                                 <span className="break-words whitespace-normal text-left">
-                                  {getSubjectLabel(subject.name?.split(":")[0]?.trim() || "") || t("unknown")}
+                                  {getSubjectLabel(subject.name?.split(":")[0]?.trim() || "") ||
+                                    t("unknown")}
                                 </span>
                                 <Check
-                                  className={`ml-auto h-4 w-4 flex-shrink-0 ${currentSubject === subject.name ? "opacity-100" : "opacity-0"
-                                    }`}
+                                  className={`ml-auto h-4 w-4 flex-shrink-0 ${
+                                    currentSubject === subject.name ? "opacity-100" : "opacity-0"
+                                  }`}
                                 />
                               </CommandItem>
                             ))}
@@ -1104,7 +1129,7 @@ export default function AiChatClient() {
                   if (currentSessionId === deletedId) {
                     setCurrentSessionId(null);
                     sessionIdRef.current = null;
-                    localStorage.removeItem('currentAIChatSessionId');
+                    localStorage.removeItem("currentAIChatSessionId");
                     setMessages([
                       {
                         id: "init",
@@ -1120,11 +1145,10 @@ export default function AiChatClient() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-
                   // Clear all session references
                   setCurrentSessionId(null);
                   sessionIdRef.current = null;
-                  localStorage.removeItem('currentAIChatSessionId');
+                  localStorage.removeItem("currentAIChatSessionId");
 
                   // Use current state value instead of ref for UI consistency
                   const subjectToUse = currentSubject;
@@ -1137,7 +1161,6 @@ export default function AiChatClient() {
                       content: getWelcomeMessage(subjectToUse),
                     },
                   ]);
-
                 }}
                 className="gap-1 sm:gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 text-xs sm:text-sm h-8 sm:h-9"
               >
@@ -1179,7 +1202,7 @@ export default function AiChatClient() {
                           width={768}
                           height={300}
                           className="rounded-lg max-w-full h-auto shadow-md object-contain"
-                          style={{ maxHeight: '300px' }}
+                          style={{ maxHeight: "300px" }}
                         />
                       </div>
                     )}
@@ -1188,11 +1211,7 @@ export default function AiChatClient() {
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeHighlight]}
                       components={{
-                        code({
-                          className,
-                          children,
-                          ...props
-                        }: React.ComponentProps<"code">) {
+                        code({ className, children, ...props }: React.ComponentProps<"code">) {
                           const match = /language-(\w+)/.exec(className || "");
                           const isInline = !className?.includes("language-");
                           return !isInline && match ? (
@@ -1210,22 +1229,14 @@ export default function AiChatClient() {
                             </code>
                           );
                         },
-                        p: ({ children }) => (
-                          <p className="mb-2 last:mb-0">{children}</p>
-                        ),
+                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                         ul: ({ children }) => (
-                          <ul className="list-disc list-inside mb-2 space-y-1">
-                            {children}
-                          </ul>
+                          <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
                         ),
                         ol: ({ children }) => (
-                          <ol className="list-decimal list-inside mb-2 space-y-1">
-                            {children}
-                          </ol>
+                          <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>
                         ),
-                        li: ({ children }) => (
-                          <li className="text-sm">{children}</li>
-                        ),
+                        li: ({ children }) => <li className="text-sm">{children}</li>,
                         h1: ({ children }) => (
                           <h1 className="text-xl font-bold mb-2">{children}</h1>
                         ),
@@ -1233,9 +1244,7 @@ export default function AiChatClient() {
                           <h2 className="text-lg font-bold mb-2">{children}</h2>
                         ),
                         h3: ({ children }) => (
-                          <h3 className="text-base font-bold mb-2">
-                            {children}
-                          </h3>
+                          <h3 className="text-base font-bold mb-2">{children}</h3>
                         ),
                         blockquote: ({ children }) => (
                           <blockquote className="border-l-4 border-blue-500 pl-4 italic bg-blue-50 dark:bg-blue-900/20 py-2 rounded-r">
@@ -1259,15 +1268,9 @@ export default function AiChatClient() {
 
                     {/* Voice Play Button for AI responses */}
                     <button
-                      onClick={() =>
-                        speakAIResponse(message.id, message.content)
-                      }
+                      onClick={() => speakAIResponse(message.id, message.content)}
                       className="absolute bottom-2 right-2 w-6 h-6 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-                      title={
-                        speakingMessageId === message.id
-                          ? t("stopVoice")
-                          : t("listenVoice")
-                      }
+                      title={speakingMessageId === message.id ? t("stopVoice") : t("listenVoice")}
                     >
                       <Volume2
                         className={`w-3 h-3 ${speakingMessageId === message.id ? "animate-pulse" : ""}`}
@@ -1275,9 +1278,7 @@ export default function AiChatClient() {
                     </button>
                   </div>
                 ) : (
-                  <p className="whitespace-pre-wrap text-sm md:text-base">
-                    {message.content}
-                  </p>
+                  <p className="whitespace-pre-wrap text-sm md:text-base">{message.content}</p>
                 )}
               </div>
               {message.role === "user" && (
@@ -1300,11 +1301,15 @@ export default function AiChatClient() {
                     className={`relative overflow-hidden flex flex-col items-start justify-between text-left p-6 sm:p-7 min-h-[190px] sm:min-h-[210px] rounded-2xl bg-white/[0.4] dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] ${p.color} transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] group`}
                   >
                     {/* Subtle Gradient Glow on Hover */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${p.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${p.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
+                    />
 
                     <div className="relative z-10 w-full h-full flex flex-col justify-between items-start">
                       <div className="w-full">
-                        <div className={`w-11 h-11 rounded-xl ${p.iconBg} ${p.iconColor} flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform`}>
+                        <div
+                          className={`w-11 h-11 rounded-xl ${p.iconBg} ${p.iconColor} flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform`}
+                        >
                           <IconComponent className="w-5 h-5" />
                         </div>
                         <h4 className="font-bold text-base text-gray-900 dark:text-gray-100 mb-2">
@@ -1366,11 +1371,7 @@ export default function AiChatClient() {
                         key={i}
                         variant="secondary"
                         className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
-                        onClick={() =>
-                          handleSuggestionClick(
-                            t("explainTopic", { topic }),
-                          )
-                        }
+                        onClick={() => handleSuggestionClick(t("explainTopic", { topic }))}
                       >
                         {topic}
                       </Badge>
@@ -1395,10 +1396,7 @@ export default function AiChatClient() {
           )}
         </CardContent>
         <div className="border-t p-4 bg-white dark:bg-gray-950">
-          <form
-            onSubmit={handleFormSubmit}
-            className="flex items-center gap-2 md:gap-4"
-          >
+          <form onSubmit={handleFormSubmit} className="flex items-center gap-2 md:gap-4">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -1416,9 +1414,9 @@ export default function AiChatClient() {
               aiTutorOutput={
                 messages.length > 0
                   ? messages
-                    .slice()
-                    .reverse()
-                    .find((msg) => msg.role === "assistant")?.content || ""
+                      .slice()
+                      .reverse()
+                      .find((msg) => msg.role === "assistant")?.content || ""
                   : ""
               }
             />
@@ -1427,11 +1425,7 @@ export default function AiChatClient() {
               disabled={isLoading || !input.trim()}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0"
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                t("send")
-              )}
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("send")}
             </Button>
           </form>
         </div>
@@ -1439,13 +1433,8 @@ export default function AiChatClient() {
 
       {/* FeatureCards - Added BELOW the main chat container */}
       <div className="w-full max-w-[96.25rem] mt-8">
-        <FeatureCards
-          title={t("featuresTitle")}
-          features={aiChatFeatures}
-          columns={3}
-        />
+        <FeatureCards title={t("featuresTitle")} features={aiChatFeatures} columns={3} />
       </div>
-
     </div>
   );
 }

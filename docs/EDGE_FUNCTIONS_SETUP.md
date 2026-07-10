@@ -25,17 +25,20 @@ supabase login
 ### 3. Edge Function Deployment
 
 #### Windows (PowerShell):
+
 ```powershell
 .\deploy-edge-functions.ps1
 ```
 
 #### Linux/macOS (Bash):
+
 ```bash
 chmod +x deploy-edge-functions.sh
 ./deploy-edge-functions.sh
 ```
 
 #### Manual Deployment:
+
 ```bash
 supabase functions deploy delete-user-account
 ```
@@ -52,9 +55,11 @@ supabase functions deploy delete-user-account
 ## 🧪 Testing
 
 ### Frontend Testing:
+
 Click the **Delete My Account** button in the application.
 
 ### Manual Testing (cURL):
+
 ```bash
 curl -X POST 'https://YOUR_PROJECT_ID.supabase.co/functions/v1/delete-user-account' \
   -H 'Authorization: Bearer YOUR_USER_JWT_TOKEN' \
@@ -62,6 +67,7 @@ curl -X POST 'https://YOUR_PROJECT_ID.supabase.co/functions/v1/delete-user-accou
 ```
 
 ### PowerShell Testing:
+
 ```powershell
 Invoke-RestMethod -Uri 'https://YOUR_PROJECT_ID.supabase.co/functions/v1/delete-user-account' `
   -Method POST `
@@ -105,22 +111,26 @@ The Edge Function performs the following:
 ## 🐛 Troubleshooting
 
 ### Deployment Error:
+
 ```bash
 # Retry deployment
 supabase functions deploy delete-user-account --debug
 ```
 
 ### Environment Variable Error:
+
 - Ensure Service Role Key is correctly copied
 - Verify the variable is saved in Supabase Dashboard
 
 ### Permission Error:
+
 - Ensure JWT token is valid
 - Verify user is logged in
 
 ## 📖 API Reference
 
 ### Request:
+
 - **Method**: POST
 - **URL**: `https://YOUR_PROJECT_ID.supabase.co/functions/v1/delete-user-account`
 - **Headers**:
@@ -128,6 +138,7 @@ supabase functions deploy delete-user-account --debug
   - `apikey: SUPABASE_ANON_KEY`
 
 ### Response (Success):
+
 ```json
 {
   "success": true,
@@ -137,6 +148,7 @@ supabase functions deploy delete-user-account --debug
 ```
 
 ### Response (Error):
+
 ```json
 {
   "success": false,
@@ -151,4 +163,4 @@ supabase functions deploy delete-user-account --debug
 3. ✅ Test on frontend
 4. ✅ Validate in production
 
-The **Delete My Account** button is now fully functional! 🎉 
+The **Delete My Account** button is now fully functional! 🎉

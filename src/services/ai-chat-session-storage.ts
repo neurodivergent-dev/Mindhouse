@@ -25,17 +25,22 @@ export interface AIChatSession {
 export interface IAiChatSessionRepository {
   getSessions(userId?: string): Promise<AIChatSession[]>;
   getSession(sessionId: string): Promise<AIChatSession | null>;
-  saveSession(session: Omit<AIChatSession, "id" | "createdAt" | "updatedAt" | "messageCount">): Promise<AIChatSession>;
+  saveSession(
+    session: Omit<AIChatSession, "id" | "createdAt" | "updatedAt" | "messageCount">,
+  ): Promise<AIChatSession>;
   updateSession(sessionId: string, updates: Partial<AIChatSession>): Promise<boolean>;
   deleteSession(sessionId: string): Promise<boolean>;
-  addMessage(sessionId: string, message: Omit<AIChatMessage, "id" | "timestamp">): Promise<AIChatMessage>;
+  addMessage(
+    sessionId: string,
+    message: Omit<AIChatMessage, "id" | "timestamp">,
+  ): Promise<AIChatMessage>;
   searchSessions(userId: string, searchTerm: string): Promise<AIChatSession[]>;
 }
 
 // 2. Single Responsibility Principle & Liskov Substitution / OCP Implementation
 export class IndexedDbAiChatSessionRepository implements IAiChatSessionRepository {
   private readonly STORAGE_KEY = "mindhouse_ai_chat_sessions";
-  
+
   private async getAllRawSessions(): Promise<AIChatSession[]> {
     try {
       const sessions = await localforage.getItem<AIChatSession[]>(this.STORAGE_KEY);
@@ -68,17 +73,19 @@ export class IndexedDbAiChatSessionRepository implements IAiChatSessionRepositor
   }
 
   async saveSession(
-    session: Omit<AIChatSession, "id" | "createdAt" | "updatedAt" | "messageCount">
+    session: Omit<AIChatSession, "id" | "createdAt" | "updatedAt" | "messageCount">,
   ): Promise<AIChatSession> {
     const sessions = await this.getAllRawSessions();
     const existingIndex = sessions.findIndex((s) => s.sessionId === session.sessionId);
-    
+
     const timestamp = new Date().toISOString();
     const existingSession = existingIndex >= 0 ? sessions[existingIndex] : null;
 
     const newSession: AIChatSession = {
       ...session,
-      id: existingSession?.id || `ai_chat_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      id:
+        existingSession?.id ||
+        `ai_chat_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       messageCount: session.messages?.length || 0,
       createdAt: existingSession?.createdAt || timestamp,
       updatedAt: timestamp,
@@ -131,7 +138,7 @@ export class IndexedDbAiChatSessionRepository implements IAiChatSessionRepositor
 
   async addMessage(
     sessionId: string,
-    message: Omit<AIChatMessage, "id" | "timestamp">
+    message: Omit<AIChatMessage, "id" | "timestamp">,
   ): Promise<AIChatMessage> {
     const sessions = await this.getAllRawSessions();
     const index = sessions.findIndex((s) => s.sessionId === sessionId);
@@ -173,10 +180,11 @@ export class IndexedDbAiChatSessionRepository implements IAiChatSessionRepositor
       (s) =>
         s.title?.toLowerCase().includes(term) ||
         s.subject.toLowerCase().includes(term) ||
-        s.messages.some((m) => m.content.toLowerCase().includes(term))
+        s.messages.some((m) => m.content.toLowerCase().includes(term)),
     );
   }
 }
 
 // Export a single instance to be used across the app
-export const aiChatSessionRepository: IAiChatSessionRepository = new IndexedDbAiChatSessionRepository();
+export const aiChatSessionRepository: IAiChatSessionRepository =
+  new IndexedDbAiChatSessionRepository();

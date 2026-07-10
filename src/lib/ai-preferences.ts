@@ -8,7 +8,9 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
   }
   try {
     const stored = localStorage.getItem("aiPreferences");
-    if (!stored) {return {};}
+    if (!stored) {
+      return {};
+    }
     const parsed = JSON.parse(stored);
     // Basic sanitization
     return {
@@ -28,7 +30,9 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
 }
 
 export function saveAiPreferences(prefs: Partial<AIPreferences>) {
-  if (typeof window === "undefined") {return;}
+  if (typeof window === "undefined") {
+    return;
+  }
   try {
     localStorage.setItem("aiPreferences", JSON.stringify(prefs));
   } catch {}

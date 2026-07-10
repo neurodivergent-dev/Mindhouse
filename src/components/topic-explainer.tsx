@@ -24,7 +24,6 @@ import {
   Save,
   Trash2,
   Volume,
-
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
@@ -61,7 +60,7 @@ type TopicData = {
   difficulty: "easy" | "medium" | "hard";
   prerequisites: string[];
   learningObjectives: string[];
-}
+};
 
 interface TopicExplainerProps {
   topic: string;
@@ -97,8 +96,12 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   };
 
   const getDifficultyLabel = (difficulty: string) => {
-    if (difficulty === "easy") {return t("difficultyEasy");}
-    if (difficulty === "medium") {return t("difficultyMedium");}
+    if (difficulty === "easy") {
+      return t("difficultyEasy");
+    }
+    if (difficulty === "medium") {
+      return t("difficultyMedium");
+    }
     return t("difficultyHard");
   };
 
@@ -107,9 +110,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [showVisuals, setShowVisuals] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [completedSteps, setCompletedSteps] = useState<Set<string>>(() => new Set());
   const [userNotes, setUserNotes] = useState<string>("");
   const [notesKey, setNotesKey] = useState<string>("");
   const [showTips, setShowTips] = useState(true);
@@ -170,11 +171,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
         topic: topicName,
         subject: subjectName,
         step: config.id as
-          | "introduction"
-          | "core_learning"
-          | "reinforcement"
-          | "application"
-          | "assessment",
+          "introduction" | "core_learning" | "reinforcement" | "application" | "assessment",
         difficulty: config.difficulty,
         estimatedTime: config.estimatedTime,
         preferences: prefsForStep,
@@ -202,9 +199,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
       const topic = topicName;
 
       const content = isAssessment
-        ? (locale === "en"
-            ? `## Self-Assessment for ${topic}\n\nTest yourself:\n\n1. Key definitions and formulas in ${topic}?\n2. Solve a basic problem with ${topic}.\n3. Common mistakes with ${topic}?\n4. Real-world use of ${topic}?\n5. Explain ${topic} as if teaching someone.\n\n**Mastery tip:** Review earlier steps first.`
-            : `## ${topic} İçin Ustalık Kontrolü\n\nKendini test et:\n\n1. ${topic} tanımlar ve formüller?\n2. Basit bir ${topic} problemi çöz.\n3. ${topic} ile ilgili yaygın hatalar?\n4. ${topic} günlük hayatta nerede kullanılır?\n5. ${topic} konusunu birine anlat.\n\n**İpucu:** Önceki adımları gözden geçir.`)
+        ? locale === "en"
+          ? `## Self-Assessment for ${topic}\n\nTest yourself:\n\n1. Key definitions and formulas in ${topic}?\n2. Solve a basic problem with ${topic}.\n3. Common mistakes with ${topic}?\n4. Real-world use of ${topic}?\n5. Explain ${topic} as if teaching someone.\n\n**Mastery tip:** Review earlier steps first.`
+          : `## ${topic} İçin Ustalık Kontrolü\n\nKendini test et:\n\n1. ${topic} tanımlar ve formüller?\n2. Basit bir ${topic} problemi çöz.\n3. ${topic} ile ilgili yaygın hatalar?\n4. ${topic} günlük hayatta nerede kullanılır?\n5. ${topic} konusunu birine anlat.\n\n**İpucu:** Önceki adımları gözden geçir.`
         : t("fallbackStepContent", { topic: topicName, step: stepLabel });
 
       return {
@@ -216,11 +213,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
           t("fallbackExample2", { topic: topicName }),
           t("fallbackExample3", { topic: topicName }),
         ],
-        tips: [
-          t("fallbackTip1", { topic: topicName }),
-          t("fallbackTip2"),
-          t("fallbackTip3"),
-        ],
+        tips: [t("fallbackTip1", { topic: topicName }), t("fallbackTip2"), t("fallbackTip3")],
         difficulty: config.difficulty,
         estimatedTime: config.estimatedTime,
         visualDescription: `${topicName} - ${stepLabel} için detaylı görsel`,
@@ -229,19 +222,30 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     }
   };
 
-  const isStepGenerated = (step: any) => step?.content && step.content.trim().length > 30 && !step.content.includes("fallbackStepContent");
+  const isStepGenerated = (step: any) =>
+    step?.content &&
+    step.content.trim().length > 30 &&
+    !step.content.includes("fallbackStepContent");
 
   const ensureStepIsGenerated = async (stepIndex: number, force = false) => {
     const latestTopicData = topicDataRef.current || topicData;
-    if (!latestTopicData) {return;}
+    if (!latestTopicData) {
+      return;
+    }
 
     const currentSteps = latestTopicData.steps;
     const targetStep = currentSteps[stepIndex];
-    if (!targetStep) {return;}
-    if (!force && isStepGenerated(targetStep)) {return;}
+    if (!targetStep) {
+      return;
+    }
+    if (!force && isStepGenerated(targetStep)) {
+      return;
+    }
 
     const config = stepConfigs.find((c) => c.id === targetStep.id);
-    if (!config) {return;}
+    if (!config) {
+      return;
+    }
 
     setGeneratingStepId(targetStep.id);
     setAiGenerating(true);
@@ -254,7 +258,12 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
         .map((s: any) => `### ${s.title}\n${s.content.substring(0, 700)}`)
         .join("\n\n---\n\n");
 
-      const generatedStep = await generateSingleStep(topic, subject, config, previousContext.length > 100 ? previousContext : undefined);
+      const generatedStep = await generateSingleStep(
+        topic,
+        subject,
+        config,
+        previousContext.length > 100 ? previousContext : undefined,
+      );
       const updatedSteps = [...currentSteps];
       updatedSteps[stepIndex] = generatedStep;
 
@@ -319,14 +328,15 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   : "exam_training_quiz_results";
                 const quizResultsStr = localStorage.getItem(quizResultsKey);
                 const results = quizResultsStr ? JSON.parse(quizResultsStr) : [];
-                
-                const existingRecentActivity = results.find((r: any) => 
-                  r.type === "TopicExplainer" && 
-                  r.subject === subject && 
-                  r.topic === topic &&
-                  (new Date().getTime() - new Date(r.createdAt).getTime()) < 4 * 60 * 60 * 1000
+
+                const existingRecentActivity = results.find(
+                  (r: any) =>
+                    r.type === "TopicExplainer" &&
+                    r.subject === subject &&
+                    r.topic === topic &&
+                    new Date().getTime() - new Date(r.createdAt).getTime() < 4 * 60 * 60 * 1000,
                 );
-                
+
                 if (!existingRecentActivity) {
                   results.push({
                     id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -338,7 +348,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                     totalQuestions: 1,
                     timeSpent: parsedData.totalTime || 300,
                     weakTopics: [],
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
                   });
                   localStorage.setItem(quizResultsKey, JSON.stringify(results));
                 }
@@ -365,7 +375,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
         // Create shell for all 5 steps, only first one populated
         const stepShells = stepConfigs.map((cfg, idx) => {
-          if (idx === 0) {return firstStep;}
+          if (idx === 0) {
+            return firstStep;
+          }
           return {
             id: cfg.id,
             title: getStepLabel(cfg.id),
@@ -385,10 +397,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
           steps: stepShells,
           totalTime: stepShells.reduce((sum, s) => sum + s.estimatedTime, 0),
           difficulty: "medium" as const,
-          prerequisites: [
-            t("prerequisiteBasics", { subject }),
-            t("prerequisiteActiveLearning"),
-          ],
+          prerequisites: [t("prerequisiteBasics", { subject }), t("prerequisiteActiveLearning")],
           learningObjectives: [
             t("objectiveUnderstand", { topic }),
             t("objectiveApply", { topic }),
@@ -416,14 +425,15 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             : "exam_training_quiz_results";
           const quizResultsStr = localStorage.getItem(quizResultsKey);
           const results = quizResultsStr ? JSON.parse(quizResultsStr) : [];
-          
-          const existingRecentActivity = results.find((r: any) => 
-            r.type === "TopicExplainer" && 
-            r.subject === subject && 
-            r.topic === topic &&
-            (new Date().getTime() - new Date(r.createdAt).getTime()) < 4 * 60 * 60 * 1000
+
+          const existingRecentActivity = results.find(
+            (r: any) =>
+              r.type === "TopicExplainer" &&
+              r.subject === subject &&
+              r.topic === topic &&
+              new Date().getTime() - new Date(r.createdAt).getTime() < 4 * 60 * 60 * 1000,
           );
-          
+
           if (!existingRecentActivity) {
             results.push({
               id: `explainer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -435,7 +445,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               totalQuestions: 1, // Dummy value
               timeSpent: initialData.totalTime || 300,
               weakTopics: [],
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             });
             localStorage.setItem(quizResultsKey, JSON.stringify(results));
           }
@@ -515,7 +525,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
   }, [currentStep, topicData]);
 
   const goToStep = async (index: number) => {
-    if (index < 0 || index >= steps.length) {return;}
+    if (index < 0 || index >= steps.length) {
+      return;
+    }
 
     // Switch to the target step *first* so the UI updates immediately.
     // This shows the loading state in the content area for ungenerated steps
@@ -571,18 +583,15 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
   // Save current topic content
   const handleSaveTopic = async () => {
-    if (!topicData) {return;}
+    if (!topicData) {
+      return;
+    }
 
     try {
       setIsSaving(true);
 
       const content = JSON.stringify(topicData);
-      TopicExplainerLocalStorageService.saveTopic(
-        topic,
-        subject,
-        content,
-        topicData.steps,
-      );
+      TopicExplainerLocalStorageService.saveTopic(topic, subject, content, topicData.steps);
 
       toast({
         title: t("success"),
@@ -601,7 +610,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
   // Delete saved topic
   const handleDeleteTopic = async () => {
-    if (!savedTopicId) {return;}
+    if (!savedTopicId) {
+      return;
+    }
 
     try {
       setIsDeleting(true);
@@ -680,9 +691,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
             {t("stepNotFound")}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {t("stepNotFoundDesc")}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{t("stepNotFoundDesc")}</p>
           <Button
             onClick={() => setCurrentStep(0)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
@@ -793,11 +802,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
             >
-              {isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               <span className="hidden sm:inline">{isPlaying ? t("pause") : t("autoPlay")}</span>
             </Button>
 
@@ -808,11 +813,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
               title={isMuted ? t("unmute") : t("mute")}
             >
-              {isMuted ? (
-                <VolumeX className="w-4 h-4" />
-              ) : (
-                <Volume2 className="w-4 h-4" />
-              )}
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
 
             <Button
@@ -822,11 +823,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
               className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
               title={showVisuals ? t("hideVisuals") : t("showVisuals")}
             >
-              {showVisuals ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showVisuals ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               <span className="hidden sm:inline">{t("visuals")}</span>
             </Button>
 
@@ -866,7 +863,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                           <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">
                             {currentStepData.title}
                             {generatingStepId === currentStepData.id && (
-                              <span className="ml-2 text-sm font-normal text-blue-100">(generating...)</span>
+                              <span className="ml-2 text-sm font-normal text-blue-100">
+                                (generating...)
+                              </span>
                             )}
                           </CardTitle>
                           <Button
@@ -901,7 +900,9 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Per-step lazy loading state */}
-                    {(generatingStepId === currentStepData.id || !isStepGenerated(currentStepData)) && !currentStepData.content ? (
+                    {(generatingStepId === currentStepData.id ||
+                      !isStepGenerated(currentStepData)) &&
+                    !currentStepData.content ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
                         <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
@@ -922,336 +923,334 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                       </div>
                     ) : (
                       <>
-                    {/* Voice Player */}
-                    <div className="mb-6">
-                      <VoicePlayer
-                        text={currentStepData.content}
-                        autoPlay={false}
-                        speed={1}
-                        language={voiceLanguage}
-                        showControls={true}
-                        className="mb-4"
-                        onPlay={() => {
-                          toast({
-                            title: t("voiceStarted"),
-                            description: t("voiceStartedDesc", {
-                              title: currentStepData.title,
-                            }),
-                          });
-                        }}
-                        onEnd={() => {
-                          toast({
-                            title: t("voiceCompleted"),
-                            description: t("voiceCompletedDesc"),
-                          });
-                        }}
-                      />
-                    </div>
+                        {/* Voice Player */}
+                        <div className="mb-6">
+                          <VoicePlayer
+                            text={currentStepData.content}
+                            autoPlay={false}
+                            speed={1}
+                            language={voiceLanguage}
+                            showControls={true}
+                            className="mb-4"
+                            onPlay={() => {
+                              toast({
+                                title: t("voiceStarted"),
+                                description: t("voiceStartedDesc", {
+                                  title: currentStepData.title,
+                                }),
+                              });
+                            }}
+                            onEnd={() => {
+                              toast({
+                                title: t("voiceCompleted"),
+                                description: t("voiceCompletedDesc"),
+                              });
+                            }}
+                          />
+                        </div>
 
-                    {/* Main Content */}
-                    <div className="prose dark:prose-invert max-w-none">
-                      <div className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          rehypePlugins={[rehypeHighlight]}
-                          components={{
-                            h1: ({ children }) => (
-                              <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-                                {children}
-                              </h1>
-                            ),
-                            h2: ({ children }) => (
-                              <h2 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">
-                                {children}
-                              </h2>
-                            ),
-                            h3: ({ children }) => (
-                              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
-                                {children}
-                              </h3>
-                            ),
-                            p: ({ children }) => (
-                              <p className="mb-4 text-gray-700 dark:text-gray-300">
-                                {children}
-                              </p>
-                            ),
-                            ul: ({ children }) => (
-                              <ul className="list-disc list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
-                                {children}
-                              </ul>
-                            ),
-                            ol: ({ children }) => (
-                              <ol className="list-decimal list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
-                                {children}
-                              </ol>
-                            ),
-                            li: ({ children }) => (
-                              <li className="text-gray-700 dark:text-gray-300">
-                                {children}
-                              </li>
-                            ),
-                            code: ({ children, className }) => {
-                              const isInline = !className;
-                              if (isInline) {
-                                return (
-                                  <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                        {/* Main Content */}
+                        <div className="prose dark:prose-invert max-w-none">
+                          <div className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeHighlight]}
+                              components={{
+                                h1: ({ children }) => (
+                                  <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
                                     {children}
-                                  </code>
-                                );
-                              }
-                              return (
-                                <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4">
-                                  <code className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                  </h1>
+                                ),
+                                h2: ({ children }) => (
+                                  <h2 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">
                                     {children}
-                                  </code>
-                                </pre>
-                              );
-                            },
-                            blockquote: ({ children }) => (
-                              <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 mb-4">
-                                {children}
-                              </blockquote>
-                            ),
-                            strong: ({ children }) => (
-                              <strong className="font-semibold text-gray-800 dark:text-white">
-                                {children}
-                              </strong>
-                            ),
-                            em: ({ children }) => (
-                              <em className="italic text-gray-600 dark:text-gray-400">
-                                {children}
-                              </em>
-                            ),
-                          }}
-                        >
-                          {currentStepData.content}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
+                                  </h2>
+                                ),
+                                h3: ({ children }) => (
+                                  <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
+                                    {children}
+                                  </h3>
+                                ),
+                                p: ({ children }) => (
+                                  <p className="mb-4 text-gray-700 dark:text-gray-300">
+                                    {children}
+                                  </p>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
+                                    {children}
+                                  </ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
+                                    {children}
+                                  </ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-gray-700 dark:text-gray-300">{children}</li>
+                                ),
+                                code: ({ children, className }) => {
+                                  const isInline = !className;
+                                  if (isInline) {
+                                    return (
+                                      <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                                        {children}
+                                      </code>
+                                    );
+                                  }
+                                  return (
+                                    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4">
+                                      <code className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                        {children}
+                                      </code>
+                                    </pre>
+                                  );
+                                },
+                                blockquote: ({ children }) => (
+                                  <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 mb-4">
+                                    {children}
+                                  </blockquote>
+                                ),
+                                strong: ({ children }) => (
+                                  <strong className="font-semibold text-gray-800 dark:text-white">
+                                    {children}
+                                  </strong>
+                                ),
+                                em: ({ children }) => (
+                                  <em className="italic text-gray-600 dark:text-gray-400">
+                                    {children}
+                                  </em>
+                                ),
+                              }}
+                            >
+                              {currentStepData.content}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
 
-                    {/* AI Image Generator */}
-                    {showVisuals && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="space-y-4"
-                      >
-                        {/* Hugging Face AI Image Generator */}
-                        <HuggingFaceImageGenerator
-                          description={
-                            currentStepData.visualDescription ||
-                            t("aiVisualFallback", { topic })
-                          }
-                          topic={topic}
-                          subject={subject}
-                          onImageGenerated={() => {
-                            // do nothing
-                          }}
-                        />
-                      </motion.div>
-                    )}
-
-                    {/* Examples */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-                        <Target className="w-5 h-5 text-green-600" />
-                        {t("examples")}
-                      </h3>
-                      <div className="grid gap-3">
-                        {currentStepData.examples.map((example, index) => (
+                        {/* AI Image Generator */}
+                        {showVisuals && (
                           <motion.div
-                            key={index}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="space-y-4"
+                          >
+                            {/* Hugging Face AI Image Generator */}
+                            <HuggingFaceImageGenerator
+                              description={
+                                currentStepData.visualDescription ||
+                                t("aiVisualFallback", { topic })
+                              }
+                              topic={topic}
+                              subject={subject}
+                              onImageGenerated={() => {
+                                // do nothing
+                              }}
+                            />
+                          </motion.div>
+                        )}
+
+                        {/* Examples */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                            <Target className="w-5 h-5 text-green-600" />
+                            {t("examples")}
+                          </h3>
+                          <div className="grid gap-3">
+                            {currentStepData.examples.map((example, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="w-6 h-6 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                                      {index + 1}
+                                    </span>
+                                  </div>
+                                  <div className="flex-1">
+                                    <ReactMarkdown
+                                      remarkPlugins={[remarkGfm]}
+                                      rehypePlugins={[rehypeHighlight]}
+                                      components={{
+                                        h1: ({ children }) => (
+                                          <h1 className="text-lg font-bold mb-2 text-gray-800 dark:text-white">
+                                            {children}
+                                          </h1>
+                                        ),
+                                        h2: ({ children }) => (
+                                          <h2 className="text-base font-semibold mb-2 text-gray-800 dark:text-white">
+                                            {children}
+                                          </h2>
+                                        ),
+                                        h3: ({ children }) => (
+                                          <h3 className="text-sm font-semibold mb-1 text-gray-800 dark:text-white">
+                                            {children}
+                                          </h3>
+                                        ),
+                                        p: ({ children }) => (
+                                          <p className="mb-2 text-gray-700 dark:text-gray-300">
+                                            {children}
+                                          </p>
+                                        ),
+                                        ul: ({ children }) => (
+                                          <ul className="list-disc list-inside mb-2 space-y-1 text-gray-700 dark:text-gray-300">
+                                            {children}
+                                          </ul>
+                                        ),
+                                        ol: ({ children }) => (
+                                          <ol className="list-decimal list-inside mb-2 space-y-1 text-gray-700 dark:text-gray-300">
+                                            {children}
+                                          </ol>
+                                        ),
+                                        li: ({ children }) => (
+                                          <li className="text-gray-700 dark:text-gray-300">
+                                            {children}
+                                          </li>
+                                        ),
+                                        code: ({ children, className }) => {
+                                          const isInline = !className;
+                                          if (isInline) {
+                                            return (
+                                              <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                {children}
+                                              </code>
+                                            );
+                                          }
+                                          return (
+                                            <pre className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg overflow-x-auto mb-2">
+                                              <code className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                {children}
+                                              </code>
+                                            </pre>
+                                          );
+                                        },
+                                        blockquote: ({ children }) => (
+                                          <blockquote className="border-l-4 border-green-500 pl-3 italic text-gray-600 dark:text-gray-400 mb-2">
+                                            {children}
+                                          </blockquote>
+                                        ),
+                                        strong: ({ children }) => (
+                                          <strong className="font-semibold text-gray-800 dark:text-white">
+                                            {children}
+                                          </strong>
+                                        ),
+                                        em: ({ children }) => (
+                                          <em className="italic text-gray-600 dark:text-gray-400">
+                                            {children}
+                                          </em>
+                                        ),
+                                      }}
+                                    >
+                                      {example}
+                                    </ReactMarkdown>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tips */}
+                        {showTips && (
+                          <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700"
+                            className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-lg p-6 border border-yellow-200 dark:border-yellow-700"
                           >
-                            <div className="flex items-start gap-3">
-                              <div className="w-6 h-6 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                                  {index + 1}
-                                </span>
-                              </div>
-                              <div className="flex-1">
-                                <ReactMarkdown
-                                  remarkPlugins={[remarkGfm]}
-                                  rehypePlugins={[rehypeHighlight]}
-                                  components={{
-                                    h1: ({ children }) => (
-                                      <h1 className="text-lg font-bold mb-2 text-gray-800 dark:text-white">
-                                        {children}
-                                      </h1>
-                                    ),
-                                    h2: ({ children }) => (
-                                      <h2 className="text-base font-semibold mb-2 text-gray-800 dark:text-white">
-                                        {children}
-                                      </h2>
-                                    ),
-                                    h3: ({ children }) => (
-                                      <h3 className="text-sm font-semibold mb-1 text-gray-800 dark:text-white">
-                                        {children}
-                                      </h3>
-                                    ),
-                                    p: ({ children }) => (
-                                      <p className="mb-2 text-gray-700 dark:text-gray-300">
-                                        {children}
-                                      </p>
-                                    ),
-                                    ul: ({ children }) => (
-                                      <ul className="list-disc list-inside mb-2 space-y-1 text-gray-700 dark:text-gray-300">
-                                        {children}
-                                      </ul>
-                                    ),
-                                    ol: ({ children }) => (
-                                      <ol className="list-decimal list-inside mb-2 space-y-1 text-gray-700 dark:text-gray-300">
-                                        {children}
-                                      </ol>
-                                    ),
-                                    li: ({ children }) => (
-                                      <li className="text-gray-700 dark:text-gray-300">
-                                        {children}
-                                      </li>
-                                    ),
-                                    code: ({ children, className }) => {
-                                      const isInline = !className;
-                                      if (isInline) {
-                                        return (
-                                          <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                            <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 flex items-center gap-2 mb-4">
+                              <Lightbulb className="w-5 h-5" />
+                              {t("aiLearningTips")}
+                            </h3>
+                            <div className="space-y-3">
+                              {currentStepData.tips.map((tip, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                  <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <div className="flex-1">
+                                    <ReactMarkdown
+                                      remarkPlugins={[remarkGfm]}
+                                      rehypePlugins={[rehypeHighlight]}
+                                      components={{
+                                        h1: ({ children }) => (
+                                          <h1 className="text-base font-bold mb-1 text-yellow-800 dark:text-yellow-300">
                                             {children}
-                                          </code>
-                                        );
-                                      }
-                                      return (
-                                        <pre className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg overflow-x-auto mb-2">
-                                          <code className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                          </h1>
+                                        ),
+                                        h2: ({ children }) => (
+                                          <h2 className="text-sm font-semibold mb-1 text-yellow-800 dark:text-yellow-300">
                                             {children}
-                                          </code>
-                                        </pre>
-                                      );
-                                    },
-                                    blockquote: ({ children }) => (
-                                      <blockquote className="border-l-4 border-green-500 pl-3 italic text-gray-600 dark:text-gray-400 mb-2">
-                                        {children}
-                                      </blockquote>
-                                    ),
-                                    strong: ({ children }) => (
-                                      <strong className="font-semibold text-gray-800 dark:text-white">
-                                        {children}
-                                      </strong>
-                                    ),
-                                    em: ({ children }) => (
-                                      <em className="italic text-gray-600 dark:text-gray-400">
-                                        {children}
-                                      </em>
-                                    ),
-                                  }}
-                                >
-                                  {example}
-                                </ReactMarkdown>
-                              </div>
+                                          </h2>
+                                        ),
+                                        h3: ({ children }) => (
+                                          <h3 className="text-xs font-semibold mb-1 text-yellow-800 dark:text-yellow-300">
+                                            {children}
+                                          </h3>
+                                        ),
+                                        p: ({ children }) => (
+                                          <p className="mb-1 text-yellow-700 dark:text-yellow-300">
+                                            {children}
+                                          </p>
+                                        ),
+                                        ul: ({ children }) => (
+                                          <ul className="list-disc list-inside mb-1 space-y-1 text-yellow-700 dark:text-yellow-300">
+                                            {children}
+                                          </ul>
+                                        ),
+                                        ol: ({ children }) => (
+                                          <ol className="list-decimal list-inside mb-1 space-y-1 text-yellow-700 dark:text-yellow-300">
+                                            {children}
+                                          </ol>
+                                        ),
+                                        li: ({ children }) => (
+                                          <li className="text-yellow-700 dark:text-yellow-300">
+                                            {children}
+                                          </li>
+                                        ),
+                                        code: ({ children, className }) => {
+                                          const isInline = !className;
+                                          if (isInline) {
+                                            return (
+                                              <code className="bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded text-sm font-mono text-yellow-800 dark:text-yellow-300">
+                                                {children}
+                                              </code>
+                                            );
+                                          }
+                                          return (
+                                            <pre className="bg-yellow-100 dark:bg-yellow-900 p-2 rounded-lg overflow-x-auto mb-1">
+                                              <code className="text-sm font-mono text-yellow-800 dark:text-yellow-300">
+                                                {children}
+                                              </code>
+                                            </pre>
+                                          );
+                                        },
+                                        blockquote: ({ children }) => (
+                                          <blockquote className="border-l-4 border-yellow-500 pl-2 italic text-yellow-600 dark:text-yellow-400 mb-1">
+                                            {children}
+                                          </blockquote>
+                                        ),
+                                        strong: ({ children }) => (
+                                          <strong className="font-semibold text-yellow-800 dark:text-yellow-300">
+                                            {children}
+                                          </strong>
+                                        ),
+                                        em: ({ children }) => (
+                                          <em className="italic text-yellow-600 dark:text-yellow-400">
+                                            {children}
+                                          </em>
+                                        ),
+                                      }}
+                                    >
+                                      {tip}
+                                    </ReactMarkdown>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Tips */}
-                    {showTips && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-lg p-6 border border-yellow-200 dark:border-yellow-700"
-                      >
-                        <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300 flex items-center gap-2 mb-4">
-                          <Lightbulb className="w-5 h-5" />
-                          {t("aiLearningTips")}
-                        </h3>
-                        <div className="space-y-3">
-                          {currentStepData.tips.map((tip, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-                              <div className="flex-1">
-                                <ReactMarkdown
-                                  remarkPlugins={[remarkGfm]}
-                                  rehypePlugins={[rehypeHighlight]}
-                                  components={{
-                                    h1: ({ children }) => (
-                                      <h1 className="text-base font-bold mb-1 text-yellow-800 dark:text-yellow-300">
-                                        {children}
-                                      </h1>
-                                    ),
-                                    h2: ({ children }) => (
-                                      <h2 className="text-sm font-semibold mb-1 text-yellow-800 dark:text-yellow-300">
-                                        {children}
-                                      </h2>
-                                    ),
-                                    h3: ({ children }) => (
-                                      <h3 className="text-xs font-semibold mb-1 text-yellow-800 dark:text-yellow-300">
-                                        {children}
-                                      </h3>
-                                    ),
-                                    p: ({ children }) => (
-                                      <p className="mb-1 text-yellow-700 dark:text-yellow-300">
-                                        {children}
-                                      </p>
-                                    ),
-                                    ul: ({ children }) => (
-                                      <ul className="list-disc list-inside mb-1 space-y-1 text-yellow-700 dark:text-yellow-300">
-                                        {children}
-                                      </ul>
-                                    ),
-                                    ol: ({ children }) => (
-                                      <ol className="list-decimal list-inside mb-1 space-y-1 text-yellow-700 dark:text-yellow-300">
-                                        {children}
-                                      </ol>
-                                    ),
-                                    li: ({ children }) => (
-                                      <li className="text-yellow-700 dark:text-yellow-300">
-                                        {children}
-                                      </li>
-                                    ),
-                                    code: ({ children, className }) => {
-                                      const isInline = !className;
-                                      if (isInline) {
-                                        return (
-                                          <code className="bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded text-sm font-mono text-yellow-800 dark:text-yellow-300">
-                                            {children}
-                                          </code>
-                                        );
-                                      }
-                                      return (
-                                        <pre className="bg-yellow-100 dark:bg-yellow-900 p-2 rounded-lg overflow-x-auto mb-1">
-                                          <code className="text-sm font-mono text-yellow-800 dark:text-yellow-300">
-                                            {children}
-                                          </code>
-                                        </pre>
-                                      );
-                                    },
-                                    blockquote: ({ children }) => (
-                                      <blockquote className="border-l-4 border-yellow-500 pl-2 italic text-yellow-600 dark:text-yellow-400 mb-1">
-                                        {children}
-                                      </blockquote>
-                                    ),
-                                    strong: ({ children }) => (
-                                      <strong className="font-semibold text-yellow-800 dark:text-yellow-300">
-                                        {children}
-                                      </strong>
-                                    ),
-                                    em: ({ children }) => (
-                                      <em className="italic text-yellow-600 dark:text-yellow-400">
-                                        {children}
-                                      </em>
-                                    ),
-                                  }}
-                                >
-                                  {tip}
-                                </ReactMarkdown>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
+                        )}
                       </>
                     )}
                   </CardContent>
@@ -1360,9 +1359,7 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                         <div className="flex-1">
                           <h4
                             className={`font-medium ${
-                              index === currentStep
-                                ? "text-white"
-                                : "text-gray-800 dark:text-white"
+                              index === currentStep ? "text-white" : "text-gray-800 dark:text-white"
                             }`}
                           >
                             {step.title}

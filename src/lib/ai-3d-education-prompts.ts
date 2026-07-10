@@ -120,10 +120,7 @@ Subject: ${subject}, Complexity: ${complexity}. Create a scientifically accurate
 🔥 FINAL WARNING: WRITE ONLY JSON! 🔥`,
 } as const satisfies Record<string, (params: GeminiPromptParams) => string>;
 
-export function get3DEducationGeminiPrompt(
-  locale: string,
-  params: GeminiPromptParams,
-): string {
+export function get3DEducationGeminiPrompt(locale: string, params: GeminiPromptParams): string {
   if (locale === "tr") {
     return PROMPTS.tr(params);
   }

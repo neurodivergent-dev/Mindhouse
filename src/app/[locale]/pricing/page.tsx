@@ -3,7 +3,14 @@
 import React, { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -91,19 +98,18 @@ export default function PricingPage() {
               {t("title")}
             </span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            {t("subtitle")}
-          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">{t("subtitle")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {pricingPlans.map((plan) => (
             <Card
               key={plan.id}
-              className={`border-gradient-question relative flex flex-col h-full ${plan.popular
+              className={`border-gradient-question relative flex flex-col h-full ${
+                plan.popular
                   ? "ring-2 ring-purple-500 shadow-lg scale-105"
                   : "hover:shadow-lg transition-shadow"
-                }`}
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -123,14 +129,8 @@ export default function PricingPage() {
               <CardContent className="space-y-6 flex-grow">
                 <div className="text-center">
                   <div className="flex items-baseline justify-center">
-                    <span className="text-4xl font-bold">
-                      ${plan.price}
-                    </span>
-                    {plan.period && (
-                      <span className="text-gray-500 ml-2">
-                        /{t(plan.period)}
-                      </span>
-                    )}
+                    <span className="text-4xl font-bold">${plan.price}</span>
+                    {plan.period && <span className="text-gray-500 ml-2">/{t(plan.period)}</span>}
                   </div>
                 </div>
 
@@ -142,9 +142,7 @@ export default function PricingPage() {
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-center space-x-2">
                         <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {feature}
-                        </span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -167,15 +165,15 @@ export default function PricingPage() {
                     </ul>
                   </div>
                 )}
-
               </CardContent>
               <CardFooter>
                 <Button
                   onClick={() => handlePlanSelect()}
-                  className={`w-full ${plan.popular
+                  className={`w-full ${
+                    plan.popular
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                       : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                    }`}
+                  }`}
                 >
                   {plan.price === "0" ? t("startFree") : t("selectPlan")}
                 </Button>
@@ -185,9 +183,7 @@ export default function PricingPage() {
         </div>
 
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            {t("comparisonTitle")}
-          </h2>
+          <h2 className="text-3xl font-bold text-center mb-8">{t("comparisonTitle")}</h2>
           <div className="apple-glass-card p-4 sm:p-6 rounded-3xl border-0 shadow-2xl overflow-hidden backdrop-blur-md">
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
@@ -201,9 +197,7 @@ export default function PricingPage() {
                       {t("freePlan")}
                     </th>
                     <th className="text-center py-6 px-8 font-bold text-sm text-indigo-600 dark:text-indigo-400 tracking-tight bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05] rounded-t-2xl">
-                      <span className="flex flex-col items-center gap-1">
-                        {t("premiumPlan")}
-                      </span>
+                      <span className="flex flex-col items-center gap-1">{t("premiumPlan")}</span>
                     </th>
                     <th className="text-center py-6 px-8 font-bold text-sm text-purple-600 dark:text-purple-400 tracking-tight">
                       {t("enterprisePlan")}
@@ -212,13 +206,23 @@ export default function PricingPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100/50 dark:divide-white/[0.03]">
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareAiQuestions")}</td>
-                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">{t("compareAiQuestionsFree")}</td>
-                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05]">{t("compareUnlimited")}</td>
-                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">{t("compareUnlimited")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareAiQuestions")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">
+                      {t("compareAiQuestionsFree")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05]">
+                      {t("compareUnlimited")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">
+                      {t("compareUnlimited")}
+                    </td>
                   </tr>
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareVoiceAssistant")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareVoiceAssistant")}
+                    </td>
                     <td className="text-center py-6 px-8">
                       <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto border border-slate-200/10">
                         <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -236,13 +240,23 @@ export default function PricingPage() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareAnalytics")}</td>
-                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">{t("compareAnalyticsBasic")}</td>
-                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05]">{t("compareAnalyticsAdvanced")}</td>
-                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">{t("compareAnalyticsCustom")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareAnalytics")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">
+                      {t("compareAnalyticsBasic")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05]">
+                      {t("compareAnalyticsAdvanced")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">
+                      {t("compareAnalyticsCustom")}
+                    </td>
                   </tr>
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareLessonPlans")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareLessonPlans")}
+                    </td>
                     <td className="text-center py-6 px-8">
                       <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto border border-slate-200/10">
                         <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -260,7 +274,9 @@ export default function PricingPage() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareApiAccess")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareApiAccess")}
+                    </td>
                     <td className="text-center py-6 px-8">
                       <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto border border-slate-200/10">
                         <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
@@ -278,10 +294,18 @@ export default function PricingPage() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50/40 dark:hover:bg-white/[0.01] transition-colors">
-                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">{t("compareSupport")}</td>
-                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">{t("compareSupportEmail")}</td>
-                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05] rounded-b-2xl">{t("compareSupportPriority")}</td>
-                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">{t("compareSupport247")}</td>
+                    <td className="py-6 px-8 font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-sm">
+                      {t("compareSupport")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-[#86868b] dark:text-[#a1a1a6] font-semibold text-xs">
+                      {t("compareSupportEmail")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm bg-indigo-500/[0.03] dark:bg-indigo-500/[0.05] rounded-b-2xl">
+                      {t("compareSupportPriority")}
+                    </td>
+                    <td className="text-center py-6 px-8 text-purple-600 dark:text-purple-400 font-bold text-sm">
+                      {t("compareSupport247")}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -296,16 +320,28 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{t("compareAiQuestionsFree")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      {t("compareAiQuestionsFree")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400">{t("compareUnlimited")}</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                      {t("compareUnlimited")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
-                    <span className="font-bold text-purple-600 dark:text-purple-400">{t("compareUnlimited")}</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400">
+                      {t("compareUnlimited")}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -317,15 +353,21 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
                     <X className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-1" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
                     <Check className="h-4.5 w-4.5 text-indigo-500 mt-0.5" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
                     <Check className="h-4.5 w-4.5 text-purple-500 mt-0.5" />
                   </div>
                 </div>
@@ -338,16 +380,28 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{t("compareAnalyticsBasic")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      {t("compareAnalyticsBasic")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-[11px] leading-tight">{t("compareAnalyticsAdvanced")}</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-[11px] leading-tight">
+                      {t("compareAnalyticsAdvanced")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
-                    <span className="font-bold text-purple-600 dark:text-purple-400 text-[11px] leading-tight">{t("compareAnalyticsCustom")}</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400 text-[11px] leading-tight">
+                      {t("compareAnalyticsCustom")}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -359,15 +413,21 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
                     <X className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-1" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
                     <Check className="h-4.5 w-4.5 text-indigo-500 mt-0.5" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
                     <Check className="h-4.5 w-4.5 text-purple-500 mt-0.5" />
                   </div>
                 </div>
@@ -380,15 +440,21 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
                     <X className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-1" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
                     <X className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-1" />
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
                     <Check className="h-4.5 w-4.5 text-purple-500 mt-0.5" />
                   </div>
                 </div>
@@ -401,16 +467,28 @@ export default function PricingPage() {
                 </h4>
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="flex flex-col items-center p-2 rounded-xl bg-slate-500/5 dark:bg-white/5">
-                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">{t("freePlan")}</span>
-                    <span className="font-medium text-slate-700 dark:text-slate-300 text-[10px] leading-tight">{t("compareSupportEmail")}</span>
+                    <span className="text-[#86868b] dark:text-[#a1a1a6] font-semibold mb-1 text-[10px]">
+                      {t("freePlan")}
+                    </span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300 text-[10px] leading-tight">
+                      {t("compareSupportEmail")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">Pro</span>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-[10px] leading-tight">{t("compareSupportPriority")}</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-extrabold mb-1 text-[10px]">
+                      Pro
+                    </span>
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-[10px] leading-tight">
+                      {t("compareSupportPriority")}
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">Enterprise</span>
-                    <span className="font-bold text-purple-600 dark:text-purple-400 text-[10px] leading-tight">{t("compareSupport247")}</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold mb-1 text-[10px]">
+                      Enterprise
+                    </span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400 text-[10px] leading-tight">
+                      {t("compareSupport247")}
+                    </span>
                   </div>
                 </div>
               </div>

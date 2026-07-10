@@ -3,11 +3,7 @@ export type Answer = {
   isCorrect: boolean;
 };
 
-export type QuestionType =
-  | "multiple-choice"
-  | "true-false"
-  | "calculation"
-  | "case-study";
+export type QuestionType = "multiple-choice" | "true-false" | "calculation" | "case-study";
 
 export type Question = {
   id: string;
@@ -41,9 +37,7 @@ export type QuestionResult = {
 };
 
 export type Subject =
-  | "Finansal Tablo Analizi"
-  | "Karar Destek Sistemleri"
-  | "Müşteri İlişkileri Yönetimi";
+  "Finansal Tablo Analizi" | "Karar Destek Sistemleri" | "Müşteri İlişkileri Yönetimi";
 
 // Match database schema exactly
 export type QuizResult = {

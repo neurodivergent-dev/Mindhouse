@@ -4,18 +4,12 @@ import { z } from "zod";
 
 const TopicExplainerInputSchema = z.object({
   topic: z.string().describe("The specific topic to explain."),
-  subject: z
-    .string()
-    .describe("The subject area (e.g., mathematics, physics, chemistry)."),
+  subject: z.string().describe("The subject area (e.g., mathematics, physics, chemistry)."),
   step: z
     .enum(["introduction", "core_learning", "reinforcement", "application", "assessment"])
     .describe("The learning step to generate content for."),
-  difficulty: z
-    .enum(["easy", "medium", "hard"])
-    .describe("The difficulty level of the content."),
-  estimatedTime: z
-    .number()
-    .describe("Estimated time in minutes for this step."),
+  difficulty: z.enum(["easy", "medium", "hard"]).describe("The difficulty level of the content."),
+  estimatedTime: z.number().describe("Estimated time in minutes for this step."),
   preferences: z.record(z.any()).optional(),
   language: z
     .enum(["tr", "en"])
@@ -25,7 +19,9 @@ const TopicExplainerInputSchema = z.object({
   previousStepsContext: z
     .string()
     .optional()
-    .describe("Summary or key points from previously generated steps for continuity (optional, use when available for better progressive content)"),
+    .describe(
+      "Summary or key points from previously generated steps for continuity (optional, use when available for better progressive content)",
+    ),
 });
 
 export type TopicExplainerInput = z.infer<typeof TopicExplainerInputSchema>;
@@ -35,12 +31,8 @@ const TopicExplainerOutputSchema = z.object({
   content: z.string().describe("The main educational content for this step."),
   examples: z.array(z.string()).describe("Relevant examples for this step."),
   tips: z.array(z.string()).describe("Learning tips for this step."),
-  visualDescription: z
-    .string()
-    .describe("Description for AI-generated visual aid."),
-  confidence: z
-    .number()
-    .describe("AI confidence in the generated content (0-1)."),
+  visualDescription: z.string().describe("Description for AI-generated visual aid."),
+  confidence: z.number().describe("AI confidence in the generated content (0-1)."),
 });
 
 export type TopicExplainerOutput = z.infer<typeof TopicExplainerOutputSchema>;
@@ -180,7 +172,7 @@ IMPORTANT CONTEXT:
 - Current Learning Phase: "${input.step}"
 - Target Difficulty: "${input.difficulty}"
 - Suggested Duration: ${input.estimatedTime} minutes
-${input.previousStepsContext ? `- Previous Steps Summary (use this for continuity and to build upon earlier explanations):\n${input.previousStepsContext}\n` : ''}
+${input.previousStepsContext ? `- Previous Steps Summary (use this for continuity and to build upon earlier explanations):\n${input.previousStepsContext}\n` : ""}
 
 CRITICAL INSTRUCTION: 
 This is a SPECIFIC topic called "${input.topic}" inside "${input.subject}". 
@@ -226,7 +218,7 @@ Generate the content now. ONLY output the JSON.`
 - Mevcut Öğrenme Aşaması: "${input.step}"
 - Hedef Zorluk: "${input.difficulty}"
 - Önerilen Süre: ${input.estimatedTime} dakika
-${input.previousStepsContext ? `- Önceki Adımların Özeti (bu bilgileri kullanarak daha tutarlı ve ilerletici içerik üret):\n${input.previousStepsContext}\n` : ''}
+${input.previousStepsContext ? `- Önceki Adımların Özeti (bu bilgileri kullanarak daha tutarlı ve ilerletici içerik üret):\n${input.previousStepsContext}\n` : ""}
 
 KRİTİK TALİMAT:
 Bu, "${input.subject}" içinde yer alan **özel bir konu** olan "${input.topic}"'dur.

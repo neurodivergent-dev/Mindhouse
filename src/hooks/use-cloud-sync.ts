@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { CloudSyncService } from '@/services/cloud-sync-service';
-import { useAuth } from './useAuth';
+import { useState, useEffect, useCallback } from "react";
+import { CloudSyncService } from "@/services/cloud-sync-service";
+import { useAuth } from "./useAuth";
 
 interface CloudSyncState {
   isLoading: boolean;
@@ -27,18 +27,18 @@ export function useCloudSync() {
 
   const checkSyncStatus = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       const status = await CloudSyncService.getSyncStatus();
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         syncStatus: status,
         error: null,
       }));
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: `Sync status kontrolü başarısız: ${error}`,
@@ -51,7 +51,7 @@ export function useCloudSync() {
     if (isAuthenticated) {
       checkSyncStatus();
     } else {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         syncStatus: null,
         error: null,
@@ -63,7 +63,7 @@ export function useCloudSync() {
   const checkSyncStatusSilently = useCallback(async () => {
     try {
       const status = await CloudSyncService.getSyncStatus();
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         syncStatus: status,
         error: null,
@@ -75,12 +75,12 @@ export function useCloudSync() {
 
   const syncLocalToCloud = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       const result = await CloudSyncService.syncLocalToCloud();
 
       if (result.success) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: null,
@@ -94,7 +94,7 @@ export function useCloudSync() {
 
         return result;
       } else {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: result.message,
@@ -104,7 +104,7 @@ export function useCloudSync() {
       }
     } catch (error) {
       const errorMessage = `Local to cloud sync hatası: ${error}`;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -119,12 +119,12 @@ export function useCloudSync() {
 
   const syncCloudToLocal = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       const result = await CloudSyncService.syncCloudToLocal();
 
       if (result.success) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: null,
@@ -138,7 +138,7 @@ export function useCloudSync() {
 
         return result;
       } else {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: result.message,
@@ -148,7 +148,7 @@ export function useCloudSync() {
       }
     } catch (error) {
       const errorMessage = `Cloud to local sync hatası: ${error}`;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -163,12 +163,12 @@ export function useCloudSync() {
 
   const fullSync = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       const result = await CloudSyncService.fullSync();
 
       if (result.success) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: null,
@@ -182,7 +182,7 @@ export function useCloudSync() {
 
         return result;
       } else {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: result.message,
@@ -192,7 +192,7 @@ export function useCloudSync() {
       }
     } catch (error) {
       const errorMessage = `Full sync hatası: ${error}`;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -207,11 +207,11 @@ export function useCloudSync() {
 
   const testConnection = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       const result = await CloudSyncService.testCloudConnection();
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: result.success ? null : result.message,
@@ -220,7 +220,7 @@ export function useCloudSync() {
       return result;
     } catch (error) {
       const errorMessage = `Bağlantı testi hatası: ${error}`;
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -234,7 +234,7 @@ export function useCloudSync() {
   };
 
   const clearError = () => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   };
 
   return {

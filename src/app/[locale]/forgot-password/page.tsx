@@ -12,7 +12,7 @@ import { resetPassword } from "@/lib/supabase";
 import { useTranslations } from "next-intl";
 
 const inputClassName =
-   "pl-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl text-sm font-medium";
+  "pl-10 h-11 bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl text-sm font-medium";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -41,8 +41,7 @@ export default function ForgotPasswordPage() {
     } catch (error) {
       toast({
         title: tCommon("error"),
-        description:
-          error instanceof Error ? error.message : t("resetEmailFailed"),
+        description: error instanceof Error ? error.message : t("resetEmailFailed"),
         variant: "destructive",
       });
     } finally {
@@ -50,7 +49,8 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  const pageShell = "min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center px-4 py-8";
+  const pageShell =
+    "min-h-screen bg-[#f5f5f7] dark:bg-transparent dark:!bg-none flex items-center justify-center px-4 py-8";
 
   if (isSuccess) {
     return (
@@ -134,7 +134,10 @@ export default function ForgotPasswordPage() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
                     {tCommon("email")}
                   </Label>
                   <div className="relative">

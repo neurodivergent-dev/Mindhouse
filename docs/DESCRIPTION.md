@@ -51,4 +51,4 @@ Platform; **Next.js 15.3.3**, **TypeScript Strict Mode**, **Supabase** ve **Tail
 
 <div align="center">
   <p><strong>Mindhouse</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
-</div> 
+</div>

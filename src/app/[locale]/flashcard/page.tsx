@@ -3,7 +3,22 @@
 import React, { useState, useEffect, Suspense, useCallback, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { ArrowLeft, BookOpen, Calculator, Atom, FlaskConical, Landmark, Dna, BookOpenCheck, Languages, Plus, RotateCcw, TrendingUp, Target, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Calculator,
+  Atom,
+  FlaskConical,
+  Landmark,
+  Dna,
+  BookOpenCheck,
+  Languages,
+  Plus,
+  RotateCcw,
+  TrendingUp,
+  Target,
+  BarChart3,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import FlashcardComponent from "@/components/flashcard";
@@ -64,13 +79,27 @@ const FlashcardPageContent = () => {
 
   // Icon mapping uses canonical keys (Matematik etc.) which getDemoSubjects preserves
   const getSubjectIcon = (name: string) => {
-    if (name === "Matematik") { return <Calculator className="w-6 h-6 text-white" />; }
-    if (name === "Fizik") { return <Atom className="w-6 h-6 text-white" />; }
-    if (name === "Kimya") { return <FlaskConical className="w-6 h-6 text-white" />; }
-    if (name === "Tarih") { return <Landmark className="w-6 h-6 text-white" />; }
-    if (name === "Biyoloji") { return <Dna className="w-6 h-6 text-white" />; }
-    if (name === "Türk Dili ve Edebiyatı") { return <BookOpenCheck className="w-6 h-6 text-white" />; }
-    if (name === "İngilizce") { return <Languages className="w-6 h-6 text-white" />; }
+    if (name === "Matematik") {
+      return <Calculator className="w-6 h-6 text-white" />;
+    }
+    if (name === "Fizik") {
+      return <Atom className="w-6 h-6 text-white" />;
+    }
+    if (name === "Kimya") {
+      return <FlaskConical className="w-6 h-6 text-white" />;
+    }
+    if (name === "Tarih") {
+      return <Landmark className="w-6 h-6 text-white" />;
+    }
+    if (name === "Biyoloji") {
+      return <Dna className="w-6 h-6 text-white" />;
+    }
+    if (name === "Türk Dili ve Edebiyatı") {
+      return <BookOpenCheck className="w-6 h-6 text-white" />;
+    }
+    if (name === "İngilizce") {
+      return <Languages className="w-6 h-6 text-white" />;
+    }
     return <BookOpen className="w-6 h-6 text-white" />;
   };
   const [selectedSubject, setSelectedSubject] = useState<string>("");
@@ -254,9 +283,7 @@ const FlashcardPageContent = () => {
             {authLoading ? t("authenticating") : t("loadingSubjects")}
           </p>
           {isAuthenticated && (
-            <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-              {t("syncingCloud")}
-            </p>
+            <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">{t("syncingCloud")}</p>
           )}
         </div>
       </div>
@@ -358,15 +385,21 @@ const FlashcardPageContent = () => {
                         <div className="mt-auto w-full flex flex-col gap-2 text-left">
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <Plus className="w-4 h-4 text-blue-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("addCard")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("addCard")}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("study")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("study")}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <BookOpenCheck className="w-4 h-4 text-purple-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learn")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("learn")}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -385,15 +418,21 @@ const FlashcardPageContent = () => {
                         <div className="mt-auto w-full flex flex-col gap-2 text-left">
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <Target className="w-4 h-4 text-blue-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("selectSubjectStep")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("selectSubjectStep")}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <Plus className="w-4 h-4 text-emerald-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("addCard")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("addCard")}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                             <BookOpen className="w-4 h-4 text-purple-500 shrink-0" />
-                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("study")}</span>
+                            <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                              {t("study")}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -439,11 +478,7 @@ const FlashcardPageContent = () => {
             </div>
           </div>
 
-          <FeatureCards
-            title={t("featuresTitle")}
-            features={flashcardFeatures}
-            columns={2}
-          />
+          <FeatureCards title={t("featuresTitle")} features={flashcardFeatures} columns={2} />
         </div>
       </div>
     );
@@ -455,11 +490,7 @@ const FlashcardPageContent = () => {
 
   return (
     <div>
-      <FlashcardComponent
-        subject={selectedSubject}
-        isDemoMode={isDemoMode}
-        onBack={handleBack}
-      />
+      <FlashcardComponent subject={selectedSubject} isDemoMode={isDemoMode} onBack={handleBack} />
     </div>
   );
 };

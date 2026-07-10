@@ -3,13 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -116,9 +110,7 @@ function DataManagementContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t("loginRequired")}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{t("loginRequired")}</p>
           <Link href="/login">
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
               {t("login")}
@@ -141,19 +133,13 @@ function DataManagementContent() {
           <nav className="mb-6">
             <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
               <li>
-                <Link
-                  href="/"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/" className="hover:text-foreground transition-colors">
                   {t("home")}
                 </Link>
               </li>
               <li>/</li>
               <li>
-                <Link
-                  href="/profile"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/profile" className="hover:text-foreground transition-colors">
                   {t("profile")}
                 </Link>
               </li>
@@ -179,14 +165,11 @@ function DataManagementContent() {
                 {t("title")}
               </span>
             </h1>
-            <p className="text-muted-foreground mt-2">
-              {t("subtitle")}
-            </p>
+            <p className="text-muted-foreground mt-2">{t("subtitle")}</p>
           </div>
 
           {/* Data Management Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
             {/* Clear Cloud Data */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -199,9 +182,7 @@ function DataManagementContent() {
                     <Trash2 className="w-5 h-5 text-orange-600" />
                     {t("clearCloudData")}
                   </CardTitle>
-                  <CardDescription>
-                    {t("clearCloudDataDescription")}
-                  </CardDescription>
+                  <CardDescription>{t("clearCloudDataDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
@@ -217,9 +198,7 @@ function DataManagementContent() {
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        <p className="text-sm text-green-600 dark:text-green-400">
-                          {clearSuccess}
-                        </p>
+                        <p className="text-sm text-green-600 dark:text-green-400">{clearSuccess}</p>
                       </div>
                     </div>
                   )}
@@ -235,19 +214,13 @@ function DataManagementContent() {
                         ) : (
                           <Trash2 className="w-4 h-4 mr-2" />
                         )}
-                        {isClearing
-                          ? t("clearing")
-                          : t("clearAllCloudData")}
+                        {isClearing ? t("clearing") : t("clearAllCloudData")}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t("confirmClearDataTitle")}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t("confirmClearData")}
-                        </AlertDialogDescription>
+                        <AlertDialogTitle>{t("confirmClearDataTitle")}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("confirmClearData")}</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
@@ -277,9 +250,7 @@ function DataManagementContent() {
                     <UserX className="w-5 h-5 text-red-600" />
                     {t("deleteAccount")}
                   </CardTitle>
-                  <CardDescription>
-                    {t("deleteAccountDescription")}
-                  </CardDescription>
+                  <CardDescription>{t("deleteAccountDescription")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
@@ -293,9 +264,7 @@ function DataManagementContent() {
 
                   {deleteError && (
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                      <p className="text-sm text-red-600 dark:text-red-400">
-                        {deleteError}
-                      </p>
+                      <p className="text-sm text-red-600 dark:text-red-400">{deleteError}</p>
                     </div>
                   )}
 
@@ -316,9 +285,7 @@ function DataManagementContent() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>{t("deleteAccount")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t("confirmDeleteAccount")}
-                        </AlertDialogDescription>
+                        <AlertDialogDescription>{t("confirmDeleteAccount")}</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>

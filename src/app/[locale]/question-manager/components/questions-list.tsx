@@ -5,13 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { getSubjectName } from "@/lib/question-manager-labels";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Question } from "@/lib/types";
 import LoadingSpinner from "@/components/loading-spinner";
 import type { Subject } from "@/types/question-manager";
@@ -97,7 +91,7 @@ export default function QuestionsList({
         <div className="space-y-1">
           <CardTitle className="text-base sm:text-xl">{t("questions")}</CardTitle>
           <CardDescription className="text-xs sm:text-sm">
-            {selectedSubject 
+            {selectedSubject
               ? t("questionsInSubject", { subject: resolveSubjectName(selectedSubject) })
               : t("selectSubject")}
           </CardDescription>
@@ -109,11 +103,7 @@ export default function QuestionsList({
             onClick={onToggleFocus}
             className="h-8 w-8 text-[#86868b] dark:text-[#a1a1a6] hover:bg-slate-100 dark:hover:bg-white/[0.05] rounded-xl flex-shrink-0 transition-colors"
           >
-            {isFocused ? (
-              <Minimize2 className="w-4 h-4" />
-            ) : (
-              <Maximize2 className="w-4 h-4" />
-            )}
+            {isFocused ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </Button>
         )}
       </CardHeader>
@@ -144,7 +134,10 @@ export default function QuestionsList({
           <NoQuestionsState onAIDialogOpenChange={onAIDialogOpenChange} />
         ) : (
           <div className="flex flex-col h-full">
-            <div className="space-y-4 w-full overflow-y-auto overflow-x-hidden flex-grow px-4 py-1" style={{ maxHeight: "850px" }}>
+            <div
+              className="space-y-4 w-full overflow-y-auto overflow-x-hidden flex-grow px-4 py-1"
+              style={{ maxHeight: "850px" }}
+            >
               {paginatedQuestions.map((question) => (
                 <QuestionCard
                   key={question.id}
@@ -176,7 +169,11 @@ export default function QuestionsList({
                       Math.abs(currentPage - (i + 1)) > 2
                     ) {
                       if (Math.abs(currentPage - (i + 1)) === 3) {
-                        return <span key={i} className="px-1 text-gray-400">...</span>;
+                        return (
+                          <span key={i} className="px-1 text-gray-400">
+                            ...
+                          </span>
+                        );
                       }
                       return null;
                     }

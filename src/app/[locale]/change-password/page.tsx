@@ -5,21 +5,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-  Loader2,
-  CheckCircle,
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock, Eye, EyeOff, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import MobileNav from "@/components/mobile-nav";
 import { useAuth } from "@/hooks/useAuth";
@@ -88,7 +75,7 @@ function ChangePasswordContent() {
         setPasswordError(t("userNotFound"));
         return;
       }
-      
+
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: authUser.email,
         password: passwordForm.currentPassword,
@@ -129,10 +116,7 @@ function ChangePasswordContent() {
     }
   };
 
-  const handlePasswordFormChange = (
-    field: keyof PasswordChangeForm,
-    value: string,
-  ) => {
+  const handlePasswordFormChange = (field: keyof PasswordChangeForm, value: string) => {
     setPasswordForm((prev) => ({ ...prev, [field]: value }));
     // Clear messages when user starts typing
     if (passwordError) {
@@ -158,9 +142,7 @@ function ChangePasswordContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t("loginRequired")}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{t("loginRequired")}</p>
           <Link href="/login">
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
               {t("login")}
@@ -183,19 +165,13 @@ function ChangePasswordContent() {
           <nav className="mb-6">
             <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
               <li>
-                <Link
-                  href="/"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/" className="hover:text-foreground transition-colors">
                   {t("home")}
                 </Link>
               </li>
               <li>/</li>
               <li>
-                <Link
-                  href="/profile"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/profile" className="hover:text-foreground transition-colors">
                   {t("profile")}
                 </Link>
               </li>
@@ -221,9 +197,7 @@ function ChangePasswordContent() {
                 {t("title")}
               </span>
             </h1>
-            <p className="text-muted-foreground mt-2">
-              {t("subtitle")}
-            </p>
+            <p className="text-muted-foreground mt-2">{t("subtitle")}</p>
           </div>
 
           {/* Password Change Form */}
@@ -238,9 +212,7 @@ function ChangePasswordContent() {
                   <Lock className="w-5 h-5" />
                   {t("title")}
                 </CardTitle>
-                <CardDescription>
-                  {t("description")}
-                </CardDescription>
+                <CardDescription>{t("description")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Current Password */}
@@ -251,12 +223,7 @@ function ChangePasswordContent() {
                       id="currentPassword"
                       type={showCurrentPassword ? "text" : "password"}
                       value={passwordForm.currentPassword}
-                      onChange={(e) =>
-                        handlePasswordFormChange(
-                          "currentPassword",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handlePasswordFormChange("currentPassword", e.target.value)}
                       placeholder={t("currentPasswordPlaceholder")}
                     />
                     <Button
@@ -264,9 +231,7 @@ function ChangePasswordContent() {
                       variant="ghost"
                       size="sm"
                       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() =>
-                        setShowCurrentPassword(!showCurrentPassword)
-                      }
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                     >
                       {showCurrentPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -285,9 +250,7 @@ function ChangePasswordContent() {
                       id="newPassword"
                       type={showNewPassword ? "text" : "password"}
                       value={passwordForm.newPassword}
-                      onChange={(e) =>
-                        handlePasswordFormChange("newPassword", e.target.value)
-                      }
+                      onChange={(e) => handlePasswordFormChange("newPassword", e.target.value)}
                       placeholder={t("newPasswordPlaceholder")}
                     />
                     <Button
@@ -314,12 +277,7 @@ function ChangePasswordContent() {
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       value={passwordForm.confirmPassword}
-                      onChange={(e) =>
-                        handlePasswordFormChange(
-                          "confirmPassword",
-                          e.target.value,
-                        )
-                      }
+                      onChange={(e) => handlePasswordFormChange("confirmPassword", e.target.value)}
                       placeholder={t("confirmNewPasswordPlaceholder")}
                     />
                     <Button
@@ -327,9 +285,7 @@ function ChangePasswordContent() {
                       variant="ghost"
                       size="sm"
                       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -343,9 +299,7 @@ function ChangePasswordContent() {
                 {/* Error/Success Messages */}
                 {passwordError && (
                   <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                      {passwordError}
-                    </p>
+                    <p className="text-sm text-red-600 dark:text-red-400">{passwordError}</p>
                   </div>
                 )}
 
@@ -378,9 +332,7 @@ function ChangePasswordContent() {
                   ) : (
                     <Lock className="w-4 h-4 mr-2" />
                   )}
-                  {isChangingPassword
-                    ? t("changingPassword")
-                    : t("changePassword")}
+                  {isChangingPassword ? t("changingPassword") : t("changePassword")}
                 </Button>
               </CardContent>
             </Card>

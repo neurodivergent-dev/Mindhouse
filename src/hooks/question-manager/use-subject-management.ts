@@ -26,7 +26,7 @@ export const useSubjectManagement = (
         try {
           // Try to load from Supabase first
           const dbQuestions = await QuestionService.getQuestions();
-          const cloudQuestions = dbQuestions.map(question => ({
+          const cloudQuestions = dbQuestions.map((question) => ({
             id: question.id,
             subject: question.subject,
             type: question.type as "multiple-choice" | "true-false" | "calculation" | "case-study",
@@ -45,13 +45,13 @@ export const useSubjectManagement = (
 
       // Also get local questions and merge
       const localQuestions = UnifiedStorageService.getQuestions();
-      localQuestions.forEach(localQ => {
-        if (!allQuestions.find(cloudQ => cloudQ.id === localQ.id)) {
+      localQuestions.forEach((localQ) => {
+        if (!allQuestions.find((cloudQ) => cloudQ.id === localQ.id)) {
           allQuestions.push(localQ);
         }
       });
-      const updatedSubjects = subjects.map(subject => {
-        const subjectQuestions = allQuestions.filter(q => {
+      const updatedSubjects = subjects.map((subject) => {
+        const subjectQuestions = allQuestions.filter((q) => {
           const normalizedQuestionSubject = q.subject.trim().toLowerCase();
           const normalizedSubjectName = subject.name.trim().toLowerCase();
           return normalizedQuestionSubject === normalizedSubjectName;
@@ -80,7 +80,7 @@ export const useSubjectManagement = (
       if (isDemoMode) {
         // Load demo subjects
         const localizedDemoSubjects = getDemoSubjects(locale);
-        
+
         loadedSubjects = localizedDemoSubjects.map((demoSubject: any) => ({
           id: demoSubject.id,
           name: demoSubject.name,
@@ -100,7 +100,7 @@ export const useSubjectManagement = (
             const dbSubjects = await SubjectService.getSubjects();
             if (dbSubjects && dbSubjects.length > 0) {
               // Convert Supabase format to local format
-              const mappedDbSubjects = dbSubjects.map(subject => ({
+              const mappedDbSubjects = dbSubjects.map((subject) => ({
                 id: subject.id,
                 name: subject.name,
                 description: subject.description,
@@ -111,8 +111,8 @@ export const useSubjectManagement = (
               }));
 
               // Merge local and db subjects
-              mappedDbSubjects.forEach(dbSub => {
-                const existingIndex = loadedSubjects.findIndex(ls => ls.id === dbSub.id);
+              mappedDbSubjects.forEach((dbSub) => {
+                const existingIndex = loadedSubjects.findIndex((ls) => ls.id === dbSub.id);
                 if (existingIndex !== -1) {
                   loadedSubjects[existingIndex] = dbSub;
                 } else {

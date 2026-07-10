@@ -1,4 +1,4 @@
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logError } from "@/lib/error-logger";
 import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
@@ -54,7 +54,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logError("API error in GET flashcards", error, { userId: request.url });
     return NextResponse.json(
-      { error: "Internal server error", details: error instanceof Error ? error.message : String(error) },
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
@@ -130,10 +133,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (error.code === "23505") {
-        return NextResponse.json(
-          { error: "Duplicate flashcard detected" },
-          { status: 409 },
-        );
+        return NextResponse.json({ error: "Duplicate flashcard detected" }, { status: 409 });
       }
 
       return NextResponse.json(
@@ -145,10 +145,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
     logError("API error in POST flashcards", error, { requestBody: request.body });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -166,10 +163,7 @@ export async function PUT(request: NextRequest) {
     const { id, updates } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Flashcard ID is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Flashcard ID is required" }, { status: 400 });
     }
 
     // Supabase will automatically update updated_at via trigger
@@ -187,26 +181,17 @@ export async function PUT(request: NextRequest) {
 
     if (error) {
       logError("Supabase error updating flashcard", error, { id, userId, updates });
-      return NextResponse.json(
-        { error: "Failed to update flashcard" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Failed to update flashcard" }, { status: 500 });
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: "Flashcard not found or access denied" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Flashcard not found or access denied" }, { status: 404 });
     }
 
     return NextResponse.json(data);
   } catch (error) {
     logError("API error in PUT flashcards", error, { id: request.body });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -224,32 +209,19 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Flashcard ID is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Flashcard ID is required" }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from("flashcards")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
+    const { error } = await supabase.from("flashcards").delete().eq("id", id).eq("user_id", userId);
 
     if (error) {
       logError("Supabase error deleting flashcard", error, { id, userId });
-      return NextResponse.json(
-        { error: "Failed to delete flashcard" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Failed to delete flashcard" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     logError("API error in DELETE flashcards", error, { id: request.url });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

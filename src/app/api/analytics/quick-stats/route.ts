@@ -34,15 +34,10 @@ export async function GET(request: NextRequest) {
     // Handle the case where there are no results, avg and sum will be null
     return NextResponse.json({
       totalTests: stats?.totalTests || 0,
-      averageScore: stats?.averageScore
-        ? Math.round(Number(stats.averageScore))
-        : 0,
+      averageScore: stats?.averageScore ? Math.round(Number(stats.averageScore)) : 0,
       totalTimeSpent: Number(stats?.totalTimeSpent) || 0,
     });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch quick stats" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to fetch quick stats" }, { status: 500 });
   }
 }

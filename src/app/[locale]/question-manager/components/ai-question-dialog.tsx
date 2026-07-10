@@ -4,12 +4,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { getSubjectName } from "@/lib/question-manager-labels";
 import { mapDifficulty } from "@/lib/question-manager-labels";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,16 +22,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import {
-  Sparkles,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-import type {
-  Subject,
-  AIGeneratedQuestion,
-  AIGenerationResult,
-} from "@/types/question-manager";
+import { Sparkles, CheckCircle, AlertCircle } from "lucide-react";
+import type { Subject, AIGeneratedQuestion, AIGenerationResult } from "@/types/question-manager";
 
 // Define proper interface for AI form data
 interface AIFormData {
@@ -77,17 +64,11 @@ export default function AIQuestionDialog({
   const getSubjectNameFormatted = (name: string) => getSubjectName(name, tSubjects);
   const [activeAITab, setActiveAITab] = useState<string>("generate");
   const [showAnswers, setShowAnswers] = useState(false);
-  const [selectedAIQuestions, setSelectedAIQuestions] = useState<Set<number>>(
-    new Set(),
-  );
+  const [selectedAIQuestions, setSelectedAIQuestions] = useState<Set<number>>(new Set());
   const [aiFormData, setAIFormData] = useState({
     subject: "",
     topic: "",
-    type: "multiple-choice" as
-      | "multiple-choice"
-      | "true-false"
-      | "calculation"
-      | "case-study",
+    type: "multiple-choice" as "multiple-choice" | "true-false" | "calculation" | "case-study",
     difficulty: "Medium" as "Easy" | "Medium" | "Hard",
     count: 5,
     guidelines: "",
@@ -100,13 +81,11 @@ export default function AIQuestionDialog({
 
   const handleApproveAIQuestions = async () => {
     // Validate that subject is selected
-    if (!aiFormData.subject || aiFormData.subject.trim() === '') {
+    if (!aiFormData.subject || aiFormData.subject.trim() === "") {
       return;
     }
 
-    const questionsToAdd = aiGeneratedQuestions.filter((_, idx) =>
-      selectedAIQuestions.has(idx),
-    );
+    const questionsToAdd = aiGeneratedQuestions.filter((_, idx) => selectedAIQuestions.has(idx));
 
     // Pass both questions and subject information
     await onApprove(questionsToAdd, aiFormData.subject);
@@ -139,9 +118,7 @@ export default function AIQuestionDialog({
     if (selectedAIQuestions.size === aiGeneratedQuestions.length) {
       setSelectedAIQuestions(new Set());
     } else {
-      setSelectedAIQuestions(
-        new Set(aiGeneratedQuestions.map((_, idx) => idx)),
-      );
+      setSelectedAIQuestions(new Set(aiGeneratedQuestions.map((_, idx) => idx)));
     }
   };
 
@@ -154,11 +131,7 @@ export default function AIQuestionDialog({
     setAIFormData({
       subject: "",
       topic: "",
-      type: "multiple-choice" as
-        | "multiple-choice"
-        | "true-false"
-        | "calculation"
-        | "case-study",
+      type: "multiple-choice" as "multiple-choice" | "true-false" | "calculation" | "case-study",
       difficulty: "Medium" as "Easy" | "Medium" | "Hard",
       count: 5,
       guidelines: "",
@@ -183,17 +156,10 @@ export default function AIQuestionDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs
-          value={activeAITab}
-          onValueChange={setActiveAITab}
-          className="w-full"
-        >
+        <Tabs value={activeAITab} onValueChange={setActiveAITab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="generate">{t("aiTabGenerate")}</TabsTrigger>
-            <TabsTrigger
-              value="review"
-              disabled={aiGeneratedQuestions.length === 0}
-            >
+            <TabsTrigger value="review" disabled={aiGeneratedQuestions.length === 0}>
               {t("aiTabReview", { count: aiGeneratedQuestions.length })}
             </TabsTrigger>
           </TabsList>
@@ -205,7 +171,12 @@ export default function AIQuestionDialog({
             <div className="grid gap-2 sm:gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="ai-subject" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subject")}</Label>
+                  <Label
+                    htmlFor="ai-subject"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("subject")}
+                  </Label>
                   <Select
                     value={aiFormData.subject}
                     onValueChange={(value) => {
@@ -225,13 +196,16 @@ export default function AIQuestionDialog({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-topic" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topic")}</Label>
+                  <Label
+                    htmlFor="ai-topic"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("topic")}
+                  </Label>
                   <Input
                     id="ai-topic"
                     value={aiFormData.topic}
-                    onChange={(e) =>
-                      setAIFormData({ ...aiFormData, topic: e.target.value })
-                    }
+                    onChange={(e) => setAIFormData({ ...aiFormData, topic: e.target.value })}
                     placeholder={t("aiTopicPlaceholder")}
                     className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
@@ -240,17 +214,19 @@ export default function AIQuestionDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                 <div>
-                  <Label htmlFor="ai-type" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("questionType")}</Label>
+                  <Label
+                    htmlFor="ai-type"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("questionType")}
+                  </Label>
                   <Select
                     value={aiFormData.type}
                     onValueChange={(value) =>
                       setAIFormData({
                         ...aiFormData,
                         type: value as
-                          | "multiple-choice"
-                          | "true-false"
-                          | "calculation"
-                          | "case-study",
+                          "multiple-choice" | "true-false" | "calculation" | "case-study",
                       })
                     }
                   >
@@ -258,19 +234,20 @@ export default function AIQuestionDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200 dark:border-white/[0.08]">
-                      <SelectItem value="multiple-choice">
-                        {t("typeMultipleChoice")}
-                      </SelectItem>
+                      <SelectItem value="multiple-choice">{t("typeMultipleChoice")}</SelectItem>
                       <SelectItem value="true-false">{t("typeTrueFalse")}</SelectItem>
                       <SelectItem value="calculation">{t("typeCalculation")}</SelectItem>
-                      <SelectItem value="case-study">
-                        {t("typeCaseStudy")}
-                      </SelectItem>
+                      <SelectItem value="case-study">{t("typeCaseStudy")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficulty")}</Label>
+                  <Label
+                    htmlFor="ai-difficulty"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("difficulty")}
+                  </Label>
                   <Select
                     value={aiFormData.difficulty}
                     onValueChange={(value) =>
@@ -291,7 +268,12 @@ export default function AIQuestionDialog({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="ai-count" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("aiQuestionCount")}</Label>
+                  <Label
+                    htmlFor="ai-count"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("aiQuestionCount")}
+                  </Label>
                   <Input
                     id="ai-count"
                     type="number"
@@ -307,14 +289,15 @@ export default function AIQuestionDialog({
                     }}
                     className="rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t("aiTokenLimit")}
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("aiTokenLimit")}</p>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="ai-guidelines" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                <Label
+                  htmlFor="ai-guidelines"
+                  className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                >
                   {t("aiGuidelines")}
                 </Label>
                 <Textarea
@@ -334,16 +317,12 @@ export default function AIQuestionDialog({
 
               <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 text-blue-900 dark:text-blue-200">
                 <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm font-semibold leading-relaxed">
-                  {t("aiQualityNote")}
-                </p>
+                <p className="text-sm font-semibold leading-relaxed">{t("aiQualityNote")}</p>
               </div>
 
               <Button
                 onClick={handleGenerateClick}
-                disabled={
-                  isGenerating || !aiFormData.subject || !aiFormData.topic
-                }
+                disabled={isGenerating || !aiFormData.subject || !aiFormData.topic}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 border-0 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {isGenerating ? (
@@ -373,8 +352,7 @@ export default function AIQuestionDialog({
                       {t("generatedQuestions")}
                     </h3>
                     <p className="text-xs sm:text-sm text-muted-foreground">
-                      {aiGenerationResult.metadata.subject} -{" "}
-                      {aiGenerationResult.metadata.topic}
+                      {aiGenerationResult.metadata.subject} - {aiGenerationResult.metadata.topic}
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -408,8 +386,7 @@ export default function AIQuestionDialog({
                         onClick={selectAllAIQuestions}
                         className="h-8 text-xs w-full sm:w-auto"
                       >
-                        {selectedAIQuestions.size ===
-                        aiGeneratedQuestions.length
+                        {selectedAIQuestions.size === aiGeneratedQuestions.length
                           ? t("deselectAll")
                           : t("selectAll")}
                       </Button>
@@ -417,10 +394,7 @@ export default function AIQuestionDialog({
                   </div>
                 </div>
 
-                <Progress
-                  value={aiGenerationResult.qualityScore * 100}
-                  className="mb-4"
-                />
+                <Progress value={aiGenerationResult.qualityScore * 100} className="mb-4" />
 
                 {aiGenerationResult.suggestions.length > 0 && (
                   <Alert className="mb-4">
@@ -428,13 +402,11 @@ export default function AIQuestionDialog({
                     <AlertDescription>
                       <strong>{t("improvementSuggestions")}</strong>
                       <ul className="list-disc list-inside mt-2">
-                        {aiGenerationResult.suggestions.map(
-                          (suggestion, idx) => (
-                            <li key={idx} className="text-sm">
-                              {suggestion}
-                            </li>
-                          ),
-                        )}
+                        {aiGenerationResult.suggestions.map((suggestion, idx) => (
+                          <li key={idx} className="text-sm">
+                            {suggestion}
+                          </li>
+                        ))}
                       </ul>
                     </AlertDescription>
                   </Alert>
@@ -456,9 +428,7 @@ export default function AIQuestionDialog({
                           <div className="flex items-center gap-1 sm:gap-2">
                             <Checkbox
                               checked={selectedAIQuestions.has(idx)}
-                              onCheckedChange={() =>
-                                toggleAIQuestionSelection(idx)
-                              }
+                              onCheckedChange={() => toggleAIQuestionSelection(idx)}
                               onClick={(e) => e.stopPropagation()}
                               className="scale-75 sm:scale-100"
                             />
@@ -474,9 +444,7 @@ export default function AIQuestionDialog({
                           )}
                         </div>
 
-                        <h4 className="font-medium mb-2 text-sm sm:text-base">
-                          {question.text}
-                        </h4>
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">{question.text}</h4>
 
                         {question.options.length > 0 && (
                           <div className="space-y-1 mb-2 sm:mb-3">
@@ -492,8 +460,7 @@ export default function AIQuestionDialog({
                                 {showAnswers && option.isCorrect && (
                                   <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 inline mr-1" />
                                 )}
-                                {String.fromCharCode(65 + optIdx)}){" "}
-                                {option.text}
+                                {String.fromCharCode(65 + optIdx)}) {option.text}
                               </div>
                             ))}
                           </div>
@@ -501,23 +468,17 @@ export default function AIQuestionDialog({
 
                         <div className="border-t pt-2 sm:pt-3">
                           <p className="text-xs sm:text-sm text-muted-foreground">
-                            <strong>{t("explanation")}:</strong>{" "}
-                            {question.explanation}
+                            <strong>{t("explanation")}:</strong> {question.explanation}
                           </p>
                           {question.learningObjective && (
                             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                              <strong>{t("learningObjective")}</strong>{" "}
-                              {question.learningObjective}
+                              <strong>{t("learningObjective")}</strong> {question.learningObjective}
                             </p>
                           )}
                           {question.keywords.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {question.keywords.map((keyword, kIdx) => (
-                                <Badge
-                                  key={kIdx}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
+                                <Badge key={kIdx} variant="outline" className="text-xs">
                                   {keyword}
                                 </Badge>
                               ))}
@@ -561,16 +522,12 @@ export default function AIQuestionDialog({
                       {isCreating ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                          <span className="text-base font-extrabold">
-                            {t("adding")}
-                          </span>
+                          <span className="text-base font-extrabold">{t("adding")}</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle className="w-4 h-4 mr-2" />
-                          <span className="text-base font-extrabold">
-                            {t("addQuestions")}
-                          </span>
+                          <span className="text-base font-extrabold">{t("addQuestions")}</span>
                         </>
                       )}
                     </Button>
@@ -580,16 +537,9 @@ export default function AIQuestionDialog({
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Sparkles className="w-16 h-16 text-purple-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {t("noAiQuestionsYet")}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {t("noAiQuestionsYetDesc")}
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => setActiveAITab("generate")}
-                >
+                <h3 className="text-lg font-semibold mb-2">{t("noAiQuestionsYet")}</h3>
+                <p className="text-muted-foreground mb-4">{t("noAiQuestionsYetDesc")}</p>
+                <Button variant="outline" onClick={() => setActiveAITab("generate")}>
                   {t("generateQuestions")}
                 </Button>
               </div>

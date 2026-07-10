@@ -14,12 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sparkles, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getStoredAiPreferences } from "@/lib/ai-preferences";
@@ -62,14 +57,9 @@ export default function AISubjectGenerator({
 }: AISubjectGeneratorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [aiGeneratedSubjects, setAIGeneratedSubjects] = useState<
-    AIGeneratedSubject[]
-  >([]);
-  const [aiGenerationResult, setAIGenerationResult] =
-    useState<AIGenerationResult | null>(null);
-  const [selectedAISubjects, setSelectedAISubjects] = useState<Set<number>>(
-    new Set(),
-  );
+  const [aiGeneratedSubjects, setAIGeneratedSubjects] = useState<AIGeneratedSubject[]>([]);
+  const [aiGenerationResult, setAIGenerationResult] = useState<AIGenerationResult | null>(null);
+  const [selectedAISubjects, setSelectedAISubjects] = useState<Set<number>>(new Set());
   const [activeTab, setActiveTab] = useState<string>("generate");
   const t = useTranslations("SubjectManager.ai");
   const tRoot = useTranslations("SubjectManager");
@@ -111,12 +101,7 @@ export default function AISubjectGenerator({
       // Auto-select high quality subjects
       const autoSelected = new Set<number>();
       result.subjects.forEach((subject, idx) => {
-        if (
-          subject.name &&
-          subject.description &&
-          subject.category &&
-          subject.topics.length > 0
-        ) {
+        if (subject.name && subject.description && subject.category && subject.topics.length > 0) {
           autoSelected.add(idx);
         }
       });
@@ -154,9 +139,7 @@ export default function AISubjectGenerator({
     }
 
     try {
-      const subjectsToAdd = aiGeneratedSubjects.filter((_, idx) =>
-        selectedAISubjects.has(idx),
-      );
+      const subjectsToAdd = aiGeneratedSubjects.filter((_, idx) => selectedAISubjects.has(idx));
 
       // Call the callback function
       if (onSubjectsGenerated) {
@@ -196,9 +179,7 @@ export default function AISubjectGenerator({
     if (selectedAISubjects.size === aiGeneratedSubjects.length) {
       setSelectedAISubjects(new Set());
     } else {
-      setSelectedAISubjects(
-        new Set(aiGeneratedSubjects.map((_, idx) => idx)),
-      );
+      setSelectedAISubjects(new Set(aiGeneratedSubjects.map((_, idx) => idx)));
     }
   };
 
@@ -237,19 +218,27 @@ export default function AISubjectGenerator({
               <div className="space-y-4 sm:space-y-5 py-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{tRoot("category")}</Label>
+                    <Label
+                      htmlFor="category"
+                      className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >
+                      {tRoot("category")}
+                    </Label>
                     <Input
                       id="category"
                       value={formData.category}
-                      onChange={(e) =>
-                        setFormData({ ...formData, category: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       placeholder={tRoot("exampleScience")}
                       className="h-11 rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] focus:ring-2 focus:ring-blue-500/20 font-medium"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{tRoot("difficultyLevel")}</Label>
+                    <Label
+                      htmlFor="difficulty"
+                      className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >
+                      {tRoot("difficultyLevel")}
+                    </Label>
                     <Select
                       value={formData.difficulty}
                       onValueChange={(value) =>
@@ -272,7 +261,12 @@ export default function AISubjectGenerator({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="count" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectCount")}</Label>
+                  <Label
+                    htmlFor="count"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("subjectCount")}
+                  </Label>
                   <Input
                     id="count"
                     type="number"
@@ -290,7 +284,10 @@ export default function AISubjectGenerator({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="guidelines" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <Label
+                    htmlFor="guidelines"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
                     {t("guidelinesOptional")}
                   </Label>
                   <Textarea
@@ -310,9 +307,7 @@ export default function AISubjectGenerator({
 
                 <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 text-blue-900 dark:text-blue-200">
                   <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm font-semibold leading-relaxed">
-                    {t("qualityNotice")}
-                  </p>
+                  <p className="text-sm font-semibold leading-relaxed">{t("qualityNotice")}</p>
                 </div>
               </div>
             ) : (
@@ -322,9 +317,7 @@ export default function AISubjectGenerator({
                     {/* Header Section */}
                     <div className="space-y-4 mb-5">
                       <div>
-                        <h3 className="text-lg font-semibold">
-                          {t("generatedSubjects")}
-                        </h3>
+                        <h3 className="text-lg font-semibold">{t("generatedSubjects")}</h3>
                         <p className="text-sm text-muted-foreground">
                           {t("categoryLabel", { category: formData.category })}
                         </p>
@@ -353,11 +346,7 @@ export default function AISubjectGenerator({
                           />
                         </div>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={selectAllAISubjects}
-                        >
+                        <Button variant="outline" size="sm" onClick={selectAllAISubjects}>
                           {selectedAISubjects.size === aiGeneratedSubjects.length
                             ? t("deselectAll")
                             : t("selectAll")}
@@ -370,13 +359,11 @@ export default function AISubjectGenerator({
                           <AlertDescription>
                             <strong>{t("improvementSuggestions")}</strong>
                             <ul className="list-disc list-inside mt-2 space-y-1">
-                              {aiGenerationResult.suggestions.map(
-                                (suggestion, idx) => (
-                                  <li key={idx} className="text-sm">
-                                    {suggestion}
-                                  </li>
-                                ),
-                              )}
+                              {aiGenerationResult.suggestions.map((suggestion, idx) => (
+                                <li key={idx} className="text-sm">
+                                  {suggestion}
+                                </li>
+                              ))}
                             </ul>
                           </AlertDescription>
                         </Alert>
@@ -385,132 +372,105 @@ export default function AISubjectGenerator({
 
                     {/* Subjects List */}
                     <div className="overflow-y-auto max-h-[420px] pr-1">
-                    <div className="space-y-3 pb-4">
-                          {aiGeneratedSubjects.map((subject, idx) => (
-                            <Card
-                              key={idx}
-                              className={`cursor-pointer transition-all hover:shadow-md ${
-                                selectedAISubjects.has(idx)
-                                  ? "ring-2 ring-blue-600 bg-blue-50/50 dark:bg-blue-950/20"
-                                  : ""
-                              }`}
-                              onClick={() => toggleAISubjectSelection(idx)}
-                            >
-                              <CardContent className="p-5">
-                                <div className="flex items-start justify-between mb-4">
-                                  <div className="flex items-center gap-3">
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedAISubjects.has(idx)}
-                                      onChange={() => toggleAISubjectSelection(idx)}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="w-4 h-4"
-                                    />
-                                    <div className="flex gap-2">
-                                      <Badge variant="outline">
-                                        {mapAiDifficulty(subject.difficulty, (key) => tRoot(key))}
-                                      </Badge>
-                                      <Badge variant="secondary">
-                                        {subject.category}
-                                      </Badge>
+                      <div className="space-y-3 pb-4">
+                        {aiGeneratedSubjects.map((subject, idx) => (
+                          <Card
+                            key={idx}
+                            className={`cursor-pointer transition-all hover:shadow-md ${
+                              selectedAISubjects.has(idx)
+                                ? "ring-2 ring-blue-600 bg-blue-50/50 dark:bg-blue-950/20"
+                                : ""
+                            }`}
+                            onClick={() => toggleAISubjectSelection(idx)}
+                          >
+                            <CardContent className="p-5">
+                              <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedAISubjects.has(idx)}
+                                    onChange={() => toggleAISubjectSelection(idx)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-4 h-4"
+                                  />
+                                  <div className="flex gap-2">
+                                    <Badge variant="outline">
+                                      {mapAiDifficulty(subject.difficulty, (key) => tRoot(key))}
+                                    </Badge>
+                                    <Badge variant="secondary">{subject.category}</Badge>
+                                  </div>
+                                </div>
+                                {selectedAISubjects.has(idx) && (
+                                  <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                                )}
+                              </div>
+
+                              <h4 className="font-semibold text-base mb-3">{subject.name}</h4>
+
+                              <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                                {subject.description}
+                              </p>
+
+                              <div className="space-y-4">
+                                {subject.topics.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-medium mb-2">{t("topics")}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {subject.topics.map((topic, tIdx) => (
+                                        <Badge key={tIdx} variant="outline" className="text-xs">
+                                          {topic}
+                                        </Badge>
+                                      ))}
                                     </div>
                                   </div>
-                                  {selectedAISubjects.has(idx) && (
-                                    <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                                  )}
-                                </div>
+                                )}
 
-                                <h4 className="font-semibold text-base mb-3">
-                                  {subject.name}
-                                </h4>
+                                {subject.learningObjectives.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-medium mb-2">
+                                      {t("learningObjectives")}
+                                    </p>
+                                    <ul className="text-sm text-muted-foreground space-y-1">
+                                      {subject.learningObjectives.map((objective, oIdx) => (
+                                        <li key={oIdx} className="flex items-start gap-2">
+                                          <span className="w-1 h-1 bg-current rounded-full mt-2 flex-shrink-0" />
+                                          {objective}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
 
-                                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                                  {subject.description}
-                                </p>
-
-                                <div className="space-y-4">
-                                    {subject.topics.length > 0 && (
-                                      <div>
-                                        <p className="text-sm font-medium mb-2">
-                                          {t("topics")}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                          {subject.topics.map((topic, tIdx) => (
-                                            <Badge
-                                              key={tIdx}
-                                              variant="outline"
-                                              className="text-xs"
-                                            >
-                                              {topic}
-                                            </Badge>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {subject.learningObjectives.length > 0 && (
-                                      <div>
-                                        <p className="text-sm font-medium mb-2">
-                                          {t("learningObjectives")}
-                                        </p>
-                                        <ul className="text-sm text-muted-foreground space-y-1">
-                                          {subject.learningObjectives.map(
-                                            (objective, oIdx) => (
-                                              <li key={oIdx} className="flex items-start gap-2">
-                                                <span className="w-1 h-1 bg-current rounded-full mt-2 flex-shrink-0" />
-                                                {objective}
-                                              </li>
-                                            ),
-                                          )}
-                                        </ul>
-                                      </div>
-                                    )}
-
-                                    {subject.prerequisites.length > 0 && (
-                                      <div>
-                                        <p className="text-sm font-medium mb-2">
-                                          {t("prerequisites")}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                          {subject.prerequisites.map(
-                                            (prereq, pIdx) => (
-                                              <Badge
-                                                key={pIdx}
-                                                variant="outline"
-                                                className="text-xs"
-                                              >
-                                                {prereq}
-                                              </Badge>
-                                            ),
-                                          )}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    <div className="text-sm text-muted-foreground pt-2 border-t">
-                                      <strong>{t("estimatedDuration")}</strong>{" "}
-                                      {subject.estimatedDuration}
+                                {subject.prerequisites.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-medium mb-2">{t("prerequisites")}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {subject.prerequisites.map((prereq, pIdx) => (
+                                        <Badge key={pIdx} variant="outline" className="text-xs">
+                                          {prereq}
+                                        </Badge>
+                                      ))}
                                     </div>
+                                  </div>
+                                )}
+
+                                <div className="text-sm text-muted-foreground pt-2 border-t">
+                                  <strong>{t("estimatedDuration")}</strong>{" "}
+                                  {subject.estimatedDuration}
                                 </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                    </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
                     </div>
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center flex-1 text-center">
                     <Sparkles className="w-16 h-16 text-green-400 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      {t("noSubjectsYet")}
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      {t("noSubjectsYetDesc")}
-                    </p>
-                    <Button
-                      variant="outline"
-                      onClick={() => setActiveTab("generate")}
-                    >
+                    <h3 className="text-lg font-semibold mb-2">{t("noSubjectsYet")}</h3>
+                    <p className="text-muted-foreground mb-4">{t("noSubjectsYetDesc")}</p>
+                    <Button variant="outline" onClick={() => setActiveTab("generate")}>
                       {t("generateSubjects")}
                     </Button>
                   </div>

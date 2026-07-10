@@ -167,11 +167,11 @@
   padding: calc(var(--compact-spacing) * 2) !important;
 }
 
-.compact-mode .space-y-4>*+* {
+.compact-mode .space-y-4 > * + * {
   margin-top: var(--compact-spacing) !important;
 }
 
-.compact-mode .space-y-8>*+* {
+.compact-mode .space-y-8 > * + * {
   margin-top: calc(var(--compact-spacing) * 2) !important;
 }
 
@@ -526,15 +526,15 @@ html:not(.dark) .border-gradient-pink {
 }
 
 /* Force inner cards to be completely transparent to inherit the premium glass blur */
-html:not(.dark) .border-gradient-active>*,
-html:not(.dark) .border-gradient-question>*,
-html:not(.dark) .border-gradient-green>*,
-html:not(.dark) .border-gradient-blue>*,
-html:not(.dark) .border-gradient-purple>*,
-html:not(.dark) .border-gradient-orange>*,
-html:not(.dark) .border-gradient-yellow>*,
-html:not(.dark) .border-gradient-teal>*,
-html:not(.dark) .border-gradient-pink>* {
+html:not(.dark) .border-gradient-active > *,
+html:not(.dark) .border-gradient-question > *,
+html:not(.dark) .border-gradient-green > *,
+html:not(.dark) .border-gradient-blue > *,
+html:not(.dark) .border-gradient-purple > *,
+html:not(.dark) .border-gradient-orange > *,
+html:not(.dark) .border-gradient-yellow > *,
+html:not(.dark) .border-gradient-teal > *,
+html:not(.dark) .border-gradient-pink > * {
   background: transparent !important;
   border-radius: 23px !important;
   border: none !important;
@@ -578,23 +578,22 @@ html.dark .border-gradient-pink {
   -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
   box-shadow:
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-    /* Volumetric top edge glow */
-    0 8px 32px -8px rgba(0, 0, 0, 0.6) !important;
+    /* Volumetric top edge glow */ 0 8px 32px -8px rgba(0, 0, 0, 0.6) !important;
   /* Deep ambient shadow */
   border-radius: 24px !important;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 /* Force inner cards to be completely transparent to inherit the premium glass blur */
-html.dark .border-gradient-active>*,
-html.dark .border-gradient-question>*,
-html.dark .border-gradient-green>*,
-html.dark .border-gradient-blue>*,
-html.dark .border-gradient-purple>*,
-html.dark .border-gradient-orange>*,
-html.dark .border-gradient-yellow>*,
-html.dark .border-gradient-teal>*,
-html.dark .border-gradient-pink>* {
+html.dark .border-gradient-active > *,
+html.dark .border-gradient-question > *,
+html.dark .border-gradient-green > *,
+html.dark .border-gradient-blue > *,
+html.dark .border-gradient-purple > *,
+html.dark .border-gradient-orange > *,
+html.dark .border-gradient-yellow > *,
+html.dark .border-gradient-teal > *,
+html.dark .border-gradient-pink > * {
   background: transparent !important;
   border-radius: 23px !important;
   border: none !important;
@@ -715,7 +714,6 @@ html.dark .border-gradient-pink:hover {
 
 /* Bubble Floating Animations */
 @keyframes float-1 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -735,7 +733,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-2 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -755,7 +752,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-3 {
-
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -775,7 +771,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-4 {
-
   0%,
   100% {
     transform: translateY(0);
@@ -787,7 +782,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-5 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -807,7 +801,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-6 {
-
   0%,
   100% {
     transform: translateX(0);
@@ -819,7 +812,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-7 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -839,7 +831,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes float-8 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -892,7 +883,6 @@ html.dark .border-gradient-pink:hover {
 
 /* Particle System Animations */
 @keyframes particle-1 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -912,7 +902,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-2 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -932,7 +921,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-3 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -952,7 +940,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-4 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -972,7 +959,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-5 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -992,7 +978,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-6 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1012,7 +997,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-7 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1032,7 +1016,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-8 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1052,7 +1035,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-9 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1072,7 +1054,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-10 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1092,7 +1073,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-11 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1112,7 +1092,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-12 {
-
   0%,
   100% {
     transform: translate(0, 0);
@@ -1132,7 +1111,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-diamond-1 {
-
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -1152,7 +1130,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-diamond-2 {
-
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -1172,7 +1149,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-diamond-3 {
-
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -1192,7 +1168,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-star-1 {
-
   0%,
   100% {
     opacity: 0.3;
@@ -1206,7 +1181,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-star-2 {
-
   0%,
   100% {
     opacity: 0.3;
@@ -1220,7 +1194,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-star-3 {
-
   0%,
   100% {
     opacity: 0.3;
@@ -1234,7 +1207,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-glow-1 {
-
   0%,
   100% {
     opacity: 0.3;
@@ -1248,7 +1220,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-glow-2 {
-
   0%,
   100% {
     opacity: 0.3;
@@ -1262,7 +1233,6 @@ html.dark .border-gradient-pink:hover {
 }
 
 @keyframes particle-glow-3 {
-
   0%,
   100% {
     opacity: 0.3;

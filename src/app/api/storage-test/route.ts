@@ -4,8 +4,7 @@ import { supabase } from "@/lib/supabase";
 export async function GET() {
   try {
     // Test storage bucket existence and permissions
-    const { data: buckets, error: bucketsError } =
-      await supabase.storage.listBuckets();
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
 
     if (bucketsError) {
       return NextResponse.json({
@@ -16,9 +15,7 @@ export async function GET() {
       });
     }
 
-    const userBackupsBucket = buckets?.find(
-      (bucket) => bucket.name === "user-backups",
-    );
+    const userBackupsBucket = buckets?.find((bucket) => bucket.name === "user-backups");
 
     if (!userBackupsBucket) {
       return NextResponse.json({
@@ -48,9 +45,7 @@ export async function GET() {
     }
 
     // Clean up test file
-    await supabase.storage
-      .from("user-backups")
-      .remove([`test/${testFileName}`]);
+    await supabase.storage.from("user-backups").remove([`test/${testFileName}`]);
 
     return NextResponse.json({
       success: true,

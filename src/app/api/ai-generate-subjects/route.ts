@@ -70,10 +70,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const errorMessage = resolveAiErrorMessage(error, language, "apiKeyAdmin");
 
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -180,8 +177,8 @@ function parseAIResponse(text: string): ParsedAIResponse {
     }
 
     // Try to find JSON without markdown
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}');
+    const jsonStart = text.indexOf("{");
+    const jsonEnd = text.lastIndexOf("}");
     if (jsonStart !== -1 && jsonEnd !== -1) {
       const jsonText = text.substring(jsonStart, jsonEnd + 1);
       const parsed = JSON.parse(jsonText);
@@ -191,7 +188,6 @@ function parseAIResponse(text: string): ParsedAIResponse {
     // If no JSON found, try to extract structured data from text
     const subjects = extractSubjectsFromText(text);
     return { subjects };
-
   } catch {
     return {
       subjects: [],
@@ -206,7 +202,9 @@ function extractSubjectsFromText(text: string): AIGeneratedSubject[] {
   const sections = text.split(/(?=##|###|\*\*|Ders|Subject)/);
 
   for (const section of sections) {
-    if (section.trim().length < 50) { continue; } // Skip short sections
+    if (section.trim().length < 50) {
+      continue;
+    } // Skip short sections
 
     const subject: ExtractedSubject = {
       name: extractField(section, ["Ders Adı", "Name", "Title"]),
@@ -231,7 +229,7 @@ function extractSubjectsFromText(text: string): AIGeneratedSubject[] {
 
 function extractField(text: string, possibleNames: string[]): string {
   for (const name of possibleNames) {
-    const regex = new RegExp(`${name}[\\s:]*([^\\n]+)`, 'i');
+    const regex = new RegExp(`${name}[\\s:]*([^\\n]+)`, "i");
     const match = text.match(regex);
     if (match?.[1]) {
       return match[1].trim();
@@ -242,35 +240,56 @@ function extractField(text: string, possibleNames: string[]): string {
 
 function extractArray(text: string, possibleNames: string[]): string[] {
   for (const name of possibleNames) {
-    const regex = new RegExp(`${name}[\\s:]*([^\\n]+)`, 'i');
+    const regex = new RegExp(`${name}[\\s:]*([^\\n]+)`, "i");
     const match = text.match(regex);
     if (match?.[1]) {
       // Split by common separators
-      return match[1].split(/[,•\-\*]/).map(item => item.trim()).filter(item => item.length > 0);
+      return match[1]
+        .split(/[,•\-\*]/)
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
     }
   }
   return [];
 }
 
 function calculateQualityScore(subjects: AIGeneratedSubject[]): number {
-  if (subjects.length === 0) { return 0; }
+  if (subjects.length === 0) {
+    return 0;
+  }
 
   let totalScore = 0;
 
-  subjects.forEach(subject => {
+  subjects.forEach((subject) => {
     let score = 0;
 
     // Check required fields
-    if (subject.name && subject.name.length > 3) { score += 0.2; }
-    if (subject.description && subject.description.length > 20) { score += 0.2; }
-    if (subject.category && subject.category.length > 0) { score += 0.1; }
-    if (subject.difficulty) { score += 0.1; }
+    if (subject.name && subject.name.length > 3) {
+      score += 0.2;
+    }
+    if (subject.description && subject.description.length > 20) {
+      score += 0.2;
+    }
+    if (subject.category && subject.category.length > 0) {
+      score += 0.1;
+    }
+    if (subject.difficulty) {
+      score += 0.1;
+    }
 
     // Check arrays
-    if (subject.topics && subject.topics.length >= 3) { score += 0.15; }
-    if (subject.learningObjectives && subject.learningObjectives.length >= 2) { score += 0.15; }
-    if (subject.prerequisites && subject.prerequisites.length >= 1) { score += 0.05; }
-    if (subject.keywords && subject.keywords.length >= 3) { score += 0.05; }
+    if (subject.topics && subject.topics.length >= 3) {
+      score += 0.15;
+    }
+    if (subject.learningObjectives && subject.learningObjectives.length >= 2) {
+      score += 0.15;
+    }
+    if (subject.prerequisites && subject.prerequisites.length >= 1) {
+      score += 0.05;
+    }
+    if (subject.keywords && subject.keywords.length >= 3) {
+      score += 0.05;
+    }
 
     totalScore += score;
   });
@@ -278,14 +297,19 @@ function calculateQualityScore(subjects: AIGeneratedSubject[]): number {
   return Math.min(totalScore / subjects.length, 1);
 }
 
-function generateSuggestions(subjects: AIGeneratedSubject[], input: SubjectGenerationInput): string[] {
+function generateSuggestions(
+  subjects: AIGeneratedSubject[],
+  input: SubjectGenerationInput,
+): string[] {
   const suggestions: string[] = [];
 
   // Check for common issues
-  const hasShortNames = subjects.some(s => s.name && s.name.length < 5);
-  const hasShortDescriptions = subjects.some(s => s.description && s.description.length < 30);
-  const hasFewTopics = subjects.some(s => s.topics && s.topics.length < 3);
-  const hasFewObjectives = subjects.some(s => s.learningObjectives && s.learningObjectives.length < 2);
+  const hasShortNames = subjects.some((s) => s.name && s.name.length < 5);
+  const hasShortDescriptions = subjects.some((s) => s.description && s.description.length < 30);
+  const hasFewTopics = subjects.some((s) => s.topics && s.topics.length < 3);
+  const hasFewObjectives = subjects.some(
+    (s) => s.learningObjectives && s.learningObjectives.length < 2,
+  );
 
   if (hasShortNames) {
     suggestions.push("Ders adları daha açıklayıcı olabilir");

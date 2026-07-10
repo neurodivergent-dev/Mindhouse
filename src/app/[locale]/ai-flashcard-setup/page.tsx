@@ -24,7 +24,11 @@ import {
 } from "lucide-react";
 
 function FeatureListItem({ children }: { children: React.ReactNode }) {
-  return <li className="flex items-start gap-2 text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">• {children}</li>;
+  return (
+    <li className="flex items-start gap-2 text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+      • {children}
+    </li>
+  );
 }
 
 export default function AIFlashcardSetupPage() {
@@ -60,7 +64,10 @@ export default function AIFlashcardSetupPage() {
                 <Brain className="w-3 h-3 mr-1" />
                 {t("badgeAiIntegration")}
               </Badge>
-              <Badge variant="outline" className="border-green-500 text-green-600 dark:text-green-400 bg-green-500/10">
+              <Badge
+                variant="outline"
+                className="border-green-500 text-green-600 dark:text-green-400 bg-green-500/10"
+              >
                 <CheckCircle className="w-3 h-3 mr-1" />
                 {t("badgeRequired")}
               </Badge>
@@ -70,20 +77,32 @@ export default function AIFlashcardSetupPage() {
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto h-12 p-1 bg-white/60 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 backdrop-blur-md rounded-2xl">
-            <TabsTrigger value="overview" className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl">
+            <TabsTrigger
+              value="overview"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl"
+            >
               <Info className="w-4 h-4" />
               <span className="hidden sm:inline">{t("tabs.overview")}</span>
               <span className="sm:hidden">{t("tabs.overviewShort")}</span>
             </TabsTrigger>
-            <TabsTrigger value="setup" className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl">
+            <TabsTrigger
+              value="setup"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl"
+            >
               <Settings className="w-4 h-4" />
               <span>{t("tabs.setup")}</span>
             </TabsTrigger>
-            <TabsTrigger value="testing" className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl">
+            <TabsTrigger
+              value="testing"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl"
+            >
               <CheckCircle className="w-4 h-4" />
               <span>{t("tabs.testing")}</span>
             </TabsTrigger>
-            <TabsTrigger value="troubleshooting" className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl">
+            <TabsTrigger
+              value="troubleshooting"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm rounded-xl"
+            >
               <AlertTriangle className="w-4 h-4" />
               <span className="hidden sm:inline">{t("tabs.troubleshooting")}</span>
               <span className="sm:hidden">{t("tabs.troubleshootingShort")}</span>
@@ -99,7 +118,9 @@ export default function AIFlashcardSetupPage() {
                     <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     {t("overview.featuresTitle")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("overview.featuresDescription")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("overview.featuresDescription")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,11 +182,18 @@ export default function AIFlashcardSetupPage() {
                         desc: t("overview.reqBrowserDesc"),
                       },
                     ].map((req, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]">
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]"
+                      >
                         <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                         <div>
-                          <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">{req.title}</h4>
-                          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">{req.desc}</p>
+                          <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+                            {req.title}
+                          </h4>
+                          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                            {req.desc}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -184,14 +212,20 @@ export default function AIFlashcardSetupPage() {
                     <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     {t("setup.step1Title")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("setup.step1Description")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("setup.step1Description")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="p-4 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02] flex flex-col justify-between">
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">{t("setup.step1Item1Title")}</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">Google&apos;ın en yeni modellerine ücretsiz erişim anahtarı.</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                          {t("setup.step1Item1Title")}
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">
+                          Google&apos;ın en yeni modellerine ücretsiz erişim anahtarı.
+                        </p>
                       </div>
                       <a
                         href="https://aistudio.google.com/app/apikey"
@@ -206,8 +240,12 @@ export default function AIFlashcardSetupPage() {
 
                     <div className="p-4 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02] flex flex-col justify-between">
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">{t("setup.step1Item2Title")}</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">{t("setup.step1Item2Desc")}</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                          {t("setup.step1Item2Title")}
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">
+                          {t("setup.step1Item2Desc")}
+                        </p>
                       </div>
                       <a
                         href="https://console.groq.com/keys"
@@ -222,8 +260,12 @@ export default function AIFlashcardSetupPage() {
 
                     <div className="p-4 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02] flex flex-col justify-between">
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">{t("setup.step1Item3Title")}</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">{t("setup.step1Item3Desc")}</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
+                          {t("setup.step1Item3Title")}
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-4">
+                          {t("setup.step1Item3Desc")}
+                        </p>
                       </div>
                       <a
                         href="https://ollama.com"
@@ -259,7 +301,9 @@ export default function AIFlashcardSetupPage() {
                     <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400 animate-spin-slow" />
                     {t("setup.step2Title")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("setup.step2Description")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("setup.step2Description")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center text-center py-6 relative z-10">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md mb-4">
@@ -269,7 +313,8 @@ export default function AIFlashcardSetupPage() {
                     Ayarlar Panelini Açın
                   </h3>
                   <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-6 font-medium">
-                    Uygulamanın Ayarlar sayfasına giderek tercih ettiğiniz sağlayıcıyı seçebilir ve API anahtarınızı güvenle kaydedebilirsiniz.
+                    Uygulamanın Ayarlar sayfasına giderek tercih ettiğiniz sağlayıcıyı seçebilir ve
+                    API anahtarınızı güvenle kaydedebilirsiniz.
                   </p>
                   <Button
                     onClick={() => router.push("/settings")}
@@ -287,7 +332,9 @@ export default function AIFlashcardSetupPage() {
                     <Layers className="w-5 h-5 text-green-600 dark:text-green-400" />
                     {t("setup.step3Title")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("setup.step3Description")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("setup.step3Description")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -296,8 +343,12 @@ export default function AIFlashcardSetupPage() {
                         1
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">Yapay Zeka Sağlayıcısı Seçimi</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">Gemini, Groq veya Ollama seçeneklerinden birini belirleyin.</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          Yapay Zeka Sağlayıcısı Seçimi
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">
+                          Gemini, Groq veya Ollama seçeneklerinden birini belirleyin.
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]">
@@ -305,8 +356,13 @@ export default function AIFlashcardSetupPage() {
                         2
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">Anahtarı Girin ve Model Seçin</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">API anahtarınızı yapıştırın. Model olarak gemini-2.0-flash veya istediğiniz bir modeli tanımlayın.</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          Anahtarı Girin ve Model Seçin
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">
+                          API anahtarınızı yapıştırın. Model olarak gemini-2.0-flash veya
+                          istediğiniz bir modeli tanımlayın.
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]">
@@ -314,8 +370,13 @@ export default function AIFlashcardSetupPage() {
                         3
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">Ayarları Kaydedin</h4>
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">Sayfanın altındaki &quot;Ayarları Kaydet&quot; butonuna basarak değişiklikleri tarayıcınıza kaydedin.</p>
+                        <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          Ayarları Kaydedin
+                        </h4>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">
+                          Sayfanın altındaki &quot;Ayarları Kaydet&quot; butonuna basarak
+                          değişiklikleri tarayıcınıza kaydedin.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -333,7 +394,9 @@ export default function AIFlashcardSetupPage() {
                     <CheckCircle className="w-5 h-5 text-green-500" />
                     {t("testing.testTitle")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("testing.testDescription")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("testing.testDescription")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
@@ -343,13 +406,20 @@ export default function AIFlashcardSetupPage() {
                       { step: 3, title: t("testing.step3Title"), desc: t("testing.step3Desc") },
                       { step: 4, title: t("testing.step4Title"), desc: t("testing.step4Desc") },
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]">
+                      <div
+                        key={idx}
+                        className="flex items-start gap-3 p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]"
+                      >
                         <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
                           {item.step}
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">{item.title}</h4>
-                          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">{item.desc}</p>
+                          <h4 className="font-bold text-sm text-[#1d1d1f] dark:text-[#f5f5f7]">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium mt-0.5">
+                            {item.desc}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -375,7 +445,9 @@ export default function AIFlashcardSetupPage() {
                     <Zap className="w-5 h-5 text-yellow-500" />
                     {t("testing.performanceTitle")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("testing.performanceDescription")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("testing.performanceDescription")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -412,7 +484,9 @@ export default function AIFlashcardSetupPage() {
                     <AlertTriangle className="w-5 h-5 text-orange-500" />
                     {t("troubleshooting.title")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("troubleshooting.description")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("troubleshooting.description")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
@@ -494,7 +568,9 @@ export default function AIFlashcardSetupPage() {
                     <Settings className="w-5 h-5 text-gray-500" />
                     {t("troubleshooting.debugTitle")}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">{t("troubleshooting.debugDescription")}</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {t("troubleshooting.debugDescription")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-3 border border-slate-200/50 dark:border-white/[0.05] rounded-2xl bg-white/40 dark:bg-white/[0.02]">
@@ -538,14 +614,16 @@ export default function AIFlashcardSetupPage() {
                   <Brain className="w-4 h-4 mr-2" />
                   {t("quickActions.testAi")}
                 </Button>
-                <Button onClick={() => router.push("/flashcard")} variant="outline" className="bg-white dark:bg-white/5 border-slate-200/50 dark:border-white/10 rounded-xl">
+                <Button
+                  onClick={() => router.push("/flashcard")}
+                  variant="outline"
+                  className="bg-white dark:bg-white/5 border-slate-200/50 dark:border-white/10 rounded-xl"
+                >
                   <BookOpen className="w-4 h-4 mr-2" />
                   {t("quickActions.backToFlashcard")}
                 </Button>
                 <Button
-                  onClick={() =>
-                    window.open("https://aistudio.google.com/app/apikey", "_blank")
-                  }
+                  onClick={() => window.open("https://aistudio.google.com/app/apikey", "_blank")}
                   variant="outline"
                   className="bg-white dark:bg-white/5 border-slate-200/50 dark:border-white/10 rounded-xl"
                 >

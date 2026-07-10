@@ -7,9 +7,17 @@ import { AIFactory } from "@/services/ai/AIFactory";
 const FlashcardRecommendationInputSchema = z.object({
   userId: z.string().describe("Kullanıcının ID'si."),
   subject: z.string().describe("Flashcard önerileri için ders konusu."),
-  performanceData: z.string().describe("localStorage'dan alınan kullanıcının performans verilerinin JSON string'i."),
-  currentFlashcardData: z.string().describe("Kullanıcının mevcut flashcard ilerlemesinin JSON string'i."),
-  studyMode: z.enum(["review", "new", "difficult", "general"]).describe("Kullanıcının şu anda bulunduğu çalışma modu. 'general' ise genel bir performans tavsiyesi isteniyor demektir."),
+  performanceData: z
+    .string()
+    .describe("localStorage'dan alınan kullanıcının performans verilerinin JSON string'i."),
+  currentFlashcardData: z
+    .string()
+    .describe("Kullanıcının mevcut flashcard ilerlemesinin JSON string'i."),
+  studyMode: z
+    .enum(["review", "new", "difficult", "general"])
+    .describe(
+      "Kullanıcının şu anda bulunduğu çalışma modu. 'general' ise genel bir performans tavsiyesi isteniyor demektir.",
+    ),
   targetStudyTime: z.number().optional().describe("Hedef çalışma süresi (dakika, opsiyonel)."),
   preferences: z.record(z.any()).optional().describe("User AI preferences"),
   language: z.enum(["tr", "en"]).optional().default("tr").describe("Language for recommendations"),
@@ -18,8 +26,12 @@ const FlashcardRecommendationInputSchema = z.object({
 export type FlashcardRecommendationInput = z.infer<typeof FlashcardRecommendationInputSchema>;
 
 const FlashcardRecommendationOutputSchema = z.object({
-  recommendedStudyMode: z.enum(["review", "new", "difficult"]).describe("Öğrenci için önerilen çalışma modu."),
-  recommendedTopics: z.array(z.string()).describe("Öğrencinin odaklanması gereken spesifik konular."),
+  recommendedStudyMode: z
+    .enum(["review", "new", "difficult"])
+    .describe("Öğrenci için önerilen çalışma modu."),
+  recommendedTopics: z
+    .array(z.string())
+    .describe("Öğrencinin odaklanması gereken spesifik konular."),
   studyStrategy: z.string().describe("Kişiselleştirilmiş çalışma stratejisi önerisi (Türkçe)."),
   estimatedTime: z.number().describe("Tahmini çalışma süresi (dakika)."),
   confidence: z.number().describe("AI öneri güven seviyesi (0-1)."),
@@ -52,9 +64,10 @@ export async function getFlashcardRecommendation(
     }
 
     // Get real performance history
-    const pastPerformance = currentSubject === "Genel"
-      ? performanceHistory
-      : getPerformanceHistoryForSubject(currentSubject, input.userId);
+    const pastPerformance =
+      currentSubject === "Genel"
+        ? performanceHistory
+        : getPerformanceHistoryForSubject(currentSubject, input.userId);
 
     const isEnglish = input.language === "en";
 
@@ -97,7 +110,7 @@ ${JSON.stringify(pastPerformance, null, 2)}
 ## STUDENT INFORMATION:
 User ID: ${input.userId}
 Subject: ${input.subject}
-${input.studyMode === 'general' ? 'General Performance Assessment Requested' : `Current Study Mode: ${input.studyMode}`}
+${input.studyMode === "general" ? "General Performance Assessment Requested" : `Current Study Mode: ${input.studyMode}`}
 Target Study Time: ${input.targetStudyTime || 30} minutes
 
 Analyze the data and respond in THE FOLLOWING JSON FORMAT (with exactly the same keys):
@@ -147,7 +160,7 @@ ${JSON.stringify(pastPerformance, null, 2)}
 ## ÖĞRENCİ BİLGİLERİ:
 Kullanıcı ID: ${input.userId}
 Ders: ${input.subject}
-${input.studyMode === 'general' ? 'Genel Performans Değerlendirmesi İsteniyor' : `Mevcut Çalışma Modu: ${input.studyMode}`}
+${input.studyMode === "general" ? "Genel Performans Değerlendirmesi İsteniyor" : `Mevcut Çalışma Modu: ${input.studyMode}`}
 Hedef Çalışma Süresi: ${input.targetStudyTime || 30} dakika
 
 Verileri analiz et ve AŞAĞIDAKİ JSON FORMATINDA (birebir aynı anahtarlarla) yanıt dön:
@@ -174,14 +187,12 @@ Verileri analiz et ve AŞAĞIDAKİ JSON FORMATINDA (birebir aynı anahtarlarla) 
     return {
       recommendedStudyMode: input.studyMode === "general" ? "review" : input.studyMode,
       recommendedTopics: isEnglish ? ["General Review"] : ["Genel Tekrar"],
-      studyStrategy: isEnglish 
+      studyStrategy: isEnglish
         ? "Since data analysis could not be performed, I recommend a general study strategy. Review your current flashcards and focus on topics you are struggling with."
         : "Veri analizi yapılamadığı için genel bir çalışma stratejisi öneriyorum. Mevcut flashcard'larınızı tekrar edin ve zorlandığınız konulara odaklanın.",
       estimatedTime: input.targetStudyTime || 30,
       confidence: 0.5,
-      reasoning: isEnglish 
-        ? `Error detail: ${  errorMessage}`
-        : `Hata detayı: ${  errorMessage}`,
+      reasoning: isEnglish ? `Error detail: ${errorMessage}` : `Hata detayı: ${errorMessage}`,
     };
   }
 }

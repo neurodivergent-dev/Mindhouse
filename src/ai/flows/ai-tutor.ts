@@ -5,15 +5,10 @@ import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 
 const AiTutorInputSchema = z.object({
-  question: z
-    .string()
-    .describe("The question text that the user is trying to solve."),
+  question: z.string().describe("The question text that the user is trying to solve."),
   subject: z.string().describe("The subject area of the question."),
   topic: z.string().describe("The specific topic of the question."),
-  userAnswer: z
-    .string()
-    .optional()
-    .describe("The user's current answer attempt (optional)."),
+  userAnswer: z.string().optional().describe("The user's current answer attempt (optional)."),
   difficulty: z
     .enum(["Kolay", "Orta", "Zor"])
     .optional()
@@ -28,10 +23,7 @@ const AiTutorInputSchema = z.object({
     .optional()
     .describe("The multiple choice options for the question."),
   correctAnswer: z.string().optional().describe("The correct answer text."),
-  explanation: z
-    .string()
-    .optional()
-    .describe("The standard explanation for the correct answer."),
+  explanation: z.string().optional().describe("The standard explanation for the correct answer."),
   step: z
     .enum(["hint", "explanation", "step-by-step", "concept-review"])
     .describe("What type of help the user needs."),
@@ -45,21 +37,14 @@ const AiTutorInputSchema = z.object({
 export type AiTutorInput = z.infer<typeof AiTutorInputSchema>;
 
 const AiTutorOutputSchema = z.object({
-  help: z
-    .string()
-    .describe("The help content based on the requested step type."),
-  confidence: z
-    .number()
-    .optional()
-    .describe("AI confidence in the explanation (0-1)."),
+  help: z.string().describe("The help content based on the requested step type."),
+  confidence: z.number().optional().describe("AI confidence in the explanation (0-1)."),
 });
 
 export type AiTutorOutput = z.infer<typeof AiTutorOutputSchema>;
 
 // Difficulty translation function
-function translateDifficulty(
-  difficulty: string,
-): "Kolay" | "Orta" | "Zor" | undefined {
+function translateDifficulty(difficulty: string): "Kolay" | "Orta" | "Zor" | undefined {
   const difficultyMap: Record<string, "Kolay" | "Orta" | "Zor"> = {
     Easy: "Kolay",
     Medium: "Orta",
@@ -77,7 +62,7 @@ function translateDifficulty(
 
 export async function getAiTutorHelp(
   input: AiTutorInput,
-  preferences?: Partial<AIPreferences>
+  preferences?: Partial<AIPreferences>,
 ): Promise<AiTutorOutput> {
   const lang = input.language || "tr";
   const isEnglish = lang === "en";
@@ -88,12 +73,16 @@ export async function getAiTutorHelp(
     if (isEnglish) {
       displayDifficulty = input.difficulty || "Unspecified";
       // If Turkish label slipped in, try reverse map (simple)
-      if (displayDifficulty === "Kolay") {displayDifficulty = "Easy";}
-      else if (displayDifficulty === "Orta") {displayDifficulty = "Medium";}
-      else if (displayDifficulty === "Zor") {displayDifficulty = "Hard";}
+      if (displayDifficulty === "Kolay") {
+        displayDifficulty = "Easy";
+      } else if (displayDifficulty === "Orta") {
+        displayDifficulty = "Medium";
+      } else if (displayDifficulty === "Zor") {
+        displayDifficulty = "Hard";
+      }
     } else {
-      displayDifficulty = input.difficulty 
-        ? (translateDifficulty(input.difficulty) || input.difficulty) 
+      displayDifficulty = input.difficulty
+        ? translateDifficulty(input.difficulty) || input.difficulty
         : "Belirtilmemiş";
     }
 
@@ -207,15 +196,17 @@ DİKKAT: Yanıtın KESİNLİKLE ve SADECE aşağıdaki JSON formatında olmalıd
 }`;
 
     // We use a simplified and highly permissive schema for the LLM to prevent Zod validation errors
-    const LLMAiTutorOutputSchema = z.object({
-      help: z.string().optional(),
-      text: z.string().optional(),
-      response: z.string().optional(),
-      answer: z.string().optional(),
-      ipucu: z.string().optional(),
-      mesaj: z.string().optional(),
-      confidence: z.any().optional(),
-    }).catchall(z.any());
+    const LLMAiTutorOutputSchema = z
+      .object({
+        help: z.string().optional(),
+        text: z.string().optional(),
+        response: z.string().optional(),
+        answer: z.string().optional(),
+        ipucu: z.string().optional(),
+        mesaj: z.string().optional(),
+        confidence: z.any().optional(),
+      })
+      .catchall(z.any());
 
     const result = await provider.generateObject<any>({
       schema: LLMAiTutorOutputSchema,
@@ -223,28 +214,44 @@ DİKKAT: Yanıtın KESİNLİKLE ve SADECE aşağıdaki JSON formatında olmalıd
     });
 
     // Smart extraction: Try known keys first
-    let helpText = result.help || result.text || result.response || result.answer || result.ipucu || result.mesaj || result.açıklama || result.content || result.data;
-    
-    if (!helpText && typeof result === 'object' && result !== null) {
+    let helpText =
+      result.help ||
+      result.text ||
+      result.response ||
+      result.answer ||
+      result.ipucu ||
+      result.mesaj ||
+      result.açıklama ||
+      result.content ||
+      result.data;
+
+    if (!helpText && typeof result === "object" && result !== null) {
       // Find all string values
-      const stringValues = Object.values(result).filter(val => typeof val === 'string' && val.trim().length > 0) as string[];
-      
+      const stringValues = Object.values(result).filter(
+        (val) => typeof val === "string" && val.trim().length > 0,
+      ) as string[];
+
       if (stringValues.length > 0) {
         // Fallback to the LONGEST string, which is almost certainly the actual explanation/help text
         // rather than a status word like "success" or "true".
-        helpText = stringValues.reduce((longest, current) => current.length > longest.length ? current : longest, "");
+        helpText = stringValues.reduce(
+          (longest, current) => (current.length > longest.length ? current : longest),
+          "",
+        );
       }
     }
 
-    helpText = helpText || (isEnglish 
-      ? "I don't know how I can help you right now. Please review the question again."
-      : "Sana şu anda nasıl yardımcı olabileceğimi bilemiyorum. Lütfen soruyu tekrar gözden geçir.");
-    
-    const confidenceNum = typeof result.confidence === 'number' ? result.confidence : 0.8;
+    helpText =
+      helpText ||
+      (isEnglish
+        ? "I don't know how I can help you right now. Please review the question again."
+        : "Sana şu anda nasıl yardımcı olabileceğimi bilemiyorum. Lütfen soruyu tekrar gözden geçir.");
+
+    const confidenceNum = typeof result.confidence === "number" ? result.confidence : 0.8;
 
     return {
       help: helpText,
-      confidence: confidenceNum
+      confidence: confidenceNum,
     };
   } catch (error) {
     console.error("AI Tutor Error:", error);

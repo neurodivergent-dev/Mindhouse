@@ -103,14 +103,19 @@ export default function ContactPage() {
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
                     <MessageSquare className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("formTitle")}</span>
+                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("formTitle")}
+                  </span>
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm mt-1">
                   {t("formDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col pb-6">
-                <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6 flex-1 flex flex-col justify-between">
+                <form
+                  onSubmit={(e) => void handleSubmit(e)}
+                  className="space-y-6 flex-1 flex flex-col justify-between"
+                >
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -186,18 +191,14 @@ export default function ContactPage() {
                 {submitStatus === "success" && (
                   <Alert className="mt-4 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
                     <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {t("successMessage")}
-                    </AlertDescription>
+                    <AlertDescription>{t("successMessage")}</AlertDescription>
                   </Alert>
                 )}
 
                 {submitStatus === "error" && (
                   <Alert className="mt-4 border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {t("errorMessage")}
-                    </AlertDescription>
+                    <AlertDescription>{t("errorMessage")}</AlertDescription>
                   </Alert>
                 )}
               </CardContent>
@@ -211,7 +212,9 @@ export default function ContactPage() {
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
                     <Building className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{tCommon("appName")}</span>
+                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {tCommon("appName")}
+                  </span>
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm mt-1">
                   {t("companyTagline")}
@@ -222,25 +225,33 @@ export default function ContactPage() {
                   <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
                     <Mail className="h-4 w-4 text-blue-500" />
                   </div>
-                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">info@mindhouse.com</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    info@mindhouse.com
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
                     <Phone className="h-4 w-4 text-green-500" />
                   </div>
-                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">+90 (212) 555-0123</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    +90 (212) 555-0123
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
                     <MapPin className="h-4 w-4 text-red-500" />
                   </div>
-                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("location")}</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("location")}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
                     <Clock className="h-4 w-4 text-purple-500" />
                   </div>
-                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("workingHours")}</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("workingHours")}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -251,24 +262,32 @@ export default function ContactPage() {
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
                     <Users className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("supportChannelsTitle")}</span>
+                  <span className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("supportChannelsTitle")}
+                  </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 flex-1 flex flex-col justify-center pb-6">
                 <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/40 dark:bg-white/5 border border-slate-200/50 dark:border-white/10">
-                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("technicalSupport")}</span>
+                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("technicalSupport")}
+                  </span>
                   <Badge className="bg-blue-500/10 text-blue-500 border-0 font-extrabold px-3 py-1 text-xs rounded-full shadow-none">
                     {t("badgeFast")}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/40 dark:bg-white/5 border border-slate-200/50 dark:border-white/10">
-                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("sales")}</span>
+                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("sales")}
+                  </span>
                   <Badge className="bg-green-500/10 text-green-500 border-0 font-extrabold px-3 py-1 text-xs rounded-full shadow-none">
                     {t("badgeActive")}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/40 dark:bg-white/5 border border-slate-200/50 dark:border-white/10">
-                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("partnership")}</span>
+                  <span className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("partnership")}
+                  </span>
                   <Badge className="bg-purple-500/10 text-purple-500 border-0 font-extrabold px-3 py-1 text-xs rounded-full shadow-none">
                     {t("badgeOpen")}
                   </Badge>
@@ -279,9 +298,7 @@ export default function ContactPage() {
         </div>
 
         <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            {t("faqTitle")}
-          </h2>
+          <h2 className="text-3xl font-bold text-center mb-8">{t("faqTitle")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {faqItems.map((faq) => (
               <Card key={faq.question} className="border-gradient-question">
@@ -289,9 +306,7 @@ export default function ContactPage() {
                   <CardTitle className="text-lg">{faq.question}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {faq.answer}
-                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">{faq.answer}</p>
                 </CardContent>
               </Card>
             ))}

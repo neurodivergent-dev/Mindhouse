@@ -1,4 +1,4 @@
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logError } from "@/lib/error-logger";
 import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
@@ -34,16 +34,11 @@ export async function POST(request: NextRequest) {
     const { flashcards } = body;
 
     if (!Array.isArray(flashcards) || flashcards.length === 0) {
-      return NextResponse.json(
-        { error: "Flashcards array is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Flashcards array is required" }, { status: 400 });
     }
 
     // Validate each flashcard has required fields
-    const invalidFlashcards = flashcards.filter(
-      (fc) => !fc.question || !fc.answer || !fc.subject,
-    );
+    const invalidFlashcards = flashcards.filter((fc) => !fc.question || !fc.answer || !fc.subject);
 
     if (invalidFlashcards.length > 0) {
       return NextResponse.json(
@@ -67,30 +62,30 @@ export async function POST(request: NextRequest) {
       next_review: fc.nextReview || null,
     }));
 
-    const { data, error } = await supabase
-      .from("flashcards")
-      .insert(flashcardData)
-      .select();
+    const { data, error } = await supabase.from("flashcards").insert(flashcardData).select();
 
     if (error) {
-      logError("Supabase bulk insert error", error, { userId, flashcardCount: flashcardData.length });
+      logError("Supabase bulk insert error", error, {
+        userId,
+        flashcardCount: flashcardData.length,
+      });
       return NextResponse.json(
         { error: "Failed to create flashcards", details: error.message },
         { status: 500 },
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      created: data?.length || 0,
-      flashcards: data || [],
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        created: data?.length || 0,
+        flashcards: data || [],
+      },
+      { status: 201 },
+    );
   } catch (error) {
     logError("Flashcard bulk creation API error", error, { userId });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -112,10 +107,7 @@ export async function PUT(request: NextRequest) {
     updates = extractedUpdates;
 
     if (!Array.isArray(updates) || updates.length === 0) {
-      return NextResponse.json(
-        { error: "Updates array is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Updates array is required" }, { status: 400 });
     }
 
     const results = [];
@@ -158,9 +150,6 @@ export async function PUT(request: NextRequest) {
     });
   } catch (error) {
     logError("Flashcard bulk update API error", error, { userId, updateCount: updates?.length });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

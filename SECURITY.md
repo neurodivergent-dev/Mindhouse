@@ -33,30 +33,35 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ### 🔍 What to Expect
 
 **If the vulnerability is accepted:**
+
 - We will acknowledge receipt within 48 hours
 - We will investigate and provide regular updates
 - We will release a security patch as soon as possible
 - We will credit you in the security advisory (unless you prefer to remain anonymous)
 
 **If the vulnerability is declined:**
+
 - We will explain why and provide technical reasoning
 - We may suggest alternative approaches or improvements
 
 ## 🔒 Current Security Features
 
 ### Authentication & Authorization
+
 - ✅ **Supabase Auth Integration:** Secure user authentication with JWT tokens
 - ✅ **Row Level Security (RLS):** Database-level access control for all tables
 - ✅ **TypeScript Strict Mode:** Complete type safety throughout the application
 - ✅ **Secure Password Management:** Encrypted password storage and secure change process
 
 ### Data Protection
+
 - ✅ **HTTPS Enforcement:** All communications encrypted with TLS
 - ✅ **Secure File Uploads:** Cloudinary integration with validation
 - ✅ **Input Sanitization:** Protection against XSS and injection attacks
 - ✅ **Content Security Policy:** CSP headers implemented
 
 ### AI Security
+
 - ✅ **API Key Management:** Secure storage of AI service credentials
 - ✅ **Request Validation:** All AI requests validated before processing
 - ✅ **Rate Limiting:** Protection against API abuse
@@ -65,6 +70,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ## 🛡️ Security Best Practices
 
 ### For Developers
+
 1. **Never commit sensitive data** (API keys, passwords, etc.)
 2. **Use environment variables** for all configuration
 3. **Validate all user inputs** before processing
@@ -72,6 +78,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 5. **Keep dependencies updated** regularly
 
 ### For Users
+
 1. **Use strong passwords** and enable 2FA when available
 2. **Keep your browser updated**
 3. **Report suspicious activity** immediately
@@ -80,6 +87,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ## 🔧 Security Configuration
 
 ### Environment Variables
+
 ```bash
 # Required for production
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -92,6 +100,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret
 ```
 
 ### Security Headers
+
 ```typescript
 // Implemented in next.config.ts
 contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -100,6 +109,7 @@ contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 ## 📋 Security Checklist
 
 ### Before Deployment
+
 - [ ] All environment variables are properly configured
 - [ ] Database RLS policies are active
 - [ ] HTTPS is enforced
@@ -108,6 +118,7 @@ contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 - [ ] API keys are rotated and secure
 
 ### Regular Maintenance
+
 - [ ] Weekly dependency updates
 - [ ] Monthly security audits
 - [ ] Quarterly penetration testing
@@ -116,12 +127,14 @@ contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 ## 🚨 Known Security Considerations
 
 ### Current Limitations
+
 - ⚠️ **API Rate Limiting:** Not fully implemented across all endpoints
 - ⚠️ **CSRF Protection:** Missing in some areas
 - ⚠️ **Security Headers:** Some headers could be enhanced
 - ⚠️ **Input Sanitization:** Some areas need improvement
 
 ### Planned Improvements
+
 - 🔄 **Enhanced Rate Limiting:** Implement comprehensive rate limiting
 - 🔄 **CSRF Tokens:** Add CSRF protection to all forms
 - 🔄 **Security Headers:** Implement additional security headers
@@ -141,4 +154,4 @@ This security policy is part of the Mindhouse project and is covered under the s
 
 **Last Updated:** August 2025  
 **Version:** 1.0.0  
-**Next Review:** August 2025 
+**Next Review:** August 2025

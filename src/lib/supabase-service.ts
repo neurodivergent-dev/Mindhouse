@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Service role client for server-side operations (bypasses RLS)
 const supabaseServiceRole = createClient(

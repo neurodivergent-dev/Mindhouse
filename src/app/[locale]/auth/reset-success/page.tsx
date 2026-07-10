@@ -3,13 +3,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Brain, ArrowLeft, Shield } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -59,9 +53,7 @@ export default function ResetSuccessPage() {
                 <Shield className="h-6 w-6" />
                 {t("title")}
               </CardTitle>
-              <CardDescription className="text-base">
-                {t("description")}
-              </CardDescription>
+              <CardDescription className="text-base">{t("description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -78,9 +70,7 @@ export default function ResetSuccessPage() {
                 {t("signIn")}
               </Button>
 
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t("autoRedirect")}
-              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t("autoRedirect")}</p>
             </CardContent>
           </Card>
         </motion.div>

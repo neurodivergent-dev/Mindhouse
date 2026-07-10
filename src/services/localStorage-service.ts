@@ -188,15 +188,10 @@ class LocalStorageService {
   }
 
   getFlashcardProgressByUser(userId: string): FlashcardProgress[] {
-    return this.getFlashcardProgress().filter(
-      (progress) => progress.userId === userId,
-    );
+    return this.getFlashcardProgress().filter((progress) => progress.userId === userId);
   }
 
-  getFlashcardProgressBySubject(
-    userId: string,
-    subject: string,
-  ): FlashcardProgress[] {
+  getFlashcardProgressBySubject(userId: string, subject: string): FlashcardProgress[] {
     return this.getFlashcardProgress().filter(
       (progress) => progress.userId === userId && progress.subject === subject,
     );
@@ -236,10 +231,7 @@ class LocalStorageService {
     return this.getPerformanceData().filter((data) => data.userId === userId);
   }
 
-  getPerformanceDataBySubject(
-    userId: string,
-    subject: string,
-  ): PerformanceData | null {
+  getPerformanceDataBySubject(userId: string, subject: string): PerformanceData | null {
     return (
       this.getPerformanceData().find(
         (data) => data.userId === userId && data.subject === subject,
@@ -269,16 +261,12 @@ class LocalStorageService {
       if (existing) {
         const totalTests = existing.totalTests + 1;
         const newAverageScore =
-          (existing.averageScore * existing.totalTests + scorePercentage) /
-          totalTests;
+          (existing.averageScore * existing.totalTests + scorePercentage) / totalTests;
         const newAverageTimeSpent =
-          (existing.averageTimeSpent * existing.totalTests + timeSpentMinutes) /
-          totalTests;
+          (existing.averageTimeSpent * existing.totalTests + timeSpentMinutes) / totalTests;
 
         // Merge weak topics (simple approach - you might want more sophisticated logic)
-        const combinedWeakTopics = [
-          ...new Set([...existing.weakTopics, ...weakTopics]),
-        ];
+        const combinedWeakTopics = [...new Set([...existing.weakTopics, ...weakTopics])];
 
         performanceData[existingIndex] = {
           id: existing.id,
@@ -358,10 +346,7 @@ class LocalStorageService {
       };
     }
 
-    const totalTests = performanceData.reduce(
-      (sum, data) => sum + data.totalTests,
-      0,
-    );
+    const totalTests = performanceData.reduce((sum, data) => sum + data.totalTests, 0);
     const weightedScoreSum = performanceData.reduce(
       (sum, data) => sum + data.averageScore * data.totalTests,
       0,
@@ -382,10 +367,7 @@ class LocalStorageService {
 
   getRecentResults(userId: string, limit = 10): QuizResult[] {
     return this.getQuizResultsByUser(userId)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, limit);
   }
 
@@ -507,15 +489,10 @@ class LocalStorageService {
   }
 
   saveAIChatSession(
-    session: Omit<
-      AIChatSession,
-      "id" | "createdAt" | "updatedAt" | "messageCount"
-    >,
+    session: Omit<AIChatSession, "id" | "createdAt" | "updatedAt" | "messageCount">,
   ): AIChatSession {
     const sessions = this.getAIChatSessions();
-    const existingIndex = sessions.findIndex(
-      (s) => s.sessionId === session.sessionId,
-    );
+    const existingIndex = sessions.findIndex((s) => s.sessionId === session.sessionId);
 
     const newSession: AIChatSession = {
       ...session,
@@ -538,10 +515,7 @@ class LocalStorageService {
     return newSession;
   }
 
-  updateAIChatSession(
-    sessionId: string,
-    updates: Partial<AIChatSession>,
-  ): boolean {
+  updateAIChatSession(sessionId: string, updates: Partial<AIChatSession>): boolean {
     const sessions = this.getAIChatSessions();
     const sessionIndex = sessions.findIndex((s) => s.sessionId === sessionId);
 
@@ -615,9 +589,7 @@ class LocalStorageService {
       (session) =>
         session.title?.toLowerCase().includes(term) ||
         session.subject.toLowerCase().includes(term) ||
-        session.messages.some((msg) =>
-          msg.content.toLowerCase().includes(term),
-        ),
+        session.messages.some((msg) => msg.content.toLowerCase().includes(term)),
     );
   }
 }

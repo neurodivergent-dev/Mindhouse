@@ -6,4 +6,4 @@
     "source.fixAll.eslint": "explicit"
   },
   "typescript.preferences.importModuleSpecifier": "relative"
-} 
+}

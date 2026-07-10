@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge";
 
 import { Brain, Target, BookOpen, Sparkles, Zap, TrendingUp } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { getFlashcardRecommendation, type FlashcardRecommendationOutput } from "@/ai/flows/flashcard-recommendation";
+import {
+  getFlashcardRecommendation,
+  type FlashcardRecommendationOutput,
+} from "@/ai/flows/flashcard-recommendation";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -48,7 +51,10 @@ interface AIPerformanceRecommendationProps {
 }
 
 // In-memory storage for AI recommendations
-let aiRecommendationStorage: { recommendation: FlashcardRecommendationOutput; timestamp: string } | null = null;
+let aiRecommendationStorage: {
+  recommendation: FlashcardRecommendationOutput;
+  timestamp: string;
+} | null = null;
 
 export default function AIPerformanceRecommendation({
   performanceData,
@@ -58,7 +64,9 @@ export default function AIPerformanceRecommendation({
   const t = useTranslations("AIPerformance");
   const locale = useLocale();
   const { toast } = useToast();
-  const [aiRecommendation, setAiRecommendation] = useState<FlashcardRecommendationOutput | null>(null);
+  const [aiRecommendation, setAiRecommendation] = useState<FlashcardRecommendationOutput | null>(
+    null,
+  );
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
 
   // Load saved recommendation on component mount
@@ -114,45 +122,53 @@ export default function AIPerformanceRecommendation({
     try {
       // Translation helper to ensure AI gets localized context
       const translateSubject = (subject: string) => {
-        if (locale === "tr" || !subject) {return subject;}
+        if (locale === "tr" || !subject) {
+          return subject;
+        }
         const map: Record<string, string> = {
-          "Matematik": "Mathematics",
-          "Fizik": "Physics",
-          "Kimya": "Chemistry",
-          "Biyoloji": "Biology",
-          "Tarih": "History",
+          Matematik: "Mathematics",
+          Fizik: "Physics",
+          Kimya: "Chemistry",
+          Biyoloji: "Biology",
+          Tarih: "History",
           "Türk Dili ve Edebiyatı": "Turkish Language & Literature",
-          "İngilizce": "English",
-          "Coğrafya": "Geography",
-          "Felsefe": "Philosophy",
-          "Din Kültürü": "Religion"
+          İngilizce: "English",
+          Coğrafya: "Geography",
+          Felsefe: "Philosophy",
+          "Din Kültürü": "Religion",
         };
         return map[subject] || subject;
       };
 
       // Find the subject with lowest performance
-      const worstPerformingSubject = [...performanceData]
-        .sort((a, b) => a.averageScore - b.averageScore)[0];
-        
-      const translatedWorstSubject = worstPerformingSubject ? translateSubject(worstPerformingSubject.subject) : "Genel";
+      const worstPerformingSubject = [...performanceData].sort(
+        (a, b) => a.averageScore - b.averageScore,
+      )[0];
+
+      const translatedWorstSubject = worstPerformingSubject
+        ? translateSubject(worstPerformingSubject.subject)
+        : "Genel";
 
       // Prepare performance data for AI (translated so AI uses correct locale words)
       const combinedData = {
-        performanceData: performanceData.map(d => ({...d, subject: translateSubject(d.subject)})),
-        quizResults: recentResults.map(r => ({...r, subject: translateSubject(r.subject)})),
+        performanceData: performanceData.map((d) => ({
+          ...d,
+          subject: translateSubject(d.subject),
+        })),
+        quizResults: recentResults.map((r) => ({ ...r, subject: translateSubject(r.subject) })),
         studyHistory: [],
         flashcardProgress: [],
-        currentSubject: translatedWorstSubject
+        currentSubject: translatedWorstSubject,
       };
       const performanceDataString = JSON.stringify(combinedData);
 
       // Get the most recent weak topics from recent results
       recentResults
         .slice(-3)
-        .flatMap(result => {
+        .flatMap((result) => {
           if (Array.isArray(result.weakTopics)) {
             return result.weakTopics;
-          } else if (typeof result.weakTopics === 'object') {
+          } else if (typeof result.weakTopics === "object") {
             return Object.keys(result.weakTopics);
           }
           return [];
@@ -194,9 +210,14 @@ export default function AIPerformanceRecommendation({
   };
 
   return (
-    <Dialog open={Boolean(aiRecommendation)} onOpenChange={(open) => {
-      if (!open) {hideRecommendation();}
-    }}>
+    <Dialog
+      open={Boolean(aiRecommendation)}
+      onOpenChange={(open) => {
+        if (!open) {
+          hideRecommendation();
+        }
+      }}
+    >
       <div className={className}>
         <div
           className="apple-glass-card cursor-pointer h-full"
@@ -228,7 +249,9 @@ export default function AIPerformanceRecommendation({
                 </div>
               </div>
             )}
-            <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("aiAnalysis")}</h3>
+            <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+              {t("aiAnalysis")}
+            </h3>
             <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
               {isLoadingRecommendation ? t("analyzing") : t("getAiRecommendation")}
             </p>
@@ -249,8 +272,12 @@ export default function AIPerformanceRecommendation({
                   <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-[#007aff] dark:text-[#0a84ff]" />
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("smartStudyRecommendation")}</h3>
-                  <p className="text-sm sm:text-base font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("preparedBasedOnAnalysis")}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("smartStudyRecommendation")}
+                  </h3>
+                  <p className="text-sm sm:text-base font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                    {t("preparedBasedOnAnalysis")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -312,14 +339,14 @@ export default function AIPerformanceRecommendation({
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Button
-                  onClick={() => window.location.href = `/flashcard`}
+                  onClick={() => (window.location.href = `/flashcard`)}
                   className="flex-1 bg-[#007aff] hover:bg-[#007aff]/90 text-white border-0 shadow-md transition-all duration-300 py-6 text-base font-semibold rounded-xl"
                 >
                   <BookOpen className="h-5 w-5 mr-2" />
                   {t("goToFlashcards")}
                 </Button>
                 <Button
-                  onClick={() => window.location.href = "/quiz"}
+                  onClick={() => (window.location.href = "/quiz")}
                   variant="outline"
                   className="flex-1 border border-[#e5e5ea] dark:border-[#38383a] bg-transparent hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] text-[#1d1d1f] dark:text-[#f5f5f7] transition-all duration-300 py-6 text-base font-semibold rounded-xl shadow-sm"
                 >

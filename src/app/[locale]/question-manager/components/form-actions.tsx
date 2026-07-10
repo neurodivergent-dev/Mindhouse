@@ -11,11 +11,7 @@ interface FormActionsProps {
   isCreating: boolean;
 }
 
-export default function FormActions({
-  onSubmit,
-  onReset,
-  isCreating,
-}: FormActionsProps) {
+export default function FormActions({ onSubmit, onReset, isCreating }: FormActionsProps) {
   const t = useTranslations("QuestionManager");
 
   const handleSubmitClick = () => {

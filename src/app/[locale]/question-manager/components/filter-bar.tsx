@@ -76,7 +76,12 @@ interface DifficultyFilterProps {
   getDifficultyLabel: (difficulty: string) => string;
 }
 
-function DifficultyFilter({ value, onChange, allLabel, getDifficultyLabel }: DifficultyFilterProps) {
+function DifficultyFilter({
+  value,
+  onChange,
+  allLabel,
+  getDifficultyLabel,
+}: DifficultyFilterProps) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full sm:w-32">

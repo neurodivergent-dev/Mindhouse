@@ -95,9 +95,9 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
       canvas.width = 480;
       canvas.height = 320;
 
-             // Draw initial background
-       ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#1f2937" : "#f0f0f0";
-       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw initial background
+      ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#1f2937" : "#f0f0f0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Initialize game objects
       initializeGame();
@@ -183,10 +183,10 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
         return;
       }
 
-             // Clear canvas and draw background
-       ctx.clearRect(0, 0, canvas.width, canvas.height);
-       ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#1f2937" : "#f0f0f0";
-       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Clear canvas and draw background
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#1f2937" : "#f0f0f0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw bricks
       drawBricks(ctx);
@@ -212,51 +212,54 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
       // Move paddle
       movePaddle();
       // Check win condition
-       if (bricks.every((brick) => brick.status === 0)) {
-         setGameState("won");
-         setIsPlaying(false);
-         setTimeout(() => {
-           toast({
-             title: `🎉 ${  t("won")}`,
-             description: t("toastScore", { score }),
-           });
-         }, 100);
-         onGameComplete?.();
-       }
+      if (bricks.every((brick) => brick.status === 0)) {
+        setGameState("won");
+        setIsPlaying(false);
+        setTimeout(() => {
+          toast({
+            title: `🎉 ${t("won")}`,
+            description: t("toastScore", { score }),
+          });
+        }, 100);
+        onGameComplete?.();
+      }
 
-       // Check lose condition
-       if (ballRef.current.y + ballRef.current.dy < ballRef.current.radius) {
-         ballRef.current.dy = -ballRef.current.dy;
-       } else if (ballRef.current.y + ballRef.current.dy > canvas.height - ballRef.current.radius) {
-         if (ballRef.current.x > paddle.x && ballRef.current.x < paddle.x + paddle.width) {
-           ballRef.current.dy = -ballRef.current.dy;
-         } else {
-           setLives((prev) => {
-             if (prev - 1 === 0) {
-               setGameState("gameOver");
-               setIsPlaying(false);
-               setTimeout(() => {
-                 toast({
-                   title: `💥 ${  t("lost")}`,
-                   description: t("toastFinalScore", { score }),
-                 });
-               }, 100);
-               return 0;
-             }
-             return prev - 1;
-           });
-           ballRef.current = {
-             x: canvas.width / 2,
-             y: canvas.height - 30,
-             dx: 3,
-             dy: -3,
-             radius: 5,
-           };
-         }
-       }
+      // Check lose condition
+      if (ballRef.current.y + ballRef.current.dy < ballRef.current.radius) {
+        ballRef.current.dy = -ballRef.current.dy;
+      } else if (ballRef.current.y + ballRef.current.dy > canvas.height - ballRef.current.radius) {
+        if (ballRef.current.x > paddle.x && ballRef.current.x < paddle.x + paddle.width) {
+          ballRef.current.dy = -ballRef.current.dy;
+        } else {
+          setLives((prev) => {
+            if (prev - 1 === 0) {
+              setGameState("gameOver");
+              setIsPlaying(false);
+              setTimeout(() => {
+                toast({
+                  title: `💥 ${t("lost")}`,
+                  description: t("toastFinalScore", { score }),
+                });
+              }, 100);
+              return 0;
+            }
+            return prev - 1;
+          });
+          ballRef.current = {
+            x: canvas.width / 2,
+            y: canvas.height - 30,
+            dx: 3,
+            dy: -3,
+            radius: 5,
+          };
+        }
+      }
 
       // Wall collision
-      if (ballRef.current.x + ballRef.current.dx > canvas.width - ballRef.current.radius || ballRef.current.x + ballRef.current.dx < ballRef.current.radius) {
+      if (
+        ballRef.current.x + ballRef.current.dx > canvas.width - ballRef.current.radius ||
+        ballRef.current.x + ballRef.current.dx < ballRef.current.radius
+      ) {
         ballRef.current.dx = -ballRef.current.dx;
       }
     }, 16);
@@ -264,22 +267,22 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     return () => clearInterval(gameLoop);
   }, [isPlaying, gameState, paddle, bricks, score, lives, onGameComplete, toast]);
 
-     // Draw functions
-   const drawBall = (ctx: CanvasRenderingContext2D) => {
-     ctx.beginPath();
-     ctx.arc(ballRef.current.x, ballRef.current.y, ballRef.current.radius, 0, Math.PI * 2);
-     ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
-     ctx.fill();
-     ctx.closePath();
-   };
+  // Draw functions
+  const drawBall = (ctx: CanvasRenderingContext2D) => {
+    ctx.beginPath();
+    ctx.arc(ballRef.current.x, ballRef.current.y, ballRef.current.radius, 0, Math.PI * 2);
+    ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#60a5fa" : "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  };
 
-   const drawPaddle = (ctx: CanvasRenderingContext2D) => {
-     ctx.beginPath();
-     ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
-     ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
-     ctx.fill();
-     ctx.closePath();
-   };
+  const drawPaddle = (ctx: CanvasRenderingContext2D) => {
+    ctx.beginPath();
+    ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
+    ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#60a5fa" : "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  };
 
   const drawBricks = (ctx: CanvasRenderingContext2D) => {
     bricks.forEach((brick) => {
@@ -293,19 +296,19 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
     });
   };
 
-     const drawScore = (ctx: CanvasRenderingContext2D) => {
-     ctx.font = "16px Arial";
-     ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
-     ctx.fillText(t("score", { score: scoreRef.current }), 8, 20);
-   };
+  const drawScore = (ctx: CanvasRenderingContext2D) => {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#60a5fa" : "#0095DD";
+    ctx.fillText(t("score", { score: scoreRef.current }), 8, 20);
+  };
 
-   const drawLives = (ctx: CanvasRenderingContext2D) => {
-     ctx.font = "16px Arial";
-     ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#60a5fa" : "#0095DD";
-     if (canvasRef.current) {
-       ctx.fillText(t("lives", { lives: livesRef.current }), canvasRef.current.width - 65, 20);
-     }
-   };
+  const drawLives = (ctx: CanvasRenderingContext2D) => {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = document.documentElement.classList.contains("dark") ? "#60a5fa" : "#0095DD";
+    if (canvasRef.current) {
+      ctx.fillText(t("lives", { lives: livesRef.current }), canvasRef.current.width - 65, 20);
+    }
+  };
 
   // Collision detection
   const collisionDetection = () => {
@@ -454,7 +457,9 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
         const ctx = canvas.getContext("2d");
         if (ctx) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = document.documentElement.classList.contains('dark') ? "#1f2937" : "#f0f0f0";
+          ctx.fillStyle = document.documentElement.classList.contains("dark")
+            ? "#1f2937"
+            : "#f0f0f0";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
 
           drawBricks(ctx);
@@ -520,19 +525,19 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
           />
         </div>
 
-                 {/* Game Controls */}
-         <div className="flex items-center justify-center gap-2">
-           {gameState === "menu" && (
-             <Button
-               onClick={() => {
-                 startGame();
-               }}
-               className="flex items-center gap-2"
-             >
-               <Play className="w-4 h-4" />
-               {t("startGame")}
-             </Button>
-           )}
+        {/* Game Controls */}
+        <div className="flex items-center justify-center gap-2">
+          {gameState === "menu" && (
+            <Button
+              onClick={() => {
+                startGame();
+              }}
+              className="flex items-center gap-2"
+            >
+              <Play className="w-4 h-4" />
+              {t("startGame")}
+            </Button>
+          )}
 
           {gameState === "playing" && (
             <>
@@ -555,49 +560,58 @@ const BreakoutLoadingGame: React.FC<BreakoutLoadingGameProps> = ({
           )}
         </div>
 
-                 {/* Game Instructions */}
-         <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-           <p className="hidden md:block">{t("controls")}</p>
-           <p className="block md:hidden">{t("controlsMobile")}</p>
-           <p>{t("instructions")}</p>
-         </div>
+        {/* Game Instructions */}
+        <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="hidden md:block">{t("controls")}</p>
+          <p className="block md:hidden">{t("controlsMobile")}</p>
+          <p>{t("instructions")}</p>
+        </div>
 
-         {/* Mobile Controls */}
-         <div className="block md:hidden">
-           <div className="flex justify-center gap-4">
-             <Button
-               variant="outline"
-               size="lg"
-               className="w-16 h-16 flex items-center justify-center"
-               onTouchStart={() => setLeftPressed(true)}
-               onTouchEnd={() => setLeftPressed(false)}
-               onMouseDown={() => setLeftPressed(true)}
-               onMouseUp={() => setLeftPressed(false)}
-               onMouseLeave={() => setLeftPressed(false)}
-             >
-               <ChevronLeft className="w-6 h-6" />
-             </Button>
-             <Button
-               variant="outline"
-               size="lg"
-               className="w-16 h-16 flex items-center justify-center"
-               onTouchStart={() => setRightPressed(true)}
-               onTouchEnd={() => setRightPressed(false)}
-               onMouseDown={() => setRightPressed(true)}
-               onMouseUp={() => setRightPressed(false)}
-               onMouseLeave={() => setRightPressed(false)}
-             >
-               <ChevronRight className="w-6 h-6" />
-             </Button>
-           </div>
-         </div>
+        {/* Mobile Controls */}
+        <div className="block md:hidden">
+          <div className="flex justify-center gap-4">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-16 h-16 flex items-center justify-center"
+              onTouchStart={() => setLeftPressed(true)}
+              onTouchEnd={() => setLeftPressed(false)}
+              onMouseDown={() => setLeftPressed(true)}
+              onMouseUp={() => setLeftPressed(false)}
+              onMouseLeave={() => setLeftPressed(false)}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-16 h-16 flex items-center justify-center"
+              onTouchStart={() => setRightPressed(true)}
+              onTouchEnd={() => setRightPressed(false)}
+              onMouseDown={() => setRightPressed(true)}
+              onMouseUp={() => setRightPressed(false)}
+              onMouseLeave={() => setRightPressed(false)}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </div>
+        </div>
 
         {/* Game Stats */}
         <div className="flex justify-center gap-4 text-sm">
           <Badge variant="outline">{t("score", { score })}</Badge>
           <Badge variant="outline">{t("lives", { lives })}</Badge>
           <Badge variant="outline">
-            {t("status", { status: gameState === "menu" ? t("menu") : gameState === "playing" ? t("playing") : gameState === "won" ? t("won") : t("lost") })}
+            {t("status", {
+              status:
+                gameState === "menu"
+                  ? t("menu")
+                  : gameState === "playing"
+                    ? t("playing")
+                    : gameState === "won"
+                      ? t("won")
+                      : t("lost"),
+            })}
           </Badge>
         </div>
       </CardContent>

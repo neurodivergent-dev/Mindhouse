@@ -2,13 +2,7 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Subject, QuestionFormData } from "@/types/question-manager";
@@ -51,7 +45,10 @@ export default function QuestionForm({
   const t = useTranslations("QuestionManager");
 
   return (
-    <Card id="question-form" className="border-gradient-question shadow-lg h-full transition-all duration-300">
+    <Card
+      id="question-form"
+      className="border-gradient-question shadow-lg h-full transition-all duration-300"
+    >
       <CardHeader className="p-3 sm:p-6 flex flex-row items-start justify-between space-y-0">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2 text-base sm:text-xl">
@@ -69,11 +66,7 @@ export default function QuestionForm({
             onClick={onToggleFocus}
             className="h-8 w-8 text-[#86868b] dark:text-[#a1a1a6] hover:bg-slate-100 dark:hover:bg-white/[0.05] rounded-xl flex-shrink-0 transition-colors"
           >
-            {isFocused ? (
-              <Minimize2 className="w-4 h-4" />
-            ) : (
-              <Maximize2 className="w-4 h-4" />
-            )}
+            {isFocused ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </Button>
         )}
       </CardHeader>
@@ -152,11 +145,7 @@ export default function QuestionForm({
           />
         )}
 
-        <FormActions
-          onSubmit={onSubmit}
-          onReset={onReset}
-          isCreating={isCreating}
-        />
+        <FormActions onSubmit={onSubmit} onReset={onReset} isCreating={isCreating} />
       </CardContent>
     </Card>
   );

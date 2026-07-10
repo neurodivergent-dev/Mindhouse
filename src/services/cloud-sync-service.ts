@@ -65,8 +65,8 @@ export class CloudSyncService {
 
       // Sync subjects (avoid duplicates by name)
       for (const localSubject of localSubjects) {
-        const existsInCloud = cloudSubjects.some(cloud =>
-          cloud.name.toLowerCase().trim() === localSubject.name.toLowerCase().trim(),
+        const existsInCloud = cloudSubjects.some(
+          (cloud) => cloud.name.toLowerCase().trim() === localSubject.name.toLowerCase().trim(),
         );
 
         if (!existsInCloud) {
@@ -87,15 +87,16 @@ export class CloudSyncService {
 
       // Sync questions (avoid duplicates by text)
       for (const localQuestion of localQuestions) {
-        const existsInCloud = cloudQuestions.some(cloud =>
-          cloud.text.toLowerCase().trim() === localQuestion.text.toLowerCase().trim() &&
-          cloud.subject.toLowerCase().trim() === localQuestion.subject.toLowerCase().trim(),
+        const existsInCloud = cloudQuestions.some(
+          (cloud) =>
+            cloud.text.toLowerCase().trim() === localQuestion.text.toLowerCase().trim() &&
+            cloud.subject.toLowerCase().trim() === localQuestion.subject.toLowerCase().trim(),
         );
 
         if (!existsInCloud) {
           try {
             // Find correct answer from options
-            const correctAnswer = localQuestion.options?.find(opt => opt.isCorrect)?.text || "";
+            const correctAnswer = localQuestion.options?.find((opt) => opt.isCorrect)?.text || "";
 
             const cloudQuestion = await QuestionService.createQuestion({
               subject_id: CloudSyncService.generateSubjectId(localQuestion.subject),
@@ -124,7 +125,6 @@ export class CloudSyncService {
         message: `${syncedSubjects} ders ve ${syncedQuestions} soru buluta senkronize edildi`,
         syncedData: { subjects: syncedSubjects, questions: syncedQuestions },
       };
-
     } catch {
       return {
         success: false,
@@ -160,8 +160,8 @@ export class CloudSyncService {
 
       // Merge cloud subjects to local (avoid duplicates)
       for (const cloudSubject of cloudSubjects) {
-        const existsLocally = localSubjects.some(local =>
-          local.name.toLowerCase().trim() === cloudSubject.name.toLowerCase().trim(),
+        const existsLocally = localSubjects.some(
+          (local) => local.name.toLowerCase().trim() === cloudSubject.name.toLowerCase().trim(),
         );
 
         if (!existsLocally) {
@@ -182,9 +182,10 @@ export class CloudSyncService {
 
       // Merge cloud questions to local (avoid duplicates)
       for (const cloudQuestion of cloudQuestions) {
-        const existsLocally = localQuestions.some(local =>
-          local.text.toLowerCase().trim() === cloudQuestion.text.toLowerCase().trim() &&
-          local.subject.toLowerCase().trim() === cloudQuestion.subject.toLowerCase().trim(),
+        const existsLocally = localQuestions.some(
+          (local) =>
+            local.text.toLowerCase().trim() === cloudQuestion.text.toLowerCase().trim() &&
+            local.subject.toLowerCase().trim() === cloudQuestion.subject.toLowerCase().trim(),
         );
 
         if (!existsLocally) {
@@ -206,7 +207,8 @@ export class CloudSyncService {
             id: cloudQuestion.id,
             subject: cloudQuestion.subject,
             topic: cloudQuestion.topic,
-            type: cloudQuestion.type as "multiple-choice" | "true-false" | "calculation" | "case-study",
+            type: cloudQuestion.type as
+              "multiple-choice" | "true-false" | "calculation" | "case-study",
             difficulty: cloudQuestion.difficulty as "Easy" | "Medium" | "Hard",
             text: cloudQuestion.text,
             options,
@@ -224,7 +226,6 @@ export class CloudSyncService {
         message: `${loadedSubjects} ders ve ${loadedQuestions} soru buluttan yüklendi`,
         loadedData: { subjects: loadedSubjects, questions: loadedQuestions },
       };
-
     } catch {
       return {
         success: false,
@@ -254,8 +255,12 @@ export class CloudSyncService {
       const cloudToLocalResult = await CloudSyncService.syncCloudToLocal();
 
       const totalSynced: SyncData = {
-        subjects: (localToCloudResult.syncedData?.subjects || 0) + (cloudToLocalResult.loadedData?.subjects || 0),
-        questions: (localToCloudResult.syncedData?.questions || 0) + (cloudToLocalResult.loadedData?.questions || 0),
+        subjects:
+          (localToCloudResult.syncedData?.subjects || 0) +
+          (cloudToLocalResult.loadedData?.subjects || 0),
+        questions:
+          (localToCloudResult.syncedData?.questions || 0) +
+          (cloudToLocalResult.loadedData?.questions || 0),
       };
 
       return {
@@ -263,7 +268,6 @@ export class CloudSyncService {
         message: `Senkronizasyon tamamlandı: ${totalSynced.subjects} ders, ${totalSynced.questions} soru işlendi`,
         syncData: totalSynced,
       };
-
     } catch {
       return {
         success: false,
@@ -343,7 +347,6 @@ export class CloudSyncService {
         localCounts,
         cloudCounts,
       };
-
     } catch {
       const localSubjects = UnifiedStorageService.getSubjects();
       const localQuestions = UnifiedStorageService.getQuestions();
@@ -409,10 +412,7 @@ export class CloudSyncService {
    */
   static async testCloudConnection(): Promise<{ success: boolean; message: string }> {
     try {
-      const { error } = await supabase
-        .from("subjects")
-        .select("count")
-        .limit(1);
+      const { error } = await supabase.from("subjects").select("count").limit(1);
 
       if (error) {
         return {

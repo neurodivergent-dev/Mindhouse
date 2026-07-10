@@ -48,17 +48,14 @@ export const handleAIGeneratedSubjects = async (
 
     toast({
       title: messages?.successTitle ?? "Başarılı!",
-      description:
-        messages?.successDescription ??
-        `${aiSubjects.length} ders başarıyla eklendi`,
+      description: messages?.successDescription ?? `${aiSubjects.length} ders başarıyla eklendi`,
     });
 
     return true;
   } catch {
     toast({
       title: messages?.errorTitle ?? "Hata!",
-      description:
-        messages?.errorDescription ?? "Dersler eklenirken bir hata oluştu",
+      description: messages?.errorDescription ?? "Dersler eklenirken bir hata oluştu",
       variant: "destructive",
     });
     return false;

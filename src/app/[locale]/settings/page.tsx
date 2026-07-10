@@ -123,7 +123,7 @@ export default function SettingsPage() {
   const persistAiPreferences = (updated: any) => {
     try {
       localStorage.setItem("aiPreferences", JSON.stringify(updated));
-    } catch { }
+    } catch {}
   };
 
   // Also save on manual full save for AI part (already does, but ensure)
@@ -210,9 +210,7 @@ export default function SettingsPage() {
 
         // 3. Default subject ayarla (use first active if none set)
         if (!loadedStudyPrefs.defaultSubject && activeSubjects.length > 0) {
-          const firstActiveSubject = activeSubjects.find(
-            (s: Subject) => s.isActive,
-          );
+          const firstActiveSubject = activeSubjects.find((s: Subject) => s.isActive);
           if (firstActiveSubject) {
             loadedStudyPrefs.defaultSubject = firstActiveSubject.name;
           }
@@ -232,10 +230,7 @@ export default function SettingsPage() {
       }
 
       const standardTimeOptions = [15, 30, 45, 60];
-      if (
-        loadedStudyPrefs.timeLimit &&
-        !standardTimeOptions.includes(loadedStudyPrefs.timeLimit)
-      ) {
+      if (loadedStudyPrefs.timeLimit && !standardTimeOptions.includes(loadedStudyPrefs.timeLimit)) {
         setCustomTimeValue(loadedStudyPrefs.timeLimit.toString());
         loadedStudyPrefs.timeLimit = -1;
       }
@@ -344,9 +339,7 @@ export default function SettingsPage() {
             if (data.settings) {
               setNotifications(data.settings.notifications || notifications);
               setAppearance(data.settings.appearance || appearance);
-              setStudyPreferences(
-                data.settings.studyPreferences || studyPreferences,
-              );
+              setStudyPreferences(data.settings.studyPreferences || studyPreferences);
             }
             toast({
               title: t("toasts.success"),
@@ -464,9 +457,7 @@ export default function SettingsPage() {
                   </Label>
                   <Select
                     value={appearance.fontSize}
-                    onValueChange={(value) =>
-                      setAppearance({ ...appearance, fontSize: value })
-                    }
+                    onValueChange={(value) => setAppearance({ ...appearance, fontSize: value })}
                   >
                     <SelectTrigger className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm">
                       <SelectValue />
@@ -481,7 +472,10 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                   <div>
-                    <Label htmlFor="compact-mode" className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    <Label
+                      htmlFor="compact-mode"
+                      className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >
                       {t("compact_mode")}
                     </Label>
                     <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
@@ -544,8 +538,12 @@ export default function SettingsPage() {
                       {subjects.filter((s) => s.isActive).length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
                           <BookOpen className="w-12 h-12 text-muted-foreground/50 mb-3" />
-                          <p className="text-sm font-medium text-muted-foreground mb-1">{t("no_subjects_yet")}</p>
-                          <p className="text-xs text-muted-foreground/70 mb-4">{t("add_subject_from_manager")}</p>
+                          <p className="text-sm font-medium text-muted-foreground mb-1">
+                            {t("no_subjects_yet")}
+                          </p>
+                          <p className="text-xs text-muted-foreground/70 mb-4">
+                            {t("add_subject_from_manager")}
+                          </p>
                           <Link href="/subject-manager">
                             <Button size="sm" variant="outline" className="text-xs">
                               <GraduationCap className="w-3 h-3 mr-1" />
@@ -572,10 +570,19 @@ export default function SettingsPage() {
                   </Label>
                   <div className="flex gap-2">
                     <Select
-                      value={studyPreferences.questionsPerQuiz === -1 ? "custom" : studyPreferences.questionsPerQuiz.toString()}
+                      value={
+                        studyPreferences.questionsPerQuiz === -1
+                          ? "custom"
+                          : studyPreferences.questionsPerQuiz.toString()
+                      }
                       onValueChange={(value) => {
-                        setStudyPreferences({ ...studyPreferences, questionsPerQuiz: value === "custom" ? -1 : parseInt(value) });
-                        if (value !== "custom") { setCustomQuestionsValue(""); };
+                        setStudyPreferences({
+                          ...studyPreferences,
+                          questionsPerQuiz: value === "custom" ? -1 : parseInt(value),
+                        });
+                        if (value !== "custom") {
+                          setCustomQuestionsValue("");
+                        }
                       }}
                     >
                       <SelectTrigger className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm">
@@ -606,10 +613,19 @@ export default function SettingsPage() {
                   </Label>
                   <div className="flex gap-2">
                     <Select
-                      value={studyPreferences.timeLimit === -1 ? "custom" : studyPreferences.timeLimit.toString()}
+                      value={
+                        studyPreferences.timeLimit === -1
+                          ? "custom"
+                          : studyPreferences.timeLimit.toString()
+                      }
                       onValueChange={(value) => {
-                        setStudyPreferences({ ...studyPreferences, timeLimit: value === "custom" ? -1 : parseInt(value) });
-                        if (value !== "custom") { setCustomTimeValue(""); };
+                        setStudyPreferences({
+                          ...studyPreferences,
+                          timeLimit: value === "custom" ? -1 : parseInt(value),
+                        });
+                        if (value !== "custom") {
+                          setCustomTimeValue("");
+                        }
                       }}
                     >
                       <SelectTrigger className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm">
@@ -637,30 +653,44 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                   <div>
-                    <Label htmlFor="show-timer" className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    <Label
+                      htmlFor="show-timer"
+                      className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >
                       {t("show_timer")}
                     </Label>
-                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("show_timer_desc")}</p>
+                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("show_timer_desc")}
+                    </p>
                   </div>
                   <Switch
                     id="show-timer"
                     checked={studyPreferences.showTimer}
-                    onCheckedChange={(checked) => setStudyPreferences({ ...studyPreferences, showTimer: checked })}
+                    onCheckedChange={(checked) =>
+                      setStudyPreferences({ ...studyPreferences, showTimer: checked })
+                    }
                     className="data-[state=checked]:bg-indigo-600 transition-colors"
                   />
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                   <div>
-                    <Label htmlFor="auto-submit" className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    <Label
+                      htmlFor="auto-submit"
+                      className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >
                       {t("auto_submit")}
                     </Label>
-                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("auto_submit_desc")}</p>
+                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                      {t("auto_submit_desc")}
+                    </p>
                   </div>
                   <Switch
                     id="auto-submit"
                     checked={studyPreferences.autoSubmit}
-                    onCheckedChange={(checked) => setStudyPreferences({ ...studyPreferences, autoSubmit: checked })}
+                    onCheckedChange={(checked) =>
+                      setStudyPreferences({ ...studyPreferences, autoSubmit: checked })
+                    }
                     className="data-[state=checked]:bg-indigo-600 transition-colors"
                   />
                 </div>
@@ -727,7 +757,10 @@ export default function SettingsPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleClearData} className="bg-red-600 hover:bg-red-700">
+                        <AlertDialogAction
+                          onClick={handleClearData}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
                           {t("delete")}
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -812,7 +845,9 @@ export default function SettingsPage() {
                         }}
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                       />
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("gemini_api_key_hint")}</p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("gemini_api_key_hint")}
+                      </p>
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wide">
@@ -822,10 +857,14 @@ export default function SettingsPage() {
                         id="gemini-model"
                         placeholder="gemini-2.0-flash, gemini-1.5-pro vs."
                         value={aiPreferences.geminiModel || "gemini-2.0-flash"}
-                        onChange={(e) => setAiPreferences({ ...aiPreferences, geminiModel: e.target.value })}
+                        onChange={(e) =>
+                          setAiPreferences({ ...aiPreferences, geminiModel: e.target.value })
+                        }
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                       />
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("gemini_model_hint")}</p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("gemini_model_hint")}
+                      </p>
                     </div>
                   </>
                 )}
@@ -857,10 +896,14 @@ export default function SettingsPage() {
                         id="groq-model"
                         placeholder="llama3-8b-8192"
                         value={aiPreferences.groqModel || "llama3-8b-8192"}
-                        onChange={(e) => setAiPreferences({ ...aiPreferences, groqModel: e.target.value })}
+                        onChange={(e) =>
+                          setAiPreferences({ ...aiPreferences, groqModel: e.target.value })
+                        }
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                       />
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("groq_model_hint")}</p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("groq_model_hint")}
+                      </p>
                     </div>
                   </>
                 )}
@@ -901,7 +944,9 @@ export default function SettingsPage() {
                         }}
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                       />
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("ollama_local_model_hint")}</p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("ollama_local_model_hint")}
+                      </p>
                     </div>
                   </>
                 )}
@@ -923,7 +968,9 @@ export default function SettingsPage() {
                         }}
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                       />
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{t("ollama_cloud_model_hint")}</p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("ollama_cloud_model_hint")}
+                      </p>
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wide">
@@ -961,11 +1008,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Feature Cards */}
-        <FeatureCards
-          title={t("platform_features")}
-          features={translatedFeatures}
-          columns={3}
-        />
+        <FeatureCards title={t("platform_features")} features={translatedFeatures} columns={3} />
       </div>
     </div>
   );

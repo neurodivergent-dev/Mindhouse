@@ -43,15 +43,19 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof Error) {
       if (error.message.includes("network") || error.message.includes("timeout")) {
-        errorMessage = "Resim servisi şu anda erişilebilir değil. Lütfen daha sonra tekrar deneyin.";
+        errorMessage =
+          "Resim servisi şu anda erişilebilir değil. Lütfen daha sonra tekrar deneyin.";
       } else if (error.message.includes("invalid") || error.message.includes("malformed")) {
         errorMessage = "Resim oluşturma isteği geçersiz. Lütfen farklı bir açıklama deneyin.";
       }
     }
 
-    return NextResponse.json({
-      error: errorMessage,
-      success: false,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: errorMessage,
+        success: false,
+      },
+      { status: 500 },
+    );
   }
 }

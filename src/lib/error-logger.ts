@@ -42,12 +42,12 @@ export class ErrorLogger {
       console.error(`[ERROR] ${message}`, {
         error: error instanceof Error ? { message: error.message, stack: error.stack } : error,
         context,
-        timestamp: errorLog.timestamp
+        timestamp: errorLog.timestamp,
       });
     } else {
       console.log(`[LOG] ${message}`, {
         context,
-        timestamp: errorLog.timestamp
+        timestamp: errorLog.timestamp,
       });
     }
   }
@@ -71,6 +71,10 @@ export class ErrorLogger {
 export const errorLogger = ErrorLogger.getInstance();
 
 // Convenience function for quick error logging
-export const logError = (message: string, error?: unknown, context?: Record<string, unknown>): void => {
+export const logError = (
+  message: string,
+  error?: unknown,
+  context?: Record<string, unknown>,
+): void => {
   errorLogger.logError(message, error, context);
 };

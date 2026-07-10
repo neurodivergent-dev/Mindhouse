@@ -40,9 +40,7 @@ export default function AIFeaturesShowcase() {
                 {t("title")}
               </span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t("subtitle")}
-            </p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("subtitle")}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -61,9 +59,15 @@ export default function AIFeaturesShowcase() {
                     {t("topicExplainerDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">{tLanding("badgeGoogleGemini")}</Badge>
-                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeMarkdown")}</Badge>
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">{t("badgeDynamicContent")}</Badge>
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">
+                      {tLanding("badgeGoogleGemini")}
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                      {t("badgeMarkdown")}
+                    </Badge>
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">
+                      {t("badgeDynamicContent")}
+                    </Badge>
                   </div>
                   <div className="mt-auto">
                     <Link href="/topic-explainer">
@@ -95,9 +99,15 @@ export default function AIFeaturesShowcase() {
                     {t("imageGenDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgePollinations")}</Badge>
-                    <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">{t("badgeEducational")}</Badge>
-                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeHighQuality")}</Badge>
+                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                      {t("badgePollinations")}
+                    </Badge>
+                    <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">
+                      {t("badgeEducational")}
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                      {t("badgeHighQuality")}
+                    </Badge>
                   </div>
                   <div className="mt-auto">
                     <Link href="/topic-explainer">
@@ -129,10 +139,18 @@ export default function AIFeaturesShowcase() {
                     {t("aiAssistantDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">{t("badge24Support")}</Badge>
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">{t("badgePersonalized")}</Badge>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">{t("badgeSmartQa")}</Badge>
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">{tNav("aiChatShort")}</Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                      {t("badge24Support")}
+                    </Badge>
+                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                      {t("badgePersonalized")}
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                      {t("badgeSmartQa")}
+                    </Badge>
+                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                      {tNav("aiChatShort")}
+                    </Badge>
                   </div>
                   <div className="mt-auto">
                     <Link href="/ai-chat">
@@ -164,10 +182,18 @@ export default function AIFeaturesShowcase() {
                     {t("modernTechStackDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">Next.js 15.3.3</Badge>
-                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">TypeScript</Badge>
-                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">Tailwind CSS</Badge>
-                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">{t("badgeEnterprise")}</Badge>
+                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                      Next.js 15.3.3
+                    </Badge>
+                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">
+                      TypeScript
+                    </Badge>
+                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                      Tailwind CSS
+                    </Badge>
+                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">
+                      {t("badgeEnterprise")}
+                    </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground mt-auto">
                     <div className="flex items-center gap-1 mb-1">
@@ -198,10 +224,18 @@ export default function AIFeaturesShowcase() {
                     {t("qualityAssuranceDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">{t("badgePythonScript")}</Badge>
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">ESLint</Badge>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">TypeScript</Badge>
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">{t("badgeTesting")}</Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                      {t("badgePythonScript")}
+                    </Badge>
+                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                      ESLint
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                      TypeScript
+                    </Badge>
+                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                      {t("badgeTesting")}
+                    </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground mt-auto">
                     <div className="flex items-center gap-1 mb-1">
@@ -232,9 +266,15 @@ export default function AIFeaturesShowcase() {
                     {t("aiPoweredPlatformDesc")}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">{t("badgeAiPowered")}</Badge>
-                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">{t("productionReady")}</Badge>
-                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">{t("badgeModernTech")}</Badge>
+                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                      {t("badgeAiPowered")}
+                    </Badge>
+                    <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">
+                      {t("productionReady")}
+                    </Badge>
+                    <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                      {t("badgeModernTech")}
+                    </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground mt-auto">
                     <div className="flex items-center gap-1 mb-1">

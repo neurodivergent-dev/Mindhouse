@@ -32,11 +32,7 @@ const generateDemoTopicData = (topic: string, subject: string): TopicData => {
       id: "intro",
       title: "Konuya Giriş",
       content: `${topic} konusu ${subject} dersinin temel yapı taşlarından biridir. Bu konuyu anlamak, daha karmaşık konuları öğrenmek için sağlam bir temel oluşturur.`,
-      examples: [
-        "Günlük hayattan örnekler",
-        "Basit formüller",
-        "Temel kavramlar",
-      ],
+      examples: ["Günlük hayattan örnekler", "Basit formüller", "Temel kavramlar"],
       tips: [
         "Konuyu parça parça öğrenin",
         "Her adımı tam anlamadan geçmeyin",
@@ -49,11 +45,7 @@ const generateDemoTopicData = (topic: string, subject: string): TopicData => {
       id: "core",
       title: "Ana Kavramlar",
       content: `${topic} konusunun merkezinde yer alan temel kavramları öğrenelim. Bu kavramlar, konunun geri kalanını anlamak için kritik öneme sahiptir.`,
-      examples: [
-        "Matematiksel ifadeler",
-        "Görsel diyagramlar",
-        "İnteraktif simülasyonlar",
-      ],
+      examples: ["Matematiksel ifadeler", "Görsel diyagramlar", "İnteraktif simülasyonlar"],
       tips: [
         "Kavramları kendi kelimelerinizle açıklayın",
         "Görselleştirmeleri dikkatle inceleyin",
@@ -66,11 +58,7 @@ const generateDemoTopicData = (topic: string, subject: string): TopicData => {
       id: "advanced",
       title: "İleri Seviye",
       content: `Artık ${topic} konusunun daha karmaşık yönlerini keşfedelim. Bu seviyede, konuyu farklı açılardan ele alacağız.`,
-      examples: [
-        "Karmaşık problemler",
-        "Gerçek hayat uygulamaları",
-        "Sınav soruları",
-      ],
+      examples: ["Karmaşık problemler", "Gerçek hayat uygulamaları", "Sınav soruları"],
       tips: [
         "Sabırlı olun, karmaşık konular zaman alır",
         "Farklı yöntemler deneyin",
@@ -155,12 +143,7 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
                 "Çarpım: d/dx(fg) = f'g + fg'",
                 "Bölüm: d/dx(f/g) = (f'g - fg')/g²",
               ],
-              keyConcepts: [
-                "Sabit Kuralı",
-                "Kuvvet Kuralı",
-                "Çarpım Kuralı",
-                "Bölüm Kuralı",
-              ],
+              keyConcepts: ["Sabit Kuralı", "Kuvvet Kuralı", "Çarpım Kuralı", "Bölüm Kuralı"],
             },
             {
               id: "applications",
@@ -246,11 +229,7 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
                 "Değişken değiştirme: ∫f(g(x))g'(x)dx = ∫f(u)du",
                 "Kısmi integral: ∫udv = uv - ∫vdu",
               ],
-              keyConcepts: [
-                "Değişken Değiştirme",
-                "Kısmi İntegral",
-                "Basit Kesirler",
-              ],
+              keyConcepts: ["Değişken Değiştirme", "Kısmi İntegral", "Basit Kesirler"],
             },
           ],
           totalTime: 40,
@@ -278,11 +257,7 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
               title: "Hareketin Temelleri",
               content:
                 "Kinematik, hareketin matematiksel açıklamasını yapar. Konum, hız ve ivme kavramları ile hareketi tanımlar.",
-              examples: [
-                "Bir arabanın yolda ilerlemesi",
-                "Bir topun düşmesi",
-                "Bir uçağın uçması",
-              ],
+              examples: ["Bir arabanın yolda ilerlemesi", "Bir topun düşmesi", "Bir uçağın uçması"],
               tips: [
                 "Hareketi vektörel olarak düşünün",
                 "Referans noktasını belirleyin",
@@ -298,11 +273,7 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
               title: "Kinematik Denklemleri",
               content:
                 "Sabit ivmeli hareket için kullanılan temel kinematik denklemlerini öğrenelim.",
-              examples: [
-                "Serbest düşme hareketi",
-                "Düzgün hızlanan hareket",
-                "Fren yapan araba",
-              ],
+              examples: ["Serbest düşme hareketi", "Düzgün hızlanan hareket", "Fren yapan araba"],
               tips: [
                 "Hangi denklemi kullanacağınızı belirleyin",
                 "Birimlere dikkat edin",
@@ -310,17 +281,8 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
               ],
               difficulty: "medium",
               estimatedTime: 12,
-              formulas: [
-                "v = v₀ + at",
-                "x = x₀ + v₀t + ½at²",
-                "v² = v₀² + 2a(x-x₀)",
-              ],
-              keyConcepts: [
-                "Başlangıç Hızı",
-                "Son Hız",
-                "Yer Değiştirme",
-                "Zaman",
-              ],
+              formulas: ["v = v₀ + at", "x = x₀ + v₀t + ½at²", "v² = v₀² + 2a(x-x₀)"],
+              keyConcepts: ["Başlangıç Hızı", "Son Hız", "Yer Değiştirme", "Zaman"],
             },
           ],
           totalTime: 30,
@@ -380,10 +342,7 @@ const getTopicSpecificContent = (topic: string, subject: string): TopicData => {
               ],
               difficulty: "hard",
               estimatedTime: 15,
-              formulas: [
-                "Verim = (Gerçek Verim / Teorik Verim) × 100",
-                "Konsantrasyon = n/V",
-              ],
+              formulas: ["Verim = (Gerçek Verim / Teorik Verim) × 100", "Konsantrasyon = n/V"],
               keyConcepts: ["Sınırlayıcı Reaktif", "Verim", "Konsantrasyon"],
             },
           ],

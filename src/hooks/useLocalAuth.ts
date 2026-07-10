@@ -95,9 +95,7 @@ export function useLocalAuth() {
     }
   };
 
-  const updateGuestPreferences = (
-    preferences: Partial<GuestUser["preferences"]>,
-  ) => {
+  const updateGuestPreferences = (preferences: Partial<GuestUser["preferences"]>) => {
     if (guestUser) {
       const updatedUser = {
         ...guestUser,
@@ -126,12 +124,8 @@ export function useLocalAuth() {
     const data = {
       user: guestUser,
       quizResults: JSON.parse(localStorage.getItem("guestQuizResults") || "[]"),
-      flashcardProgress: JSON.parse(
-        localStorage.getItem("guestFlashcardProgress") || "{}",
-      ),
-      performanceData: JSON.parse(
-        localStorage.getItem("guestPerformanceData") || "[]",
-      ),
+      flashcardProgress: JSON.parse(localStorage.getItem("guestFlashcardProgress") || "{}"),
+      performanceData: JSON.parse(localStorage.getItem("guestPerformanceData") || "[]"),
       settings: JSON.parse(localStorage.getItem("userSettings") || "{}"),
       exportDate: new Date().toISOString(),
     };
@@ -153,22 +147,13 @@ export function useLocalAuth() {
         setGuestUser(data.user);
       }
       if (data.quizResults) {
-        localStorage.setItem(
-          "guestQuizResults",
-          JSON.stringify(data.quizResults),
-        );
+        localStorage.setItem("guestQuizResults", JSON.stringify(data.quizResults));
       }
       if (data.flashcardProgress) {
-        localStorage.setItem(
-          "guestFlashcardProgress",
-          JSON.stringify(data.flashcardProgress),
-        );
+        localStorage.setItem("guestFlashcardProgress", JSON.stringify(data.flashcardProgress));
       }
       if (data.performanceData) {
-        localStorage.setItem(
-          "guestPerformanceData",
-          JSON.stringify(data.performanceData),
-        );
+        localStorage.setItem("guestPerformanceData", JSON.stringify(data.performanceData));
       }
       if (data.settings) {
         localStorage.setItem("userSettings", JSON.stringify(data.settings));
@@ -208,10 +193,7 @@ export function useLocalAuth() {
 
   // Determine current user (Supabase user takes precedence) - Memoized to prevent infinite re-renders
   const currentUser: AuthUser = useMemo(
-    () =>
-      supabaseUser
-        ? ({ ...supabaseUser, isGuest: false })
-        : guestUser,
+    () => (supabaseUser ? { ...supabaseUser, isGuest: false } : guestUser),
     [supabaseUser, guestUser],
   );
 

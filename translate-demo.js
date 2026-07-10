@@ -1,5 +1,5 @@
-const fs = require('fs');
-let content = fs.readFileSync('src/data/demo-data.ts', 'utf8');
+const fs = require("fs");
+let content = fs.readFileSync("src/data/demo-data.ts", "utf8");
 
 const translations = `
 const tMap: Record<string, string> = {
@@ -89,19 +89,23 @@ export const translateDemoData = (data: any, locale?: string) => {
 };
 `;
 
-if (!content.includes('translateDemoData')) {
-  content = content.replace('export const getDemoQuestions = (subjectNameOrId: string) => {', translations + '\nexport const getDemoQuestions = (subjectNameOrId: string, locale?: string) => {');
-  
+if (!content.includes("translateDemoData")) {
+  content = content.replace(
+    "export const getDemoQuestions = (subjectNameOrId: string) => {",
+    translations +
+      "\nexport const getDemoQuestions = (subjectNameOrId: string, locale?: string) => {",
+  );
+
   // also modify getDemoQuestions return
   content = content.replace(
-    'return demoQuestions[subjectId as keyof typeof demoQuestions] || [];',
-    'return translateDemoData(demoQuestions[subjectId as keyof typeof demoQuestions] || [], locale);'
+    "return demoQuestions[subjectId as keyof typeof demoQuestions] || [];",
+    "return translateDemoData(demoQuestions[subjectId as keyof typeof demoQuestions] || [], locale);",
   );
 
   content = content.replace(
-    'export const getAllDemoQuestions = () => Object.values(demoQuestions).flat();',
-    'export const getAllDemoQuestions = (locale?: string) => translateDemoData(Object.values(demoQuestions).flat(), locale);'
+    "export const getAllDemoQuestions = () => Object.values(demoQuestions).flat();",
+    "export const getAllDemoQuestions = (locale?: string) => translateDemoData(Object.values(demoQuestions).flat(), locale);",
   );
 
-  fs.writeFileSync('src/data/demo-data.ts', content);
+  fs.writeFileSync("src/data/demo-data.ts", content);
 }

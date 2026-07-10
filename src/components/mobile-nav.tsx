@@ -169,9 +169,7 @@ export default function MobileNav() {
                         alt={user?.user_metadata?.full_name || user?.email}
                       />
                       <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium">
-                        {user?.user_metadata?.full_name
-                          ?.charAt(0)
-                          .toUpperCase() ||
+                        {user?.user_metadata?.full_name?.charAt(0).toUpperCase() ||
                           user?.email?.charAt(0).toUpperCase() ||
                           "U"}
                       </AvatarFallback>
@@ -279,14 +277,10 @@ export default function MobileNav() {
                             <Avatar className="w-8 h-8 flex-shrink-0">
                               <AvatarImage
                                 src={user?.user_metadata?.avatar_url}
-                                alt={
-                                  user?.user_metadata?.full_name || user?.email
-                                }
+                                alt={user?.user_metadata?.full_name || user?.email}
                               />
                               <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium">
-                                {user?.user_metadata?.full_name
-                                  ?.charAt(0)
-                                  .toUpperCase() ||
+                                {user?.user_metadata?.full_name?.charAt(0).toUpperCase() ||
                                   user?.email?.charAt(0).toUpperCase() ||
                                   "U"}
                               </AvatarFallback>

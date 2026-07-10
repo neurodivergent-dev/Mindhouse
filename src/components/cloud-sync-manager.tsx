@@ -1,14 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useAuth } from '@/hooks/useAuth';
-import { CloudSyncService } from '@/services/cloud-sync-service';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Cloud, HardDrive, CheckCircle, AlertCircle, Database, Upload, Download, TestTube } from 'lucide-react';
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
+import { CloudSyncService } from "@/services/cloud-sync-service";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Loader2,
+  Cloud,
+  HardDrive,
+  CheckCircle,
+  AlertCircle,
+  Database,
+  Upload,
+  Download,
+  TestTube,
+} from "lucide-react";
 
 interface SyncStatus {
   hasLocalData: boolean;
@@ -23,7 +33,7 @@ interface SyncStatus {
   };
 }
 
-type SyncAction = 'upload' | 'download' | 'fullSync' | 'connectionTest' | '';
+type SyncAction = "upload" | "download" | "fullSync" | "connectionTest" | "";
 
 interface SyncState {
   isLoading: boolean;
@@ -33,17 +43,17 @@ interface SyncState {
 }
 
 export function CloudSyncManager() {
-  const t = useTranslations('CloudSync');
+  const t = useTranslations("CloudSync");
   const { isAuthenticated, user } = useAuth();
   const [state, setState] = useState<SyncState>({
     isLoading: false,
     error: null,
-    lastAction: '',
+    lastAction: "",
     syncStatus: null,
   });
 
   const updateState = (updates: Partial<SyncState>) => {
-    setState(prev => ({ ...prev, ...updates }));
+    setState((prev) => ({ ...prev, ...updates }));
   };
 
   const checkSyncStatus = async () => {
@@ -59,7 +69,7 @@ export function CloudSyncManager() {
     } catch (error) {
       updateState({
         isLoading: false,
-        error: t('syncStatusCheckFailed', { error: String(error) }),
+        error: t("syncStatusCheckFailed", { error: String(error) }),
       });
     }
   };
@@ -106,7 +116,7 @@ export function CloudSyncManager() {
 
       return result;
     } catch (error) {
-      const errorMessage = t('actionError', { action: actionLabel, error: String(error) });
+      const errorMessage = t("actionError", { action: actionLabel, error: String(error) });
       updateState({
         isLoading: false,
         error: errorMessage,
@@ -117,16 +127,20 @@ export function CloudSyncManager() {
   };
 
   const syncLocalToCloud = () => {
-    void handleSyncAction(CloudSyncService.syncLocalToCloud, 'upload', t('uploadAction'));
+    void handleSyncAction(CloudSyncService.syncLocalToCloud, "upload", t("uploadAction"));
   };
   const syncCloudToLocal = () => {
-    void handleSyncAction(CloudSyncService.syncCloudToLocal, 'download', t('downloadAction'));
+    void handleSyncAction(CloudSyncService.syncCloudToLocal, "download", t("downloadAction"));
   };
   const fullSync = () => {
-    void handleSyncAction(CloudSyncService.fullSync, 'fullSync', t('fullSyncAction'));
+    void handleSyncAction(CloudSyncService.fullSync, "fullSync", t("fullSyncAction"));
   };
   const testConnection = () => {
-    void handleSyncAction(CloudSyncService.testCloudConnection, 'connectionTest', t('connectionTestAction'));
+    void handleSyncAction(
+      CloudSyncService.testCloudConnection,
+      "connectionTest",
+      t("connectionTestAction"),
+    );
   };
 
   const clearError = () => {
@@ -139,11 +153,9 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cloud className="h-5 w-5" />
-            {t('title')}
+            {t("title")}
           </CardTitle>
-          <CardDescription>
-            {t('loginRequiredDesc')}
-          </CardDescription>
+          <CardDescription>{t("loginRequiredDesc")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -160,11 +172,9 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cloud className="h-5 w-5" />
-            {t('title')}
+            {t("title")}
           </CardTitle>
-          <CardDescription>
-            {t('accountSyncDesc', { email: user?.email ?? '' })}
-          </CardDescription>
+          <CardDescription>{t("accountSyncDesc", { email: user?.email ?? "" })}</CardDescription>
         </CardHeader>
       </Card>
 
@@ -175,7 +185,7 @@ export function CloudSyncManager() {
           <AlertDescription className="flex items-center justify-between">
             <span>{error}</span>
             <Button variant="outline" size="sm" onClick={clearError}>
-              {t('clear')}
+              {t("clear")}
             </Button>
           </AlertDescription>
         </Alert>
@@ -186,7 +196,7 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            {t('dataStatus')}
+            {t("dataStatus")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -197,7 +207,7 @@ export function CloudSyncManager() {
               ) : (
                 <Database className="h-4 w-4 mr-2" />
               )}
-              {t('checkStatus')}
+              {t("checkStatus")}
             </Button>
 
             {syncStatus && (
@@ -206,14 +216,18 @@ export function CloudSyncManager() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
-                    <span className="font-medium">{t('localData')}</span>
+                    <span className="font-medium">{t("localData")}</span>
                     <Badge variant={hasLocalData ? "default" : "secondary"}>
-                      {hasLocalData ? t('available') : t('notAvailable')}
+                      {hasLocalData ? t("available") : t("notAvailable")}
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <div>📚 {t('subjects')}: {syncStatus.localCounts.subjects}</div>
-                    <div>❓ {t('questions')}: {syncStatus.localCounts.questions}</div>
+                    <div>
+                      📚 {t("subjects")}: {syncStatus.localCounts.subjects}
+                    </div>
+                    <div>
+                      ❓ {t("questions")}: {syncStatus.localCounts.questions}
+                    </div>
                   </div>
                 </div>
 
@@ -221,14 +235,18 @@ export function CloudSyncManager() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Cloud className="h-4 w-4" />
-                    <span className="font-medium">{t('cloudData')}</span>
+                    <span className="font-medium">{t("cloudData")}</span>
                     <Badge variant={hasCloudData ? "default" : "secondary"}>
-                      {hasCloudData ? t('available') : t('notAvailable')}
+                      {hasCloudData ? t("available") : t("notAvailable")}
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <div>📚 {t('subjects')}: {syncStatus.cloudCounts.subjects}</div>
-                    <div>❓ {t('questions')}: {syncStatus.cloudCounts.questions}</div>
+                    <div>
+                      📚 {t("subjects")}: {syncStatus.cloudCounts.subjects}
+                    </div>
+                    <div>
+                      ❓ {t("questions")}: {syncStatus.cloudCounts.questions}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -242,11 +260,9 @@ export function CloudSyncManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5" />
-            {t('syncOperations')}
+            {t("syncOperations")}
           </CardTitle>
-          <CardDescription>
-            {t('syncDescription')}
-          </CardDescription>
+          <CardDescription>{t("syncDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -254,23 +270,21 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Upload className="h-4 w-4" />
-                <span className="font-medium">{t('uploadToCloud')}</span>
+                <span className="font-medium">{t("uploadToCloud")}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('uploadDesc')}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("uploadDesc")}</p>
               <Button
                 onClick={syncLocalToCloud}
                 disabled={isLoading || !hasLocalData}
                 variant="outline"
                 className="w-full"
               >
-                {isLoading && lastAction === 'upload' ? (
+                {isLoading && lastAction === "upload" ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <Upload className="h-4 w-4 mr-2" />
                 )}
-                {t('localToCloud')}
+                {t("localToCloud")}
               </Button>
             </div>
 
@@ -278,23 +292,21 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                <span className="font-medium">{t('downloadFromCloud')}</span>
+                <span className="font-medium">{t("downloadFromCloud")}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('downloadDesc')}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("downloadDesc")}</p>
               <Button
                 onClick={syncCloudToLocal}
                 disabled={isLoading || !hasCloudData}
                 variant="outline"
                 className="w-full"
               >
-                {isLoading && lastAction === 'download' ? (
+                {isLoading && lastAction === "download" ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                {t('cloudToLocal')}
+                {t("cloudToLocal")}
               </Button>
             </div>
 
@@ -302,22 +314,20 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
-                <span className="font-medium">{t('fullSync')}</span>
+                <span className="font-medium">{t("fullSync")}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('fullSyncDesc')}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("fullSyncDesc")}</p>
               <Button
                 onClick={fullSync}
                 disabled={isLoading || (!hasLocalData && !hasCloudData)}
                 className="w-full"
               >
-                {isLoading && lastAction === 'fullSync' ? (
+                {isLoading && lastAction === "fullSync" ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <CheckCircle className="h-4 w-4 mr-2" />
                 )}
-                {t('fullSync')}
+                {t("fullSync")}
               </Button>
             </div>
 
@@ -325,23 +335,21 @@ export function CloudSyncManager() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <TestTube className="h-4 w-4" />
-                <span className="font-medium">{t('connectionTest')}</span>
+                <span className="font-medium">{t("connectionTest")}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('connectionTestDesc')}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("connectionTestDesc")}</p>
               <Button
                 onClick={testConnection}
                 disabled={isLoading}
                 variant="secondary"
                 className="w-full"
               >
-                {isLoading && lastAction === 'connectionTest' ? (
+                {isLoading && lastAction === "connectionTest" ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <TestTube className="h-4 w-4 mr-2" />
                 )}
-                {t('testConnection')}
+                {t("testConnection")}
               </Button>
             </div>
           </div>
@@ -354,7 +362,7 @@ export function CloudSyncManager() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5" />
-              {t('recommendations')}
+              {t("recommendations")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -362,36 +370,28 @@ export function CloudSyncManager() {
               {!hasLocalData && !hasCloudData && (
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    {t('noDataYet')}
-                  </AlertDescription>
+                  <AlertDescription>{t("noDataYet")}</AlertDescription>
                 </Alert>
               )}
 
               {hasLocalData && !hasCloudData && (
                 <Alert>
                   <Upload className="h-4 w-4" />
-                  <AlertDescription>
-                    {t('localOnly')}
-                  </AlertDescription>
+                  <AlertDescription>{t("localOnly")}</AlertDescription>
                 </Alert>
               )}
 
               {!hasLocalData && hasCloudData && (
                 <Alert>
                   <Download className="h-4 w-4" />
-                  <AlertDescription>
-                    {t('cloudOnly')}
-                  </AlertDescription>
+                  <AlertDescription>{t("cloudOnly")}</AlertDescription>
                 </Alert>
               )}
 
               {hasLocalData && hasCloudData && (
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    {t('bothData')}
-                  </AlertDescription>
+                  <AlertDescription>{t("bothData")}</AlertDescription>
                 </Alert>
               )}
             </div>

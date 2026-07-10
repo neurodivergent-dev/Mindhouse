@@ -12,10 +12,7 @@ export async function POST(request: NextRequest) {
     const { subject, difficulty, questionCount = 10 } = requestBody;
 
     if (!subject) {
-      return NextResponse.json(
-        { error: "Subject is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Subject is required" }, { status: 400 });
     }
 
     // Demo mode check - Server-side check with header
@@ -34,8 +31,7 @@ export async function POST(request: NextRequest) {
         İngilizce: "subj_ingilizce_007",
       };
 
-      const subjectId =
-        subjectNameToId[subject as keyof typeof subjectNameToId] || subject;
+      const subjectId = subjectNameToId[subject as keyof typeof subjectNameToId] || subject;
 
       const demoQuestions = getDemoQuestions(subjectId);
 
@@ -49,10 +45,7 @@ export async function POST(request: NextRequest) {
 
       // Limit questions and shuffle
       const shuffled = filteredQuestions.sort(() => 0.5 - Math.random());
-      const selectedQuestions = shuffled.slice(
-        0,
-        Math.min(questionCount, shuffled.length),
-      );
+      const selectedQuestions = shuffled.slice(0, Math.min(questionCount, shuffled.length));
 
       if (selectedQuestions.length === 0) {
         return NextResponse.json(
@@ -81,10 +74,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (questions.length === 0) {
-      return NextResponse.json(
-        { error: "No questions found for this subject" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "No questions found for this subject" }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -100,9 +90,7 @@ export async function POST(request: NextRequest) {
 
       if (subject) {
         const demoQuestions = getDemoQuestions(subject);
-        const shuffled = demoQuestions
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 3);
+        const shuffled = demoQuestions.sort(() => 0.5 - Math.random()).slice(0, 3);
 
         return NextResponse.json({
           questions: shuffled,
@@ -113,10 +101,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(
-      { error: "Failed to generate quiz" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to generate quiz" }, { status: 500 });
   }
 }
 
@@ -150,9 +135,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data, { status: 200 });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to get quiz results" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to get quiz results" }, { status: 500 });
   }
 }

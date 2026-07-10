@@ -40,11 +40,7 @@ export class UserService {
 
   static async getUserById(id: string): Promise<User | null> {
     try {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const { data, error } = await supabase.from("users").select("*").eq("id", id).single();
 
       if (error) {
         return null;
@@ -85,9 +81,7 @@ export class SubjectService {
     return data || [];
   }
 
-  static async createSubject(
-    subject: InsertTables<"subjects">,
-  ): Promise<Subject | null> {
+  static async createSubject(subject: InsertTables<"subjects">): Promise<Subject | null> {
     // Get current user for created_by field
     const {
       data: { user },
@@ -171,10 +165,7 @@ export class SubjectService {
     return (data?.length ?? 0) > 0;
   }
 
-  static async toggleActive(
-    id: string,
-    isActive: boolean,
-  ): Promise<Subject | null> {
+  static async toggleActive(id: string, isActive: boolean): Promise<Subject | null> {
     return this.updateSubject(id, { is_active: isActive });
   }
 }
@@ -229,9 +220,7 @@ export class QuestionService {
     return data || [];
   }
 
-  static async createQuestion(
-    question: InsertTables<"questions">,
-  ): Promise<Question | null> {
+  static async createQuestion(question: InsertTables<"questions">): Promise<Question | null> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -330,9 +319,7 @@ export class QuestionService {
 
 // Quiz Result Service
 export class QuizResultService {
-  static async saveQuizResult(
-    result: InsertTables<"quiz_results">,
-  ): Promise<QuizResult | null> {
+  static async saveQuizResult(result: InsertTables<"quiz_results">): Promise<QuizResult | null> {
     const { data, error } = await supabase
       .from("quiz_results")
       .insert({
@@ -399,9 +386,7 @@ export class PerformanceAnalyticsService {
     return data;
   }
 
-  static async getAnalyticsByUser(
-    userId: string,
-  ): Promise<PerformanceAnalytics[]> {
+  static async getAnalyticsByUser(userId: string): Promise<PerformanceAnalytics[]> {
     const { data, error } = await supabase
       .from("performance_analytics")
       .select("*")
@@ -437,9 +422,7 @@ export class AIRecommendationService {
     return data;
   }
 
-  static async getRecommendationsByUser(
-    userId: string,
-  ): Promise<AIRecommendation[]> {
+  static async getRecommendationsByUser(userId: string): Promise<AIRecommendation[]> {
     const { data, error } = await supabase
       .from("ai_recommendations")
       .select("*")
@@ -490,10 +473,7 @@ export class FlashcardProgressService {
     return data || [];
   }
 
-  static async getProgressBySubject(
-    userId: string,
-    subject: string,
-  ): Promise<FlashcardProgress[]> {
+  static async getProgressBySubject(userId: string, subject: string): Promise<FlashcardProgress[]> {
     const { data, error } = await supabase
       .from("flashcard_progress")
       .select("*")

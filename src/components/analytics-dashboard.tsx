@@ -77,87 +77,91 @@ interface AnalyticsDashboardProps {
 const IMPROVEMENT_THRESHOLD = 60;
 
 const translateSubject = (subject: string, locale: string) => {
-  if (locale === "tr") {return subject;}
+  if (locale === "tr") {
+    return subject;
+  }
   const map: Record<string, string> = {
-    "Matematik": "Mathematics",
-    "Fizik": "Physics",
-    "Kimya": "Chemistry",
-    "Biyoloji": "Biology",
-    "Tarih": "History",
+    Matematik: "Mathematics",
+    Fizik: "Physics",
+    Kimya: "Chemistry",
+    Biyoloji: "Biology",
+    Tarih: "History",
     "Türk Dili ve Edebiyatı": "Turkish Language & Lit.",
     "Türk Dili": "Turkish Language",
-    "İngilizce": "English",
-    "Coğrafya": "Geography",
-    "Felsefe": "Philosophy",
-    "Din Kültürü": "Religion"
+    İngilizce: "English",
+    Coğrafya: "Geography",
+    Felsefe: "Philosophy",
+    "Din Kültürü": "Religion",
   };
   return map[subject] || subject;
 };
 
 const translateTopic = (topic: string, locale: string) => {
-  if (locale === "tr") {return topic;}
+  if (locale === "tr") {
+    return topic;
+  }
   const map: Record<string, string> = {
     "Türev Uygulamaları": "Derivative Applications",
     "İntegral Hesabı": "Integral Calculus",
-    "Logaritma": "Logarithms",
-    "Geometri": "Geometry",
-    "Cebir": "Algebra",
-    "Analiz": "Calculus",
+    Logaritma: "Logarithms",
+    Geometri: "Geometry",
+    Cebir: "Algebra",
+    Analiz: "Calculus",
     "Elektrik ve Manyetizma": "Electricity & Magnetism",
     "Dalga Hareketi": "Wave Motion",
     "Modern Fizik": "Modern Physics",
-    "Mekanik": "Mechanics",
-    "Termodinamik": "Thermodynamics",
-    "Elektrik": "Electricity",
+    Mekanik: "Mechanics",
+    Termodinamik: "Thermodynamics",
+    Elektrik: "Electricity",
     "Organik Kimya": "Organic Chemistry",
-    "Elektrokimya": "Electrochemistry",
+    Elektrokimya: "Electrochemistry",
     "Kimyasal Reaksiyonlar": "Chemical Reactions",
     "Anorganik Kimya": "Inorganic Chemistry",
     "Kimyasal Bağlar": "Chemical Bonds",
-    "Genetik": "Genetics",
-    "Ekoloji": "Ecology",
+    Genetik: "Genetics",
+    Ekoloji: "Ecology",
     "Hücre Bölünmesi": "Cell Division",
     "Hücre Biyolojisi": "Cell Biology",
-    "Sistemler": "Systems",
-    "Dokular": "Tissues",
+    Sistemler: "Systems",
+    Dokular: "Tissues",
     "Osmanlı Duraklama Dönemi": "Ottoman Stagnation Period",
-    "Tarih": "History",
+    Tarih: "History",
     "Tarihsel Olaylar": "Historical Events",
     "Tarihsel Süreçler": "Historical Processes",
     "Divan Edebiyatı": "Divan Literature",
     "Çağdaş Türk Edebiyatı": "Modern Turkish Lit.",
     "Dil Bilgisi": "Grammar",
-    "Edebiyat": "Literature",
+    Edebiyat: "Literature",
     "Çağdaş Edebiyat": "Modern Literature",
     "Grammar Tenses": "Grammar Tenses",
     "Reading Comprehension": "Reading Comprehension",
-    "Vocabulary": "Vocabulary",
+    Vocabulary: "Vocabulary",
     "Türk Dili": "Turkish Language",
-    "Coğrafya": "Geography",
-    "Felsefe": "Philosophy",
-    "Din Kültürü": "Religion"
+    Coğrafya: "Geography",
+    Felsefe: "Philosophy",
+    "Din Kültürü": "Religion",
   };
   return map[topic] || topic;
 };
 
 const translateDay = (day: string, locale: string) => {
-  if (locale === "tr") {return day;}
+  if (locale === "tr") {
+    return day;
+  }
   const map: Record<string, string> = {
-    "Pazartesi": "Monday",
-    "Salı": "Tuesday",
-    "Çarşamba": "Wednesday",
-    "Perşembe": "Thursday",
-    "Cuma": "Friday",
-    "Cumartesi": "Saturday",
-    "Pazar": "Sunday"
+    Pazartesi: "Monday",
+    Salı: "Tuesday",
+    Çarşamba: "Wednesday",
+    Perşembe: "Thursday",
+    Cuma: "Friday",
+    Cumartesi: "Saturday",
+    Pazar: "Sunday",
   };
   return map[day] || day;
 };
 
 // return the useMockData parameter
-export default function AnalyticsDashboard({
-  useMockData,
-}: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ useMockData }: AnalyticsDashboardProps) {
   const t = useTranslations("AnalyticsDashboard");
   const tDashboard = useTranslations("Dashboard");
   const locale = useLocale();
@@ -184,21 +188,25 @@ export default function AnalyticsDashboard({
       if (useMockData) {
         setAnalytics({
           ...demoAnalyticsData,
-          weakTopics: demoAnalyticsData.weakTopics?.map(t => translateTopic(t, locale)) || [],
-          strongTopics: demoAnalyticsData.strongTopics?.map(t => translateTopic(t, locale)) || [],
-          topicsNeedingImprovement: demoAnalyticsData.topicsNeedingImprovement?.map(t => translateTopic(t, locale)) || [],
-          recentActivity: demoAnalyticsData.recentActivity?.map(item => ({
-            ...item,
-            subject: translateSubject(item.subject || "", locale)
-          })) || [],
-          subjectDistribution: demoAnalyticsData.subjectDistribution?.map(item => ({
-            ...item,
-            subject: translateSubject(item.subject || "", locale)
-          })) || [],
-          weeklyProgress: demoAnalyticsData.weeklyProgress?.map(item => ({
-            ...item,
-            day: translateDay(item.day || "", locale)
-          })) || []
+          weakTopics: demoAnalyticsData.weakTopics?.map((t) => translateTopic(t, locale)) || [],
+          strongTopics: demoAnalyticsData.strongTopics?.map((t) => translateTopic(t, locale)) || [],
+          topicsNeedingImprovement:
+            demoAnalyticsData.topicsNeedingImprovement?.map((t) => translateTopic(t, locale)) || [],
+          recentActivity:
+            demoAnalyticsData.recentActivity?.map((item) => ({
+              ...item,
+              subject: translateSubject(item.subject || "", locale),
+            })) || [],
+          subjectDistribution:
+            demoAnalyticsData.subjectDistribution?.map((item) => ({
+              ...item,
+              subject: translateSubject(item.subject || "", locale),
+            })) || [],
+          weeklyProgress:
+            demoAnalyticsData.weeklyProgress?.map((item) => ({
+              ...item,
+              day: translateDay(item.day || "", locale),
+            })) || [],
         });
       } else {
         // Simple mock data (old version)
@@ -238,9 +246,7 @@ export default function AnalyticsDashboard({
               ? "exam_training_demo_quiz_results"
               : "exam_training_quiz_results";
             const quizResults = localStorage.getItem(quizResultsKey);
-            const results: QuizResult[] = quizResults
-              ? JSON.parse(quizResults)
-              : [];
+            const results: QuizResult[] = quizResults ? JSON.parse(quizResults) : [];
 
             // Filter out demo results if not in demo mode
             const filteredResults = useMockData
@@ -272,7 +278,9 @@ export default function AnalyticsDashboard({
             }
 
             // Calculate analytics (exclude TopicExplainer from question counts)
-            const quizOnlyResults = filteredResults.filter((r: QuizResult) => r.type !== "TopicExplainer");
+            const quizOnlyResults = filteredResults.filter(
+              (r: QuizResult) => r.type !== "TopicExplainer",
+            );
 
             const totalQuestions = quizOnlyResults.reduce(
               (sum: number, result: QuizResult) => sum + (result.totalQuestions || 0),
@@ -283,12 +291,9 @@ export default function AnalyticsDashboard({
               0,
             );
             const averageScore =
-              totalQuestions > 0
-                ? Math.round((correctAnswers / totalQuestions) * 100)
-                : 0;
+              totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const studyTime = filteredResults.reduce(
-              (sum: number, result: QuizResult) =>
-                sum + (result.timeSpent || 0),
+              (sum: number, result: QuizResult) => sum + (result.timeSpent || 0),
               0,
             );
 
@@ -353,11 +358,12 @@ export default function AnalyticsDashboard({
                   return false;
                 } // Need at least 2 questions
 
-                const successRate =
-                  (performance.correct / performance.total) * 100;
-                return successRate >= STRONG_THRESHOLD &&
+                const successRate = (performance.correct / performance.total) * 100;
+                return (
+                  successRate >= STRONG_THRESHOLD &&
                   !weakTopics.includes(topic) &&
-                  !topicsNeedingImprovement.some(item => item.topic === topic);
+                  !topicsNeedingImprovement.some((item) => item.topic === topic)
+                );
               })
               .slice(0, 3);
 
@@ -365,21 +371,23 @@ export default function AnalyticsDashboard({
             const defaultStrongTopics =
               strongTopics.length === 0
                 ? subjectsData
-                  .filter((subject: Subject) => subject.isActive)
-                  .slice(0, 3)
-                  .map((subject: Subject) => subject.name)
+                    .filter((subject: Subject) => subject.isActive)
+                    .slice(0, 3)
+                    .map((subject: Subject) => subject.name)
                 : strongTopics;
 
             // Recent activity
-            const recentActivity = filteredResults
-              .slice(-5)
-              .map((result: QuizResult) => ({
-                type: result.type || "Quiz",
-                score: (result.totalQuestions && result.totalQuestions > 0) ? Math.round((result.score / result.totalQuestions) * 100) : 100,
-                timestamp: (result as any).completedAt || result.createdAt || new Date().toISOString(),
-                subject: result.subject,
-                topic: result.topic,
-              }));
+            const recentActivity = filteredResults.slice(-5).map((result: QuizResult) => ({
+              type: result.type || "Quiz",
+              score:
+                result.totalQuestions && result.totalQuestions > 0
+                  ? Math.round((result.score / result.totalQuestions) * 100)
+                  : 100,
+              timestamp:
+                (result as any).completedAt || result.createdAt || new Date().toISOString(),
+              subject: result.subject,
+              topic: result.topic,
+            }));
 
             return {
               totalQuestions,
@@ -392,7 +400,7 @@ export default function AnalyticsDashboard({
               improvement: Math.floor(Math.random() * 20) + 5,
               weakTopics,
               strongTopics: defaultStrongTopics,
-              topicsNeedingImprovement: topicsNeedingImprovement.map(item => item.topic),
+              topicsNeedingImprovement: topicsNeedingImprovement.map((item) => item.topic),
               recentActivity,
             };
           } catch {
@@ -439,11 +447,11 @@ export default function AnalyticsDashboard({
       fetchRealData();
     }
 
-    return () => { };
+    return () => {};
   }, [useMockData, locale]); // add useMockData as a dependency
 
   // add console log for debugging
-  useEffect(() => { }, [analytics]);
+  useEffect(() => {}, [analytics]);
 
   const getScoreColor = (score: number) => {
     if (score >= 90) {
@@ -531,9 +539,7 @@ export default function AnalyticsDashboard({
                 <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {analytics.totalQuestions.toLocaleString()}
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {t("allTime")}
-                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{t("allTime")}</p>
               </>
             ) : (
               <div className="flex flex-col items-center text-center py-2">
@@ -599,9 +605,7 @@ export default function AnalyticsDashboard({
                 <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {formatTime(analytics.studyTime)}
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {t("allTime")}
-                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{t("allTime")}</p>
               </>
             ) : (
               <div className="flex flex-col items-center text-center py-2">
@@ -651,10 +655,7 @@ export default function AnalyticsDashboard({
                     <span>{t("correctAnswerRate")}</span>
                     <span>
                       {analytics.totalQuestions > 0
-                        ? Math.round(
-                          (analytics.correctAnswers / analytics.totalQuestions) *
-                          100,
-                        )
+                        ? Math.round((analytics.correctAnswers / analytics.totalQuestions) * 100)
                         : 0}
                       %
                     </span>
@@ -709,8 +710,7 @@ export default function AnalyticsDashboard({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {analytics.strongTopics.length === 0 &&
-              analytics.weakTopics.length === 0 ? (
+            {analytics.strongTopics.length === 0 && analytics.weakTopics.length === 0 ? (
               <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white/40 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/[0.05] shadow-sm">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 flex items-center justify-center mb-4 border border-green-500/20">
                   <PieChart className="w-6 h-6 text-green-500" />
@@ -729,14 +729,11 @@ export default function AnalyticsDashboard({
                   <h4 className="text-sm font-medium mb-2 text-[#34c759] dark:text-[#30d158]">
                     {t("strongTopics")}
                   </h4>
-                  {analytics.strongTopics &&
-                    analytics.strongTopics.length > 0 ? (
+                  {analytics.strongTopics && analytics.strongTopics.length > 0 ? (
                     <div className="space-y-2">
                       {analytics.strongTopics
                         // If a topic is in weak topics, it will not be shown in strong topics
-                        .filter(
-                          (topic) => !analytics.weakTopics.includes(topic),
-                        )
+                        .filter((topic) => !analytics.weakTopics.includes(topic))
                         .map((topic, index) => (
                           <div
                             key={index}
@@ -802,7 +799,8 @@ export default function AnalyticsDashboard({
                   <h4 className="text-sm font-medium mb-2 text-[#ff9500] dark:text-[#ff9f0a]">
                     {t("belowThresholdSuccess", { threshold: IMPROVEMENT_THRESHOLD })}
                   </h4>
-                  {analytics.topicsNeedingImprovement && analytics.topicsNeedingImprovement.length > 0 ? (
+                  {analytics.topicsNeedingImprovement &&
+                  analytics.topicsNeedingImprovement.length > 0 ? (
                     <div className="space-y-2">
                       {analytics.topicsNeedingImprovement.map((topic, index) => (
                         <div
@@ -1091,19 +1089,17 @@ export default function AnalyticsDashboard({
                         <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                           {activity.subject} - {activity.topic}
                         </p>
-                      ) : activity.subject && (
-                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
-                          {activity.subject}
-                        </p>
+                      ) : (
+                        activity.subject && (
+                          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                            {activity.subject}
+                          </p>
+                        )
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      className={`${getScoreColor(activity.score)}`}
-                    >
-                      %{activity.score}
-                    </Badge>
+                    <Badge className={`${getScoreColor(activity.score)}`}>%{activity.score}</Badge>
                     <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
                       {new Date(activity.timestamp).toLocaleDateString(dateLocale)}
                     </span>

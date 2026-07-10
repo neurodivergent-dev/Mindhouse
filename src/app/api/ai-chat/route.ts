@@ -26,10 +26,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(sessions);
   } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -46,18 +43,11 @@ export async function POST(request: NextRequest) {
     const { subject, title } = body;
 
     if (!subject) {
-      return NextResponse.json(
-        { error: "Subject is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Subject is required" }, { status: 400 });
     }
 
     try {
-      const session = await AiChatRepository.createSession(
-        userId,
-        subject,
-        title,
-      );
+      const session = await AiChatRepository.createSession(userId, subject, title);
 
       // Ensure sessionId is returned for compatibility
       const response = {
@@ -68,8 +58,7 @@ export async function POST(request: NextRequest) {
       // Session created successfully - no need to log success in production
       return NextResponse.json(response);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       logError("Session creation failed", error, { userId, subject, title });
       return NextResponse.json(
         { error: "Failed to create session", details: errorMessage },
@@ -77,9 +66,6 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

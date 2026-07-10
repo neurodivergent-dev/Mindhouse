@@ -29,9 +29,7 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
   const [aiResponse, setAiResponse] = useState<AiChatOutput | null>(null);
   const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(
-    null,
-  );
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -80,12 +78,16 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
       }));
 
       const aiPreferences = getStoredAiPreferences();
-      const response = await getAiChatResponse({
-        message: inputMessage,
-        subject,
-        conversationHistory,
-        context,
-      }, aiPreferences, locale);
+      const response = await getAiChatResponse(
+        {
+          message: inputMessage,
+          subject,
+          conversationHistory,
+          context,
+        },
+        aiPreferences,
+        locale,
+      );
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -100,8 +102,7 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content:
-          "Üzgünüm, şu anda cevap veremiyorum. Lütfen biraz sonra tekrar dene. 😔",
+        content: "Üzgünüm, şu anda cevap veremiyorum. Lütfen biraz sonra tekrar dene. 😔",
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -158,12 +159,16 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
           }));
 
           const aiPreferences = getStoredAiPreferences();
-          const response = await getAiChatResponse({
-            message: voiceTranscript,
-            subject,
-            conversationHistory: updatedHistory,
-            context,
-          }, aiPreferences, locale);
+          const response = await getAiChatResponse(
+            {
+              message: voiceTranscript,
+              subject,
+              conversationHistory: updatedHistory,
+              context,
+            },
+            aiPreferences,
+            locale,
+          );
 
           const assistantMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
@@ -178,8 +183,7 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
           const errorMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
             role: "assistant",
-            content:
-              "Üzgünüm, şu anda cevap veremiyorum. Lütfen biraz sonra tekrar dene. 😔",
+            content: "Üzgünüm, şu anda cevap veremiyorum. Lütfen biraz sonra tekrar dene. 😔",
             timestamp: new Date().toISOString(),
           };
           setMessages((prev) => [...prev, errorMessage]);
@@ -318,12 +322,8 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
                       : "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
                   }`}
                 >
-                  <Mic
-                    className={`w-4 h-4 ${isListening ? "animate-pulse" : ""}`}
-                  />
-                  {showVoiceAssistant
-                    ? "Sesli Asistanı Kapat"
-                    : "Sesli Asistan"}
+                  <Mic className={`w-4 h-4 ${isListening ? "animate-pulse" : ""}`} />
+                  {showVoiceAssistant ? "Sesli Asistanı Kapat" : "Sesli Asistan"}
                 </button>
                 <button
                   onClick={clearChat}
@@ -370,14 +370,10 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
                     {/* Voice Play Button for AI responses */}
                     {message.role === "assistant" && (
                       <button
-                        onClick={() =>
-                          speakAIResponse(message.id, message.content)
-                        }
+                        onClick={() => speakAIResponse(message.id, message.content)}
                         className="absolute bottom-2 right-2 w-6 h-6 bg-blue-500/20 hover:bg-blue-500/30 dark:bg-blue-400/20 dark:hover:bg-blue-400/30 rounded-full flex items-center justify-center transition-colors"
                         title={
-                          speakingMessageId === message.id
-                            ? "Sesi durdur"
-                            : "AI yanıtını dinle"
+                          speakingMessageId === message.id ? "Sesi durdur" : "AI yanıtını dinle"
                         }
                       >
                         <Volume2
@@ -436,16 +432,14 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
                       💡 Önerilen Konular
                     </h4>
                     <div className="space-y-1">
-                      {aiResponse.suggestedTopics
-                        .slice(0, 3)
-                        .map((topic, index) => (
-                          <div
-                            key={`suggested-topic-${Date.now()}-${index}`}
-                            className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded"
-                          >
-                            {topic}
-                          </div>
-                        ))}
+                      {aiResponse.suggestedTopics.slice(0, 3).map((topic, index) => (
+                        <div
+                          key={`suggested-topic-${Date.now()}-${index}`}
+                          className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded"
+                        >
+                          {topic}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -455,17 +449,15 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
                       ❓ Takip Soruları
                     </h4>
                     <div className="space-y-1">
-                      {aiResponse.followUpQuestions
-                        .slice(0, 2)
-                        .map((question, index) => (
-                          <div
-                            key={`followup-question-${Date.now()}-${index}`}
-                            className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors"
-                            onClick={() => setInputMessage(question)}
-                          >
-                            {question}
-                          </div>
-                        ))}
+                      {aiResponse.followUpQuestions.slice(0, 2).map((question, index) => (
+                        <div
+                          key={`followup-question-${Date.now()}-${index}`}
+                          className="text-sm text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors"
+                          onClick={() => setInputMessage(question)}
+                        >
+                          {question}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -525,8 +517,7 @@ const AiChatComponent: React.FC<AiChatProps> = ({ subject, context }) => {
               </button>
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              AI güven seviyesi:{" "}
-              {aiResponse ? Math.round(aiResponse.confidence * 100) : 0}%
+              AI güven seviyesi: {aiResponse ? Math.round(aiResponse.confidence * 100) : 0}%
             </div>
           </div>
         </div>

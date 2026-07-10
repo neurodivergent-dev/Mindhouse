@@ -19,12 +19,7 @@ cloudinary.config({
 });
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ALLOWED_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-]);
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,10 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: "File is too large (max 5 MB)" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "File is too large (max 5 MB)" }, { status: 400 });
     }
 
     // Convert file to buffer
@@ -67,10 +59,7 @@ export async function POST(request: NextRequest) {
             public_id: user.id,
             overwrite: true,
             resource_type: "image",
-            transformation: [
-              { width: 200, height: 200, crop: "fill" },
-              { quality: "auto" },
-            ],
+            transformation: [{ width: 200, height: 200, crop: "fill" }, { quality: "auto" }],
           },
           (error, result) => {
             if (error) {
