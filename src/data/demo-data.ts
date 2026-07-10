@@ -96,7 +96,8 @@ export const demoSubjects: Subject[] = [
   },
 ];
 
-// Rich performance dataexport const demoPerformanceData: DemoPerformanceData[] = [
+// Rich performance data
+export const demoPerformanceData: DemoPerformanceData[] = [
   {
     subject: "Matematik",
     averageScore: 87,
@@ -222,14 +223,16 @@ export const demoRecentResults: DemoQuizResult[] = [
   },
 ];
 
-// Total statisticsexport const demoTotalStats: DemoTotalStats = {
+// Total stats
+export const demoTotalStats: DemoTotalStats = {
   totalTests: 157, // High usage indicator
   averageScore: 84.2, // Good success rate
   totalTimeSpent: 4680, // 78 hours (in minutes)
   totalSubjects: 7, // Various subject areas
 };
 
-// AI Recommendations - Show AI featuresexport const demoAIRecommendations = [
+// AI Recommendations - Show AI features
+export const demoAIRecommendations = [
   {
     id: "ai_rec_1",
     subject: "Matematik",
@@ -343,7 +346,8 @@ export interface DemoAnalyticsData {
 }
 
 export const demoAnalyticsData: DemoAnalyticsData = {
-  totalQuestions: 1247, // Impressive number  correctAnswers: 1049, // 84.1% success rate
+  totalQuestions: 1247, // Impressive number
+  correctAnswers: 1049, // 84.1% success rate
   averageScore: 84.2,
   studyTime: 4680, // 78 hours (in minutes)
   streak: 12, // 12 day study streak
@@ -463,7 +467,7 @@ export const toggleDemoMode = (enabled: boolean) => {
         if (subjects) {
           const parsed = JSON.parse(subjects);
           const filtered = parsed.filter(
-            (s: any) => s.createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_"),
+            (s: { createdBy?: string; id: string }) => s.createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_"),
           );
           localStorage.setItem("mindhouse_subjects", JSON.stringify(filtered));
         }
@@ -471,13 +475,14 @@ export const toggleDemoMode = (enabled: boolean) => {
         if (questions) {
           const parsed = JSON.parse(questions);
           const filtered = parsed.filter(
-            (q: any) => !q.id.startsWith("q_") && q.createdBy !== "demo_user_btk_2025",
+            (q: { id: string; createdBy?: string }) => !q.id.startsWith("q_") && q.createdBy !== "demo_user_btk_2025",
           );
           localStorage.setItem("mindhouse_questions", JSON.stringify(filtered));
         }
         // Force reload/rehydrate page to propagate cleaned storage changes
         window.location.reload();
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
       }
     }
@@ -500,7 +505,8 @@ export const loadDemoDataToLocalStorage = () => {
   localStorage.setItem("guestAIRecommendations", JSON.stringify(demoData.aiRecommendations));
 };
 
-// Demo Questionsexport const demoQuestions = {
+// Demo Questions
+export const demoQuestions = {
   subj_matematik_001: [
     {
       id: "q_mat_001",
@@ -880,22 +886,22 @@ const tMap: Record<string, string> = {
   Brang: "Brang",
 };
 
-export const translateDemoData = (data: any, locale?: string): any => {
+export const translateDemoData = <T>(data: T, locale?: string): T => {
   if (locale !== "en" || !data) {
     return data;
   }
   if (Array.isArray(data)) {
-    return data.map((item) => translateDemoData(item, locale));
+    return data.map((item) => translateDemoData(item, locale)) as unknown as T;
   }
   if (typeof data === "object") {
-    const translated = { ...data };
-    if (translated.question && tMap[translated.question]) {
+    const translated = { ...data } as Record<string, unknown>;
+    if (translated.question && typeof translated.question === "string" && tMap[translated.question]) {
       translated.question = tMap[translated.question];
     }
-    if (translated.answer && tMap[translated.answer]) {
+    if (translated.answer && typeof translated.answer === "string" && tMap[translated.answer]) {
       translated.answer = tMap[translated.answer];
     }
-    if (translated.explanation && tMap[translated.explanation]) {
+    if (translated.explanation && typeof translated.explanation === "string" && tMap[translated.explanation]) {
       translated.explanation = tMap[translated.explanation];
     }
     if (translated.tags && Array.isArray(translated.tags)) {
@@ -909,14 +915,14 @@ export const translateDemoData = (data: any, locale?: string): any => {
       translated.topic = tMap[translated.topic.toLowerCase()];
     }
     if (translated.options && Array.isArray(translated.options)) {
-      translated.options = translated.options.map((opt: any) => {
-        if (opt?.text && tMap[opt.text]) {
+      translated.options = translated.options.map((opt: Record<string, unknown>) => {
+        if (opt?.text && typeof opt.text === "string" && tMap[opt.text]) {
           return { ...opt, text: tMap[opt.text] };
         }
         return opt;
       });
     }
-    return translated;
+    return translated as unknown as T;
   }
   return data;
 };
@@ -984,7 +990,8 @@ export const getDemoSubjects = (locale?: string): Subject[] => {
   }));
 };
 
-// Demo Flashcardsexport const demoFlashcards = {
+// Demo Flashcards
+export const demoFlashcards = {
   Matematik: [
     {
       id: "fc_mat_001",
