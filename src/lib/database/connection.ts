@@ -5,27 +5,32 @@ import * as schema from "./schema";
 
 // Get database connection string from environment variables
 const connectionString =
-  process.env.DATABASE_URL ||
-  process.env.SUPABASE_DB_URL ||
-  "postgresql://localhost:5432/dummy";
+  process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
 
 // Create PostgreSQL connection with better error handling
-let client: postgres.Sql | null;
-let db: PostgresJsDatabase<typeof schema> | null;
+let client: postgres.Sql | null = null;
+let db: PostgresJsDatabase<typeof schema> | null = null;
 
-try {
-  client = postgres(connectionString, {
-    max: 10, // Maximum connections in pool
-    idle_timeout: 20,
-    max_lifetime: 60 * 30,
-  });
+// Without a connection string there is no database. Leaving `db` null makes
+// getDb() throw a clear error instead of failing later against a fake host.
+if (connectionString) {
+  try {
+    client = postgres(connectionString, {
+      // Supabase's transaction-mode pooler (port 6543) does not support
+      // prepared statements.
+      prepare: false,
+      max: 10, // Maximum connections in pool
+      idle_timeout: 20,
+      max_lifetime: 60 * 30,
+    });
 
-  // Create Drizzle instance
-  db = drizzle(client, { schema });
-} catch {
-  // Create a dummy client for build time
-  client = null;
-  db = null;
+    // Create Drizzle instance
+    db = drizzle(client, { schema });
+  } catch {
+    // Create a dummy client for build time
+    client = null;
+    db = null;
+  }
 }
 
 export { db };
