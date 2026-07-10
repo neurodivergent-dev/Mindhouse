@@ -14,20 +14,13 @@
     <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/badge/status-production-green.svg" alt="Status">
     <img src="https://deploy-badge.vercel.app/vercel/mindhouse?root=landing" alt="Vercel Deploy Status">
-    <img src="https://circleci.com/gh/neurodivergent-dev/mindhouse.svg?style=svg" alt="CircleCI">
-    <img src="https://img.shields.io/github/languages/top/melihcanndemir/mindhouse" alt="Top Language">
-    <img src="https://img.shields.io/github/languages/code-size/melihcanndemir/mindhouse" alt="Code Size">
-    <img src="https://img.shields.io/github/repo-size/melihcanndemir/mindhouse" alt="Repo Size">
+    <img src="https://img.shields.io/github/languages/top/neurodivergent-dev/mindhouse" alt="Top Language">
+    <img src="https://img.shields.io/github/languages/code-size/neurodivergent-dev/mindhouse" alt="Code Size">
+    <img src="https://img.shields.io/github/repo-size/neurodivergent-dev/mindhouse" alt="Repo Size">
     <img src="https://img.shields.io/badge/AI-Powered-orange.svg" alt="AI Powered">
     <img src="https://img.shields.io/badge/Voice-Assistant-blue.svg" alt="Voice Assistant">
   </p>
   <br>
-</div>
-
-<!-- Landing Page Demo GIF -->
-<div align="center">
-  <img src="assets/demo/landing-demo.gif" alt="Mindhouse Landing Page Demo" width="800">
-  <p><em>🎬 Live demo showcase - Mindhouse landing page interactions</em></p>
 </div>
 
 ## ✨ Why Mindhouse?
@@ -85,7 +78,6 @@ This project is built to **enterprise-level** quality assurance standards. For d
 ## 🛠️ Tech Stack
 
 <div align="center">
-  <a href="https://circleci.com/" target="_blank"><img src="https://img.shields.io/badge/CircleCI-343434?style=for-the-badge&logo=circleci&logoColor=white" alt="CircleCI"></a>
   <a href="https://nextjs.org/" target="_blank"><img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="NextJS"></a>
   <a href="https://react.dev/" target="_blank"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"></a>
   <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
