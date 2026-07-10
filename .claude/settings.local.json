@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
-      "PowerShell(npm run *)"
+      "PowerShell(npm run *)",
+      "Bash(xargs wc -l)",
+      "Bash(grep -rnEi \"\\(api[_-]?key|secret|password|token\\)\\\\s*[:=]\\\\s*[\\\\\"'][A-Za-z0-9_\\\\-]{16,}[\\\\\"']\" src --include=\"*.ts\" --include=\"*.tsx\")",
+      "Bash(npx next *)",
+      "Bash(node -e \"console.log\\('installed next:', require\\('next/package.json'\\).version\\)\")",
+      "Bash(npm audit *)"
     ],
     "deny": [],
     "ask": []
