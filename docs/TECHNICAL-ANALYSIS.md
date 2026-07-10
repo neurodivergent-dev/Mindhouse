@@ -93,17 +93,10 @@
 POST /api/quiz - Create test
 GET  /api/quiz - Get test results
 
-// Subjects API  
-GET  /api/subjects - List subjects
-POST /api/subjects - Add new subject
-PUT  /api/subjects/[id] - Update subject
-DELETE /api/subjects/[id] - Delete subject
-
-// Questions API
-GET  /api/questions - List questions
-POST /api/questions - Add new question
-PUT  /api/questions/[id] - Update question
-DELETE /api/questions/[id] - Delete question
+// Subjects & Questions
+// No REST routes: the browser talks to Supabase directly through
+// SubjectService / QuestionService, so reads and writes share one path
+// and the same RLS policies.
 
 // AI Chat API
 POST /api/ai-chat/sessions - Start new session

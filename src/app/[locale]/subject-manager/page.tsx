@@ -14,6 +14,7 @@ import { shouldUseDemoData, getDemoSubjects } from "@/data/demo-data";
 import AISubjectGenerator from "@/components/ai-subject-generator";
 import { handleAIGeneratedSubjects } from "@/lib/subject-ai-handler";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
+import { SubjectService } from "@/services/supabase-service";
 import FeatureCards from "@/components/ui/feature-cards";
 import type { Subject } from "@/types/question-manager";
 
@@ -107,28 +108,25 @@ export default function SubjectManagerPage() {
             totalCategories,
           });
         } else {
-          // Try API as fallback
-          const response = await fetch("/api/subjects");
-          if (response.ok) {
-            const subjects: Subject[] = await response.json();
+          // Fall back to the cloud copy, read through the Supabase client.
+          const cloudSubjects = await SubjectService.getSubjects();
 
-            const totalSubjects = subjects.length;
+          const totalSubjects = cloudSubjects.length;
 
-            // Calculate real question count from actual questions
-            const allQuestions = UnifiedStorageService.getQuestions();
-            const totalQuestions = allQuestions.length;
+          // Calculate real question count from actual questions
+          const allQuestions = UnifiedStorageService.getQuestions();
+          const totalQuestions = allQuestions.length;
 
-            const categories = new Set(
-              subjects.map((subject) => subject.category),
-            );
-            const totalCategories = categories.size;
+          const categories = new Set(
+            cloudSubjects.map((subject) => subject.category),
+          );
+          const totalCategories = categories.size;
 
-            setStats({
-              totalSubjects,
-              totalQuestions,
-              totalCategories,
-            });
-          }
+          setStats({
+            totalSubjects,
+            totalQuestions,
+            totalCategories,
+          });
         }
       }
     } catch {

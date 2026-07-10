@@ -60,9 +60,12 @@ export class UserService {
 // Subject Service
 export class SubjectService {
   static async getSubjects(): Promise<Subject[]> {
+    // getSession() reads the local session; getUser() would add a round trip to
+    // the auth server on every load. RLS still enforces ownership server-side.
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
 
     if (!user) {
       return [];
@@ -151,17 +154,21 @@ export class SubjectService {
       return false;
     }
 
-    const { error } = await supabase
+    // `.select()` makes PostgREST return the deleted rows. Without it a delete
+    // that matches nothing (RLS, wrong owner) reports no error and would look
+    // like a success.
+    const { data, error } = await supabase
       .from("subjects")
       .delete()
       .eq("id", id)
-      .eq("created_by", user.id);
+      .eq("created_by", user.id)
+      .select("id");
 
     if (error) {
       return false;
     }
 
-    return true;
+    return (data?.length ?? 0) > 0;
   }
 
   static async toggleActive(
@@ -304,18 +311,20 @@ export class QuestionService {
       return false;
     }
 
-    // 🎯 FIX: Direct delete without pre-update
-    const { error } = await supabase
+    // `.select()` makes PostgREST report the deleted rows, so a delete that
+    // matches nothing is not mistaken for a success.
+    const { data, error } = await supabase
       .from("questions")
       .delete()
       .eq("id", id)
-      .eq("created_by", user.id); // Only delete questions owned by current user
+      .eq("created_by", user.id) // Only delete questions owned by current user
+      .select("id");
 
     if (error) {
       return false;
     }
 
-    return true;
+    return (data?.length ?? 0) > 0;
   }
 }
 

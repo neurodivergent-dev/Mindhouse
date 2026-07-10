@@ -9,7 +9,8 @@
       "Bash(npx next *)",
       "Bash(node -e \"console.log\\('installed next:', require\\('next/package.json'\\).version\\)\")",
       "Bash(npm audit *)",
-      "Bash(node -p \"require\\('./node_modules/@supabase/ssr/package.json'\\).version\")"
+      "Bash(node -p \"require\\('./node_modules/@supabase/ssr/package.json'\\).version\")",
+      "Bash(echo \"BUILD_EXIT=$?\")"
     ],
     "deny": [],
     "ask": []
