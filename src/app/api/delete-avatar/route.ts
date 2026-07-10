@@ -55,10 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!deleted) {
-      return NextResponse.json(
-        { error: "Avatar not found or already deleted" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Avatar not found or already deleted" }, { status: 404 });
     }
 
     return NextResponse.json({

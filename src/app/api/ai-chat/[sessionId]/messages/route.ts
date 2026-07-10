@@ -35,19 +35,10 @@ export async function POST(
       );
     }
 
-    const message = await AiChatRepository.addMessage(
-      user.id,
-      sessionId,
-      subject,
-      role,
-      content,
-    );
+    const message = await AiChatRepository.addMessage(user.id, sessionId, subject, role, content);
 
     return NextResponse.json(message);
   } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -20,7 +20,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Frown, Meh, Smile, Star, Target, Shuffle, Brain, BookOpen, Zap, MousePointer2, BarChart3, CheckCircle, Lightbulb, Eye, RotateCcw } from "lucide-react";
+import {
+  ArrowLeft,
+  Frown,
+  Meh,
+  Smile,
+  Star,
+  Target,
+  Shuffle,
+  Brain,
+  BookOpen,
+  Zap,
+  MousePointer2,
+  BarChart3,
+  CheckCircle,
+  Lightbulb,
+  Eye,
+  RotateCcw,
+} from "lucide-react";
 import VoiceAssistant from "./voice-assistant";
 import { getDemoFlashcards } from "@/data/demo-data";
 import MobileNav from "@/components/mobile-nav";
@@ -48,11 +65,7 @@ interface FlashcardProps {
   onBack?: () => void;
 }
 
-const FlashcardComponent: React.FC<FlashcardProps> = ({
-  subject,
-  isDemoMode = false,
-  onBack,
-}) => {
+const FlashcardComponent: React.FC<FlashcardProps> = ({ subject, isDemoMode = false, onBack }) => {
   const { toast } = useToast();
   const t = useTranslations("Flashcard");
   const tCommon = useTranslations("Common");
@@ -61,8 +74,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   const getStudyModeLabel = useCallback(
     (mode: string) => {
-      if (mode === "review") {return t("modeReview");}
-      if (mode === "new") {return t("modeNew");}
+      if (mode === "review") {
+        return t("modeReview");
+      }
+      if (mode === "new") {
+        return t("modeNew");
+      }
       return t("modeDifficult");
     },
     [t],
@@ -70,8 +87,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   const formatReviewWhen = useCallback(
     (days: number) => {
-      if (days === 1) {return t("reviewTomorrow");}
-      if (days < 30) {return t("reviewInDays", { days });}
+      if (days === 1) {
+        return t("reviewTomorrow");
+      }
+      if (days < 30) {
+        return t("reviewInDays", { days });
+      }
       return t("reviewInMonth");
     },
     [t],
@@ -79,25 +100,23 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
   // Check demo mode from localStorage
   const demoModeActive =
     isDemoMode ||
-    (typeof window !== "undefined" &&
-      localStorage.getItem("btk_demo_mode") === "true");
+    (typeof window !== "undefined" && localStorage.getItem("btk_demo_mode") === "true");
 
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [confidence, setConfidence] = useState<number | null>(null);
-  const [studyMode, setStudyMode] = useState<"review" | "new" | "difficult">(
-    "review",
-  );
+  const [studyMode, setStudyMode] = useState<"review" | "new" | "difficult">("review");
   const [stats, setStats] = useState({
     total: 0,
     reviewed: 0,
     mastered: 0,
     needsReview: 0,
   });
-  const [aiRecommendation, setAiRecommendation] =
-    useState<FlashcardRecommendationOutput | null>(null);
+  const [aiRecommendation, setAiRecommendation] = useState<FlashcardRecommendationOutput | null>(
+    null,
+  );
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
@@ -144,7 +163,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
           // Only add optional properties if they exist
           if (f.lastReviewed) {
-            card.lastReviewed = f.lastReviewed instanceof Date ? f.lastReviewed : new Date(f.lastReviewed);
+            card.lastReviewed =
+              f.lastReviewed instanceof Date ? f.lastReviewed : new Date(f.lastReviewed);
           }
           if (f.nextReview) {
             card.nextReview = f.nextReview instanceof Date ? f.nextReview : new Date(f.nextReview);
@@ -197,18 +217,13 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
       currentCard.lastReviewed = new Date();
 
       // Calculate next review date based on confidence (spaced repetition)
-      const daysUntilNextReview = calculateNextReview(
-        level,
-        currentCard.reviewCount,
-      );
-      currentCard.nextReview = new Date(
-        Date.now() + daysUntilNextReview * 24 * 60 * 60 * 1000,
-      );
+      const daysUntilNextReview = calculateNextReview(level, currentCard.reviewCount);
+      currentCard.nextReview = new Date(Date.now() + daysUntilNextReview * 24 * 60 * 60 * 1000);
 
       setFlashcards(updatedFlashcards);
 
       // Save progress to storage using UnifiedStorageService
-      if (currentCard.id.startsWith('flashcard_') || currentCard.id.startsWith('ai_flashcard_')) {
+      if (currentCard.id.startsWith("flashcard_") || currentCard.id.startsWith("ai_flashcard_")) {
         // This is a flashcard, save progress
         UnifiedStorageService.updateFlashcardProgress(currentCard.id, {
           confidence: currentCard.confidence,
@@ -223,10 +238,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     }
   };
 
-  const calculateNextReview = (
-    confidence: number,
-    reviewCount: number,
-  ): number => {
+  const calculateNextReview = (confidence: number, reviewCount: number): number => {
     // Optimized spaced repetition algorithm with realistic limits
     let daysUntilNextReview: number;
 
@@ -251,11 +263,11 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
   const updateStats = (cards: Flashcard[]) => {
     const now = new Date();
     const reviewed = cards.filter((c) => c.lastReviewed).length;
-    const mastered = cards.filter(
-      (c) => c.confidence >= 4 && c.reviewCount >= 3,
-    ).length;
+    const mastered = cards.filter((c) => c.confidence >= 4 && c.reviewCount >= 3).length;
     const needsReview = cards.filter((c) => {
-      if (!c.nextReview) {return true;}
+      if (!c.nextReview) {
+        return true;
+      }
       const nextReviewDate = c.nextReview instanceof Date ? c.nextReview : new Date(c.nextReview);
       return nextReviewDate <= now;
     }).length;
@@ -270,7 +282,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   const resetAllCards = () => {
     // Reset all flashcards to initial state
-    const resetFlashcards = flashcards.map(card => {
+    const resetFlashcards = flashcards.map((card) => {
       const { ...cardWithoutDates } = card;
       return {
         ...cardWithoutDates,
@@ -289,8 +301,8 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     updateStats(resetFlashcards);
 
     // Save reset state to storage
-    resetFlashcards.forEach(card => {
-      if (card.id.startsWith('flashcard_') || card.id.startsWith('ai_flashcard_')) {
+    resetFlashcards.forEach((card) => {
+      if (card.id.startsWith("flashcard_") || card.id.startsWith("ai_flashcard_")) {
         UnifiedStorageService.updateFlashcardProgress(card.id, {
           confidence: card.confidence,
           reviewCount: card.reviewCount,
@@ -311,21 +323,15 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     try {
       // Get comprehensive data from localStorage for AI recommendations
       const performanceData =
-        typeof window !== "undefined"
-          ? localStorage.getItem("performanceData") || "{}"
-          : "{}";
+        typeof window !== "undefined" ? localStorage.getItem("performanceData") || "{}" : "{}";
 
       // Get quiz results from localStorage
       const quizResults =
-        typeof window !== "undefined"
-          ? localStorage.getItem("quizResults") || "[]"
-          : "[]";
+        typeof window !== "undefined" ? localStorage.getItem("quizResults") || "[]" : "[]";
 
       // Get study history from localStorage
       const studyHistory =
-        typeof window !== "undefined"
-          ? localStorage.getItem("studyHistory") || "[]"
-          : "[]";
+        typeof window !== "undefined" ? localStorage.getItem("studyHistory") || "[]" : "[]";
 
       // Get current flashcard progress with real data
       const flashcardProgress = flashcards.map((card) => ({
@@ -347,17 +353,20 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         currentSubject: subject,
         currentStudyMode: studyMode,
         totalFlashcards: flashcards.length,
-        reviewedCount: flashcards.filter(card => card.lastReviewed).length,
-        masteredCount: flashcards.filter(card => card.confidence >= 4).length,
-        needsReviewCount: flashcards.filter(card => {
-          if (!card.nextReview) {return true;}
-          const nextReviewDate = card.nextReview instanceof Date ? card.nextReview : new Date(card.nextReview);
+        reviewedCount: flashcards.filter((card) => card.lastReviewed).length,
+        masteredCount: flashcards.filter((card) => card.confidence >= 4).length,
+        needsReviewCount: flashcards.filter((card) => {
+          if (!card.nextReview) {
+            return true;
+          }
+          const nextReviewDate =
+            card.nextReview instanceof Date ? card.nextReview : new Date(card.nextReview);
           return nextReviewDate <= new Date();
         }).length,
       };
 
       const flashcardData = JSON.stringify(combinedData);
-      
+
       const preferences = getStoredAiPreferences();
       if (!isAiConfigured(preferences)) {
         // silently skip or set empty, since it's optional rec
@@ -377,7 +386,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
       setAiRecommendation(recommendation);
     } catch /* (error) */ {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         //console.error("AI recommendation error:", error);
       }
       // Show user-friendly error message
@@ -419,12 +428,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
     // Update the main flashcards array with the shuffled order
     // but preserve the original cards that aren't in the current filter
     const originalCards = [...flashcards];
-    const shuffledIds = new Set(shuffled.map(card => card.id));
+    const shuffledIds = new Set(shuffled.map((card) => card.id));
 
     // Replace cards that are in the current filter with shuffled ones
-    const updatedFlashcards = originalCards.map(card => {
+    const updatedFlashcards = originalCards.map((card) => {
       if (shuffledIds.has(card.id)) {
-        return shuffled.find(shuffledCard => shuffledCard.id === card.id) || card;
+        return shuffled.find((shuffledCard) => shuffledCard.id === card.id) || card;
       }
       return card;
     });
@@ -433,7 +442,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
     // Find the new position of the current card in shuffled array
     if (currentCard) {
-      const newIndex = shuffled.findIndex(card => card.id === currentCard.id);
+      const newIndex = shuffled.findIndex((card) => card.id === currentCard.id);
       setCurrentIndex(newIndex >= 0 ? newIndex : 0);
     } else {
       setCurrentIndex(0);
@@ -447,10 +456,11 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
   const getCardsForStudyMode = () => {
     switch (studyMode) {
       case "review":
-        return flashcards.filter(() =>
-          // Show all cards in review mode
-          // This includes: new cards, cards due for review, and completed cards
-           true,
+        return flashcards.filter(
+          () =>
+            // Show all cards in review mode
+            // This includes: new cards, cards due for review, and completed cards
+            true,
         );
       case "new":
         return flashcards.filter((c) => !c.lastReviewed);
@@ -518,8 +528,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
   // Check if all cards are completed (confidence >= 4) - show congratulations
   // More realistic completion condition - all cards must be reviewed multiple times and have max confidence
-  const allCardsCompleted = flashcards.length > 0 && 
-    flashcards.every(card => card.confidence === 5 && card.reviewCount >= 3);
+  const allCardsCompleted =
+    flashcards.length > 0 &&
+    flashcards.every((card) => card.confidence === 5 && card.reviewCount >= 3);
 
   if (!currentCard || allCardsCompleted) {
     // Check if current study mode has no cards
@@ -546,7 +557,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
               {t("systemTitle", { subject: getSubjectName(subject, tSubjects) })}
             </h1>
 
-            {(allCardsCompleted || currentModeCompleted) ? (
+            {allCardsCompleted || currentModeCompleted ? (
               // 🎉 MODERN CONGRATULATIONS SCREEN 🎉
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -565,8 +576,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     >
                       {/* Main achievement badge */}
                       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-2 sm:border-4 border-white/20">
-                        <svg className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <svg
+                          className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                         </svg>
                       </div>
 
@@ -583,8 +598,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                         }}
                         className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg"
                       >
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        <svg
+                          className="w-3 h-3 sm:w-4 sm:h-4 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                       </motion.div>
 
@@ -601,8 +620,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                         }}
                         className="absolute -bottom-1 -left-1 sm:-bottom-2 sm:-left-2 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg"
                       >
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <svg
+                          className="w-3 h-3 sm:w-4 sm:h-4 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                         </svg>
                       </motion.div>
                     </motion.div>
@@ -613,7 +636,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4 px-4"
-                    style={{ lineHeight: '1.2', height: 'auto', overflow: 'visible' }}
+                    style={{ lineHeight: "1.2", height: "auto", overflow: "visible" }}
                   >
                     {t("completedTitle")}
                   </motion.h2>
@@ -640,42 +663,82 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200/50 dark:border-blue-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div className="text-center">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        <svg
+                          className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                          />
                         </svg>
                       </div>
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent mb-2">
                         {flashcards.length}
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{t("totalCards")}</div>
+                      <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        {t("totalCards")}
+                      </div>
                     </div>
                   </div>
 
                   <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-green-200/50 dark:border-green-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div className="text-center">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                       </div>
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-br from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
-                        {Math.round((flashcards.filter(c => c.confidence >= 4).length / flashcards.length) * 100)}%
+                        {Math.round(
+                          (flashcards.filter((c) => c.confidence >= 4).length / flashcards.length) *
+                            100,
+                        )}
+                        %
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-green-400">{t("successRate")}</div>
+                      <div className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-green-400">
+                        {t("successRate")}
+                      </div>
                     </div>
                   </div>
 
                   <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-purple-200/50 dark:border-purple-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div className="text-center">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <svg
+                          className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
                         </svg>
                       </div>
                       <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent mb-2">
                         {flashcards.reduce((sum, c) => sum + c.reviewCount, 0)}
                       </div>
-                      <div className="text-xs sm:text-sm font-semibold text-purple-600 dark:text-purple-400">{t("totalReviews")}</div>
+                      <div className="text-xs sm:text-sm font-semibold text-purple-600 dark:text-purple-400">
+                        {t("totalReviews")}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -695,8 +758,18 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     }}
                     className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
                   >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
                     </svg>
                     <span>{t("startFresh")}</span>
                   </motion.button>
@@ -707,8 +780,18 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                     whileTap={{ scale: 0.95 }}
                     className="w-full px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
                   >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
                     </svg>
                     <span>{t("backToSubjectSelection")}</span>
                   </motion.button>
@@ -740,11 +823,11 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-2xl">💡</span>
-                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">{t("tip")}</h4>
+                      <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300">
+                        {t("tip")}
+                      </h4>
                     </div>
-                    <p className="text-blue-700 dark:text-blue-300">
-                      {t("noCardsInModeTip")}
-                    </p>
+                    <p className="text-blue-700 dark:text-blue-300">{t("noCardsInModeTip")}</p>
                   </motion.div>
                 )}
 
@@ -761,26 +844,54 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                      <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{flashcards.length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugTotal")}</div>
+                      <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        {flashcards.length}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {t("debugTotal")}
+                      </div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                      <div className="text-xl font-bold text-green-600 dark:text-green-400">{flashcards.filter(c => c.confidence >= 4).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugCompleted")}</div>
+                      <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                        {flashcards.filter((c) => c.confidence >= 4).length}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {t("debugCompleted")}
+                      </div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                      <div className="text-xl font-bold text-red-600 dark:text-red-400">{flashcards.filter(c => c.confidence <= 2).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugDifficult")}</div>
+                      <div className="text-xl font-bold text-red-600 dark:text-red-400">
+                        {flashcards.filter((c) => c.confidence <= 2).length}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {t("debugDifficult")}
+                      </div>
                     </div>
                     <div className="text-center p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                      <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{flashcards.filter(c => !c.lastReviewed).length}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">{t("debugNew")}</div>
+                      <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                        {flashcards.filter((c) => !c.lastReviewed).length}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {t("debugNew")}
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div><strong>{t("confidenceDistribution")}</strong> {flashcards.map(c => `${c.confidence}/5`).join(' • ')}</div>
-                    <div><strong>{t("currentMode")}</strong> {studyMode === "review" ? `🔄 ${getStudyModeLabel("review")}` : studyMode === "new" ? `🆕 ${getStudyModeLabel("new")}` : `⚠️ ${getStudyModeLabel("difficult")}`}</div>
-                    <div><strong>{t("filteredCards")}</strong> {filteredCards.length}</div>
+                    <div>
+                      <strong>{t("confidenceDistribution")}</strong>{" "}
+                      {flashcards.map((c) => `${c.confidence}/5`).join(" • ")}
+                    </div>
+                    <div>
+                      <strong>{t("currentMode")}</strong>{" "}
+                      {studyMode === "review"
+                        ? `🔄 ${getStudyModeLabel("review")}`
+                        : studyMode === "new"
+                          ? `🆕 ${getStudyModeLabel("new")}`
+                          : `⚠️ ${getStudyModeLabel("difficult")}`}
+                    </div>
+                    <div>
+                      <strong>{t("filteredCards")}</strong> {filteredCards.length}
+                    </div>
                   </div>
                 </motion.div>
 
@@ -1030,7 +1141,12 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                 title={t("hideRecommendation")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -1038,8 +1154,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <h4 className="font-medium text-indigo-700 dark:text-indigo-300 mb-2">
-                  {t("recommendedMode")}{" "}
-                  {getStudyModeLabel(aiRecommendation.recommendedStudyMode)}
+                  {t("recommendedMode")} {getStudyModeLabel(aiRecommendation.recommendedStudyMode)}
                 </h4>
                 <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-3">
                   {aiRecommendation.reasoning}
@@ -1051,16 +1166,14 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   {t("focusTopics")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {aiRecommendation.recommendedTopics
-                    .slice(0, 3)
-                    .map((topic, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs rounded"
-                      >
-                        {topic}
-                      </span>
-                    ))}
+                  {aiRecommendation.recommendedTopics.slice(0, 3).map((topic, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs rounded"
+                    >
+                      {topic}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1115,7 +1228,11 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                 className={`absolute w-full h-full bg-white/85 dark:bg-gray-900/65 backdrop-blur-3xl border border-black/5 dark:border-white/10 rounded-[24px] shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-center items-center text-center ${
                   isFlipped ? "backface-hidden" : ""
                 }`}
-                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translate3d(0, 0, 0)" }}
+                style={{
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  transform: "translate3d(0, 0, 0)",
+                }}
               >
                 {/* Header with modern badges */}
                 <div className="mb-6 flex flex-wrap justify-center gap-3">
@@ -1138,9 +1255,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
 
                 {/* Modern options display */}
                 {currentCard.options &&
-                  (currentCard.question
-                    .toLowerCase()
-                    .includes("aşağıdakilerden") ||
+                  (currentCard.question.toLowerCase().includes("aşağıdakilerden") ||
                     currentCard.question.toLowerCase().includes("hangisi")) && (
                     <div className="w-full max-w-lg mb-6">
                       <div className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
@@ -1211,7 +1326,9 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
                   <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
                     <div className="flex items-center gap-2 mb-2 sm:mb-3">
                       <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-                      <h4 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">{t("explanation")}</h4>
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">
+                        {t("explanation")}
+                      </h4>
                     </div>
                     <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                       {currentCard.explanation}
@@ -1442,18 +1559,19 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("resetDialogTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("resetDialogDesc")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("resetDialogDesc")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowResetDialog(false)}>
               {t("cancel")}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              resetAllCards();
-              setShowResetDialog(false);
-            }} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={() => {
+                resetAllCards();
+                setShowResetDialog(false);
+              }}
+              className="bg-red-600 hover:bg-red-700"
+            >
               {t("confirmReset")}
             </AlertDialogAction>
           </AlertDialogFooter>

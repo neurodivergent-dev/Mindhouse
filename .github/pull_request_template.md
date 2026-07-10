@@ -1,6 +1,7 @@
 ## 📋 Pull Request Description
 
 ### 🎯 Type of Change
+
 <!-- Mark the appropriate option(s) with [x] -->
 
 - [ ] 🐛 **Bug fix** (non-breaking change which fixes an issue)
@@ -17,6 +18,7 @@
 - [ ] 🚀 **Deployment** (CI/CD, infrastructure changes)
 
 ### 📝 Description
+
 <!-- Provide a clear and concise description of what the PR does -->
 
 **What does this PR do?**
@@ -29,6 +31,7 @@
 <!-- Describe the testing approach and results -->
 
 ### 🔗 Related Issues
+
 <!-- Link any related issues using keywords like "Fixes #123" or "Closes #456" -->
 
 Fixes #
@@ -36,6 +39,7 @@ Closes #
 Related to #
 
 ### 📸 Screenshots/Videos
+
 <!-- Add screenshots or videos for UI changes -->
 
 **Before:**
@@ -45,9 +49,11 @@ Related to #
 <!-- Add screenshot/video of the new state -->
 
 ### 🧪 Testing Checklist
+
 <!-- Mark completed items with [x] -->
 
 #### Manual Testing
+
 - [ ] **Responsive Design**: Tested on mobile, tablet, and desktop
 - [ ] **Cross-browser**: Tested on Chrome, Firefox, Safari, Edge
 - [ ] **Accessibility**: Screen reader compatibility, keyboard navigation
@@ -56,6 +62,7 @@ Related to #
 - [ ] **User Flow**: Complete user journey tested
 
 #### AI Features (if applicable)
+
 - [ ] **Genkit Integration**: AI flows working correctly
 - [ ] **Error Handling**: AI request failures handled gracefully
 - [ ] **Rate Limiting**: API limits respected
@@ -63,18 +70,21 @@ Related to #
 - [ ] **Response Processing**: AI responses parsed correctly
 
 #### Security Testing
+
 - [ ] **Authentication**: Login/logout flows work correctly
 - [ ] **Authorization**: Proper access control implemented
 - [ ] **Data Validation**: Input sanitization working
 - [ ] **API Security**: No sensitive data exposed in responses
 
 #### Database Changes (if applicable)
+
 - [ ] **Migration**: Database schema changes applied correctly
 - [ ] **Data Integrity**: No data loss during migration
 - [ ] **RLS Policies**: Row Level Security policies updated
 - [ ] **Performance**: No significant query performance impact
 
 ### 🔍 Code Quality Checklist
+
 <!-- Mark completed items with [x] -->
 
 - [ ] **TypeScript**: All code properly typed
@@ -86,6 +96,7 @@ Related to #
 - [ ] **SOLID Principles**: Code follows SOLID principles
 
 ### 🚨 Breaking Changes
+
 <!-- If this PR includes breaking changes, describe them here -->
 
 **Breaking Changes:**
@@ -95,6 +106,7 @@ Related to #
 <!-- Provide steps for users to migrate -->
 
 ### 📊 Performance Impact
+
 <!-- Describe any performance implications -->
 
 **Performance Changes:**
@@ -104,6 +116,7 @@ Related to #
 <!-- Mention any significant bundle size changes -->
 
 ### 🔒 Security Considerations
+
 <!-- Describe any security implications -->
 
 **Security Changes:**
@@ -113,6 +126,7 @@ Related to #
 <!-- Confirm no security vulnerabilities introduced -->
 
 ### 🤖 AI Integration (if applicable)
+
 <!-- For AI-related changes -->
 
 **AI Service Used:**
@@ -128,6 +142,7 @@ Related to #
 <!-- How API rate limits are managed -->
 
 ### 🎨 UI/UX Changes (if applicable)
+
 <!-- For UI/UX related changes -->
 
 **Design System Compliance:**
@@ -140,6 +155,7 @@ Related to #
 <!-- Confirm responsive behavior -->
 
 ### 📚 Documentation Updates
+
 <!-- List any documentation that needs updating -->
 
 - [ ] README.md updated
@@ -149,6 +165,7 @@ Related to #
 - [ ] Contributing guidelines updated
 
 ### 🧪 Test Coverage
+
 <!-- Describe test coverage for this change -->
 
 **Unit Tests:**
@@ -161,6 +178,7 @@ Related to #
 <!-- List end-to-end tests added/modified -->
 
 ### 🔧 Dependencies
+
 <!-- List any new dependencies or version changes -->
 
 **New Dependencies:**
@@ -173,6 +191,7 @@ Related to #
 <!-- List any packages removed -->
 
 ### 📋 Additional Notes
+
 <!-- Any additional information that reviewers should know -->
 
 **Notes for Reviewers:**
@@ -182,6 +201,7 @@ Related to #
 <!-- Any follow-up work or improvements planned -->
 
 ### ✅ Final Checklist
+
 <!-- Final verification before submitting -->
 
 - [ ] **Code Review**: Self-review completed
@@ -198,9 +218,11 @@ Related to #
 ## 📝 Review Guidelines
 
 ### For Reviewers
+
 <!-- Guidelines for code reviewers -->
 
 **Focus Areas:**
+
 - [ ] **Functionality**: Does the code work as intended?
 - [ ] **Security**: Are there any security concerns?
 - [ ] **Performance**: Any performance implications?
@@ -209,6 +231,7 @@ Related to #
 - [ ] **Documentation**: Is the code well-documented?
 
 **Review Checklist:**
+
 - [ ] Code follows project standards
 - [ ] No obvious bugs or issues
 - [ ] Proper error handling implemented
@@ -222,11 +245,11 @@ Related to #
 
 **Thank you for contributing to Mindhouse! 🚀**
 
-<!-- 
+<!--
 Template Usage Notes:
 1. Delete sections that don't apply to your PR
 2. Add specific details for each section
 3. Include screenshots for UI changes
 4. Link related issues using GitHub keywords
 5. Be thorough in testing and documentation
---> 
+-->

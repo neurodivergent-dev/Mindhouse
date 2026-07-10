@@ -73,10 +73,7 @@ interface UserSettings {
   };
 }
 
-const QuizComponent: React.FC<QuizProps> = ({
-  subject,
-  isDemoMode = false,
-}) => {
+const QuizComponent: React.FC<QuizProps> = ({ subject, isDemoMode = false }) => {
   const { toast } = useToast();
   const t = useTranslations("Quiz");
   const locale = useLocale();
@@ -104,110 +101,123 @@ const QuizComponent: React.FC<QuizProps> = ({
   const displaySubject = getDisplaySubject(subject);
 
   // Translations for demo questions
-  const DEMO_QUESTION_TRANSLATIONS: Record<string, { question: string; options: string[]; explanation: string; tags: string[] }> = {
+  const DEMO_QUESTION_TRANSLATIONS: Record<
+    string,
+    { question: string; options: string[]; explanation: string; tags: string[] }
+  > = {
     // Mathematics
-    "q_mat_001": {
+    q_mat_001: {
       question: "What is the value of f(5) for the function f(x) = 2x + 3?",
       options: ["11", "13", "15", "17"],
       explanation: "f(5) = 2(5) + 3 = 10 + 3 = 13",
       tags: ["function", "algebra"],
     },
-    "q_mat_002": {
+    q_mat_002: {
       question: "What is the sum of the interior angles of a triangle?",
       options: ["90°", "180°", "270°", "360°"],
       explanation: "The sum of the interior angles of a triangle is always 180 degrees.",
       tags: ["geometry", "triangle"],
     },
-    "q_mat_003": {
+    q_mat_003: {
       question: "What is the result of the integral ∫(2x + 1)dx?",
       options: ["x² + x + C", "2x² + x + C", "x² + C", "2x + C"],
       explanation: "∫(2x + 1)dx = ∫2x dx + ∫1 dx = x² + x + C",
       tags: ["integral", "calculus"],
     },
     // Physics
-    "q_fiz_001": {
+    q_fiz_001: {
       question: "What is the formula for Newton's second law?",
       options: ["F = ma", "E = mc²", "P = mv", "W = Fd"],
       explanation: "Newton's second law: Force = mass × acceleration (F = ma)",
       tags: ["newton", "force", "mechanics"],
     },
-    "q_fiz_002": {
+    q_fiz_002: {
       question: "What is the approximate speed of light in a vacuum?",
       options: ["3×10⁶ m/s", "3×10⁷ m/s", "3×10⁸ m/s", "3×10⁹ m/s"],
       explanation: "The speed of light in a vacuum is approximately 3×10⁸ m/s (300,000,000 m/s).",
       tags: ["light", "speed", "optics"],
     },
-    "q_fiz_003": {
+    q_fiz_003: {
       question: "What concept does the first law of thermodynamics express?",
-      options: ["Increase in entropy", "Conservation of energy", "Conservation of momentum", "Conservation of mass"],
+      options: [
+        "Increase in entropy",
+        "Conservation of energy",
+        "Conservation of momentum",
+        "Conservation of mass",
+      ],
       explanation: "The first law of thermodynamics states the principle of energy conservation.",
       tags: ["thermodynamics", "energy", "conservation"],
     },
     // Chemistry
-    "q_kim_001": {
+    q_kim_001: {
       question: "By what name are the elements in Group 1 of the periodic table known?",
       options: ["Halogens", "Alkali metals", "Noble gases", "Alkaline earth metals"],
       explanation: "Group 1 elements are known as alkali metals (Li, Na, K, Rb, Cs, Fr).",
       tags: ["periodic table", "alkali metals"],
     },
-    "q_kim_002": {
+    q_kim_002: {
       question: "What is the molecular geometry of H₂O?",
       options: ["Linear", "Trigonal planar", "Bent", "Tetrahedral"],
       explanation: "The water molecule (H₂O) has a bent (angular) geometry.",
       tags: ["molecular geometry", "water", "hybridization"],
     },
     // Biology
-    "q_bio_001": {
+    q_bio_001: {
       question: "In which organelles does photosynthesis occur?",
       options: ["Mitochondria", "Chloroplast", "Ribosome", "Golgi apparatus"],
       explanation: "Photosynthesis occurs in the chloroplasts of plant cells.",
       tags: ["photosynthesis", "chloroplast", "plant"],
     },
-    "q_bio_002": {
+    q_bio_002: {
       question: "Who first discovered the structure of DNA?",
       options: ["Darwin", "Mendel", "Watson and Crick", "Pasteur"],
       explanation: "The double helix structure of DNA was discovered by Watson and Crick.",
       tags: ["dna", "watson", "crick", "genetics"],
     },
     // History
-    "q_tar_001": {
+    q_tar_001: {
       question: "In what year was the Ottoman Empire founded?",
       options: ["1299", "1326", "1354", "1389"],
       explanation: "The Ottoman Empire was founded by Osman Gazi in 1299.",
       tags: ["ottoman", "foundation", "osman gazi"],
     },
-    "q_tar_002": {
+    q_tar_002: {
       question: "On what date was the Republic of Turkey proclaimed?",
       options: ["May 19, 1919", "April 23, 1920", "August 30, 1922", "October 29, 1923"],
       explanation: "The Republic of Turkey was proclaimed on October 29, 1923.",
       tags: ["republic", "ataturk", "foundation"],
     },
     // Literature
-    "q_ede_001": {
+    q_ede_001: {
       question: "Who is the author of the novel 'The Red-Haired Woman'?",
       options: ["Orhan Pamuk", "Yaşar Kemal", "Nazim Hikmet", "Sabahattin Ali"],
       explanation: "The novel 'The Red-Haired Woman' was written by Nobel laureate Orhan Pamuk.",
       tags: ["novel", "orhan pamuk", "contemporary literature"],
     },
-    "q_ede_002": {
+    q_ede_002: {
       question: "What is the most important poetic form in Divan Literature?",
       options: ["Ghazal", "Koshma", "Turku", "Mani"],
       explanation: "The most important and common poetic form in Divan Literature is the ghazal.",
       tags: ["divan literature", "ghazal", "poetry"],
     },
     // English
-    "q_ing_001": {
+    q_ing_001: {
       question: "Which sentence is grammatically correct?",
-      options: ["She don't like coffee", "She doesn't likes coffee", "She doesn't like coffee", "She not like coffee"],
-      explanation: "Third person singular uses \"doesn't\" and base form of verb.",
+      options: [
+        "She don't like coffee",
+        "She doesn't likes coffee",
+        "She doesn't like coffee",
+        "She not like coffee",
+      ],
+      explanation: 'Third person singular uses "doesn\'t" and base form of verb.',
       tags: ["grammar", "present simple", "negative"],
     },
-    "q_ing_002": {
+    q_ing_002: {
       question: 'What is the past tense of "go"?',
       options: ["goed", "went", "gone", "going"],
       explanation: '"Go" is an irregular verb. Its past tense is "went".',
       tags: ["irregular verbs", "past tense"],
-    }
+    },
   };
 
   // Save demo mode to localStorage
@@ -318,28 +328,32 @@ const QuizComponent: React.FC<QuizProps> = ({
         // Check demo mode
         const demoModeActive =
           isDemoMode ||
-          (typeof window !== "undefined" &&
-            localStorage.getItem("btk_demo_mode") === "true");
+          (typeof window !== "undefined" && localStorage.getItem("btk_demo_mode") === "true");
 
         if (demoModeActive) {
           // Load demo questions from demo-data.ts
           const demoQuestionsFromData = getDemoQuestions(subject) as DemoQuestion[];
 
           // Convert demo questions to Quiz component format
-          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map(q => {
-            const tr = (locale !== "tr" && DEMO_QUESTION_TRANSLATIONS[q.id]) ? DEMO_QUESTION_TRANSLATIONS[q.id] : null;
+          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map((q) => {
+            const tr =
+              locale !== "tr" && DEMO_QUESTION_TRANSLATIONS[q.id]
+                ? DEMO_QUESTION_TRANSLATIONS[q.id]
+                : null;
             return {
               id: q.id,
               subject, // Use the selected subject name directly
               type: "multiple-choice",
-              difficulty: q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
+              difficulty:
+                q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
               text: tr ? tr.question : q.question,
-              topic: (tr ? tr.tags[0] : (q.tags && q.tags.length > 0 ? q.tags[0] : "Genel")) || "Genel",
+              topic:
+                (tr ? tr.tags[0] : q.tags && q.tags.length > 0 ? q.tags[0] : "Genel") || "Genel",
               options: q.options.map((option, index) => ({
                 text: (tr ? tr.options[index] : option) || option,
-                isCorrect: index === q.correctAnswer
+                isCorrect: index === q.correctAnswer,
               })),
-              explanation: tr ? tr.explanation : q.explanation
+              explanation: tr ? tr.explanation : q.explanation,
             };
           });
 
@@ -352,7 +366,7 @@ const QuizComponent: React.FC<QuizProps> = ({
           const questionCount = Math.min(
             userSettings.studyPreferences.questionsPerQuiz,
             realQuestionCount,
-            demoQuestions.length // Don't exceed available demo questions
+            demoQuestions.length, // Don't exceed available demo questions
           );
           const selectedQuestions = demoQuestions.slice(0, questionCount);
 
@@ -390,7 +404,7 @@ const QuizComponent: React.FC<QuizProps> = ({
             if (isAuthenticated) {
               try {
                 const dbQuestions = await QuestionService.getQuestionsBySubject(subject);
-                const cloudQuestions = dbQuestions.map(question => ({
+                const cloudQuestions = dbQuestions.map((question) => ({
                   id: question.id,
                   subject: question.subject,
                   type: question.type,
@@ -401,7 +415,6 @@ const QuizComponent: React.FC<QuizProps> = ({
                   topic: question.topic || "",
                 }));
                 allQuestions = [...cloudQuestions];
-
               } catch {
                 //do nothing
               }
@@ -409,14 +422,16 @@ const QuizComponent: React.FC<QuizProps> = ({
 
             // Also check IndexedDB and merge
             await UnifiedStorageService.initialize();
-            const localQuestions = UnifiedStorageService.getQuestionsBySubject(subject).map(q => ({
-              ...q,
-              topic: q.topic || "",
-            })) as Question[];
+            const localQuestions = UnifiedStorageService.getQuestionsBySubject(subject).map(
+              (q) => ({
+                ...q,
+                topic: q.topic || "",
+              }),
+            ) as Question[];
 
             // Add local questions that don't exist in cloud questions
-            localQuestions.forEach(localQ => {
-              if (!allQuestions.find(cloudQ => cloudQ.id === localQ.id)) {
+            localQuestions.forEach((localQ) => {
+              if (!allQuestions.find((cloudQ) => cloudQ.id === localQ.id)) {
                 allQuestions.push(localQ);
               }
             });
@@ -471,14 +486,7 @@ const QuizComponent: React.FC<QuizProps> = ({
     if (subject && userSettings) {
       loadQuestions();
     }
-  }, [
-    subject,
-    userSettings,
-    isDemoMode,
-    locale,
-    t,
-    toast,
-  ]);
+  }, [subject, userSettings, isDemoMode, locale, t, toast]);
 
   // Timer for elapsed time
   useEffect(() => {
@@ -506,11 +514,9 @@ const QuizComponent: React.FC<QuizProps> = ({
     // Also include current question if answered incorrectly
     const currentQuestion = questions[currentQuestionIndex];
     if (currentQuestion && selectedAnswer !== null) {
-      const isCorrect =
-        currentQuestion.options[selectedAnswer]?.isCorrect ?? false;
+      const isCorrect = currentQuestion.options[selectedAnswer]?.isCorrect ?? false;
       if (!isCorrect) {
-        weakTopics[currentQuestion.topic] =
-          (weakTopics[currentQuestion.topic] || 0) + 1;
+        weakTopics[currentQuestion.topic] = (weakTopics[currentQuestion.topic] || 0) + 1;
       }
     }
 
@@ -520,9 +526,7 @@ const QuizComponent: React.FC<QuizProps> = ({
   // Function to handle quiz completion
   const handleFinish = useCallback(async () => {
     const endTime = new Date();
-    const totalTime = startTime
-      ? Math.floor((endTime.getTime() - startTime.getTime()) / 1000)
-      : 0;
+    const totalTime = startTime ? Math.floor((endTime.getTime() - startTime.getTime()) / 1000) : 0;
 
     // Get weak topics
     const weakTopics = getWeakTopics();
@@ -611,8 +615,7 @@ const QuizComponent: React.FC<QuizProps> = ({
 
   const handleSubmit = useCallback(() => {
     if (selectedAnswer !== null && currentQuestion) {
-      const isCorrect =
-        currentQuestion.options[selectedAnswer]?.isCorrect ?? false;
+      const isCorrect = currentQuestion.options[selectedAnswer]?.isCorrect ?? false;
       if (isCorrect) {
         setScore(score + 1);
       }
@@ -633,7 +636,7 @@ const QuizComponent: React.FC<QuizProps> = ({
       setTimeout(() => {
         if (currentQuestion.explanation) {
           // Voice assistant'a açıklama okuma sinyali gönder
-          const event = new CustomEvent('readExplanation', {
+          const event = new CustomEvent("readExplanation", {
             detail: { explanation: currentQuestion.explanation },
           });
           window.dispatchEvent(event);
@@ -663,7 +666,7 @@ const QuizComponent: React.FC<QuizProps> = ({
         setTimeout(() => {
           const isCorrect = currentQuestion.options[randomAnswer]?.isCorrect ?? false;
           if (isCorrect) {
-            setScore(prev => prev + 1);
+            setScore((prev) => prev + 1);
           }
 
           setUserAnswers((prev) => [
@@ -705,12 +708,7 @@ const QuizComponent: React.FC<QuizProps> = ({
 
   // Timer for countdown (time limit)
   useEffect(() => {
-    if (
-      timeLimit &&
-      timeRemaining !== null &&
-      timeRemaining > 0 &&
-      !quizFinished
-    ) {
+    if (timeLimit && timeRemaining !== null && timeRemaining > 0 && !quizFinished) {
       const timer = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev === null || prev <= 1) {
@@ -836,27 +834,29 @@ const QuizComponent: React.FC<QuizProps> = ({
       const aiPreferences = getStoredAiPreferences();
       if (!isAiConfigured(aiPreferences)) {
         setAiTutorHelp({
-          help: t("aiTutorUnavailable") || "AI service configuration error. Please check your API key in Settings.",
+          help:
+            t("aiTutorUnavailable") ||
+            "AI service configuration error. Please check your API key in Settings.",
         });
         return;
       }
 
-      const result = await getAiTutorHelp({
-        question: currentQuestion.text,
-        subject: currentQuestion.subject,
-        topic: currentQuestion.topic,
-        difficulty: currentQuestion.difficulty as "Kolay" | "Orta" | "Zor" | undefined,
-        options: currentQuestion.options,
-        correctAnswer:
-          currentQuestion.options.find((opt) => opt.isCorrect)?.text || "",
-        explanation: currentQuestion.explanation,
-        userAnswer:
-          selectedAnswer !== null
-            ? currentQuestion.options[selectedAnswer]?.text
-            : undefined,
-        step,
-        language: locale === "en" ? "en" : "tr",
-      }, aiPreferences);
+      const result = await getAiTutorHelp(
+        {
+          question: currentQuestion.text,
+          subject: currentQuestion.subject,
+          topic: currentQuestion.topic,
+          difficulty: currentQuestion.difficulty as "Kolay" | "Orta" | "Zor" | undefined,
+          options: currentQuestion.options,
+          correctAnswer: currentQuestion.options.find((opt) => opt.isCorrect)?.text || "",
+          explanation: currentQuestion.explanation,
+          userAnswer:
+            selectedAnswer !== null ? currentQuestion.options[selectedAnswer]?.text : undefined,
+          step,
+          language: locale === "en" ? "en" : "tr",
+        },
+        aiPreferences,
+      );
 
       setAiTutorHelp(result);
     } catch {
@@ -938,12 +938,13 @@ const QuizComponent: React.FC<QuizProps> = ({
               )}
               {timeLimit && timeRemaining !== null && (
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 backdrop-blur-sm shadow-sm border ${timeRemaining <= 60
+                  className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 backdrop-blur-sm shadow-sm border ${
+                    timeRemaining <= 60
                       ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
                       : timeRemaining <= 300
                         ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                         : "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
-                    }`}
+                  }`}
                 >
                   <Clock className="w-4 h-4" />
                   {t("remaining")} {formatTime(timeRemaining)}
@@ -957,7 +958,10 @@ const QuizComponent: React.FC<QuizProps> = ({
               {t("questionCount", { current: currentQuestionIndex + 1, total: totalQuestions })}
             </span>
             <span>
-              {totalQuestions > 0 ? Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100) : 0}% Complete
+              {totalQuestions > 0
+                ? Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100)
+                : 0}
+              % Complete
             </span>
           </div>
 
@@ -973,20 +977,17 @@ const QuizComponent: React.FC<QuizProps> = ({
         </div>
 
         {/* Time Warning */}
-        {timeLimit &&
-          timeRemaining !== null &&
-          timeRemaining <= 60 &&
-          timeRemaining > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-4 bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 rounded-2xl"
-            >
-              <p className="text-red-700 dark:text-red-400 font-bold text-center text-base">
-                {t("timeWarning", { seconds: timeRemaining })}
-              </p>
-            </motion.div>
-          )}
+        {timeLimit && timeRemaining !== null && timeRemaining <= 60 && timeRemaining > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-4 bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 rounded-2xl"
+          >
+            <p className="text-red-700 dark:text-red-400 font-bold text-center text-base">
+              {t("timeWarning", { seconds: timeRemaining })}
+            </p>
+          </motion.div>
+        )}
 
         {/* Question Area */}
         <AnimatePresence mode="wait">
@@ -1004,14 +1005,14 @@ const QuizComponent: React.FC<QuizProps> = ({
                   {currentQuestion.topic}
                 </span>
                 <span
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${currentQuestion.difficulty === "Kolay" ||
-                      currentQuestion.difficulty === "Easy"
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${
+                    currentQuestion.difficulty === "Kolay" || currentQuestion.difficulty === "Easy"
                       ? "bg-green-500/10 text-green-700 dark:text-green-400"
                       : currentQuestion.difficulty === "Orta" ||
-                        currentQuestion.difficulty === "Medium"
+                          currentQuestion.difficulty === "Medium"
                         ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
                         : "bg-red-500/10 text-red-700 dark:text-red-400"
-                    }`}
+                  }`}
                 >
                   {currentQuestion.difficulty}
                 </span>
@@ -1025,28 +1026,33 @@ const QuizComponent: React.FC<QuizProps> = ({
               <div className="space-y-4 mb-8">
                 {currentQuestion.options.map((option, index) => {
                   const isSelected = selectedAnswer === index;
-                  let optionStyle = "border-slate-200/90 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60";
+                  let optionStyle =
+                    "border-slate-200/90 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60";
                   let dotStyle = "border-slate-200/80 dark:border-white/20";
                   let checkMark = null;
 
                   if (isSelected) {
                     if (showResult) {
                       if (option.isCorrect) {
-                        optionStyle = "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400";
+                        optionStyle =
+                          "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400";
                         dotStyle = "border-green-500 bg-green-500 text-white";
                         checkMark = "✓";
                       } else {
-                        optionStyle = "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-400";
+                        optionStyle =
+                          "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-400";
                         dotStyle = "border-red-500 bg-red-500 text-white";
                         checkMark = "✗";
                       }
                     } else {
-                      optionStyle = "border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400";
+                      optionStyle =
+                        "border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400";
                       dotStyle = "border-blue-500 bg-blue-500 text-white";
                       checkMark = "✓";
                     }
                   } else if (showResult && option.isCorrect) {
-                    optionStyle = "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400";
+                    optionStyle =
+                      "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400";
                     dotStyle = "border-green-500 bg-green-500 text-white";
                     checkMark = "✓";
                   }
@@ -1064,7 +1070,9 @@ const QuizComponent: React.FC<QuizProps> = ({
                         >
                           {checkMark}
                         </div>
-                        <span className="font-semibold text-base leading-relaxed">{option.text}</span>
+                        <span className="font-semibold text-base leading-relaxed">
+                          {option.text}
+                        </span>
                       </div>
                     </button>
                   );
@@ -1105,35 +1113,31 @@ const QuizComponent: React.FC<QuizProps> = ({
                       💡 {t("hint")}
                     </button>
                   ) : (
-                    (
-                      [
-                        "hint",
-                        "explanation",
-                        "step-by-step",
-                        "concept-review",
-                      ] as const
-                    ).map((step) => (
-                      <button
-                        key={step}
-                        onClick={() => {
-                          void requestAiTutorHelp(step);
-                        }}
-                        disabled={isLoadingTutor}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${tutorStep === step && aiTutorHelp
-                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm"
-                            : "bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60"
+                    (["hint", "explanation", "step-by-step", "concept-review"] as const).map(
+                      (step) => (
+                        <button
+                          key={step}
+                          onClick={() => {
+                            void requestAiTutorHelp(step);
+                          }}
+                          disabled={isLoadingTutor}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                            tutorStep === step && aiTutorHelp
+                              ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm"
+                              : "bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60"
                           } disabled:opacity-40`}
-                      >
-                        {step === "hint" && "💡"}
-                        {step === "explanation" && "📚"}
-                        {step === "step-by-step" && "🔍"}
-                        {step === "concept-review" && "🎯"}
-                        {step === "hint" && t("hint")}
-                        {step === "explanation" && t("explanation")}
-                        {step === "step-by-step" && t("stepByStep")}
-                        {step === "concept-review" && t("conceptReview")}
-                      </button>
-                    ))
+                        >
+                          {step === "hint" && "💡"}
+                          {step === "explanation" && "📚"}
+                          {step === "step-by-step" && "🔍"}
+                          {step === "concept-review" && "🎯"}
+                          {step === "hint" && t("hint")}
+                          {step === "explanation" && t("explanation")}
+                          {step === "step-by-step" && t("stepByStep")}
+                          {step === "concept-review" && t("conceptReview")}
+                        </button>
+                      ),
+                    )
                   )}
                 </div>
 
@@ -1163,9 +1167,7 @@ const QuizComponent: React.FC<QuizProps> = ({
                       {tutorStep === "concept-review" && t("conceptReview")}
                     </h4>
                     <div className="text-xs leading-relaxed text-[#515154] dark:text-[#d2d2d7] prose prose-invert max-w-none ai-tutor-markdown">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {aiTutorHelp.help}
-                      </ReactMarkdown>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{aiTutorHelp.help}</ReactMarkdown>
                     </div>
                   </motion.div>
                 )}
@@ -1210,7 +1212,8 @@ const QuizComponent: React.FC<QuizProps> = ({
             {t("score")}: {score} / {totalQuestions}
           </span>
           <span>
-            {t("successRate")}: {totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0}%
+            {t("successRate")}:{" "}
+            {totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0}%
           </span>
         </div>
       </div>
@@ -1221,9 +1224,7 @@ const QuizComponent: React.FC<QuizProps> = ({
           onCommand={handleVoiceCommand}
           currentQuestion={currentQuestion.text}
           currentOptions={currentQuestion.options}
-          currentAnswer={
-            currentQuestion.options.find((opt) => opt.isCorrect)?.text || ""
-          }
+          currentAnswer={currentQuestion.options.find((opt) => opt.isCorrect)?.text || ""}
           currentExplanation={currentQuestion.explanation}
           aiTutorOutput={aiTutorHelp?.help || ""}
           isListening={isListening}
@@ -1239,7 +1240,14 @@ const QuizComponent: React.FC<QuizProps> = ({
         quizData={{
           questions,
           currentQuestionIndex,
-          ...(currentQuestionIndex < questions.length ? { currentQuestion: questions[currentQuestionIndex] as unknown as Record<string, unknown> } : {}),
+          ...(currentQuestionIndex < questions.length
+            ? {
+                currentQuestion: questions[currentQuestionIndex] as unknown as Record<
+                  string,
+                  unknown
+                >,
+              }
+            : {}),
           selectedAnswer,
           timeSpent,
           timeRemaining,

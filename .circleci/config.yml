@@ -1,5 +1,5 @@
 # version: 2.1
-# 
+#
 # jobs:
 #   verify:
 #     docker:
@@ -34,7 +34,7 @@
 #       - run:
 #           name: Production build
 #           command: npm run build
-# 
+#
 # workflows:
 #   ci:
 #     jobs:

@@ -479,11 +479,7 @@
       "Local Storage (On-Device)",
       "Basic Support (48h)"
     ],
-    "freeLimitations": [
-      "No Cloud sync",
-      "No Voice Assistant",
-      "No Custom Lesson Plans"
-    ],
+    "freeLimitations": ["No Cloud sync", "No Voice Assistant", "No Custom Lesson Plans"],
     "premiumFeatures": [
       "Cloud Sync (Multi-device)",
       "Advanced Quiz System",
@@ -492,9 +488,7 @@
       "Personalized Study Program",
       "Priority Support"
     ],
-    "premiumLimitations": [
-      "Requires monthly subscription"
-    ],
+    "premiumLimitations": ["Requires monthly subscription"],
     "enterpriseFeatures": [
       "All Pro Features",
       "Save 20% compared to monthly",

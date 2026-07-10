@@ -88,42 +88,31 @@ export default function EditQuestionDialog({
             <div className="grid grid-cols-4 items-start gap-4">
               <Label className="text-right pt-2">{t("options")}</Label>
               <div className="col-span-3 space-y-2">
-                {editingQuestion.options.map(
-                  (option: QuestionOption, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <Checkbox
-                        checked={option.isCorrect}
-                        onCheckedChange={(checked) =>
-                          onOptionChange(index, "isCorrect", checked)
-                        }
-                      />
-                      <Input
-                        value={option.text}
-                        onChange={(e) =>
-                          onOptionChange(index, "text", e.target.value)
-                        }
-                        placeholder={t("optionN", { n: index + 1 })}
-                        className="flex-1"
-                      />
-                      {editingQuestion.options.length > 2 && (
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 flex-shrink-0"
-                          onClick={() => onRemoveOption(index)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ),
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onAddOption}
-                  className="mt-2"
-                >
+                {editingQuestion.options.map((option: QuestionOption, index: number) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Checkbox
+                      checked={option.isCorrect}
+                      onCheckedChange={(checked) => onOptionChange(index, "isCorrect", checked)}
+                    />
+                    <Input
+                      value={option.text}
+                      onChange={(e) => onOptionChange(index, "text", e.target.value)}
+                      placeholder={t("optionN", { n: index + 1 })}
+                      className="flex-1"
+                    />
+                    {editingQuestion.options.length > 2 && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 flex-shrink-0"
+                        onClick={() => onRemoveOption(index)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button variant="outline" size="sm" onClick={onAddOption} className="mt-2">
                   <Plus className="w-4 h-4 mr-2" />
                   {t("addOption")}
                 </Button>
@@ -148,9 +137,7 @@ export default function EditQuestionDialog({
           <DialogClose asChild>
             <Button variant="outline">{t("cancel")}</Button>
           </DialogClose>
-          <Button onClick={handleUpdateClick}>
-            {t("saveChanges")}
-          </Button>
+          <Button onClick={handleUpdateClick}>{t("saveChanges")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

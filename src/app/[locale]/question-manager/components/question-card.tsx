@@ -38,12 +38,7 @@ interface QuestionActionsProps {
 function QuestionActions({ question, onEdit, onDelete }: QuestionActionsProps) {
   return (
     <div className="flex gap-1 flex-shrink-0">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onEdit(question)}
-        className="h-8 w-8"
-      >
+      <Button variant="outline" size="icon" onClick={() => onEdit(question)} className="h-8 w-8">
         <Edit className="w-4 h-4" />
       </Button>
       <Button
@@ -73,15 +68,9 @@ export default function QuestionCard({ question, onEdit, onDelete }: QuestionCar
     <div className="p-4 border-gradient-question rounded-lg bg-white dark:bg-gray-800/50 w-full shadow-lg hover:shadow-xl transition-all duration-300">
       <div className="flex items-start justify-between mb-2">
         <QuestionTags question={question} />
-        <QuestionActions
-          question={question}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+        <QuestionActions question={question} onEdit={onEdit} onDelete={onDelete} />
       </div>
-      <p className="text-sm font-medium mb-2 break-words">
-        {question.text}
-      </p>
+      <p className="text-sm font-medium mb-2 break-words">{question.text}</p>
       <p className="text-xs text-muted-foreground">
         {t("optionsCount", { count: question.options.length })}
       </p>

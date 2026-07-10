@@ -4,4 +4,4 @@
     "lib": ["deno.window"]
   },
   "importMap": "import_map.json"
-} 
+}

@@ -48,10 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     const totalTimeMinutes = Math.round(
-      userResults.reduce(
-        (acc: number, r: DashboardQuizResult) => acc + (r.timeSpent || 0),
-        0,
-      ) / 60,
+      userResults.reduce((acc: number, r: DashboardQuizResult) => acc + (r.timeSpent || 0), 0) / 60,
     );
     const totalQuestionsSum = userResults.reduce(
       (acc: number, r: DashboardQuizResult) => acc + (r.totalQuestions || 0),
@@ -62,23 +59,16 @@ export async function GET(request: NextRequest) {
       0,
     );
     const averageScore =
-      totalQuestionsSum > 0
-        ? Math.round((correctAnswers / totalQuestionsSum) * 100)
-        : 0;
+      totalQuestionsSum > 0 ? Math.round((correctAnswers / totalQuestionsSum) * 100) : 0;
 
     // Track both weak topics and topic performance for strong topics
-    const allTopics = new Map<
-      string,
-      { total: number; correct: number; incorrect: number }
-    >();
+    const allTopics = new Map<string, { total: number; correct: number; incorrect: number }>();
     const allWeakTopics = new Map<string, number>();
 
     // Process all results to gather topic performance data
     for (const result of userResults) {
       try {
-        const topics: Record<string, number> = JSON.parse(
-          result.weakTopics || "{}",
-        );
+        const topics: Record<string, number> = JSON.parse(result.weakTopics || "{}");
 
         // For each topic in this result
         for (const topic in topics) {
@@ -168,9 +158,7 @@ export async function GET(request: NextRequest) {
 
     // A topic should not be both strong and weak
     // Remove topics that are in the weak topics list from the strong topics list
-    strongTopics = strongTopics.filter(
-      (topic) => !sortedWeakTopics.includes(topic),
-    );
+    strongTopics = strongTopics.filter((topic) => !sortedWeakTopics.includes(topic));
 
     // If there are still no strong subjects, add Mathematics by default
     if (strongTopics.length === 0) {

@@ -1,11 +1,13 @@
 # Environment Variables Setup Guide
 
 ## 🚨 Current Issue
+
 The AI question generation is falling back to mock data because the `GEMINI_API_KEY` is not properly configured.
 
 ## 🔧 Required Environment Variables
 
 ### For Vercel Deployment:
+
 1. Go to your Vercel project dashboard
 2. Navigate to Settings → Environment Variables
 3. Add the following variables:
@@ -17,6 +19,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### For Local Development:
+
 Create a `.env.local` file in the project root:
 
 ```bash
@@ -55,6 +58,7 @@ If the issue persists:
 ## 📝 Expected Behavior
 
 When properly configured:
+
 - ✅ `GEMINI_API_KEY` should show "SET" in debug logs
 - ✅ AI generation should use real Google AI instead of mock data
 - ✅ Questions should be generated with actual AI content
@@ -63,6 +67,7 @@ When properly configured:
 ## 🔄 Alternative API Key Names
 
 The system supports multiple API key names:
+
 - `GEMINI_API_KEY` (preferred)
 - `GOOGLE_GENAI_API_KEY` (alternative)
 - `GOOGLE_AI_API_KEY` (alternative)
@@ -75,4 +80,4 @@ echo "GEMINI_API_KEY=your_key_here" > .env.local
 
 # Restart development server
 npm run dev
-``` 
+```

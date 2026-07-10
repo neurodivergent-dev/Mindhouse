@@ -60,5 +60,5 @@ export const QUESTION_TYPES = [
 
 export const DIFFICULTIES = ["Kolay", "Orta", "Zor"] as const;
 
-export type QuestionType = typeof QUESTION_TYPES[number];
-export type Difficulty = typeof DIFFICULTIES[number];
+export type QuestionType = (typeof QUESTION_TYPES)[number];
+export type Difficulty = (typeof DIFFICULTIES)[number];

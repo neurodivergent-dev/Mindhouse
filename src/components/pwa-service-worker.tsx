@@ -7,13 +7,10 @@ export default function PWAServiceWorker() {
     const registerServiceWorker = async () => {
       if ("serviceWorker" in navigator) {
         try {
-          const registration = await navigator.serviceWorker.register(
-            "/sw.js",
-            {
-              scope: "/",
-              updateViaCache: "none",
-            },
-          );
+          const registration = await navigator.serviceWorker.register("/sw.js", {
+            scope: "/",
+            updateViaCache: "none",
+          });
 
           // Check for updates
           registration.addEventListener("updatefound", () => {
@@ -21,10 +18,7 @@ export default function PWAServiceWorker() {
 
             if (newWorker) {
               newWorker.addEventListener("statechange", () => {
-                if (
-                  newWorker.state === "installed" &&
-                  navigator.serviceWorker.controller
-                ) {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
                   // You can show a notification to the user here
                 }
               });

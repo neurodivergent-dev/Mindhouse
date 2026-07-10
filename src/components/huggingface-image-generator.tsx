@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import NextImage from "next/image";
-import {
-  Image,
-  Loader2,
-  Download,
-  RefreshCw,
-  Eye,
-  EyeOff,
-  Zap,
-} from "lucide-react";
+import { Image, Loader2, Download, RefreshCw, Eye, EyeOff, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
 
@@ -73,15 +65,13 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
         throw new Error("Görsel URL alınamadı");
       }
     } catch (error) {
-
       let errorMessage = "AI görsel üretilirken bir hata oluştu.";
 
       if (error instanceof Error) {
         if (error.message.includes("API token")) {
           errorMessage = "Pollinations.ai API token bulunamadı.";
         } else if (error.message.includes("Failed to fetch")) {
-          errorMessage =
-            "Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.";
+          errorMessage = "Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.";
         } else {
           errorMessage = error.message;
         }
@@ -146,9 +136,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
           <h4 className="font-medium text-purple-800 dark:text-purple-300 mb-2">
             {t("descriptionLabel")}
           </h4>
-          <p className="text-sm text-purple-700 dark:text-purple-400">
-            {description}
-          </p>
+          <p className="text-sm text-purple-700 dark:text-purple-400">{description}</p>
         </div>
 
         {/* Görsel Üretim Butonu */}
@@ -203,9 +191,7 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
                 <div className="w-full h-[400px] md:h-[600px] lg:h-[768px] max-h-[768px] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-lg flex items-center justify-center">
                   <div className="text-center">
                     <EyeOff className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Görsel gizlendi
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Görsel gizlendi</p>
                   </div>
                 </div>
               )}
@@ -219,30 +205,16 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
                 size="sm"
                 className="flex-1"
               >
-                {showImage ? (
-                  <EyeOff className="w-4 h-4 mr-2" />
-                ) : (
-                  <Eye className="w-4 h-4 mr-2" />
-                )}
+                {showImage ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
                 {showImage ? "Gizle" : "Göster"}
               </Button>
 
-              <Button
-                onClick={downloadImage}
-                variant="outline"
-                size="sm"
-                className="flex-1"
-              >
+              <Button onClick={downloadImage} variant="outline" size="sm" className="flex-1">
                 <Download className="w-4 h-4 mr-2" />
                 İndir
               </Button>
 
-              <Button
-                onClick={regenerateImage}
-                variant="outline"
-                size="sm"
-                className="flex-1"
-              >
+              <Button onClick={regenerateImage} variant="outline" size="sm" className="flex-1">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 {t("regenerate")}
               </Button>

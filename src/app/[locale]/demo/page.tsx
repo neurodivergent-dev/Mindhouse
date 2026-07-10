@@ -5,13 +5,7 @@ import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -88,8 +82,7 @@ export default function DemoPage() {
   );
 
   React.useEffect(() => {
-    const savedPlayingState =
-      localStorage.getItem("btk_demo_playing") === "true";
+    const savedPlayingState = localStorage.getItem("btk_demo_playing") === "true";
     setIsPlaying(savedPlayingState);
   }, []);
 
@@ -173,9 +166,7 @@ export default function DemoPage() {
                 {t("title")}
               </span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-              {t("subtitle")}
-            </p>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">{t("subtitle")}</p>
 
             <div className="flex items-center justify-center space-x-4 mb-8">
               <Button
@@ -192,14 +183,8 @@ export default function DemoPage() {
                 onClick={handlePlayPause}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                {isPlaying ? (
-                  <Pause className="h-4 w-4" />
-                ) : (
-                  <Play className="h-4 w-4" />
-                )}
-                <span className="ml-2">
-                  {isPlaying ? t("pause") : t("start")}
-                </span>
+                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                <span className="ml-2">{isPlaying ? t("pause") : t("start")}</span>
               </Button>
 
               <Button
@@ -260,8 +245,7 @@ export default function DemoPage() {
                 <CardContent className="text-center">
                   <Button
                     onClick={() =>
-                      demoSteps[currentStep] &&
-                      handleStepAction(demoSteps[currentStep])
+                      demoSteps[currentStep] && handleStepAction(demoSteps[currentStep])
                     }
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                     size="lg"
@@ -285,48 +269,46 @@ export default function DemoPage() {
               >
                 <div className="relative h-full rounded-xl p-[2px] group">
                   {/* Dynamic Gradient Layer */}
-                  <div 
+                  <div
                     className={`absolute inset-0 rounded-xl bg-gradient-to-br ${step.color} transition-opacity duration-300 ${
-                      currentStep === index ? "opacity-100 shadow-lg" : "opacity-0 group-hover:opacity-100 group-hover:shadow-md"
+                      currentStep === index
+                        ? "opacity-100 shadow-lg"
+                        : "opacity-0 group-hover:opacity-100 group-hover:shadow-md"
                     }`}
                   />
                   {/* Default Subtle Border Layer */}
-                  <div 
+                  <div
                     className={`absolute inset-0 rounded-xl border border-border transition-opacity duration-300 ${
                       currentStep === index ? "opacity-0" : "opacity-100 group-hover:opacity-0"
                     }`}
                   />
-                  
+
                   <Card
                     className={`relative cursor-pointer h-full border-0 rounded-[10px] ${
-                      completedSteps.includes(step.id) ? "bg-green-50 dark:bg-green-900/20" : "bg-card"
+                      completedSteps.includes(step.id)
+                        ? "bg-green-50 dark:bg-green-900/20"
+                        : "bg-card"
                     }`}
                     onClick={() => setCurrentStep(index)}
                   >
-                  <CardHeader className="text-center pb-3">
-                    <div className="flex justify-center mb-2">
-                      <div
-                        className={`bg-gradient-to-r ${step.color} p-2 rounded-lg`}
-                      >
-                        {step.icon}
+                    <CardHeader className="text-center pb-3">
+                      <div className="flex justify-center mb-2">
+                        <div className={`bg-gradient-to-r ${step.color} p-2 rounded-lg`}>
+                          {step.icon}
+                        </div>
                       </div>
-                    </div>
-                    <CardTitle className="text-lg font-semibold">
-                      {step.title}
-                    </CardTitle>
-                    {completedSteps.includes(step.id) && (
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        {t("completed")}
-                      </Badge>
-                    )}
-                  </CardHeader>
-                  <CardContent className="text-center pt-0">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {step.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                      <CardTitle className="text-lg font-semibold">{step.title}</CardTitle>
+                      {completedSteps.includes(step.id) && (
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          {t("completed")}
+                        </Badge>
+                      )}
+                    </CardHeader>
+                    <CardContent className="text-center pt-0">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{step.description}</p>
+                    </CardContent>
+                  </Card>
                 </div>
               </motion.div>
             ))}

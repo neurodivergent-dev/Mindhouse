@@ -35,9 +35,7 @@ export async function getPerformanceHistoryForSubject(
  * @param userId The user ID.
  * @returns Performance data organized by subject.
  */
-export async function getAllPerformanceData(
-  userId: string,
-): Promise<PerformanceData> {
+export async function getAllPerformanceData(userId: string): Promise<PerformanceData> {
   try {
     const allResults = await QuizRepository.getAllQuizResults(userId);
     return allResults;
@@ -128,10 +126,7 @@ export async function getRecentQuizResults(
  * @param userId The user ID.
  * @param subject The subject.
  */
-export async function deleteQuizResults(
-  userId: string,
-  subject: string,
-): Promise<void> {
+export async function deleteQuizResults(userId: string, subject: string): Promise<void> {
   try {
     await QuizRepository.deleteQuizResults(userId, subject);
   } catch (error) {
@@ -143,9 +138,7 @@ export async function deleteQuizResults(
 // This is kept for backward compatibility with existing AI flows
 let mockPerformanceData: PerformanceData = {};
 
-(getPerformanceHistoryForSubject as PerformanceFunction).__setData = (
-  data: PerformanceData,
-) => {
+(getPerformanceHistoryForSubject as PerformanceFunction).__setData = (data: PerformanceData) => {
   mockPerformanceData = data;
 };
 // Fallback function for when database is not available

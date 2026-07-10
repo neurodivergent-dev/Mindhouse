@@ -23,37 +23,45 @@ After creating the bucket:
 Go to **Authentication** > **Policies** tab in Supabase Dashboard and create the following policies for the **storage.objects** table:
 
 ### Policy 1: Upload Permission
+
 - **Policy name**: `Users can upload to own folder`
 - **Allowed operation**: `INSERT`
 - **Target roles**: `authenticated`
-- **USING expression**: 
+- **USING expression**:
+
 ```sql
 bucket_id = 'user-backups' AND auth.uid()::text = (storage.foldername(name))[1]
 ```
 
 ### Policy 2: Download Permission
+
 - **Policy name**: `Users can view own backup files`
 - **Allowed operation**: `SELECT`
 - **Target roles**: `authenticated`
-- **USING expression**: 
+- **USING expression**:
+
 ```sql
 bucket_id = 'user-backups' AND auth.uid()::text = (storage.foldername(name))[1]
 ```
 
 ### Policy 3: Update Permission
+
 - **Policy name**: `Users can update own backup files`
 - **Allowed operation**: `UPDATE`
 - **Target roles**: `authenticated`
-- **USING expression**: 
+- **USING expression**:
+
 ```sql
 bucket_id = 'user-backups' AND auth.uid()::text = (storage.foldername(name))[1]
 ```
 
 ### Policy 4: Delete Permission
+
 - **Policy name**: `Users can delete own backup files`
 - **Allowed operation**: `DELETE`
 - **Target roles**: `authenticated`
-- **USING expression**: 
+- **USING expression**:
+
 ```sql
 bucket_id = 'user-backups' AND auth.uid()::text = (storage.foldername(name))[1]
 ```
@@ -68,4 +76,4 @@ If you encounter issues creating policies, you can temporarily make the bucket p
 
 ## Verification
 
-After completing the storage setup, use the "Test Storage" button in our application to verify the installation. 
+After completing the storage setup, use the "Test Storage" button in our application to verify the installation.

@@ -5,13 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -92,7 +86,9 @@ function ProfileContent() {
         let storedAverageScore = 0;
         let storedTotalTime = 0;
         try {
-          const results = localStorage.getItem("guestQuizResults") || localStorage.getItem("exam_training_demo_quiz_results");
+          const results =
+            localStorage.getItem("guestQuizResults") ||
+            localStorage.getItem("exam_training_demo_quiz_results");
           if (results) {
             const parsed = JSON.parse(results);
             storedResultsCount = parsed.length;
@@ -102,22 +98,21 @@ function ProfileContent() {
               storedTotalTime = parsed.reduce((sum: number, r: any) => sum + (r.timeSpent || 0), 0);
             }
           }
-        } catch { }
+        } catch {}
 
         // Use Supabase Auth data directly
         setUser({
           id: authUser.id,
-          name:
-            authUser.user_metadata?.full_name ||
-            authUser.user_metadata?.name ||
-            t("user"),
+          name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || t("user"),
           email: authUser.email || "",
           avatar: authUser.user_metadata?.avatar_url,
           avatarPublicId: authUser.user_metadata?.avatar_public_id,
           joinDate: new Date(authUser.created_at).toLocaleDateString(dateLocale),
           totalTests: storedResultsCount || totalTestsCount,
           averageScore: storedAverageScore || (totalTestsCount > 0 ? 75 : 0),
-          totalTime: t("hoursUnit", { count: Math.ceil(storedTotalTime / 3600) || totalTestsCount }),
+          totalTime: t("hoursUnit", {
+            count: Math.ceil(storedTotalTime / 3600) || totalTestsCount,
+          }),
           subjects: subjectNames,
         });
       } catch {
@@ -205,9 +200,7 @@ function ProfileContent() {
       }
 
       // Update local state
-      setUser((prev) =>
-        prev ? { ...prev, avatar: avatarUrl, avatarPublicId } : null,
-      );
+      setUser((prev) => (prev ? { ...prev, avatar: avatarUrl, avatarPublicId } : null));
     } catch {
       // Show error toast
       toast({
@@ -280,9 +273,7 @@ function ProfileContent() {
       }
 
       // Update local state
-      setUser((prev) =>
-        prev ? { ...prev, avatar: undefined, avatarPublicId: undefined } : null,
-      );
+      setUser((prev) => (prev ? { ...prev, avatar: undefined, avatarPublicId: undefined } : null));
     } catch {
       toast({
         title: t("error"),
@@ -309,9 +300,7 @@ function ProfileContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t("userInfoError")}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{t("userInfoError")}</p>
           <Link href="/login">
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0">
               {t("login")}
@@ -334,10 +323,7 @@ function ProfileContent() {
           <nav className="mb-6">
             <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
               <li>
-                <Link
-                  href="/"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/" className="hover:text-foreground transition-colors">
                   {t("home")}
                 </Link>
               </li>
@@ -363,9 +349,7 @@ function ProfileContent() {
                 {t("profileSettings")}
               </span>
             </h1>
-            <p className="text-muted-foreground mt-2">
-              {t("profileSettingsDesc")}
-            </p>
+            <p className="text-muted-foreground mt-2">{t("profileSettingsDesc")}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -430,9 +414,7 @@ function ProfileContent() {
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
                         {user.name}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        {user.email}
-                      </p>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">{user.email}</p>
                       <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0">
                         {t("activeUser")}
                       </Badge>
@@ -493,9 +475,7 @@ function ProfileContent() {
                       <Settings className="w-5 h-5 mr-2 text-blue-600" />
                       {t("accountInfo")}
                     </CardTitle>
-                    <CardDescription>
-                      {t("accountInfoDesc")}
-                    </CardDescription>
+                    <CardDescription>{t("accountInfoDesc")}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6 flex-1 flex flex-col">
                     <div className="flex-1 space-y-6">
@@ -507,9 +487,7 @@ function ProfileContent() {
                             <Input
                               id="name"
                               value={user.name}
-                              onChange={(e) =>
-                                setUser({ ...user, name: e.target.value })
-                              }
+                              onChange={(e) => setUser({ ...user, name: e.target.value })}
                               className="pl-10"
                               disabled={!isEditing}
                             />

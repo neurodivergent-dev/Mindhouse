@@ -7,13 +7,9 @@
 export const AI_CONFIG = {
   // Check for multiple possible API key environment variable names
   apiKey:
-    process.env.GEMINI_API_KEY ||
-    process.env.GOOGLE_GENAI_API_KEY ||
-    process.env.GOOGLE_AI_API_KEY,
+    process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_AI_API_KEY,
   hasApiKey: Boolean(
-    process.env.GEMINI_API_KEY ||
-      process.env.GOOGLE_GENAI_API_KEY ||
-      process.env.GOOGLE_AI_API_KEY,
+    process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_AI_API_KEY,
   ),
   model: "googleai/gemini-2.0-flash",
 };
@@ -38,8 +34,8 @@ export const CLOUDINARY_CONFIG = {
   publicCloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   hasConfig: Boolean(
     process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET,
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET,
   ),
 };
 

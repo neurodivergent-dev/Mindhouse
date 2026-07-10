@@ -5,9 +5,7 @@ export async function POST() {
   try {
     // Check if bucket already exists
     const { data: buckets } = await supabase.storage.listBuckets();
-    const existingBucket = buckets?.find(
-      (bucket) => bucket.name === "user-backups",
-    );
+    const existingBucket = buckets?.find((bucket) => bucket.name === "user-backups");
 
     if (existingBucket) {
       return NextResponse.json({
@@ -19,12 +17,14 @@ export async function POST() {
     }
 
     // Create the bucket as PUBLIC for now (easier setup)
-    const { data: newBucket, error: createError } =
-      await supabase.storage.createBucket("user-backups", {
+    const { data: newBucket, error: createError } = await supabase.storage.createBucket(
+      "user-backups",
+      {
         public: true, // Temporarily public for easier testing
         allowedMimeTypes: ["application/json"],
         fileSizeLimit: 10485760, // 10MB limit
-      });
+      },
+    );
 
     if (createError) {
       return NextResponse.json({

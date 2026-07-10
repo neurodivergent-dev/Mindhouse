@@ -18,10 +18,7 @@ export async function POST(request: NextRequest) {
     const guestData = await request.json();
 
     if (!guestData?.user?.isGuest) {
-      return NextResponse.json(
-        { error: "Invalid guest data format" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid guest data format" }, { status: 400 });
     }
 
     const {
@@ -114,9 +111,7 @@ export async function POST(request: NextRequest) {
         if (!perfError) {
           migrationResults.performanceData = formattedPerformanceData.length;
         } else {
-          migrationResults.errors.push(
-            `Performance data: ${perfError.message}`,
-          );
+          migrationResults.errors.push(`Performance data: ${perfError.message}`);
         }
       } catch (error) {
         migrationResults.errors.push(
@@ -159,12 +154,9 @@ export async function POST(request: NextRequest) {
           .insert(formattedFlashcardProgress);
 
         if (!flashcardError) {
-          migrationResults.flashcardProgress =
-            formattedFlashcardProgress.length;
+          migrationResults.flashcardProgress = formattedFlashcardProgress.length;
         } else {
-          migrationResults.errors.push(
-            `Flashcard progress: ${flashcardError.message}`,
-          );
+          migrationResults.errors.push(`Flashcard progress: ${flashcardError.message}`);
         }
       } catch (error) {
         migrationResults.errors.push(
@@ -191,12 +183,9 @@ export async function POST(request: NextRequest) {
           .insert(formattedAIRecommendations);
 
         if (!aiError) {
-          migrationResults.aiRecommendations =
-            formattedAIRecommendations.length;
+          migrationResults.aiRecommendations = formattedAIRecommendations.length;
         } else {
-          migrationResults.errors.push(
-            `AI recommendations: ${aiError.message}`,
-          );
+          migrationResults.errors.push(`AI recommendations: ${aiError.message}`);
         }
       } catch (error) {
         migrationResults.errors.push(
@@ -217,9 +206,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (metadataError) {
-          migrationResults.errors.push(
-            `Metadata update: ${metadataError.message}`,
-          );
+          migrationResults.errors.push(`Metadata update: ${metadataError.message}`);
         }
       } catch (error) {
         migrationResults.errors.push(

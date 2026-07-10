@@ -2,16 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Mic,
-  MicOff,
-  Volume2,
-  VolumeX,
-  Play,
-  Pause,
-  Brain,
-  BookOpen,
-} from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, Play, Pause, Brain, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -29,12 +20,8 @@ interface CustomSpeechRecognition extends EventTarget {
   interimResults: boolean;
   lang: string;
   onstart: ((this: CustomSpeechRecognition, ev: Event) => void) | null;
-  onresult:
-  | ((this: CustomSpeechRecognition, ev: SpeechRecognitionEvent) => void)
-  | null;
-  onerror:
-  | ((this: CustomSpeechRecognition, ev: SpeechRecognitionErrorEvent) => void)
-  | null;
+  onresult: ((this: CustomSpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+  onerror: ((this: CustomSpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
   onend: ((this: CustomSpeechRecognition, ev: Event) => void) | null;
   start(): void;
   stop(): void;
@@ -83,10 +70,7 @@ function VoiceCommandHint({
       />
       <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-200">
         <span className={`font-semibold ${phraseColor}`}>&quot;{phrase}&quot;</span>
-        <span className="text-gray-500 dark:text-gray-400 hidden sm:inline">
-          {" "}
-          - {description}
-        </span>
+        <span className="text-gray-500 dark:text-gray-400 hidden sm:inline"> - {description}</span>
       </span>
     </div>
   );
@@ -145,8 +129,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
   // Check browser support
   useEffect(() => {
     const checkSupport = () => {
-      const hasRecognition =
-        "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
+      const hasRecognition = "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
       const hasSynthesis = "speechSynthesis" in window;
       setIsSupported(hasRecognition && hasSynthesis);
     };
@@ -160,8 +143,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       return;
     }
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition() as CustomSpeechRecognition;
 
     const recognition = recognitionRef.current;
@@ -209,7 +191,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
         }
 
         // Only process if we have meaningful content and it's different from last processed
-        if (cleanTranscript.length > 1 && cleanTranscript.toLowerCase() !== lastProcessedTranscript.current.toLowerCase()) {
+        if (
+          cleanTranscript.length > 1 &&
+          cleanTranscript.toLowerCase() !== lastProcessedTranscript.current.toLowerCase()
+        ) {
           // Set timeout to send after silence (2 seconds as requested)
           transcriptProcessingTimeout.current = setTimeout(() => {
             // Double-check to prevent duplicates (remove isListening check for continuous mode)
@@ -323,10 +308,10 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       }
     };
 
-    window.addEventListener('readExplanation', handleReadExplanation as EventListener);
+    window.addEventListener("readExplanation", handleReadExplanation as EventListener);
 
     return () => {
-      window.removeEventListener('readExplanation', handleReadExplanation as EventListener);
+      window.removeEventListener("readExplanation", handleReadExplanation as EventListener);
     };
   }, []);
 
@@ -380,15 +365,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
     }
 
     if (
-      matchesAny(normalized, [
-        "cevap",
-        "yanıt",
-        "şıkları",
-        "şık",
-        "answer",
-        "options",
-        "choices",
-      ])
+      matchesAny(normalized, ["cevap", "yanıt", "şıkları", "şık", "answer", "options", "choices"])
     ) {
       speakOptions();
     } else if (
@@ -409,19 +386,15 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       ])
     ) {
       speakBackSide();
-    } else if (
-      matchesAny(normalized, ["açıklama", "açıkla", "explanation", "explain"])
-    ) {
+    } else if (matchesAny(normalized, ["açıklama", "açıkla", "explanation", "explain"])) {
       if (currentExplanation) {
         speakText(currentExplanation, "explanation");
       } else {
         speakText(t("noExplanation"), "help");
       }
     } else if (
-      (normalized.includes("ai") &&
-        (normalized.includes("oku") || normalized.includes("read"))) ||
-      (normalized.includes("tutor") &&
-        (normalized.includes("oku") || normalized.includes("read")))
+      (normalized.includes("ai") && (normalized.includes("oku") || normalized.includes("read"))) ||
+      (normalized.includes("tutor") && (normalized.includes("oku") || normalized.includes("read")))
     ) {
       if (aiTutorOutput) {
         speakText(markdownToPlainText(aiTutorOutput), "ai-tutor");
@@ -438,24 +411,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       onCommand?.("hint");
     } else if (matchesAny(normalized, ["sonraki", "ileri", "next", "forward"])) {
       onCommand?.("next");
-    } else if (
-      matchesAny(normalized, ["önceki", "geri", "previous", "back"])
-    ) {
+    } else if (matchesAny(normalized, ["önceki", "geri", "previous", "back"])) {
       onCommand?.("previous");
     } else if (
-      matchesAny(normalized, [
-        "başa dön",
-        "baştan",
-        "karıştır",
-        "shuffle",
-        "restart",
-        "from start",
-      ])
+      matchesAny(normalized, ["başa dön", "baştan", "karıştır", "shuffle", "restart", "from start"])
     ) {
       onCommand?.("shuffle");
-    } else if (
-      matchesAny(normalized, ["çevir", "flip", "döndür", "turn"])
-    ) {
+    } else if (matchesAny(normalized, ["çevir", "flip", "döndür", "turn"])) {
       onCommand?.("flip");
     } else if (matchesAny(normalized, ["göster", "show"])) {
       onCommand?.("show");
@@ -615,13 +577,9 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
       <div className="fixed bottom-6 left-6 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4 max-w-sm">
         <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
           <MicOff className="w-5 h-5" />
-          <span className="text-sm font-medium">
-            {t("voiceAssistantNotSupported")}
-          </span>
+          <span className="text-sm font-medium">{t("voiceAssistantNotSupported")}</span>
         </div>
-        <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-          {t("browserNotSupported")}
-        </p>
+        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t("browserNotSupported")}</p>
       </div>
     ) : null;
   }
@@ -644,14 +602,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           <Button
             type="button"
             onClick={toggleListening}
-            disabled={
-              recognitionState === "starting" || recognitionState === "stopping"
-            }
+            disabled={recognitionState === "starting" || recognitionState === "stopping"}
             size={inline ? "default" : "lg"}
-            className={`rounded-full shadow-lg transition-all duration-300 ${inline ? "w-10 h-10 p-0" : "w-16 h-16"} ${isListening || recognitionState === "active"
+            className={`rounded-full shadow-lg transition-all duration-300 ${inline ? "w-10 h-10 p-0" : "w-16 h-16"} ${
+              isListening || recognitionState === "active"
                 ? "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 animate-pulse"
                 : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              } ${recognitionState === "starting" || recognitionState === "stopping" ? "opacity-50 cursor-not-allowed" : ""}`}
+            } ${recognitionState === "starting" || recognitionState === "stopping" ? "opacity-50 cursor-not-allowed" : ""}`}
             title={t("voiceAssistant")}
           >
             {isListening || recognitionState === "active" ? (
@@ -689,17 +646,13 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 size="sm"
                 variant="outline"
                 className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
-                  isReadingQuestion 
-                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30" 
+                  isReadingQuestion
+                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30"
                     : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
                 }`}
                 disabled={isSpeaking && !isReadingQuestion}
               >
-                {isReadingQuestion ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
+                {isReadingQuestion ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               </Button>
             )}
 
@@ -711,18 +664,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 size="sm"
                 variant="outline"
                 className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
-                  isReadingAnswer 
-                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30" 
+                  isReadingAnswer
+                    ? "bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/30"
                     : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
                 }`}
                 disabled={isSpeaking && !isReadingAnswer}
                 title={t("readAnswer")}
               >
-                {isReadingAnswer ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Volume2 className="w-4 h-4" />
-                )}
+                {isReadingAnswer ? <Pause className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </Button>
             )}
 
@@ -734,8 +683,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 size="sm"
                 variant="outline"
                 className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
-                  isReadingExplanation 
-                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30" 
+                  isReadingExplanation
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
                     : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
                 }`}
                 disabled={isSpeaking && !isReadingExplanation}
@@ -757,8 +706,8 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 size="sm"
                 variant="outline"
                 className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
-                  isReadingExplanation 
-                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30" 
+                  isReadingExplanation
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30"
                     : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
                 }`}
                 disabled={isSpeaking && !isReadingExplanation}
@@ -783,18 +732,14 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                 size="sm"
                 variant="outline"
                 className={`rounded-full w-12 h-12 shadow-lg backdrop-blur-sm transition-all ${
-                  isReadingAiTutor 
-                    ? "bg-purple-500/20 border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/30" 
+                  isReadingAiTutor
+                    ? "bg-purple-500/20 border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/30"
                     : "bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/10"
                 }`}
                 disabled={isSpeaking && !isReadingAiTutor}
                 title={t("aiTutorRead")}
               >
-                {isReadingAiTutor ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Brain className="w-4 h-4" />
-                )}
+                {isReadingAiTutor ? <Pause className="w-4 h-4" /> : <Brain className="w-4 h-4" />}
               </Button>
             )}
 
@@ -1081,10 +1026,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                           <span className="font-semibold text-teal-600 dark:text-teal-400">
                             &quot;Göster&quot;
                           </span>
-                          <span className="text-gray-500 dark:text-gray-400">
-                            {" "}
-                            - Cevabı göster
-                          </span>
+                          <span className="text-gray-500 dark:text-gray-400"> - Cevabı göster</span>
                         </span>
                       </div>
                       <div
@@ -1096,10 +1038,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
                           <span className="font-semibold text-gray-600 dark:text-gray-400">
                             &quot;Gizle&quot;
                           </span>
-                          <span className="text-gray-500 dark:text-gray-400">
-                            {" "}
-                            - Cevabı gizle
-                          </span>
+                          <span className="text-gray-500 dark:text-gray-400"> - Cevabı gizle</span>
                         </span>
                       </div>
                     </>
@@ -1130,9 +1069,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-auto"></div>
             )}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {transcript}
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{transcript}</p>
           {/* Status indicator */}
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>

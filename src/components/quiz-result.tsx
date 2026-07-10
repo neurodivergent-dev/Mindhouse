@@ -58,8 +58,7 @@ export const QuizResult: React.FC<QuizResultProps> = ({
   onRetake,
 }) => {
   const t = useTranslations("Quiz");
-  const percentage =
-    totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+  const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
   const feedback = getFeedback(percentage, t);
   const weakTopicList = Object.keys(weakTopics);
 
@@ -96,8 +95,12 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   className="relative"
                 >
                   {/* Main achievement badge */}
-                  <div className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-2 sm:border-4 border-white/20`}>
-                    <Award className={`h-10 w-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white ${feedback.iconColor}`} />
+                  <div
+                    className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-2 sm:border-4 border-white/20`}
+                  >
+                    <Award
+                      className={`h-10 w-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white ${feedback.iconColor}`}
+                    />
                   </div>
 
                   {/* Floating success indicators */}
@@ -168,7 +171,9 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent mb-2">
                     {score} / {totalQuestions}
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{t("correctCount")}</div>
+                  <div className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    {t("correctCount")}
+                  </div>
                 </div>
               </div>
 
@@ -180,7 +185,9 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-600 bg-clip-text text-transparent mb-2">
                     {formatTime(timeSpent, t)}
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-yellow-600 dark:text-yellow-400">{t("totalTime")}</div>
+                  <div className="text-xs sm:text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+                    {t("totalTime")}
+                  </div>
                 </div>
               </div>
 
@@ -192,7 +199,9 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent mb-2">
                     {percentage}%
                   </div>
-                  <div className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">{t("successRate")}</div>
+                  <div className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">
+                    {t("successRate")}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -214,7 +223,9 @@ export const QuizResult: React.FC<QuizResultProps> = ({
               </div>
               <div className="text-center mt-4">
                 <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-lg font-bold text-gray-700 dark:text-gray-200">{t("progress")}</span>
+                  <span className="text-lg font-bold text-gray-700 dark:text-gray-200">
+                    {t("progress")}
+                  </span>
                   <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     {percentage}%
                   </span>
@@ -236,7 +247,11 @@ export const QuizResult: React.FC<QuizResultProps> = ({
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2 mt-4">
                   {weakTopicList.map((topic) => (
-                    <Badge key={topic} variant="destructive" className="text-sm px-3 py-1 bg-gradient-to-r from-red-500 to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Badge
+                      key={topic}
+                      variant="destructive"
+                      className="text-sm px-3 py-1 bg-gradient-to-r from-red-500 to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    >
                       {topic}
                     </Badge>
                   ))}

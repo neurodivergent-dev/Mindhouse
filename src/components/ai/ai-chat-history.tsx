@@ -15,14 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import {
-  History,
-  Search,
-  Trash2,
-  MessageSquare,
-  Calendar,
-  BookOpen,
-} from "lucide-react";
+import { History, Search, Trash2, MessageSquare, Calendar, BookOpen } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { aiChatSessionRepository } from "@/services/ai-chat-session-storage";
 
@@ -36,10 +29,12 @@ interface AiChatSession {
   lastMessageAt: string;
   createdAt: string;
   updatedAt: string;
-  lastMessage?: {
-    content: string;
-    image?: string;
-  } | undefined;
+  lastMessage?:
+    | {
+        content: string;
+        image?: string;
+      }
+    | undefined;
 }
 
 interface AiChatHistoryProps {
@@ -95,29 +90,30 @@ export default function AiChatHistory({
 
       const localSessions = await aiChatSessionRepository.getSessions(user?.id);
 
-      let localFormattedSessions: AiChatSession[] = localSessions.map(
-        (session) => {
-          const lastMessage = session.messages && session.messages.length > 0
+      let localFormattedSessions: AiChatSession[] = localSessions.map((session) => {
+        const lastMessage =
+          session.messages && session.messages.length > 0
             ? session.messages[session.messages.length - 1]
             : undefined;
 
-          return {
-            id: session.id,
-            userId: session.userId,
-            sessionId: session.sessionId,
-            subject: session.subject,
-            title: session.title || undefined,
-            messageCount: session.messages?.length || 0,
-            lastMessageAt: session.lastMessageAt,
-            createdAt: session.createdAt,
-            updatedAt: session.updatedAt,
-            lastMessage: lastMessage ? {
-              content: lastMessage.content,
-              ...(lastMessage.image && { image: lastMessage.image }),
-            } : undefined,
-          };
-        },
-      );
+        return {
+          id: session.id,
+          userId: session.userId,
+          sessionId: session.sessionId,
+          subject: session.subject,
+          title: session.title || undefined,
+          messageCount: session.messages?.length || 0,
+          lastMessageAt: session.lastMessageAt,
+          createdAt: session.createdAt,
+          updatedAt: session.updatedAt,
+          lastMessage: lastMessage
+            ? {
+                content: lastMessage.content,
+                ...(lastMessage.image && { image: lastMessage.image }),
+              }
+            : undefined,
+        };
+      });
 
       if (search?.trim()) {
         const searchLower = search.toLowerCase().trim();
@@ -134,9 +130,9 @@ export default function AiChatHistory({
             return true;
           }
 
-          const originalSession = localSessions.find(s => s.sessionId === session.sessionId);
+          const originalSession = localSessions.find((s) => s.sessionId === session.sessionId);
           if (originalSession?.messages) {
-            return originalSession.messages.some(msg =>
+            return originalSession.messages.some((msg) =>
               msg.content.toLowerCase().includes(searchLower),
             );
           }
@@ -148,9 +144,7 @@ export default function AiChatHistory({
       const combinedSessions = [...allSessions, ...localFormattedSessions];
 
       combinedSessions.sort(
-        (a, b) =>
-          new Date(b.lastMessageAt).getTime() -
-          new Date(a.lastMessageAt).getTime(),
+        (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
       );
 
       setSessions(combinedSessions);
@@ -167,7 +161,9 @@ export default function AiChatHistory({
     let userId: string | null = null;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.user) {
         userId = session.user.id;
       }
@@ -178,12 +174,9 @@ export default function AiChatHistory({
     if (userId) {
       try {
         console.log("Attempting to delete from Supabase for user:", userId);
-        const response = await fetch(
-          `/api/ai-chat/${sessionId}?userId=${userId}`,
-          {
-            method: "DELETE",
-          },
-        );
+        const response = await fetch(`/api/ai-chat/${sessionId}?userId=${userId}`, {
+          method: "DELETE",
+        });
 
         if (response.ok) {
           deletedFromSupabase = true;
@@ -200,7 +193,7 @@ export default function AiChatHistory({
       console.log("Attempting to delete from IndexedDB local repo...");
       const deletedFromLocal = await aiChatSessionRepository.deleteSession(sessionId);
       console.log("IndexedDB delete result:", deletedFromLocal);
-      
+
       if (deletedFromLocal || deletedFromSupabase) {
         toast({
           title: t("success"),
@@ -235,9 +228,7 @@ export default function AiChatHistory({
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
-    );
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
     if (diffInHours < 1) {
       return t("justNow");
@@ -322,9 +313,7 @@ export default function AiChatHistory({
               <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
                 {t("loading")}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                {t("loadingHistory")}
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{t("loadingHistory")}</p>
             </div>
           ) : sessions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 h-[350px] text-center">
@@ -361,7 +350,8 @@ export default function AiChatHistory({
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-base lg:text-lg truncate text-gray-900 dark:text-gray-100">
-                            {session.title || t("sessionTitle", { subject: getSubjectLabel(session.subject) })}
+                            {session.title ||
+                              t("sessionTitle", { subject: getSubjectLabel(session.subject) })}
                           </h3>
                           <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 truncate">
                             {t("chatAbout", { subject: getSubjectLabel(session.subject) })}
@@ -380,9 +370,7 @@ export default function AiChatHistory({
                         <div className="flex items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           <Calendar className="w-4 h-4 lg:w-5 lg:h-5" />
-                          <span className="font-medium">
-                            {formatDate(session.lastMessageAt)}
-                          </span>
+                          <span className="font-medium">{formatDate(session.lastMessageAt)}</span>
                         </div>
                       </div>
 

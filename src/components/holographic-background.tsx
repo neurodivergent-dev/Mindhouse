@@ -182,13 +182,7 @@ export default function HolographicBackground() {
               opacity="0.3"
             />
           </pattern>
-          <linearGradient
-            id="holographicGradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id="holographicGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6" />
             <stop offset="25%" stopColor="#8b5cf6" stopOpacity="0.6" />
             <stop offset="50%" stopColor="#ec4899" stopOpacity="0.6" />

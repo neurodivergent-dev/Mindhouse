@@ -4,14 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  RotateCcw,
-  Settings,
-} from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, RotateCcw, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
 import { markdownToPlainText } from "@/lib/utils";
@@ -59,9 +52,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
       setAvailableVoices(voices);
 
       // Select Turkish voice if available
-      const turkishVoice = voices.find(v =>
-        v.lang.includes("tr") || v.lang.includes("TR"),
-      );
+      const turkishVoice = voices.find((v) => v.lang.includes("tr") || v.lang.includes("TR"));
       setSelectedVoice(turkishVoice || voices[0] || null);
     }
   }, []);
@@ -89,7 +80,9 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   }, [loadVoices]);
 
   const handlePlay = useCallback(() => {
-    if (!isSupported || !text) {return;}
+    if (!isSupported || !text) {
+      return;
+    }
 
     const plainText = markdownToPlainText(text);
 
@@ -156,7 +149,18 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
         variant: "destructive",
       });
     }
-  }, [isSupported, text, language, currentSpeed, isMuted, selectedVoice, onPlay, onEnd, onPause, toast]);
+  }, [
+    isSupported,
+    text,
+    language,
+    currentSpeed,
+    isMuted,
+    selectedVoice,
+    onPlay,
+    onEnd,
+    onPause,
+    toast,
+  ]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -214,7 +218,9 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
 
   if (!isSupported) {
     return (
-      <div className={`p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg ${className}`}>
+      <div
+        className={`p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg ${className}`}
+      >
         <p className="text-sm text-yellow-800 dark:text-yellow-200">
           Seslendirme özelliği bu tarayıcıda desteklenmiyor.
         </p>
@@ -223,7 +229,9 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 ${className}`}
+    >
       {/* Main Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -234,11 +242,7 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             variant="outline"
             className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
           >
-            {isPlaying ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             {isPlaying ? t("pause") : t("play")}
           </Button>
 
@@ -259,88 +263,84 @@ const VoicePlayer: React.FC<VoicePlayerProps> = ({
             variant="outline"
             className="hover:bg-gradient-to-r hover:from-gray-600 hover:to-gray-700 hover:text-white"
           >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4" />
-            )}
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </Button>
 
-                     <Button
-             onClick={() => setShowSettings(!showSettings)}
-             size="sm"
-             variant="outline"
-             className="hidden md:flex hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-600 hover:text-white"
-           >
-             <Settings className="w-4 h-4" />
-           </Button>
+          <Button
+            onClick={() => setShowSettings(!showSettings)}
+            size="sm"
+            variant="outline"
+            className="hidden md:flex hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-600 hover:text-white"
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
         </div>
 
-                 <div className="flex items-center gap-1 sm:gap-2">
-           <Badge variant="outline" className="text-xs px-1 sm:px-2 hidden sm:block">
-             {currentSpeed}x
-           </Badge>
-           {selectedVoice && (
-             <Badge variant="secondary" className="text-xs px-1 sm:px-2 hidden sm:block">
-               {selectedVoice.name}
-             </Badge>
-           )}
-         </div>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Badge variant="outline" className="text-xs px-1 sm:px-2 hidden sm:block">
+            {currentSpeed}x
+          </Badge>
+          {selectedVoice && (
+            <Badge variant="secondary" className="text-xs px-1 sm:px-2 hidden sm:block">
+              {selectedVoice.name}
+            </Badge>
+          )}
+        </div>
       </div>
 
-             {/* Settings Panel - Desktop Only */}
-       {showControls && showSettings && (
-         <div className="hidden md:block border-t border-gray-200 dark:border-gray-700 pt-4 space-y-4">
-           {/* Speed Control */}
-           <div>
-             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-               Ses Hızı: {currentSpeed}x
-             </label>
-             <Slider
-               value={[currentSpeed]}
-               onValueChange={handleSpeedChange}
-               max={2}
-               min={0.5}
-               step={0.1}
-               className="w-full"
-             />
-           </div>
+      {/* Settings Panel - Desktop Only */}
+      {showControls && showSettings && (
+        <div className="hidden md:block border-t border-gray-200 dark:border-gray-700 pt-4 space-y-4">
+          {/* Speed Control */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+              Ses Hızı: {currentSpeed}x
+            </label>
+            <Slider
+              value={[currentSpeed]}
+              onValueChange={handleSpeedChange}
+              max={2}
+              min={0.5}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
 
-           {/* Voice Selection */}
-           {availableVoices.length > 0 && (
-             <div>
-               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                 Ses Seçimi
-               </label>
-               <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                 {availableVoices.map((voice) => (
-                   <Button
-                     key={voice.name}
-                     onClick={() => handleVoiceChange(voice)}
-                     size="sm"
-                     variant={selectedVoice?.name === voice.name ? "default" : "outline"}
-                     className="text-xs justify-start"
-                   >
-                     {voice.name} ({voice.lang})
-                   </Button>
-                 ))}
-               </div>
-             </div>
-           )}
+          {/* Voice Selection */}
+          {availableVoices.length > 0 && (
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                Ses Seçimi
+              </label>
+              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                {availableVoices.map((voice) => (
+                  <Button
+                    key={voice.name}
+                    onClick={() => handleVoiceChange(voice)}
+                    size="sm"
+                    variant={selectedVoice?.name === voice.name ? "default" : "outline"}
+                    className="text-xs justify-start"
+                  >
+                    {voice.name} ({voice.lang})
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
-           {/* Text Preview */}
-           <div>
-             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-               Seslendirilecek Metin
-             </label>
-             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg max-h-32 overflow-y-auto">
-               <p className="text-sm text-gray-600 dark:text-gray-400">
-                 {text || "Seslendirilecek metin yok"}
-               </p>
-             </div>
-           </div>
-         </div>
-       )}
+          {/* Text Preview */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+              Seslendirilecek Metin
+            </label>
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg max-h-32 overflow-y-auto">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {text || "Seslendirilecek metin yok"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

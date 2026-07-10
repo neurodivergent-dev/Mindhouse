@@ -94,10 +94,7 @@ export class QuestionRepository {
   ): Promise<Question[]> {
     try {
       const db = getDb();
-      const conditions = [
-        eq(questions.subject, subject),
-        eq(questions.isActive, true),
-      ];
+      const conditions = [eq(questions.subject, subject), eq(questions.isActive, true)];
 
       // Add user filter if userId is provided
       if (userId) {
@@ -258,10 +255,7 @@ export class QuestionRepository {
   ): Promise<Question[]> {
     try {
       const db = getDb();
-      const conditions = [
-        eq(questions.subject, subject),
-        eq(questions.isActive, true),
-      ];
+      const conditions = [eq(questions.subject, subject), eq(questions.isActive, true)];
 
       // Add user filter if userId is provided
       if (userId) {
@@ -443,10 +437,7 @@ export class QuestionRepository {
   static async getQuestionStats(subject: string, userId?: string) {
     try {
       const db = getDb();
-      const conditions = [
-        eq(questions.subject, subject),
-        eq(questions.isActive, true),
-      ];
+      const conditions = [eq(questions.subject, subject), eq(questions.isActive, true)];
 
       // Add user filter if userId is provided
       if (userId) {
@@ -474,16 +465,10 @@ export class QuestionRepository {
   /**
    * Get all topics for a subject
    */
-  static async getTopicsBySubject(
-    subject: string,
-    userId?: string,
-  ): Promise<string[]> {
+  static async getTopicsBySubject(subject: string, userId?: string): Promise<string[]> {
     try {
       const db = getDb();
-      const conditions = [
-        eq(questions.subject, subject),
-        eq(questions.isActive, true),
-      ];
+      const conditions = [eq(questions.subject, subject), eq(questions.isActive, true)];
 
       // Add user filter if userId is provided
       if (userId) {

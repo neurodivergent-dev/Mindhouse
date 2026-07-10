@@ -59,8 +59,7 @@ export async function GET(request: NextRequest) {
       try {
         const topics = JSON.parse(result.weakTopics || "{}");
         for (const topic in topics) {
-          entry.weakTopics[topic] =
-            (entry.weakTopics[topic] || 0) + topics[topic];
+          entry.weakTopics[topic] = (entry.weakTopics[topic] || 0) + topics[topic];
         }
       } catch {
         // Ignore if weakTopics is not valid JSON
@@ -68,33 +67,27 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Format the output
-    const performanceData = Array.from(performanceMap.entries()).map(
-      ([subject, data]) => {
-        const percentages = data.scores.map((score, index) => {
-          const total = data.totalQuestions[index];
-          return total && total > 0 ? (score / total) * 100 : 0;
-        });
-        const averageScore =
-          percentages.reduce((a, b) => a + b, 0) / percentages.length;
-        const sortedWeakTopics = Object.entries(data.weakTopics)
-          .sort(([, a], [, b]) => b - a)
-          .map(([topic]) => topic);
+    const performanceData = Array.from(performanceMap.entries()).map(([subject, data]) => {
+      const percentages = data.scores.map((score, index) => {
+        const total = data.totalQuestions[index];
+        return total && total > 0 ? (score / total) * 100 : 0;
+      });
+      const averageScore = percentages.reduce((a, b) => a + b, 0) / percentages.length;
+      const sortedWeakTopics = Object.entries(data.weakTopics)
+        .sort(([, a], [, b]) => b - a)
+        .map(([topic]) => topic);
 
-        return {
-          subject,
-          averageScore: Math.round(averageScore),
-          totalTests: data.scores.length,
-          weakTopics: sortedWeakTopics.slice(0, 3), // Return top 3 weak topics
-          lastUpdated: new Date().toISOString(),
-        };
-      },
-    );
+      return {
+        subject,
+        averageScore: Math.round(averageScore),
+        totalTests: data.scores.length,
+        weakTopics: sortedWeakTopics.slice(0, 3), // Return top 3 weak topics
+        lastUpdated: new Date().toISOString(),
+      };
+    });
 
     return NextResponse.json(performanceData);
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch performance data" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to fetch performance data" }, { status: 500 });
   }
 }

@@ -31,11 +31,16 @@ class TopicExplainerLocalStorageService {
     return UnifiedStorageService.getSavedTopics();
   }
 
-  static saveTopic(topic: string, subject: string, content: string, stepData?: TopicStepData[]): SavedTopicContent {
+  static saveTopic(
+    topic: string,
+    subject: string,
+    content: string,
+    stepData?: TopicStepData[],
+  ): SavedTopicContent {
     return UnifiedStorageService.saveTopic(topic, subject, content, stepData);
   }
 
-  static updateTopic(id: string, updates: Partial<Omit<SavedTopicContent, 'id'>>): boolean {
+  static updateTopic(id: string, updates: Partial<Omit<SavedTopicContent, "id">>): boolean {
     return UnifiedStorageService.updateTopic(id, updates);
   }
 

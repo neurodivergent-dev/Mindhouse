@@ -86,7 +86,7 @@ export default function QuestionManager() {
   useEffect(() => {
     const totalSubjects = subjects.length;
     const totalQuestions = questions.length;
-    const categories = new Set(subjects.map(subject => subject.category));
+    const categories = new Set(subjects.map((subject) => subject.category));
     const totalCategories = categories.size;
 
     setStats({

@@ -4,8 +4,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
 // Get database connection string from environment variables
-const connectionString =
-  process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
+const connectionString = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
 
 // Create PostgreSQL connection with better error handling
 let client: postgres.Sql | null = null;

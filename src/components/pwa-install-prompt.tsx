@@ -24,8 +24,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function PWAInstallPrompt() {
   const t = useTranslations("Pwa");
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -33,8 +32,7 @@ export default function PWAInstallPrompt() {
 
   useEffect(() => {
     // Check if PWA features are supported
-    const checkSupport = () =>
-      "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window;
+    const checkSupport = () => "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window;
 
     // Check if app is already installed
     const checkIfInstalled = () => {
@@ -125,10 +123,7 @@ export default function PWAInstallPrompt() {
 
     // Cleanup
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handler as EventListener,
-      );
+      window.removeEventListener("beforeinstallprompt", handler as EventListener);
       window.removeEventListener("appinstalled", installHandler);
       clearInterval(iosCheckInterval);
     };
@@ -206,9 +201,7 @@ export default function PWAInstallPrompt() {
                 <h3 className="font-semibold text-gray-900 dark:text-white text-base">
                   {t("installMindhouse")}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t("fasterAccess")}
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t("fasterAccess")}</p>
               </div>
             </div>
             <button

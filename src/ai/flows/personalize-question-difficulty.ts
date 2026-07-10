@@ -6,28 +6,42 @@ import { AIFactory } from "@/services/ai/AIFactory";
 
 const PersonalizeQuestionDifficultyInputSchema = z.object({
   userId: z.string().describe("The ID of the user."),
-  subject: z.string().describe("The subject for which to personalize question difficulty (e.g., Finansal Tablo Analizi)."),
-  performanceData: z.string().describe("A stringified JSON object of the user's performance data from localStorage. The tool will handle this data."),
+  subject: z
+    .string()
+    .describe(
+      "The subject for which to personalize question difficulty (e.g., Finansal Tablo Analizi).",
+    ),
+  performanceData: z
+    .string()
+    .describe(
+      "A stringified JSON object of the user's performance data from localStorage. The tool will handle this data.",
+    ),
   preferences: z.record(z.any()).optional().describe("User AI preferences"),
 });
 
-export type PersonalizeQuestionDifficultyInput = z.infer<typeof PersonalizeQuestionDifficultyInputSchema>;
+export type PersonalizeQuestionDifficultyInput = z.infer<
+  typeof PersonalizeQuestionDifficultyInputSchema
+>;
 
 const PersonalizeQuestionDifficultyOutputSchema = z.object({
-  difficulty: z.enum(["Easy", "Medium", "Hard"]).describe("The personalized difficulty level for the user in the given subject."),
+  difficulty: z
+    .enum(["Easy", "Medium", "Hard"])
+    .describe("The personalized difficulty level for the user in the given subject."),
 });
 
-export type PersonalizeQuestionDifficultyOutput = z.infer<typeof PersonalizeQuestionDifficultyOutputSchema>;
+export type PersonalizeQuestionDifficultyOutput = z.infer<
+  typeof PersonalizeQuestionDifficultyOutputSchema
+>;
 
 export async function personalizeQuestionDifficulty(
   input: PersonalizeQuestionDifficultyInput,
 ): Promise<PersonalizeQuestionDifficultyOutput> {
   try {
     const provider = AIFactory.getProviderFromPreferences(input.preferences || {});
-    
+
     // Get real performance history
     const pastPerformance = getPerformanceHistoryForSubject(input.subject, input.userId);
-    
+
     const promptText = `You are an AI that personalizes the difficulty of quiz questions for a student.
 
 Analyze the user's average score from their most recent tests. Consider the last 3 tests for the analysis if available. The 'score' field is the number of correct answers and 'totalQuestions' is the total number of questions.

@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
-import { QuestionService } from '@/services/supabase-service';
-import type { Question } from '@/lib/types';
-import { shouldUseDemoData } from '@/data/demo-data';
-import { UnifiedStorageService } from '@/services/unified-storage-service';
-import { logError } from '@/lib/error-logger';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
+import { QuestionService } from "@/services/supabase-service";
+import type { Question } from "@/lib/types";
+import { shouldUseDemoData } from "@/data/demo-data";
+import { UnifiedStorageService } from "@/services/unified-storage-service";
+import { logError } from "@/lib/error-logger";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface UseRealtimeQuestionsProps {
   selectedSubject: string;
@@ -20,7 +20,7 @@ interface UseRealtimeQuestionsReturn {
 }
 
 interface RealtimePayload {
-  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  eventType: "INSERT" | "UPDATE" | "DELETE";
   new?: Record<string, unknown>;
   old?: Record<string, unknown>;
 }
@@ -46,59 +46,66 @@ export function useRealtimeQuestions({
   const [error, setError] = useState<string | null>(null);
 
   // Realtime change handler
-  const handleRealtimeChange = useCallback((payload: RealtimePayload) => {
-    const { eventType, new: newRecord, old: oldRecord } = payload;
+  const handleRealtimeChange = useCallback(
+    (payload: RealtimePayload) => {
+      const { eventType, new: newRecord, old: oldRecord } = payload;
 
-    switch (eventType) {
-      case 'INSERT':
-        if (newRecord && typeof newRecord === 'object' && 'subject' in newRecord && newRecord.subject === selectedSubject) {
-          const newQuestion = mapSupabaseToQuestion(newRecord as unknown as SupabaseQuestionRecord);
-          setQuestions((prev) => {
-            // Duplicate check
-            if (prev.find((q) => q.id === newQuestion.id)) {
-              return prev;
-            }
-            return [newQuestion, ...prev];
-          });
-        }
-        break;
-
-      case 'UPDATE':
-        if (newRecord && typeof newRecord === 'object') {
-          const updatedQuestion = mapSupabaseToQuestion(newRecord as unknown as SupabaseQuestionRecord);
-          setQuestions((prev) => {
-            // Update existing question
-            const updated = prev.map((q) =>
-              q.id === updatedQuestion.id ? updatedQuestion : q,
+      switch (eventType) {
+        case "INSERT":
+          if (
+            newRecord &&
+            typeof newRecord === "object" &&
+            "subject" in newRecord &&
+            newRecord.subject === selectedSubject
+          ) {
+            const newQuestion = mapSupabaseToQuestion(
+              newRecord as unknown as SupabaseQuestionRecord,
             );
-
-            // If subject changed and no longer matches selected subject, remove it
-            if (newRecord.subject !== selectedSubject) {
-              return updated.filter((q) => q.id !== updatedQuestion.id);
-            }
-
-            // If subject changed TO selected subject, add it
-            if (
-              oldRecord?.subject !== selectedSubject &&
-              newRecord.subject === selectedSubject
-            ) {
-              if (!prev.find((q) => q.id === updatedQuestion.id)) {
-                return [updatedQuestion, ...prev];
+            setQuestions((prev) => {
+              // Duplicate check
+              if (prev.find((q) => q.id === newQuestion.id)) {
+                return prev;
               }
-            }
+              return [newQuestion, ...prev];
+            });
+          }
+          break;
 
-            return updated;
-          });
-        }
-        break;
+        case "UPDATE":
+          if (newRecord && typeof newRecord === "object") {
+            const updatedQuestion = mapSupabaseToQuestion(
+              newRecord as unknown as SupabaseQuestionRecord,
+            );
+            setQuestions((prev) => {
+              // Update existing question
+              const updated = prev.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q));
 
-      case 'DELETE':
-        if (oldRecord) {
-          setQuestions((prev) => prev.filter((q) => q.id !== oldRecord.id));
-        }
-        break;
-    }
-  }, [selectedSubject]);
+              // If subject changed and no longer matches selected subject, remove it
+              if (newRecord.subject !== selectedSubject) {
+                return updated.filter((q) => q.id !== updatedQuestion.id);
+              }
+
+              // If subject changed TO selected subject, add it
+              if (oldRecord?.subject !== selectedSubject && newRecord.subject === selectedSubject) {
+                if (!prev.find((q) => q.id === updatedQuestion.id)) {
+                  return [updatedQuestion, ...prev];
+                }
+              }
+
+              return updated;
+            });
+          }
+          break;
+
+        case "DELETE":
+          if (oldRecord) {
+            setQuestions((prev) => prev.filter((q) => q.id !== oldRecord.id));
+          }
+          break;
+      }
+    },
+    [selectedSubject],
+  );
 
   // Realtime subscription
   useEffect(() => {
@@ -118,11 +125,11 @@ export function useRealtimeQuestions({
         subscription = supabase
           .channel(`questions-${session.user.id}`)
           .on(
-            'postgres_changes',
+            "postgres_changes",
             {
-              event: '*',
-              schema: 'public',
-              table: 'questions',
+              event: "*",
+              schema: "public",
+              table: "questions",
               filter: `created_by=eq.${session.user.id}`,
             },
             (payload) => {
@@ -131,8 +138,8 @@ export function useRealtimeQuestions({
           )
           .subscribe();
       } catch (err) {
-        logError('Realtime setup error:', err);
-        setError('Realtime connection failed');
+        logError("Realtime setup error:", err);
+        setError("Realtime connection failed");
       }
     };
 
@@ -162,43 +169,39 @@ export function useRealtimeQuestions({
       if (shouldUseDemoData()) {
         const allDemoQuestions: Question[] = [
           {
-            id: 'demo_q_1',
-            subject: 'Matematik',
-            type: 'multiple-choice',
-            difficulty: 'Medium',
-            text: '2x + 5 = 13 denkleminin çözümü nedir?',
+            id: "demo_q_1",
+            subject: "Matematik",
+            type: "multiple-choice",
+            difficulty: "Medium",
+            text: "2x + 5 = 13 denkleminin çözümü nedir?",
             options: [
-              { text: 'x = 4', isCorrect: true },
-              { text: 'x = 3', isCorrect: false },
-              { text: 'x = 5', isCorrect: false },
-              { text: 'x = 6', isCorrect: false },
+              { text: "x = 4", isCorrect: true },
+              { text: "x = 3", isCorrect: false },
+              { text: "x = 5", isCorrect: false },
+              { text: "x = 6", isCorrect: false },
             ],
-            explanation: '2x + 5 = 13 → 2x = 8 → x = 4',
-            topic: 'Cebir',
+            explanation: "2x + 5 = 13 → 2x = 8 → x = 4",
+            topic: "Cebir",
           },
           {
-            id: 'demo_q_2',
-            subject: 'Fizik',
-            type: 'multiple-choice',
-            difficulty: 'Medium',
-            text: 'Hangi kuvvet türü temas gerektirmez?',
+            id: "demo_q_2",
+            subject: "Fizik",
+            type: "multiple-choice",
+            difficulty: "Medium",
+            text: "Hangi kuvvet türü temas gerektirmez?",
             options: [
-              { text: 'Sürtünme kuvveti', isCorrect: false },
-              { text: 'Yerçekimi kuvveti', isCorrect: true },
-              { text: 'Normal kuvvet', isCorrect: false },
-              { text: 'Tepki kuvveti', isCorrect: false },
+              { text: "Sürtünme kuvveti", isCorrect: false },
+              { text: "Yerçekimi kuvveti", isCorrect: true },
+              { text: "Normal kuvvet", isCorrect: false },
+              { text: "Tepki kuvveti", isCorrect: false },
             ],
-            explanation: 'Yerçekimi kuvveti uzaktan etki eden bir kuvvettir.',
-            topic: 'Mekanik',
+            explanation: "Yerçekimi kuvveti uzaktan etki eden bir kuvvettir.",
+            topic: "Mekanik",
           },
         ];
 
-        const demoQuestions = allDemoQuestions.filter(
-          (q) => q.subject === selectedSubject,
-        );
-        const localQuestions = UnifiedStorageService.getQuestionsBySubject(
-          selectedSubject,
-        );
+        const demoQuestions = allDemoQuestions.filter((q) => q.subject === selectedSubject);
+        const localQuestions = UnifiedStorageService.getQuestionsBySubject(selectedSubject);
 
         setQuestions([...demoQuestions, ...localQuestions]);
         return;
@@ -210,26 +213,21 @@ export function useRealtimeQuestions({
 
       if (!session) {
         // LocalStorage fallback
-        const localQuestions = UnifiedStorageService.getQuestionsBySubject(
-          selectedSubject,
-        );
+        const localQuestions = UnifiedStorageService.getQuestionsBySubject(selectedSubject);
         setQuestions(localQuestions);
         return;
       }
 
-      const supabaseQuestions =
-        await QuestionService.getQuestionsBySubject(selectedSubject);
+      const supabaseQuestions = await QuestionService.getQuestionsBySubject(selectedSubject);
       const mappedQuestions = supabaseQuestions.map(mapSupabaseToQuestion);
 
       setQuestions(mappedQuestions);
     } catch (err) {
-      logError('Error fetching questions:', err);
-      setError('Failed to fetch questions');
+      logError("Error fetching questions:", err);
+      setError("Failed to fetch questions");
 
       // Fallback to localStorage
-      const localQuestions = UnifiedStorageService.getQuestionsBySubject(
-        selectedSubject,
-      );
+      const localQuestions = UnifiedStorageService.getQuestionsBySubject(selectedSubject);
       setQuestions(localQuestions);
     } finally {
       setIsLoading(false);
@@ -246,9 +244,9 @@ export function useRealtimeQuestions({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === "SIGNED_OUT") {
         setQuestions([]);
-      } else if (event === 'SIGNED_IN') {
+      } else if (event === "SIGNED_IN") {
         fetchQuestions();
       }
     });
@@ -267,7 +265,8 @@ export function useRealtimeQuestions({
 // Helper function
 function mapSupabaseToQuestion(record: SupabaseQuestionRecord): Question {
   // Type conversion with validation
-  const questionType = record.type as "multiple-choice" | "true-false" | "calculation" | "case-study";
+  const questionType = record.type as
+    "multiple-choice" | "true-false" | "calculation" | "case-study";
   const questionDifficulty = record.difficulty as "Easy" | "Medium" | "Hard";
 
   return {
@@ -276,7 +275,7 @@ function mapSupabaseToQuestion(record: SupabaseQuestionRecord): Question {
     type: questionType,
     difficulty: questionDifficulty,
     text: record.text,
-    options: JSON.parse(record.options || '[]'),
+    options: JSON.parse(record.options || "[]"),
     explanation: record.explanation,
     topic: record.topic || "",
     formula: record.formula || "",

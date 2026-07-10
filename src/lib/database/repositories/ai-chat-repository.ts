@@ -94,9 +94,7 @@ export class AiChatRepository {
   }
 
   // Get a specific session by sessionId
-  static async getSessionBySessionId(
-    sessionId: string,
-  ): Promise<AiChatSession | null> {
+  static async getSessionBySessionId(sessionId: string): Promise<AiChatSession | null> {
     const { data, error } = await supabaseServiceRole
       .from("ai_chat_sessions")
       .select("*")
@@ -113,10 +111,7 @@ export class AiChatRepository {
   }
 
   // Get all messages for a session
-  static async getMessagesBySessionId(
-    sessionId: string,
-    userId: string,
-  ): Promise<AiChatMessage[]> {
+  static async getMessagesBySessionId(sessionId: string, userId: string): Promise<AiChatMessage[]> {
     const { data, error } = await supabaseServiceRole
       .from("ai_chat_history")
       .select("*")
@@ -172,11 +167,7 @@ export class AiChatRepository {
   }
 
   // Update session title
-  static async updateSessionTitle(
-    sessionId: string,
-    title: string,
-    userId: string,
-  ): Promise<void> {
+  static async updateSessionTitle(sessionId: string, title: string, userId: string): Promise<void> {
     const { error } = await supabaseServiceRole
       .from("ai_chat_sessions")
       .update({
@@ -192,10 +183,7 @@ export class AiChatRepository {
   }
 
   // Delete a session and all its messages
-  static async deleteSession(
-    sessionId: string,
-    userId: string,
-  ): Promise<boolean> {
+  static async deleteSession(sessionId: string, userId: string): Promise<boolean> {
     try {
       // Delete all messages in the session
       const { error: messagesError } = await supabaseServiceRole
@@ -226,10 +214,7 @@ export class AiChatRepository {
   }
 
   // Search sessions by title or content
-  static async searchSessions(
-    userId: string,
-    searchTerm: string,
-  ): Promise<AiChatSession[]> {
+  static async searchSessions(userId: string, searchTerm: string): Promise<AiChatSession[]> {
     const { data, error } = await supabaseServiceRole
       .from("ai_chat_sessions")
       .select("*")
@@ -244,18 +229,12 @@ export class AiChatRepository {
     const filteredSessions = [];
 
     for (const session of data) {
-      const messages = await this.getMessagesBySessionId(
-        session.session_id,
-        userId,
-      );
+      const messages = await this.getMessagesBySessionId(session.session_id, userId);
       const hasMatchingContent = messages.some((msg) =>
         msg.content.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
-      if (
-        session.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hasMatchingContent
-      ) {
+      if (session.title?.toLowerCase().includes(searchTerm.toLowerCase()) || hasMatchingContent) {
         filteredSessions.push(this.mapSessionFromSupabase(session));
       }
     }
@@ -264,10 +243,7 @@ export class AiChatRepository {
   }
 
   // Get recent sessions (last 10)
-  static async getRecentSessions(
-    userId: string,
-    limit: number = 10,
-  ): Promise<AiChatSession[]> {
+  static async getRecentSessions(userId: string, limit: number = 10): Promise<AiChatSession[]> {
     const { data, error } = await supabaseServiceRole
       .from("ai_chat_sessions")
       .select("*")
@@ -284,9 +260,7 @@ export class AiChatRepository {
   }
 
   // Helper methods to map Supabase data to our interfaces
-  private static mapSessionFromSupabase(
-    data: SupabaseSessionData,
-  ): AiChatSession {
+  private static mapSessionFromSupabase(data: SupabaseSessionData): AiChatSession {
     return {
       id: data.id,
       userId: data.user_id,
@@ -300,9 +274,7 @@ export class AiChatRepository {
     };
   }
 
-  private static mapMessageFromSupabase(
-    data: SupabaseMessageData,
-  ): AiChatMessage {
+  private static mapMessageFromSupabase(data: SupabaseMessageData): AiChatMessage {
     return {
       id: data.id,
       userId: data.user_id,

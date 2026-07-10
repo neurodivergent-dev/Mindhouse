@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+build
+dist
+coverage
+*.min.js
+package-lock.json
+public/sw.js
+.localstorage

@@ -492,9 +492,7 @@
       "Kişiselleştirilmiş Çalışma Programı",
       "Öncelikli Destek"
     ],
-    "premiumLimitations": [
-      "Aylık abonelik gerektirir"
-    ],
+    "premiumLimitations": ["Aylık abonelik gerektirir"],
     "enterpriseFeatures": [
       "Tüm Pro Özellikleri",
       "Aylık plana göre %20 tasarruf",

@@ -28,7 +28,9 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
       <div className="flex h-screen w-full items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
-          <p className="text-muted-foreground font-space-grotesk text-sm">Mindhouse hazırlanıyor...</p>
+          <p className="text-muted-foreground font-space-grotesk text-sm">
+            Mindhouse hazırlanıyor...
+          </p>
         </div>
       </div>
     );

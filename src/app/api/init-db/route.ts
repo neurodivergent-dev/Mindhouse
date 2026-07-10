@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  initializeDatabase,
-  checkDatabaseHealth,
-} from "@/lib/database/connection";
+import { initializeDatabase, checkDatabaseHealth } from "@/lib/database/connection";
 
 // Force this route to be dynamic
 export const dynamic = "force-dynamic";
@@ -16,10 +13,7 @@ export async function POST() {
     const isHealthy = await checkDatabaseHealth();
 
     if (!isHealthy) {
-      return NextResponse.json(
-        { error: "Database initialization failed" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Database initialization failed" }, { status: 500 });
     }
 
     return NextResponse.json(
@@ -30,10 +24,7 @@ export async function POST() {
       { status: 200 },
     );
   } catch {
-    return NextResponse.json(
-      { error: "Failed to initialize database" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to initialize database" }, { status: 500 });
   }
 }
 

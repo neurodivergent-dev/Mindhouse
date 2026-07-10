@@ -4,11 +4,7 @@ import { notFound } from "next/navigation";
 import "./globals.css";
 import LayoutContent from "@/components/layout-content";
 import { NextIntlClientProvider } from "next-intl";
-import {
-  getMessages,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
 
 const inter = Inter({
@@ -51,10 +47,7 @@ export async function generateMetadata({
       title: t("appTitle"),
     },
     icons: {
-      icon: [
-        { url: "/favicon.ico" },
-        { url: "/favicon.svg", type: "image/svg+xml" },
-      ],
+      icon: [{ url: "/favicon.ico" }, { url: "/favicon.svg", type: "image/svg+xml" }],
       apple: [{ url: "/favicon.svg", sizes: "180x180", type: "image/svg+xml" }],
     },
   };

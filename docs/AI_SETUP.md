@@ -66,16 +66,21 @@ npm run dev
 ## Sorun Giderme
 
 ### API Anahtarı Hatası
+
 ```
 AI Servisi Hatası: Google AI API anahtarı bulunamadı
 ```
+
 **Çözüm**: `.env.local` dosyasında doğru API anahtarını ayarladığınızdan emin olun.
 
 ### Soru Oluşturma Hatası
+
 ```
 AI soruları oluşturulurken bir hata oluştu
 ```
-**Çözüm**: 
+
+**Çözüm**:
+
 1. API anahtarınızın geçerli olduğundan emin olun
 2. İnternet bağlantınızı kontrol edin
 3. Daha az soru sayısı deneyin
@@ -96,6 +101,7 @@ AI soruları oluşturulurken bir hata oluştu
 ## Katkıda Bulunma
 
 AI servisini geliştirmek için:
+
 1. `src/ai/flows/question-generator.ts` dosyasını inceleyin
 2. Prompt'ları ve kalite kriterlerini iyileştirin
 3. Yeni soru tipleri ekleyin

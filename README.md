@@ -7,7 +7,7 @@
   <p>
     <a href="https://mindhouse.vercel.app/"><strong>Visit Live Demo »</strong></a>
   </p>
-  
+
   <!-- Project Status Badges -->
   <p>
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
@@ -32,6 +32,7 @@ This project was built to transform the learning experience using modern web tec
 ## 🚀 Core Features
 
 ### **🤖 Advanced AI-Powered Study System:**
+
 - **AI-Powered Question Generation:** Automatically generates high-quality questions using Google Gemini AI, customized by subject, topic, difficulty, and optional custom instructions.
 - **AI-Powered Subject & Topic Generation:** Automatically constructs subjects and topics, performs quality checks, and sets study objectives.
 - **AI Topic Explainer:** Generates comprehensive step-by-step topic summaries in clean Markdown layout.
@@ -41,22 +42,26 @@ This project was built to transform the learning experience using modern web tec
 - **Persistent Local History:** Local chat sessions saved securely in IndexedDB for guests and authenticated users.
 
 ### **🎤 Voice Assistant Features:**
+
 - **Turkish Speech Recognition:** Real-time speech-to-text using Web Speech API.
 - **Voice Navigation Commands:** Voice controls like "read question", "show options", "read hint", and "explain solution".
 - **Text-to-Speech:** Natural audio readouts of AI responses and study texts.
 - **Real-time Transcript UI:** Live interactive text transcription as you speak.
 
 ### **📚 Advanced Study Tools:**
+
 - **Smart Flashcards:** Digital study cards operating on a Spaced Repetition scientific interval algorithm to optimize retention.
 - **Performance Analytics:** Visual charts and metrics to track study progress and topic success rates.
 - **Rich Markdown Formatting:** Beautifully rendered educational contents with highlight code blocks and media.
 
 ### **🎨 Modern User Experience:**
+
 - **PWA Support:** Progressive Web App capabilities for offline usage and home-screen installation.
 - **Premium Aesthetics:** Curated dark/light modes, premium glassmorphism, responsive comparison lists, and smooth micro-animations.
 - **Robust Error Handling:** Informative user-friendly notifications and fallbacks.
 
 ### **⚙️ Security & Management:**
+
 - **Comprehensive Admin Panels:** Effortless CRUD management panels for subjects, topics, and question banks.
 - **Data Management:** Export, import, cloud backup, restore, and profile deletion tools.
 - **Secure Authentication:** Supabase Auth integrations with safe password update modules.
@@ -64,16 +69,13 @@ This project was built to transform the learning experience using modern web tec
 
 ## 📋 Quality Assurance
 
-This project is built to **enterprise-level** quality assurance standards. For detailed information on our comprehensive QA processes:
+This project follows a comprehensive manual quality assurance process. For details:
 
 ### **🔍 Manual Test Checklist**
-- **[📋 QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md)** - Extensive QA checklist containing 120+ test categories and 2000+ lines.
-- **Test Coverage:** UI/UX, Performance, Security, Accessibility, Cross-browser, Cross-device
-- **Scenarios:** 600+ specific test points verifying AI features, data pipelines, PWAs, and authentication.
 
-### **📊 Test Metrics**
-- **Quality Score:** 9.2/10 (Enterprise grade)
-- **Feature Coverage:** 95%+ feature validation
+- **[📋 QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md)** - Detailed manual QA checklist.
+- **Test Coverage:** UI/UX, Performance, Security, Accessibility, Cross-browser, Cross-device
+- **Scenarios:** Manual test points covering AI features, data pipelines, PWAs, and authentication.
 
 ## 🛠️ Tech Stack
 
@@ -98,7 +100,6 @@ This project is built to **enterprise-level** quality assurance standards. For d
   <a href="https://eslint.org/" target="_blank"><img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint"></a>
   <a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black" alt="Prettier"></a>
   <a href="https://vercel.com/" target="_blank"><img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel"></a>
-  <a href="https://huggingface.co/" target="_blank"><img src="https://img.shields.io/badge/Hugging%20Face-FF6C6C?style=for-the-badge&logo=huggingface&logoColor=white" alt="Hugging Face"></a>
 </div>
 
 ## 🏗️ Technical Architecture
@@ -125,13 +126,14 @@ Mindhouse relies on a robust layered N-tier architecture enforcing clean Separat
 ```
 
 - **Frontend:** Next.js 15 + React 18 + TypeScript
-- **Styling:** Tailwind CSS + Radix UI Primitives + Framer Motion  
+- **Styling:** Tailwind CSS + Radix UI Primitives + Framer Motion
 - **Database:** PostgreSQL (Supabase) + localforage (IndexedDB Cache) + Drizzle ORM
-- **Row Level Security (RLS):** Supabase client policies isolate personal data.
+- **Data Isolation:** Supabase Row Level Security (RLS) policies protect user data accessed through the Supabase client. Server routes that use Drizzle ORM enforce user ownership at the application layer.
 
 ## 📚 Technical Documentation
 
 Explore detailed design specifications and integration plans:
+
 - 📖 **[AI Question Generation Guide](docs/AI_QUESTION_GENERATION.md)** - Workflow details for Gemini question generation pipelines.
 - 🚀 **[AI Deployment Guide](docs/AI_DEPLOYMENT_GUIDE.md)** - Production settings and API integrations.
 - 🔧 **[Environment Setup](docs/ENVIRONMENT_SETUP.md)** - Guide to local environment variables.
@@ -149,11 +151,13 @@ Set up local AI-powered generation modules in minutes:
 
 2. **Configure your Environment:**
    - Create a `.env.local` file in the project root:
+
    ```bash
    GEMINI_API_KEY=your_api_key_here
    ```
 
 3. **Install and Run:**
+
    ```bash
    npm install
    npm run dev
@@ -249,6 +253,7 @@ flowchart TD
   Flashcard --> VoiceAssistant
   Dashboard --> AnalyticsDashboard
 ```
+
 </details>
 
 <details>
@@ -256,17 +261,20 @@ flowchart TD
 <br>
 
 1. **Clone the Repository:**
+
    ```bash
    git clone https://github.com/neurodivergent-dev/Mindhouse.git
    cd Mindhouse
    ```
 
 2. **Install Dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Populate Environment Variables (`.env.local`):**
+
    ```ini
    # AI Settings
    GEMINI_API_KEY=your_gemini_api_key
@@ -286,6 +294,7 @@ flowchart TD
    ```
 
 4. **Initialize DB Schemas:**
+
    ```bash
    npm run db:generate
    npm run db:init
@@ -295,6 +304,7 @@ flowchart TD
    ```bash
    npm run dev
    ```
+
 </details>
 
 <details>
@@ -313,11 +323,13 @@ flowchart TD
   ```bash
   npm run db:studio
   ```
+
 </details>
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these guidelines:
+
 1. **Fork** the repository.
 2. Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
 3. **Commit** your modifications (`git commit -m 'Add some AmazingFeature'`).
@@ -325,6 +337,7 @@ Contributions are welcome! Please follow these guidelines:
 5. Open a **Pull Request**.
 
 ---
+
 <div align="center">
   <p><strong>Mindhouse</strong> - Where knowledge meets intelligence.</p>
 </div>

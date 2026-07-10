@@ -104,10 +104,7 @@ function ResetPasswordContent() {
     } catch (error) {
       toast({
         title: t("error"),
-        description:
-          error instanceof Error
-            ? error.message
-            : t("errorUpdatingPassword"),
+        description: error instanceof Error ? error.message : t("errorUpdatingPassword"),
         variant: "destructive",
       });
     } finally {
@@ -243,7 +240,10 @@ function ResetPasswordContent() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
                     {t("newPassword")}
                   </Label>
                   <div className="relative">
@@ -263,17 +263,16 @@ function ResetPasswordContent() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
                     {t("confirmPassword")}
                   </Label>
                   <div className="relative">
@@ -289,9 +288,7 @@ function ResetPasswordContent() {
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
                     >
                       {showConfirmPassword ? (

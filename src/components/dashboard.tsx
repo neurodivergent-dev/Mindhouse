@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -166,16 +160,13 @@ export default function Dashboard() {
         return;
       }
 
-      const [performanceResponse, resultsResponse, statsResponse] =
-        await Promise.all([
-          fetch("/api/analytics/performance"),
-          fetch("/api/results?limit=5"),
-          fetch("/api/analytics/quick-stats"),
-        ]);
+      const [performanceResponse, resultsResponse, statsResponse] = await Promise.all([
+        fetch("/api/analytics/performance"),
+        fetch("/api/results?limit=5"),
+        fetch("/api/analytics/quick-stats"),
+      ]);
 
-      const perfData = performanceResponse.ok
-        ? await performanceResponse.json()
-        : [];
+      const perfData = performanceResponse.ok ? await performanceResponse.json() : [];
       const resData = resultsResponse.ok ? await resultsResponse.json() : [];
       const statsData = statsResponse.ok
         ? await statsResponse.json()
@@ -255,12 +246,8 @@ export default function Dashboard() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-headline font-bold text-blue-600">
-                Dashboard
-              </h1>
-              <p className="text-muted-foreground">
-                Sınav hazırlık performansınızı takip edin
-              </p>
+              <h1 className="text-3xl font-headline font-bold text-blue-600">Dashboard</h1>
+              <p className="text-muted-foreground">Sınav hazırlık performansınızı takip edin</p>
             </div>
             <div className="flex items-center space-x-2">
               <Switch
@@ -272,10 +259,7 @@ export default function Dashboard() {
             </div>
             <div className="flex space-x-2">
               <Link href="/question-manager">
-                <Button
-                  size="sm"
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                >
+                <Button size="sm" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
                   <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">Ekle</span>
                 </Button>
@@ -297,9 +281,7 @@ export default function Dashboard() {
                 onClick={() => setShowAnalytics(!showAnalytics)}
               >
                 <BarChart3 className="w-4 h-4" />
-                <span className="hidden sm:inline">
-                  {showAnalytics ? "Kapat" : "Analitik"}
-                </span>
+                <span className="hidden sm:inline">{showAnalytics ? "Kapat" : "Analitik"}</span>
               </Button>
             </div>
           </div>
@@ -318,73 +300,52 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Toplam Test
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Toplam Test</CardTitle>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {totalStats.totalTests}
-                </div>
+                <div className="text-2xl font-bold">{totalStats.totalTests}</div>
                 <p className="text-xs text-muted-foreground">Tüm zamanlar</p>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Ortalama Skor
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Ortalama Skor</CardTitle>
                 <Target className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {totalStats.averageScore}%
-                </div>
+                <div className="text-2xl font-bold">{totalStats.averageScore}%</div>
                 <p className="text-xs text-muted-foreground">Tüm zamanlar</p>
               </CardContent>
             </Card>
 
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Toplam Süre
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Toplam Süre</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatTime(totalStats.totalTimeSpent)}
-                </div>
+                <div className="text-2xl font-bold">{formatTime(totalStats.totalTimeSpent)}</div>
                 <p className="text-xs text-muted-foreground">Tüm zamanlar</p>
               </CardContent>
             </Card>
 
             <Card
-              onClick={() =>
-                handleStatCardClick("performance-analytics-section")
-              }
+              onClick={() => handleStatCardClick("performance-analytics-section")}
               className="cursor-pointer hover:bg-muted/50 transition-colors glass-card"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Zayıf Konular
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">Zayıf Konular</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   {performanceData.length > 0
-                    ? performanceData.reduce(
-                        (acc, data) => acc + data.weakTopics.length,
-                        0,
-                      )
+                    ? performanceData.reduce((acc, data) => acc + data.weakTopics.length, 0)
                     : 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  İncelemek için tıkla
-                </p>
+                <p className="text-xs text-muted-foreground">İncelemek için tıkla</p>
               </CardContent>
             </Card>
           </div>
@@ -397,29 +358,21 @@ export default function Dashboard() {
                   <BarChart3 className="w-5 h-5" />
                   Performans Analizi
                 </CardTitle>
-                <CardDescription>
-                  Ders bazında performans durumunuz
-                </CardDescription>
+                <CardDescription>Ders bazında performans durumunuz</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {performanceData.length === 0 ? (
                   <div className="text-center py-8">
                     <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      Henüz performans verisi yok
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      İlk testinizi çözerek başlayın
-                    </p>
+                    <p className="text-muted-foreground">Henüz performans verisi yok</p>
+                    <p className="text-sm text-muted-foreground">İlk testinizi çözerek başlayın</p>
                   </div>
                 ) : (
                   performanceData.map((data) => (
                     <div key={data.subject} className="space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="font-medium">{data.subject}</h3>
-                        <span
-                          className={`font-bold ${getScoreColor(data.averageScore)}`}
-                        >
+                        <span className={`font-bold ${getScoreColor(data.averageScore)}`}>
                           {data.averageScore}%
                         </span>
                       </div>
@@ -431,11 +384,7 @@ export default function Dashboard() {
                       {data.weakTopics.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {data.weakTopics.slice(0, 3).map((topic, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="text-xs"
-                            >
+                            <Badge key={index} variant="secondary" className="text-xs">
                               {topic}
                             </Badge>
                           ))}
@@ -465,21 +414,15 @@ export default function Dashboard() {
                 {recentResults.length === 0 ? (
                   <div className="text-center py-8">
                     <CheckCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      Henüz test sonucu yok
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      İlk testinizi çözerek başlayın
-                    </p>
+                    <p className="text-muted-foreground">Henüz test sonucu yok</p>
+                    <p className="text-sm text-muted-foreground">İlk testinizi çözerek başlayın</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {recentResults.map((result) => {
                       const percentage =
                         result.totalQuestions > 0
-                          ? Math.round(
-                              (result.score / result.totalQuestions) * 100,
-                            )
+                          ? Math.round((result.score / result.totalQuestions) * 100)
                           : 0;
 
                       return (
@@ -500,15 +443,12 @@ export default function Dashboard() {
                             <div>
                               <p className="font-medium">{result.subject}</p>
                               <p className="text-sm text-muted-foreground">
-                                {result.totalQuestions} soru •{" "}
-                                {formatTime(result.timeSpent)}
+                                {result.totalQuestions} soru • {formatTime(result.timeSpent)}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div
-                              className={`font-bold text-lg ${getScoreColor(percentage)}`}
-                            >
+                            <div className={`font-bold text-lg ${getScoreColor(percentage)}`}>
                               {percentage}%
                             </div>
                             {getScoreBadge(percentage)}
@@ -526,9 +466,7 @@ export default function Dashboard() {
           <Card className="glass-card">
             <CardHeader>
               <CardTitle>Hızlı Erişim</CardTitle>
-              <CardDescription>
-                Sık kullandığınız özelliklere hızlı erişim
-              </CardDescription>
+              <CardDescription>Sık kullandığınız özelliklere hızlı erişim</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

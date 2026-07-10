@@ -196,8 +196,12 @@ export default function LandingPage() {
                       {t("featureAiLearningDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">{t("badgeGoogleGemini")}</Badge>
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeVercelAiSdk")}</Badge>
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">
+                        {t("badgeGoogleGemini")}
+                      </Badge>
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                        {t("badgeVercelAiSdk")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -219,8 +223,12 @@ export default function LandingPage() {
                       {t("featureAnalyticsDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">{t("badgePerformanceTracking")}</Badge>
-                      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">{t("badgeCharts")}</Badge>
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                        {t("badgePerformanceTracking")}
+                      </Badge>
+                      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                        {t("badgeCharts")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -242,8 +250,12 @@ export default function LandingPage() {
                       {t("featurePwaDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeOfflineSupport")}</Badge>
-                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">{t("badgeMobileOptimized")}</Badge>
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                        {t("badgeOfflineSupport")}
+                      </Badge>
+                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">
+                        {t("badgeMobileOptimized")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -265,8 +277,12 @@ export default function LandingPage() {
                       {t("featureFlashcardsDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">{t("badgeSpacedRepetition")}</Badge>
-                      <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">{t("badgeAiRecommendations")}</Badge>
+                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                        {t("badgeSpacedRepetition")}
+                      </Badge>
+                      <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">
+                        {t("badgeAiRecommendations")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -288,8 +304,12 @@ export default function LandingPage() {
                       {t("featureQuestionGenDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-800/60 border-0">{t("badgeGoogleGemini")}</Badge>
-                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:hover:bg-amber-800/60 border-0">{t("badgeAutoGeneration")}</Badge>
+                      <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-800/60 border-0">
+                        {t("badgeGoogleGemini")}
+                      </Badge>
+                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:hover:bg-amber-800/60 border-0">
+                        {t("badgeAutoGeneration")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -311,8 +331,12 @@ export default function LandingPage() {
                       {t("featureSecurityDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 dark:bg-teal-900/50 dark:text-teal-200 dark:hover:bg-teal-800/60 border-0">{t("badgeClientSideProcessing")}</Badge>
-                      <Badge className="bg-cyan-100 text-cyan-800 hover:bg-cyan-200 dark:bg-cyan-900/50 dark:text-cyan-200 dark:hover:bg-cyan-800/60 border-0">{t("badgeModernWebStandards")}</Badge>
+                      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 dark:bg-teal-900/50 dark:text-teal-200 dark:hover:bg-teal-800/60 border-0">
+                        {t("badgeClientSideProcessing")}
+                      </Badge>
+                      <Badge className="bg-cyan-100 text-cyan-800 hover:bg-cyan-200 dark:bg-cyan-900/50 dark:text-cyan-200 dark:hover:bg-cyan-800/60 border-0">
+                        {t("badgeModernWebStandards")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -350,8 +374,12 @@ export default function LandingPage() {
                       {t("subjectGenDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">{t("badgeGoogleGemini")}</Badge>
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeAutoGeneration")}</Badge>
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">
+                        {t("badgeGoogleGemini")}
+                      </Badge>
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                        {t("badgeAutoGeneration")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -373,8 +401,12 @@ export default function LandingPage() {
                       {t("subjectQualityDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">{t("badgeQualityScoring")}</Badge>
-                      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">{t("badgeValidation")}</Badge>
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-800/60 border-0">
+                        {t("badgeQualityScoring")}
+                      </Badge>
+                      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200 dark:hover:bg-emerald-800/60 border-0">
+                        {t("badgeValidation")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -396,8 +428,12 @@ export default function LandingPage() {
                       {t("subjectGoalsDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeLearningGoals")}</Badge>
-                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">{t("badgeTopics")}</Badge>
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">
+                        {t("badgeLearningGoals")}
+                      </Badge>
+                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 dark:bg-violet-900/50 dark:text-violet-200 dark:hover:bg-violet-800/60 border-0">
+                        {t("badgeTopics")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -419,8 +455,12 @@ export default function LandingPage() {
                       {t("subjectGuidelinesDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">{t("badgeCustomInstructions")}</Badge>
-                      <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">{t("badgeTailoredContent")}</Badge>
+                      <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-900/50 dark:text-orange-200 dark:hover:bg-orange-800/60 border-0">
+                        {t("badgeCustomInstructions")}
+                      </Badge>
+                      <Badge className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-800/60 border-0">
+                        {t("badgeTailoredContent")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -442,8 +482,12 @@ export default function LandingPage() {
                       {t("subjectReviewDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-800/60 border-0">{t("badgeReviewSystem")}</Badge>
-                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:hover:bg-amber-800/60 border-0">{t("badgeSelectiveAddition")}</Badge>
+                      <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:hover:bg-yellow-800/60 border-0">
+                        {t("badgeReviewSystem")}
+                      </Badge>
+                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:hover:bg-amber-800/60 border-0">
+                        {t("badgeSelectiveAddition")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -465,8 +509,12 @@ export default function LandingPage() {
                       {t("subjectOrganizationDesc")}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 dark:bg-teal-900/50 dark:text-teal-200 dark:hover:bg-teal-800/60 border-0">{t("badgeAutoCategorization")}</Badge>
-                      <Badge className="bg-cyan-100 text-cyan-800 hover:bg-cyan-200 dark:bg-cyan-900/50 dark:text-cyan-200 dark:hover:bg-cyan-800/60 border-0">{t("badgeDifficultyLevels")}</Badge>
+                      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 dark:bg-teal-900/50 dark:text-teal-200 dark:hover:bg-teal-800/60 border-0">
+                        {t("badgeAutoCategorization")}
+                      </Badge>
+                      <Badge className="bg-cyan-100 text-cyan-800 hover:bg-cyan-200 dark:bg-cyan-900/50 dark:text-cyan-200 dark:hover:bg-cyan-800/60 border-0">
+                        {t("badgeDifficultyLevels")}
+                      </Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -871,7 +919,10 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-purple-500/10 to-violet-500/10 dark:from-purple-500/20 dark:to-violet-500/20 cursor-pointer">
                   <Link href="/ai-chat">
                     <CardContent className="p-6 text-center">
-                      <MessageSquare className="h-8 w-8 mx-auto mb-3" stroke="url(#purple-gradient)" />
+                      <MessageSquare
+                        className="h-8 w-8 mx-auto mb-3"
+                        stroke="url(#purple-gradient)"
+                      />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
                         {t("quickAiTutor")}
                       </h3>
@@ -919,7 +970,10 @@ export default function LandingPage() {
                 <Card className="h-full w-full rounded-[11px] border-0 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 dark:from-teal-500/20 dark:to-cyan-500/20 cursor-pointer">
                   <Link href="/subject-manager">
                     <CardContent className="p-6 text-center">
-                      <GraduationCap className="h-8 w-8 mx-auto mb-3" stroke="url(#teal-gradient)" />
+                      <GraduationCap
+                        className="h-8 w-8 mx-auto mb-3"
+                        stroke="url(#teal-gradient)"
+                      />
                       <h3 className="font-bold text-lg mb-2 bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent">
                         {t("quickSubjectManager")}
                       </h3>

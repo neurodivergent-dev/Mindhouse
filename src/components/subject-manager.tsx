@@ -153,9 +153,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
       // Check each subject in Supabase
       mappedSupabaseSubjects.forEach((supabaseSubject) => {
-        const existingIndex = mergedSubjects.findIndex(
-          (local) => local.id === supabaseSubject.id,
-        );
+        const existingIndex = mergedSubjects.findIndex((local) => local.id === supabaseSubject.id);
         if (existingIndex !== -1) {
           // If same ID exists, update with Supabase data
           mergedSubjects[existingIndex] = supabaseSubject;
@@ -185,9 +183,9 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
           try {
             // The session was already verified above.
             const { count } = await supabase
-              .from('questions')
-              .select('*', { count: 'exact', head: true })
-              .eq('subject', subject.name);
+              .from("questions")
+              .select("*", { count: "exact", head: true })
+              .eq("subject", subject.name);
 
             return {
               ...subject,
@@ -210,7 +208,6 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       // Save merged subjects to localStorage for Question Manager to use
       if (updatedMergedSubjects.length > 0) {
         UnifiedStorageService.saveSubjects(updatedMergedSubjects);
-
       }
     } catch {
       //do nothing
@@ -329,9 +326,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             createdAt: result.created_at,
             updatedAt: result.updated_at,
           };
-          setSubjects((prev) =>
-            prev.map((s) => (s.id === subject.id ? mappedSubject : s)),
-          );
+          setSubjects((prev) => prev.map((s) => (s.id === subject.id ? mappedSubject : s)));
         }
       } else {
         const result = UnifiedStorageService.updateSubject(subject.id, {
@@ -342,9 +337,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         });
 
         if (result) {
-          setSubjects((prev) =>
-            prev.map((s) => (s.id === subject.id ? { ...s, ...formData } : s)),
-          );
+          setSubjects((prev) => prev.map((s) => (s.id === subject.id ? { ...s, ...formData } : s)));
         }
       }
 
@@ -382,9 +375,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       // result back to local storage, so a subject can live in both places.
       // Deleting only one of them lets the survivor reappear on the next load.
       const deletedLocally = UnifiedStorageService.deleteSubject(id);
-      const deletedInCloud = useSupabase
-        ? await SubjectService.deleteSubject(id)
-        : false;
+      const deletedInCloud = useSupabase ? await SubjectService.deleteSubject(id) : false;
       const success = deletedLocally || deletedInCloud;
 
       if (!success) {
@@ -422,10 +413,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       if (useSupabase) {
         const subject = subjects.find((s) => s.id === id);
         if (subject) {
-          const result = await SubjectService.toggleActive(
-            id,
-            !subject.isActive,
-          );
+          const result = await SubjectService.toggleActive(id, !subject.isActive);
           if (result) {
             const mappedSubject: Subject = {
               id: result.id,
@@ -436,9 +424,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               questionCount: result.question_count,
               isActive: result.is_active,
             };
-            setSubjects((prev) =>
-              prev.map((s) => (s.id === id ? mappedSubject : s)),
-            );
+            setSubjects((prev) => prev.map((s) => (s.id === id ? mappedSubject : s)));
           }
         }
       } else {
@@ -446,7 +432,9 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         if (subject) {
           const result = UnifiedStorageService.updateSubject(id, { isActive: !subject.isActive });
           if (result) {
-            setSubjects((prev) => prev.map((s) => (s.id === id ? { ...s, isActive: !s.isActive } : s)));
+            setSubjects((prev) =>
+              prev.map((s) => (s.id === id ? { ...s, isActive: !s.isActive } : s)),
+            );
           }
         }
       }
@@ -509,9 +497,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t("loading")}
-            </p>
+            <p className="text-gray-600 dark:text-gray-300">{t("loading")}</p>
           </div>
         </div>
       </div>
@@ -534,13 +520,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
   const totalPages = Math.ceil(filteredSubjects.length / ITEMS_PER_PAGE);
   const paginatedSubjects = filteredSubjects.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   return (
     <div className="w-full">
       <div className="max-w-6xl mx-auto">
-
         {/* Actions Bar */}
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 mx-6 sm:mx-0">
           <div className="relative w-full sm:w-96">
@@ -574,19 +559,27 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               </DialogHeader>
               <div className="space-y-4 pt-3">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectName")}</Label>
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("subjectName")}
+                  </Label>
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
+                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     placeholder={t("exampleMath")}
                     className="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-white/[0.02] h-11 font-medium"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("description")}</Label>
+                  <Label
+                    htmlFor="description"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("description")}
+                  </Label>
                   <Input
                     id="description"
                     value={formData.description}
@@ -601,7 +594,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("category")}</Label>
+                  <Label
+                    htmlFor="category"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("category")}
+                  </Label>
                   <Input
                     id="category"
                     value={formData.category}
@@ -616,7 +614,12 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="difficulty" className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLevel")}</Label>
+                  <Label
+                    htmlFor="difficulty"
+                    className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]"
+                  >
+                    {t("difficultyLevel")}
+                  </Label>
                   <Select
                     value={formData.difficulty}
                     onValueChange={(value) =>
@@ -638,11 +641,11 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                     onClick={
                       editingSubject
                         ? () => {
-                          void handleEditSubject(editingSubject);
-                        }
+                            void handleEditSubject(editingSubject);
+                          }
                         : () => {
-                          void handleAddSubject();
-                        }
+                            void handleAddSubject();
+                          }
                     }
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 flex-1 h-12 text-base font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
                   >
@@ -664,25 +667,31 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         {/* Subjects Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mx-6 sm:mx-0">
           {paginatedSubjects.map((subject) => (
-            <div
-              key={subject.id}
-              className="apple-glass-card"
-            >
+            <div key={subject.id} className="apple-glass-card">
               <div className="flex flex-col h-full w-full">
                 {/* Header */}
                 <div className="p-5 pb-3 flex items-start justify-between border-b border-gray-50 dark:border-gray-700">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className={`w-10 h-10 mt-0.5 rounded-xl flex items-center justify-center flex-shrink-0 ${subject.isActive ? 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-800/40' : 'bg-gray-100 dark:bg-gray-800'}`}>
-                      <BookOpen className={`w-5 h-5 ${subject.isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
+                    <div
+                      className={`w-10 h-10 mt-0.5 rounded-xl flex items-center justify-center flex-shrink-0 ${subject.isActive ? "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-800/40" : "bg-gray-100 dark:bg-gray-800"}`}
+                    >
+                      <BookOpen
+                        className={`w-5 h-5 ${subject.isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-400"}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <div className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${subject.isActive ? 'bg-blue-500 shadow-blue-500/50' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                        <div
+                          className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${subject.isActive ? "bg-blue-500 shadow-blue-500/50" : "bg-gray-300 dark:bg-gray-600"}`}
+                        />
                         <span className="text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 uppercase truncate">
                           {subject.category}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight line-clamp-2" title={getSubjectName(subject.name, tSubjects)}>
+                      <h3
+                        className="text-lg font-bold text-gray-900 dark:text-white leading-tight line-clamp-2"
+                        title={getSubjectName(subject.name, tSubjects)}
+                      >
                         {getSubjectName(subject.name, tSubjects)}
                       </h3>
                     </div>
@@ -691,15 +700,24 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
                 {/* Body */}
                 <div className="p-5 flex-1 flex flex-col">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-5 line-clamp-3 leading-relaxed flex-1" title={subject.description}>
+                  <p
+                    className="text-sm text-gray-600 dark:text-gray-300 mb-5 line-clamp-3 leading-relaxed flex-1"
+                    title={subject.description}
+                  >
                     {subject.description || t("noDescription")}
                   </p>
 
                   <div className="flex flex-wrap gap-2 mt-auto">
-                    <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 font-medium border-0 px-2.5 py-0.5 rounded-md">
+                    <Badge
+                      variant="secondary"
+                      className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 font-medium border-0 px-2.5 py-0.5 rounded-md"
+                    >
                       {getFormDifficultyLabel(subject.difficulty, t)}
                     </Badge>
-                    <Badge variant="secondary" className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 font-medium border-0 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
+                    <Badge
+                      variant="secondary"
+                      className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 font-medium border-0 px-2.5 py-0.5 rounded-md flex items-center gap-1.5"
+                    >
                       <Database className="w-3.5 h-3.5" />
                       {t("questionCount", { count: subject.questionCount })}
                     </Badge>
@@ -708,35 +726,39 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
                 {/* Footer Actions */}
                 <div className="px-4 py-3 bg-gray-50/80 dark:bg-gray-800/40 border-t border-gray-100 dark:border-gray-700 rounded-b-2xl flex items-center justify-end gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleToggleActive(subject.id)}
-                  className={`h-8 px-2 rounded-lg transition-colors ${subject.isActive ? 'text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950/30' : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30'}`}
-                  title={subject.isActive ? t("deactivate") : t("activate")}
-                >
-                  {subject.isActive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => openEditDialog(subject)}
-                  className="h-8 px-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-950/30 transition-colors"
-                  title={t("edit")}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteSubject(subject.id)}
-                  className="h-8 px-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/30 transition-colors"
-                  title={t("delete")}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleActive(subject.id)}
+                    className={`h-8 px-2 rounded-lg transition-colors ${subject.isActive ? "text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950/30" : "text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30"}`}
+                    title={subject.isActive ? t("deactivate") : t("activate")}
+                  >
+                    {subject.isActive ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditDialog(subject)}
+                    className="h-8 px-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-950/30 transition-colors"
+                    title={t("edit")}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteSubject(subject.id)}
+                    className="h-8 px-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/30 transition-colors"
+                    title={t("delete")}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
@@ -748,7 +770,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               className="h-9 w-9 p-0 rounded-lg border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
@@ -762,10 +784,11 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
                   variant={currentPage === i + 1 ? "default" : "outline"}
                   size="sm"
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`h-9 w-9 p-0 rounded-lg transition-all ${currentPage === i + 1
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                    : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                    }`}
+                  className={`h-9 w-9 p-0 rounded-lg transition-all ${
+                    currentPage === i + 1
+                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
                 >
                   {i + 1}
                 </Button>
@@ -775,7 +798,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className="h-9 w-9 p-0 rounded-lg border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
@@ -793,11 +816,7 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
             <p className="text-gray-500 dark:text-gray-400">
               {t("noResultsFor", { query: searchQuery })}
             </p>
-            <Button
-              variant="outline"
-              onClick={() => setSearchQuery("")}
-              className="mt-4"
-            >
+            <Button variant="outline" onClick={() => setSearchQuery("")} className="mt-4">
               {t("clearSearch")}
             </Button>
           </div>
@@ -841,15 +860,21 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               <div className="mt-auto w-full flex flex-col gap-2 text-left">
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksAdd")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("howItWorksAdd")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <Target className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksCategory")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("howItWorksCategory")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <Brain className="w-4 h-4 text-purple-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("howItWorksAi")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("howItWorksAi")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -868,15 +893,21 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
               <div className="mt-auto w-full flex flex-col gap-2 text-left">
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <Plus className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessAdd")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("learningProcessAdd")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <BookOpen className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessQuestions")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("learningProcessQuestions")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
                   <GraduationCap className="w-4 h-4 text-purple-500 shrink-0" />
-                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">{t("learningProcessStart")}</span>
+                  <span className="text-xs font-semibold text-[#1d1d1f] dark:text-[#e8e8ed]">
+                    {t("learningProcessStart")}
+                  </span>
                 </div>
               </div>
             </div>

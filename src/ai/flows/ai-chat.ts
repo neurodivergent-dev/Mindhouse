@@ -26,9 +26,7 @@ const AiChatOutputSchema = z.object({
   response: z.string().describe("AI'nın cevabı"),
   confidence: z.number().describe("AI güven seviyesi (0-1)"),
   suggestedTopics: z.array(z.string()).describe("Önerilen konular"),
-  followUpQuestions: z
-    .array(z.string())
-    .describe("Öğrencinin AI'ya sorabileceği takip soruları"),
+  followUpQuestions: z.array(z.string()).describe("Öğrencinin AI'ya sorabileceği takip soruları"),
   learningTips: z.array(z.string()).describe("Öğrenme ipuçları"),
 });
 
@@ -46,9 +44,13 @@ export async function getAiChatResponse(
 
     const formattedHistory = input.conversationHistory
       .map((msg) => {
-        const prefix = isEnglish 
-          ? (msg.role === "user" ? "Student" : "Teacher")
-          : (msg.role === "user" ? "Öğrenci" : "Öğretmen");
+        const prefix = isEnglish
+          ? msg.role === "user"
+            ? "Student"
+            : "Teacher"
+          : msg.role === "user"
+            ? "Öğrenci"
+            : "Öğretmen";
         return `${prefix}: ${msg.content}`;
       })
       .join("\n");
@@ -96,7 +98,7 @@ export async function getAiChatResponse(
     - **SUBJECT:** ${input.subject}
     
     - **ADDITIONAL CONTEXT (current quiz state, question, user's selection, time, etc.):**
-    ${input.context || 'No additional context provided.'}
+    ${input.context || "No additional context provided."}
     
     - **CONVERSATION HISTORY:**
     ${formattedHistory}
@@ -150,7 +152,7 @@ export async function getAiChatResponse(
     - **DERS KONUSU:** ${input.subject}
     
     - **EK BAĞLAM (şu anki quiz durumu, soru, kullanıcının seçimi, süre vb.):**
-    ${input.context || 'Ek bağlam sağlanmadı.'}
+    ${input.context || "Ek bağlam sağlanmadı."}
     
     - **GEÇMİŞ KONUŞMA:**
     ${formattedHistory}

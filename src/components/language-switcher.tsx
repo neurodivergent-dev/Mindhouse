@@ -17,8 +17,10 @@ export function LanguageSwitcher() {
   const t = useTranslations("Navigation");
 
   // Lighter gradient for light mode, vibrant gradient for dark mode.
-  const gradientClass = "hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white transition-all";
-  const activeClass = "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white";
+  const gradientClass =
+    "hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white transition-all";
+  const activeClass =
+    "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white";
 
   return (
     <DropdownMenu>

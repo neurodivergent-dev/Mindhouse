@@ -51,18 +51,21 @@ Sayfa `/ai-3d-education` adresinde erişilebilir.
 ## 🔧 Teknik Detaylar
 
 ### Frontend
+
 - **React** + **TypeScript**
 - **Three.js** 3D grafik kütüphanesi
 - **Tailwind CSS** styling
 - **Responsive** tasarım
 
 ### Backend
+
 - **Vercel Edge Functions**
 - **Gemini API** entegrasyonu
 - **JSON** response parsing
 - **Error handling**
 
 ### 3D Rendering
+
 - **WebGL** tabanlı
 - **Shadow mapping**
 - **Anti-aliasing**
@@ -71,18 +74,21 @@ Sayfa `/ai-3d-education` adresinde erişilebilir.
 ## 🌟 Özellikler
 
 ### AI Destekli
+
 - **Gemini Pro** modeli
 - **Natural language** prompt
 - **Structured** JSON response
 - **Educational** content
 
 ### 3D Görselleştirme
+
 - **Interactive** modeller
 - **Real-time** rendering
 - **Custom** geometries
 - **Material** system
 
 ### Eğitim Odaklı
+
 - **Biyoloji** modelleri
 - **Kimya** modelleri
 - **Fizik** modelleri
@@ -91,16 +97,19 @@ Sayfa `/ai-3d-education` adresinde erişilebilir.
 ## 🚨 Sorun Giderme
 
 ### Gemini API Hatası
+
 - API anahtarını kontrol et
 - Rate limit'i kontrol et
 - Network bağlantısını kontrol et
 
 ### 3D Render Hatası
+
 - WebGL desteğini kontrol et
 - Browser'ı güncelle
 - Hardware acceleration'ı etkinleştir
 
 ### Performance Sorunları
+
 - Model karmaşıklığını azalt
 - Texture boyutlarını küçült
 - LOD (Level of Detail) ekle

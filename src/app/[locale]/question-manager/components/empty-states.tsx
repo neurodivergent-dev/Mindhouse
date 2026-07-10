@@ -5,7 +5,13 @@ import { useTranslations } from "next-intl";
 import { getSubjectName } from "@/lib/question-manager-labels";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, GraduationCap, Sparkles } from "lucide-react";
 import type { Subject } from "@/types/question-manager";
@@ -16,9 +22,7 @@ export function LoadingState() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-      <p className="text-muted-foreground font-medium">
-        {t("loadingSubjects")}
-      </p>
+      <p className="text-muted-foreground font-medium">{t("loadingSubjects")}</p>
     </div>
   );
 }
@@ -86,9 +90,7 @@ export function NoSubjectSelectedState({
         <h3 className="text-base font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
           {t("selectSubjectTitle")}
         </h3>
-        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
-          {t("selectSubjectDesc")}
-        </p>
+        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">{t("selectSubjectDesc")}</p>
         <div className="flex flex-col gap-3 w-full">
           <Link href="/subject-manager">
             <Button className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold w-full">
@@ -151,7 +153,9 @@ export function NoQuestionsState({ onAIDialogOpenChange }: NoQuestionsStateProps
         </p>
         <div className="flex flex-col gap-3 w-full">
           <Button
-            onClick={() => document.getElementById("question-form")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() =>
+              document.getElementById("question-form")?.scrollIntoView({ behavior: "smooth" })
+            }
             className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold w-full"
           >
             <BookOpen className="w-4 h-4 mr-2" />
@@ -176,12 +180,8 @@ export function SelectNoSubjectsState() {
 
   return (
     <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
-      <p className="text-sm font-medium text-muted-foreground mb-1">
-        {t("noSubjectsInSelect")}
-      </p>
-      <p className="text-xs text-muted-foreground/70 mb-3">
-        {t("noSubjectsInSelectDesc")}
-      </p>
+      <p className="text-sm font-medium text-muted-foreground mb-1">{t("noSubjectsInSelect")}</p>
+      <p className="text-xs text-muted-foreground/70 mb-3">{t("noSubjectsInSelectDesc")}</p>
     </div>
   );
 }

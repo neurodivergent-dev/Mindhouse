@@ -13,7 +13,7 @@ export default function QuizResultPage() {
   const router = useRouter();
   const { toast } = useToast();
   const t = useTranslations("Quiz");
-  
+
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,11 +25,14 @@ export default function QuizResultPage() {
     }
 
     try {
-      const demoResults = JSON.parse(localStorage.getItem("exam_training_demo_quiz_results") || "[]");
+      const demoResults = JSON.parse(
+        localStorage.getItem("exam_training_demo_quiz_results") || "[]",
+      );
       const realResults = JSON.parse(localStorage.getItem("exam_training_quiz_results") || "[]");
-      
-      const foundResult = demoResults.find((r: any) => r.id === id) || realResults.find((r: any) => r.id === id);
-      
+
+      const foundResult =
+        demoResults.find((r: any) => r.id === id) || realResults.find((r: any) => r.id === id);
+
       if (foundResult) {
         if (foundResult.type === "TopicExplainer") {
           // Redirect to topic explainer if it's an explainer result
@@ -45,7 +48,7 @@ export default function QuizResultPage() {
         toast({
           title: t("errorTitle") || "Hata",
           description: t("resultNotFound") || "Sonuç bulunamadı.",
-          variant: "destructive"
+          variant: "destructive",
         });
         router.push("/dashboard");
       }

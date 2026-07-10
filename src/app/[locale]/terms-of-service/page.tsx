@@ -41,10 +41,7 @@ export default async function TermsOfServicePage({
           <nav className="mb-6">
             <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
               <li>
-                <Link
-                  href="/landing"
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href="/landing" className="hover:text-foreground transition-colors">
                   {tFooter("home")}
                 </Link>
               </li>
@@ -68,9 +65,7 @@ export default async function TermsOfServicePage({
                   <h2 className="text-2xl font-semibold mb-4 text-foreground border-b border-border pb-2">
                     {section.title}
                   </h2>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {section.content}
-                  </p>
+                  <p className="text-muted-foreground leading-relaxed">{section.content}</p>
                 </section>
               ))}
             </div>

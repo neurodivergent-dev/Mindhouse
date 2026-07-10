@@ -1,4 +1,4 @@
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { logError } from "@/lib/error-logger";
 import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     logError("Check access error", error, { url: request.url });
     return NextResponse.json(
-      { error: "Internal server error", details: error instanceof Error ? error.message : String(error) },
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }

@@ -14,9 +14,7 @@ export function useAuth() {
       try {
         // Check if there's a hash in the URL (from OAuth callback)
         if (typeof window !== "undefined" && window.location.hash) {
-          const hashParams = new URLSearchParams(
-            window.location.hash.substring(1),
-          );
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
           const accessToken = hashParams.get("access_token");
           const refreshToken = hashParams.get("refresh_token");
 
@@ -31,11 +29,7 @@ export function useAuth() {
             } else {
               setUser(data.user);
               // Clean up the URL
-              window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname,
-              );
+              window.history.replaceState({}, document.title, window.location.pathname);
             }
             setLoading(false);
             return;
@@ -97,7 +91,9 @@ export function useAuth() {
       }
 
       // Try to get current session first
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session) {
         // No active session, just clear local state
@@ -120,7 +116,6 @@ export function useAuth() {
       // Logout successful
       setUser(null);
       window.location.href = "/landing";
-
     } catch /* (error) */ {
       //console.error("Logout exception:", error);
       // Even if there's an exception, try to clear state and redirect

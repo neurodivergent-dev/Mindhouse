@@ -56,7 +56,9 @@ function QuizPageContent() {
 
   const tSubjects = useTranslations("Subjects");
   const getTranslatedSubject = (name: string) => {
-    if (locale === "tr") { return name; }
+    if (locale === "tr") {
+      return name;
+    }
     try {
       return tSubjects(name as any);
     } catch {
@@ -65,25 +67,29 @@ function QuizPageContent() {
   };
 
   const getTranslatedCategory = (category: string) => {
-    if (locale === "tr") { return category; }
+    if (locale === "tr") {
+      return category;
+    }
     const map: Record<string, string> = {
       "SayÃ„Â±sal": "Science & Math",
       "Fen Bilimleri": "Science",
       "Sosyal Bilimler": "Social Sciences",
       "SÃƒÂ¶zel": "Verbal",
-      "YabancÃ„Â± Dil": "Foreign Language"
+      "YabancÃ„Â± Dil": "Foreign Language",
     };
     return map[category] || category;
   };
 
   const getTranslatedDifficulty = (diff: string) => {
-    if (locale === "tr") { return diff; }
+    if (locale === "tr") {
+      return diff;
+    }
     const map: Record<string, string> = {
-      "Kolay": "Easy",
-      "Orta": "Medium",
-      "Zor": "Hard",
+      Kolay: "Easy",
+      Orta: "Medium",
+      Zor: "Hard",
       "BaÃ…Å¸langÃ„Â±ÃƒÂ§": "Beginner",
-      "Ã„Â°leri": "Advanced"
+      "Ã„Â°leri": "Advanced",
     };
     return map[diff] || diff;
   };
@@ -132,7 +138,7 @@ function QuizPageContent() {
         // Try to load from Supabase first
         try {
           const dbQuestions = await QuestionService.getQuestions();
-          const cloudQuestions = dbQuestions.map(question => ({
+          const cloudQuestions = dbQuestions.map((question) => ({
             id: question.id,
             subject: question.subject,
             type: question.type as "multiple-choice" | "true-false" | "calculation" | "case-study",
@@ -151,8 +157,8 @@ function QuizPageContent() {
 
       // Also get local questions and merge
       const localQuestions = UnifiedStorageService.getQuestions();
-      localQuestions.forEach(localQ => {
-        if (!allQuestions.find(cloudQ => cloudQ.id === localQ.id)) {
+      localQuestions.forEach((localQ) => {
+        if (!allQuestions.find((cloudQ) => cloudQ.id === localQ.id)) {
           allQuestions.push(localQ);
         }
       });
@@ -180,7 +186,7 @@ function QuizPageContent() {
           const { demoSubjects } = await import("@/data/demo-data");
 
           // Calculate real question counts for each subject based on available demo questions
-          const subjectsWithRealCounts = demoSubjects.map(subject => {
+          const subjectsWithRealCounts = demoSubjects.map((subject) => {
             let questionCount = 0;
 
             // Count demo questions for each subject (based on quiz component logic)
@@ -198,7 +204,7 @@ function QuizPageContent() {
 
             return {
               ...subject,
-              questionCount
+              questionCount,
             };
           });
 
@@ -215,7 +221,7 @@ function QuizPageContent() {
 
             // If there are subjects in Supabase, use them, otherwise load from localStorage
             if (dbSubjects && dbSubjects.length > 0) {
-              loadedSubjects = dbSubjects.map(subject => ({
+              loadedSubjects = dbSubjects.map((subject) => ({
                 id: subject.id,
                 name: subject.name,
                 description: subject.description,
@@ -241,7 +247,7 @@ function QuizPageContent() {
         // Calculate question count for each subject using all questions
         const subjectsWithQuestionCount = loadedSubjects.map((subject) => {
           // Filter questions by subject name
-          const subjectQuestions = allQuestions.filter(q => {
+          const subjectQuestions = allQuestions.filter((q) => {
             const normalizedQuestionSubject = q.subject.trim().toLowerCase();
             const normalizedSubjectName = subject.name.trim().toLowerCase();
             return normalizedQuestionSubject === normalizedSubjectName;
@@ -295,8 +301,8 @@ function QuizPageContent() {
   const handleStartQuiz = () => {
     if (selectedSubject) {
       // Check if there are real questions for this subject using both sources
-      loadAllQuestions().then(allQuestions => {
-        const questionsForSubject = allQuestions.filter(q => {
+      loadAllQuestions().then((allQuestions) => {
+        const questionsForSubject = allQuestions.filter((q) => {
           const normalizedQuestionSubject = q.subject.trim().toLowerCase();
           const normalizedSelectedSubject = selectedSubject.trim().toLowerCase();
           return normalizedQuestionSubject === normalizedSelectedSubject;
@@ -383,7 +389,9 @@ function QuizPageContent() {
             {loading ? (
               <div className="flex items-center justify-center py-16">
                 <Loader2 className="w-7 h-7 animate-spin mr-2 text-blue-500" />
-                <span className="text-[#86868b] dark:text-[#a1a1a6] text-sm">{t("loadingSubjects")}</span>
+                <span className="text-[#86868b] dark:text-[#a1a1a6] text-sm">
+                  {t("loadingSubjects")}
+                </span>
               </div>
             ) : subjects.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -457,7 +465,8 @@ function QuizPageContent() {
                         value={subject.name}
                         className={subject.name === defaultSubject ? "font-semibold" : ""}
                       >
-                        {getTranslatedSubject(subject.name)} ({t("questionCount", { count: subject.questionCount })})
+                        {getTranslatedSubject(subject.name)} (
+                        {t("questionCount", { count: subject.questionCount })})
                         {subject.name === defaultSubject && t("defaultBadge")}
                       </SelectItem>
                     ))}
@@ -494,37 +503,49 @@ function QuizPageContent() {
                 <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                   <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("personalizedDifficulty")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("personalizedDifficulty")}
+                </span>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
                   <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("timeLimitedModes")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("timeLimitedModes")}
+                </span>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
                   <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("aiTutorHelp")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("aiTutorHelp")}
+                </span>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
                   <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("detailedAnalytics")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("detailedAnalytics")}
+                </span>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center shrink-0">
                   <Palette className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("adaptiveAlgorithm")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("adaptiveAlgorithm")}
+                </span>
               </div>
               <div className="flex items-center gap-3.5 p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
                   <Search className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 </div>
-                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">{t("weakTopicDetection")}</span>
+                <span className="text-xs sm:text-sm text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold">
+                  {t("weakTopicDetection")}
+                </span>
               </div>
             </div>
           </div>
@@ -543,8 +564,8 @@ function QuizPageContent() {
                   className="apple-glass-card cursor-pointer group hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                   onClick={() => {
                     setSelectedSubject(subject.name);
-                    loadAllQuestions().then(allQuestions => {
-                      const questionsForSubject = allQuestions.filter(q => {
+                    loadAllQuestions().then((allQuestions) => {
+                      const questionsForSubject = allQuestions.filter((q) => {
                         const normalizedQuestionSubject = q.subject.trim().toLowerCase();
                         const normalizedSubjectName = subject.name.trim().toLowerCase();
                         return normalizedQuestionSubject === normalizedSubjectName;
@@ -598,11 +619,7 @@ function QuizPageContent() {
         )}
 
         {/* Feature Cards */}
-        <FeatureCards
-          title={t("quizFeatures")}
-          features={translatedFeatures}
-          columns={3}
-        />
+        <FeatureCards title={t("quizFeatures")} features={translatedFeatures} columns={3} />
       </div>
     </div>
   );

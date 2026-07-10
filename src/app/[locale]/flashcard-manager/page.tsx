@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getSubjectName } from "@/lib/question-manager-labels";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -35,7 +41,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { shouldUseDemoData, getDemoSubjects } from "@/data/demo-data";
-import { generateFlashcards, type FlashcardGenerationOutput } from "@/ai/flows/flashcard-generation";
+import {
+  generateFlashcards,
+  type FlashcardGenerationOutput,
+} from "@/ai/flows/flashcard-generation";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { UnifiedStorageService, type Flashcard } from "@/services/unified-storage-service";
 import { SubjectService } from "@/services/supabase-service";
@@ -100,7 +109,7 @@ export default function FlashcardManagerPage() {
 
   // Generated flashcards
   const [generatedFlashcards, setGeneratedFlashcards] = useState<Flashcard[]>([]);
-  const [aiMetadata, setAiMetadata] = useState<FlashcardGenerationOutput['metadata'] | null>(null);
+  const [aiMetadata, setAiMetadata] = useState<FlashcardGenerationOutput["metadata"] | null>(null);
   const [qualityScore, setQualityScore] = useState<number>(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [studyTips, setStudyTips] = useState<string[]>([]);
@@ -119,7 +128,9 @@ export default function FlashcardManagerPage() {
   // Check authentication status
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setIsAuthenticated(Boolean(session?.user));
     };
     checkAuth();
@@ -152,7 +163,7 @@ export default function FlashcardManagerPage() {
               const dbSubjects = await SubjectService.getSubjects();
 
               if (dbSubjects && dbSubjects.length > 0) {
-                loadedSubjects = dbSubjects.map(subject => ({
+                loadedSubjects = dbSubjects.map((subject) => ({
                   id: subject.id,
                   name: subject.name,
                   category: subject.category,
@@ -197,17 +208,22 @@ export default function FlashcardManagerPage() {
         setLoading(true);
         try {
           // Small delay to show loading state
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
 
           const flashcards = UnifiedStorageService.getFlashcardsBySubject(selectedSubjectForManage);
           // Ensure createdAt is a Date object
-          const processedFlashcards = flashcards.map(flashcard => ({
+          const processedFlashcards = flashcards.map((flashcard) => ({
             ...flashcard,
-            createdAt: flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+            createdAt:
+              flashcard.createdAt instanceof Date
+                ? flashcard.createdAt
+                : new Date(flashcard.createdAt),
           }));
           setExistingFlashcards(processedFlashcards);
         } catch (error) {
-          errorLogger.logError('Error loading flashcards', error, { subject: selectedSubjectForManage });
+          errorLogger.logError("Error loading flashcards", error, {
+            subject: selectedSubjectForManage,
+          });
         } finally {
           setLoading(false);
         }
@@ -237,7 +253,7 @@ export default function FlashcardManagerPage() {
   };
 
   const handleDeleteFlashcard = (id: string) => {
-    const flashcard = existingFlashcards.find(f => f.id === id);
+    const flashcard = existingFlashcards.find((f) => f.id === id);
     if (flashcard) {
       setFlashcardToDelete(flashcard);
       setShowDeleteDialog(true);
@@ -255,9 +271,12 @@ export default function FlashcardManagerPage() {
         // Reload flashcards efficiently
         if (selectedSubjectForManage) {
           const flashcards = UnifiedStorageService.getFlashcardsBySubject(selectedSubjectForManage);
-          const processedFlashcards = flashcards.map(flashcard => ({
+          const processedFlashcards = flashcards.map((flashcard) => ({
             ...flashcard,
-            createdAt: flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+            createdAt:
+              flashcard.createdAt instanceof Date
+                ? flashcard.createdAt
+                : new Date(flashcard.createdAt),
           }));
           setExistingFlashcards(processedFlashcards);
         }
@@ -274,7 +293,9 @@ export default function FlashcardManagerPage() {
         });
       }
     } catch (error) {
-      errorLogger.logError('Error confirming flashcard deletion', error, { flashcardId: flashcardToDelete?.id });
+      errorLogger.logError("Error confirming flashcard deletion", error, {
+        flashcardId: flashcardToDelete?.id,
+      });
       toast({
         title: tCommon("error"),
         description: t("deleteError"),
@@ -306,9 +327,12 @@ export default function FlashcardManagerPage() {
         // Reload flashcards efficiently
         if (selectedSubjectForManage) {
           const flashcards = UnifiedStorageService.getFlashcardsBySubject(selectedSubjectForManage);
-          const processedFlashcards = flashcards.map(flashcard => ({
+          const processedFlashcards = flashcards.map((flashcard) => ({
             ...flashcard,
-            createdAt: flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+            createdAt:
+              flashcard.createdAt instanceof Date
+                ? flashcard.createdAt
+                : new Date(flashcard.createdAt),
           }));
           setExistingFlashcards(processedFlashcards);
         }
@@ -339,7 +363,9 @@ export default function FlashcardManagerPage() {
         });
       }
     } catch (error) {
-      errorLogger.logError('Error updating flashcard', error, { flashcardId: editingFlashcard?.id });
+      errorLogger.logError("Error updating flashcard", error, {
+        flashcardId: editingFlashcard?.id,
+      });
       toast({
         title: tCommon("error"),
         description: t("updateError"),
@@ -381,7 +407,9 @@ export default function FlashcardManagerPage() {
 
       // Use UnifiedStorageService which handles both localStorage and Supabase sync
       const createdFlashcard = await UnifiedStorageService.addFlashcard(newFlashcard);
-      errorLogger.logError("Flashcard created successfully", undefined, { id: createdFlashcard.id });
+      errorLogger.logError("Flashcard created successfully", undefined, {
+        id: createdFlashcard.id,
+      });
 
       // Reset form
       setManualForm({
@@ -411,13 +439,15 @@ export default function FlashcardManagerPage() {
       // Reload existing flashcards if we're on the manage tab
       if (selectedSubjectForManage === manualForm.subject) {
         const flashcards = UnifiedStorageService.getFlashcardsBySubject(manualForm.subject);
-        const processedFlashcards = flashcards.map(flashcard => ({
+        const processedFlashcards = flashcards.map((flashcard) => ({
           ...flashcard,
-          createdAt: flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+          createdAt:
+            flashcard.createdAt instanceof Date
+              ? flashcard.createdAt
+              : new Date(flashcard.createdAt),
         }));
         setExistingFlashcards(processedFlashcards);
       }
-
     } catch (error) {
       errorLogger.logError("Error creating flashcard", error);
 
@@ -456,21 +486,26 @@ export default function FlashcardManagerPage() {
       if (!isAiConfigured(aiPrefs)) {
         toast({
           title: t("aiError"),
-          description: t("aiApiKeyError") || "AI service configuration error. Please check your API key in Settings.",
+          description:
+            t("aiApiKeyError") ||
+            "AI service configuration error. Please check your API key in Settings.",
           variant: "destructive",
         });
         setAiGenerating(false);
         return;
       }
 
-      const aiResponse = await generateFlashcards({
-        subject: aiForm.subject,
-        topic: aiForm.topic,
-        difficulty: aiForm.difficulty as "Easy" | "Medium" | "Hard",
-        count: aiForm.count,
-        language: locale === "tr" ? "tr" : "en",
-        guidelines: aiForm.guidelines || undefined,
-      }, aiPrefs);
+      const aiResponse = await generateFlashcards(
+        {
+          subject: aiForm.subject,
+          topic: aiForm.topic,
+          difficulty: aiForm.difficulty as "Easy" | "Medium" | "Hard",
+          count: aiForm.count,
+          language: locale === "tr" ? "tr" : "en",
+          guidelines: aiForm.guidelines || undefined,
+        },
+        aiPrefs,
+      );
 
       // Convert AI response to Flashcard format
       const convertedFlashcards: Flashcard[] = aiResponse.flashcards.map((aiCard, i) => ({
@@ -491,7 +526,10 @@ export default function FlashcardManagerPage() {
       setStudyTips(aiResponse.studyTips);
 
       // Check if we got fallback flashcards due to AI errors
-      if (aiResponse.metadata.aiModel.includes("Fallback") || aiResponse.metadata.aiModel.includes("Error")) {
+      if (
+        aiResponse.metadata.aiModel.includes("Fallback") ||
+        aiResponse.metadata.aiModel.includes("Error")
+      ) {
         toast({
           title: t("aiFallbackTitle"),
           description: t("aiFallbackDesc"),
@@ -507,7 +545,6 @@ export default function FlashcardManagerPage() {
           variant: "default",
         });
       }
-
     } catch (error) {
       let errorMessage = t("aiGenerateError");
 
@@ -561,7 +598,9 @@ export default function FlashcardManagerPage() {
 
   const saveGeneratedFlashcards = async () => {
     try {
-      errorLogger.logError("Saving AI generated flashcards", undefined, { count: generatedFlashcards.length });
+      errorLogger.logError("Saving AI generated flashcards", undefined, {
+        count: generatedFlashcards.length,
+      });
 
       // Save all generated flashcards with proper error handling
       const results = await Promise.allSettled(
@@ -572,10 +611,14 @@ export default function FlashcardManagerPage() {
       );
 
       // Count successful and failed saves
-      const successful = results.filter(r => r.status === 'fulfilled').length;
-      const failed = results.filter(r => r.status === 'rejected').length;
+      const successful = results.filter((r) => r.status === "fulfilled").length;
+      const failed = results.filter((r) => r.status === "rejected").length;
 
-      errorLogger.logError("Save results", undefined, { successful, failed, total: generatedFlashcards.length });
+      errorLogger.logError("Save results", undefined, {
+        successful,
+        failed,
+        total: generatedFlashcards.length,
+      });
 
       // Clear generated flashcards after saving
       setGeneratedFlashcards([]);
@@ -606,13 +649,15 @@ export default function FlashcardManagerPage() {
       // Reload existing flashcards for the current subject
       if (selectedSubjectForManage) {
         const flashcards = UnifiedStorageService.getFlashcardsBySubject(selectedSubjectForManage);
-        const processedFlashcards = flashcards.map(flashcard => ({
+        const processedFlashcards = flashcards.map((flashcard) => ({
           ...flashcard,
-          createdAt: flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+          createdAt:
+            flashcard.createdAt instanceof Date
+              ? flashcard.createdAt
+              : new Date(flashcard.createdAt),
         }));
         setExistingFlashcards(processedFlashcards);
       }
-
     } catch (error) {
       errorLogger.logError("Error saving generated flashcards", error);
 
@@ -713,11 +758,15 @@ export default function FlashcardManagerPage() {
                 <div className="space-y-6">
                   {/* Subject Selector */}
                   <div className="p-4 rounded-xl bg-white/20 dark:bg-white/5 border border-white/20 dark:border-white/10">
-                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("selectSubject")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("selectSubject")}
+                    </label>
                     {loading ? (
                       <div className="flex items-center gap-2 p-3 border border-white/20 dark:border-white/10 rounded-xl bg-white/40 dark:bg-white/5">
                         <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                        <span className="text-sm text-[#86868b] dark:text-[#a1a1a6]">{t("loadingSubjects")}</span>
+                        <span className="text-sm text-[#86868b] dark:text-[#a1a1a6]">
+                          {t("loadingSubjects")}
+                        </span>
                       </div>
                     ) : (
                       <Select
@@ -746,7 +795,9 @@ export default function FlashcardManagerPage() {
                           <div className="flex items-center gap-2.5">
                             <Edit className="w-4 h-4 text-blue-500" />
                             <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">
-                              {t("editingFlashcard", { question: editingFlashcard.question.substring(0, 50) })}
+                              {t("editingFlashcard", {
+                                question: editingFlashcard.question.substring(0, 50),
+                              })}
                             </span>
                           </div>
                           <Button
@@ -774,7 +825,10 @@ export default function FlashcardManagerPage() {
 
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                          {t("subjectFlashcardCount", { subject: selectedSubjectForManage, count: existingFlashcards.length })}
+                          {t("subjectFlashcardCount", {
+                            subject: selectedSubjectForManage,
+                            count: existingFlashcards.length,
+                          })}
                         </h3>
                         <Button
                           onClick={() => {
@@ -801,21 +855,31 @@ export default function FlashcardManagerPage() {
                       ) : (
                         <div className="grid gap-4">
                           {existingFlashcards.map((flashcard) => (
-                            <div key={flashcard.id} className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
+                            <div
+                              key={flashcard.id}
+                              className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+                            >
                               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                                 <div className="flex-1 space-y-2 min-w-0">
                                   <div className="flex flex-wrap items-center gap-2">
-                                    <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400">
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs px-2.5 py-0.5 font-semibold bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400"
+                                    >
                                       {flashcard.topic}
                                     </Badge>
-                                    <Badge variant="secondary" className="text-xs px-2.5 py-0.5 font-semibold">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs px-2.5 py-0.5 font-semibold"
+                                    >
                                       {getDifficultyLabel(flashcard.difficulty)}
                                     </Badge>
                                     <span className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                                       {flashcard.createdAt instanceof Date
                                         ? flashcard.createdAt.toLocaleDateString(dateLocale)
-                                        : new Date(flashcard.createdAt).toLocaleDateString(dateLocale)
-                                      }
+                                        : new Date(flashcard.createdAt).toLocaleDateString(
+                                            dateLocale,
+                                          )}
                                     </span>
                                   </div>
                                   <h4 className="font-bold text-[#1d1d1f] dark:text-[#f5f5f7] text-base leading-relaxed break-words">
@@ -878,13 +942,22 @@ export default function FlashcardManagerPage() {
                   </div>
                 </div>
 
-                <form onSubmit={(e) => { handleManualSubmit(e); }} className="space-y-4">
+                <form
+                  onSubmit={(e) => {
+                    handleManualSubmit(e);
+                  }}
+                  className="space-y-4"
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("subjectLabel")}
+                      </label>
                       <Select
                         value={manualForm.subject}
-                        onValueChange={(value) => setManualForm(prev => ({ ...prev, subject: value }))}
+                        onValueChange={(value) =>
+                          setManualForm((prev) => ({ ...prev, subject: value }))
+                        }
                       >
                         <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                           <SelectValue placeholder={t("selectSubjectOption")} />
@@ -899,10 +972,14 @@ export default function FlashcardManagerPage() {
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("difficultyLabel")}
+                      </label>
                       <Select
                         value={manualForm.difficulty}
-                        onValueChange={(value) => setManualForm(prev => ({ ...prev, difficulty: value }))}
+                        onValueChange={(value) =>
+                          setManualForm((prev) => ({ ...prev, difficulty: value }))
+                        }
                       >
                         <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                           <SelectValue />
@@ -917,50 +994,69 @@ export default function FlashcardManagerPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topicLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("topicLabel")}
+                    </label>
                     <Input
                       placeholder={t("topicPlaceholder")}
                       value={manualForm.topic}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, topic: e.target.value }))}
+                      onChange={(e) =>
+                        setManualForm((prev) => ({ ...prev, topic: e.target.value }))
+                      }
                       className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("questionLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("questionLabel")}
+                    </label>
                     <Textarea
                       placeholder={t("questionPlaceholder")}
                       value={manualForm.question}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, question: e.target.value }))}
+                      onChange={(e) =>
+                        setManualForm((prev) => ({ ...prev, question: e.target.value }))
+                      }
                       rows={3}
                       className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("answerLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("answerLabel")}
+                    </label>
                     <Textarea
                       placeholder={t("answerPlaceholder")}
                       value={manualForm.answer}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, answer: e.target.value }))}
+                      onChange={(e) =>
+                        setManualForm((prev) => ({ ...prev, answer: e.target.value }))
+                      }
                       rows={3}
                       className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("explanationLabel")}</label>
+                    <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                      {t("explanationLabel")}
+                    </label>
                     <Textarea
                       placeholder={t("explanationPlaceholder")}
                       value={manualForm.explanation}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, explanation: e.target.value }))}
+                      onChange={(e) =>
+                        setManualForm((prev) => ({ ...prev, explanation: e.target.value }))
+                      }
                       rows={2}
                       className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
                     />
                   </div>
 
                   <div className="flex gap-3 pt-2">
-                    <Button type="submit" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl h-11 text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all border-0">
+                    <Button
+                      type="submit"
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl h-11 text-sm font-semibold shadow-lg shadow-blue-500/20 transition-all border-0"
+                    >
                       {isEditing ? (
                         <>
                           <Edit className="w-4 h-4 mr-2" />
@@ -1041,7 +1137,10 @@ export default function FlashcardManagerPage() {
                           <p className="mb-1">{t("aiStatusNote")}</p>
                           <p>
                             {t("aiSetupGuidePrefix")}{" "}
-                            <Link href="/ai-flashcard-setup" className="underline font-semibold text-blue-600 dark:text-blue-400">
+                            <Link
+                              href="/ai-flashcard-setup"
+                              className="underline font-semibold text-blue-600 dark:text-blue-400"
+                            >
                               {t("aiSetupGuideLink")}
                             </Link>{" "}
                             {t("aiSetupGuideSuffix")}
@@ -1051,13 +1150,22 @@ export default function FlashcardManagerPage() {
                     </div>
                   </div>
 
-                  <form onSubmit={(e) => { handleAIGeneration(e); }} className="space-y-4">
+                  <form
+                    onSubmit={(e) => {
+                      handleAIGeneration(e);
+                    }}
+                    className="space-y-4"
+                  >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("subjectLabel")}
+                        </label>
                         <Select
                           value={aiForm.subject}
-                          onValueChange={(value) => setAiForm(prev => ({ ...prev, subject: value }))}
+                          onValueChange={(value) =>
+                            setAiForm((prev) => ({ ...prev, subject: value }))
+                          }
                         >
                           <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue placeholder={t("selectSubjectOption")} />
@@ -1072,10 +1180,14 @@ export default function FlashcardManagerPage() {
                         </Select>
                       </div>
                       <div>
-                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("difficultyLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("difficultyLabel")}
+                        </label>
                         <Select
                           value={aiForm.difficulty}
-                          onValueChange={(value) => setAiForm(prev => ({ ...prev, difficulty: value }))}
+                          onValueChange={(value) =>
+                            setAiForm((prev) => ({ ...prev, difficulty: value }))
+                          }
                         >
                           <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue />
@@ -1090,21 +1202,27 @@ export default function FlashcardManagerPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("topicLabel")}</label>
+                      <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("topicLabel")}
+                      </label>
                       <Input
                         placeholder={t("topicPlaceholder")}
                         value={aiForm.topic}
-                        onChange={(e) => setAiForm(prev => ({ ...prev, topic: e.target.value }))}
+                        onChange={(e) => setAiForm((prev) => ({ ...prev, topic: e.target.value }))}
                         className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("cardCountLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("cardCountLabel")}
+                        </label>
                         <Select
                           value={aiForm.count.toString()}
-                          onValueChange={(value) => setAiForm(prev => ({ ...prev, count: parseInt(value) }))}
+                          onValueChange={(value) =>
+                            setAiForm((prev) => ({ ...prev, count: parseInt(value) }))
+                          }
                         >
                           <SelectTrigger className="bg-white/80 dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 rounded-xl h-11 text-sm font-medium">
                             <SelectValue />
@@ -1118,11 +1236,15 @@ export default function FlashcardManagerPage() {
                         </Select>
                       </div>
                       <div>
-                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">{t("guidelinesLabel")}</label>
+                        <label className="text-sm font-semibold mb-2 block text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("guidelinesLabel")}
+                        </label>
                         <Input
                           placeholder={t("guidelinesPlaceholder")}
                           value={aiForm.guidelines}
-                          onChange={(e) => setAiForm(prev => ({ ...prev, guidelines: e.target.value }))}
+                          onChange={(e) =>
+                            setAiForm((prev) => ({ ...prev, guidelines: e.target.value }))
+                          }
                           className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl h-11"
                         />
                       </div>
@@ -1177,29 +1299,49 @@ export default function FlashcardManagerPage() {
 
                     <div className="space-y-4">
                       {generatedFlashcards.map((flashcard, index) => (
-                        <div key={flashcard.id} className="p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10">
+                        <div
+                          key={flashcard.id}
+                          className="p-4 rounded-xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10"
+                        >
                           <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
-                            <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-semibold bg-white/40 border-0 text-[#1d1d1f] dark:text-[#f5f5f7]">
+                            <Badge
+                              variant="outline"
+                              className="text-xs px-2.5 py-0.5 font-semibold bg-white/40 border-0 text-[#1d1d1f] dark:text-[#f5f5f7]"
+                            >
                               {getDifficultyLabel(flashcard.difficulty)}
                             </Badge>
-                            <span className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-bold">#{index + 1}</span>
+                            <span className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-bold">
+                              #{index + 1}
+                            </span>
                           </div>
 
                           <div className="space-y-3">
                             <div>
-                              <label className="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 block mb-1 uppercase tracking-wider">{t("questionField")}</label>
-                              <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-relaxed break-words">{flashcard.question}</p>
+                              <label className="text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 block mb-1 uppercase tracking-wider">
+                                {t("questionField")}
+                              </label>
+                              <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-relaxed break-words">
+                                {flashcard.question}
+                              </p>
                             </div>
 
                             <div>
-                              <label className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 block mb-1 uppercase tracking-wider">{t("answerField")}</label>
-                              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words">{flashcard.answer}</p>
+                              <label className="text-[11px] sm:text-xs font-bold text-green-600 dark:text-green-400 block mb-1 uppercase tracking-wider">
+                                {t("answerField")}
+                              </label>
+                              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                                {flashcard.answer}
+                              </p>
                             </div>
 
                             {flashcard.explanation && (
                               <div>
-                                <label className="text-[11px] sm:text-xs font-bold text-[#86868b] dark:text-[#a1a1a6] block mb-1 uppercase tracking-wider">{t("explanationField")}</label>
-                                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed break-words bg-white/20 dark:bg-white/5 p-2.5 rounded-lg border border-white/10">{flashcard.explanation}</p>
+                                <label className="text-[11px] sm:text-xs font-bold text-[#86868b] dark:text-[#a1a1a6] block mb-1 uppercase tracking-wider">
+                                  {t("explanationField")}
+                                </label>
+                                <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] leading-relaxed break-words bg-white/20 dark:bg-white/5 p-2.5 rounded-lg border border-white/10">
+                                  {flashcard.explanation}
+                                </p>
                               </div>
                             )}
                           </div>
@@ -1217,7 +1359,9 @@ export default function FlashcardManagerPage() {
 
                         {suggestions.length > 0 && (
                           <div className="mb-4">
-                            <h5 className="text-sm font-bold text-purple-700 dark:text-purple-400 mb-2">💡 {t("improvementSuggestions")}</h5>
+                            <h5 className="text-sm font-bold text-purple-700 dark:text-purple-400 mb-2">
+                              💡 {t("improvementSuggestions")}
+                            </h5>
                             <ul className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] space-y-1.5 font-medium pl-1">
                               {suggestions.map((suggestion, index) => (
                                 <li key={index} className="flex items-start gap-2">
@@ -1231,7 +1375,9 @@ export default function FlashcardManagerPage() {
 
                         {studyTips.length > 0 && (
                           <div>
-                            <h5 className="text-sm font-bold text-green-700 dark:text-green-400 mb-2">📚 {t("studyTips")}</h5>
+                            <h5 className="text-sm font-bold text-green-700 dark:text-green-400 mb-2">
+                              📚 {t("studyTips")}
+                            </h5>
                             <ul className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] space-y-1.5 font-medium pl-1">
                               {studyTips.map((tip, index) => (
                                 <li key={index} className="flex items-start gap-2">
@@ -1290,7 +1436,9 @@ export default function FlashcardManagerPage() {
                   <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
                     <Plus className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureManualTitle")}</h3>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("featureManualTitle")}
+                  </h3>
                   <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureManualDesc")}
                   </p>
@@ -1300,7 +1448,9 @@ export default function FlashcardManagerPage() {
                   <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
                     <Brain className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureAiTitle")}</h3>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("featureAiTitle")}
+                  </h3>
                   <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureAiDesc")}
                   </p>
@@ -1310,7 +1460,9 @@ export default function FlashcardManagerPage() {
                   <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
                     <Target className="w-6 h-6 text-green-600" />
                   </div>
-                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("featureSmartTitle")}</h3>
+                  <h3 className="font-bold mb-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                    {t("featureSmartTitle")}
+                  </h3>
                   <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
                     {t("featureSmartDesc")}
                   </p>
@@ -1326,15 +1478,15 @@ export default function FlashcardManagerPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("deleteDialogTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteDialogDesc")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("deleteDialogDesc")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setShowDeleteDialog(false);
-              setFlashcardToDelete(null);
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setFlashcardToDelete(null);
+              }}
+            >
               {t("cancel")}
             </AlertDialogCancel>
             <AlertDialogAction

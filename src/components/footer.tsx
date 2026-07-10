@@ -154,26 +154,17 @@ export default function Footer() {
                   <span className="sr-only">GitHub</span>
                   <Github className="h-6 w-6" />
                 </a>
-
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center">
-          <p className="text-base text-gray-400">
-            {t("copyright", { year })}
-          </p>
+          <p className="text-base text-gray-400">{t("copyright", { year })}</p>
           <p className="text-sm text-gray-400 mt-2 flex items-center justify-center gap-1 flex-wrap">
             {t.rich("madeBy", {
-              author: (chunks) => (
-                <span className="text-blue-500 font-medium">
-                  {chunks}
-                </span>
-              ),
-              heart: () => (
-                <Heart className="h-4 w-4 text-red-500 animate-pulse inline" />
-              ),
+              author: (chunks) => <span className="text-blue-500 font-medium">{chunks}</span>,
+              heart: () => <Heart className="h-4 w-4 text-red-500 animate-pulse inline" />,
             })}
           </p>
         </div>

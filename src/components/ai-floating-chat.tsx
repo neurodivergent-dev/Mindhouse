@@ -63,7 +63,9 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   // Safe subject name resolution (Subjects namespace contains lesson names only).
   // "Dashboard" (and unknown values) fall back gracefully to prevent MISSING_MESSAGE.
   const getDisplaySubject = (name: string) => {
-    if (name === "Dashboard") {return name;}
+    if (name === "Dashboard") {
+      return name;
+    }
     const demoSubjectNames = [
       "Matematik",
       "Fizik",
@@ -107,7 +109,9 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   };
 
   const handleClearClick = () => {
-    if (messages.length === 0) {return;}
+    if (messages.length === 0) {
+      return;
+    }
     setShowClearConfirm(true);
   };
 
@@ -123,12 +127,18 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
 
       if (quizData) {
         const qNum = (quizData.currentQuestionIndex ?? 0) + 1;
-        const total = quizData.totalQuestions || quizData.questions?.length || '?';
-        const timeInfo = quizData.timeRemaining !== null && quizData.timeRemaining !== undefined 
-          ? `You have ${quizData.timeRemaining} seconds left.` 
-          : 'No time limit.';
-        const selectedInfo = quizData.selectedAnswer !== null && quizData.selectedAnswer !== undefined ? 'You have selected an answer.' : 'You have not selected an answer yet.';
-        const isFlash = Boolean(quizData.currentQuestion?.answer && !quizData.currentQuestion.options);
+        const total = quizData.totalQuestions || quizData.questions?.length || "?";
+        const timeInfo =
+          quizData.timeRemaining !== null && quizData.timeRemaining !== undefined
+            ? `You have ${quizData.timeRemaining} seconds left.`
+            : "No time limit.";
+        const selectedInfo =
+          quizData.selectedAnswer !== null && quizData.selectedAnswer !== undefined
+            ? "You have selected an answer."
+            : "You have not selected an answer yet.";
+        const isFlash = Boolean(
+          quizData.currentQuestion?.answer && !quizData.currentQuestion.options,
+        );
         if (isFlash) {
           welcomeContent = t("flashcardAiChatWelcome", {
             subject: displaySubject,
@@ -136,14 +146,15 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
         } else {
           welcomeContent = `${t("quizAiChatWelcome", {
             subject: displaySubject,
-          })  } You are on question ${qNum} of ${total}. ${timeInfo} ${selectedInfo} I can see the current question, your selection, time info, and whether you used the AI Tutor. Ask away!`;
+          })} You are on question ${qNum} of ${total}. ${timeInfo} ${selectedInfo} I can see the current question, your selection, time info, and whether you used the AI Tutor. Ask away!`;
         }
       } else if (externalContext) {
         // Dashboard or general context
-        const isDemo = externalContext.includes('DEMO');
-        welcomeContent = locale === 'tr' 
-          ? `Merhaba! Dashboard verilerine göre yardımcı oluyorum. ${isDemo ? 'Demo verileri aktif.' : 'Gerçek veriler kullanılıyor.'} Performans, zayıf konular veya genel sorular sorabilirsin.`
-          : `Hello! Helping with dashboard data. ${isDemo ? 'Demo mode active.' : 'Using real data.'} Ask about performance, weak topics or general queries.`;
+        const isDemo = externalContext.includes("DEMO");
+        welcomeContent =
+          locale === "tr"
+            ? `Merhaba! Dashboard verilerine göre yardımcı oluyorum. ${isDemo ? "Demo verileri aktif." : "Gerçek veriler kullanılıyor."} Performans, zayıf konular veya genel sorular sorabilirsin.`
+            : `Hello! Helping with dashboard data. ${isDemo ? "Demo mode active." : "Using real data."} Ask about performance, weak topics or general queries.`;
       } else {
         welcomeContent = t("aiChatWelcome", {
           step: currentStepTitle || "Quiz",
@@ -160,10 +171,22 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
       };
       setMessages([welcome]);
     }
-  }, [isOpen, messages.length, subject, currentStepTitle, quizData, externalContext, t, displaySubject, locale]);
+  }, [
+    isOpen,
+    messages.length,
+    subject,
+    currentStepTitle,
+    quizData,
+    externalContext,
+    t,
+    displaySubject,
+    locale,
+  ]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) {return;}
+    if (!input.trim() || isLoading) {
+      return;
+    }
 
     const aiPreferences = getStoredAiPreferences();
     if (!isAiConfigured(aiPreferences)) {
@@ -200,21 +223,24 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
       let context = externalContext || "";
 
       if (topicData?.steps) {
-        const step = (topicData.steps as Array<Record<string, unknown>>)?.find((s) => s.title === currentStepTitle) || (topicData.steps as Array<Record<string, unknown>>)?.[0];
+        const step =
+          (topicData.steps as Array<Record<string, unknown>>)?.find(
+            (s) => s.title === currentStepTitle,
+          ) || (topicData.steps as Array<Record<string, unknown>>)?.[0];
         context = `
 Current Topic: ${topicData.topic}
 Subject: ${topicData.subject}
-Current Step: ${step?.title || ''}
+Current Step: ${step?.title || ""}
 Difficulty: ${topicData.difficulty}
 
 Explanation Content:
-${step?.content || ''}
+${step?.content || ""}
 
 Examples:
-${(step?.examples as string[] | undefined)?.join('\n- ') || ''}
+${(step?.examples as string[] | undefined)?.join("\n- ") || ""}
 
 Tips:
-${(step?.tips as string[] | undefined)?.join('\n- ') || ''}
+${(step?.tips as string[] | undefined)?.join("\n- ") || ""}
 `.trim();
       } else if (quizData) {
         const q = quizData.currentQuestion;
@@ -223,61 +249,66 @@ ${(step?.tips as string[] | undefined)?.join('\n- ') || ''}
         const showResult = Boolean(quizData.showResult);
 
         // Sanitize options: never include isCorrect unless showResult is true
-        let optionsText = 'N/A';
+        let optionsText = "N/A";
         if (q && Array.isArray(q.options)) {
-          optionsText = q.options.map((o: Record<string, unknown> | string, i: number) => {
-            const text = typeof o === 'string' ? o : (o.text as string);
-            const isCorrect = typeof o === 'string' ? false : Boolean(o.isCorrect);
-            if (showResult && isCorrect) {
-              return `${i}: ${text} (correct)`;
-            }
-            return `${i}: ${text}`;
-          }).join(' | ');
+          optionsText = q.options
+            .map((o: Record<string, unknown> | string, i: number) => {
+              const text = typeof o === "string" ? o : (o.text as string);
+              const isCorrect = typeof o === "string" ? false : Boolean(o.isCorrect);
+              if (showResult && isCorrect) {
+                return `${i}: ${text} (correct)`;
+              }
+              return `${i}: ${text}`;
+            })
+            .join(" | ");
         }
 
-        const selectedText = hasAnswered && Array.isArray(q?.options) && q?.options?.[selectedIdx]
-          ? (typeof q.options[selectedIdx] === 'object' && q.options[selectedIdx] !== null ? (q.options[selectedIdx] as Record<string, unknown>).text : q.options[selectedIdx])
-          : 'None yet';
+        const selectedText =
+          hasAnswered && Array.isArray(q?.options) && q?.options?.[selectedIdx]
+            ? typeof q.options[selectedIdx] === "object" && q.options[selectedIdx] !== null
+              ? (q.options[selectedIdx] as Record<string, unknown>).text
+              : q.options[selectedIdx]
+            : "None yet";
 
         const isFlashcard = Boolean(q?.answer && !Array.isArray(q.options));
 
         if (isFlashcard) {
           context = `
 Current Subject: ${subject}
-Current Flashcard: ${(quizData.currentQuestionIndex ?? 0) + 1} / ${quizData.totalQuestions || quizData.questions?.length || '?'}
+Current Flashcard: ${(quizData.currentQuestionIndex ?? 0) + 1} / ${quizData.totalQuestions || quizData.questions?.length || "?"}
 
-Question: ${q?.question || q?.text || 'N/A'}
-${showResult ? `Answer: ${q?.answer || q?.correctAnswer}` : 'Answer: (not yet revealed by flipping)'}
-Explanation: ${q?.explanation || 'N/A'}
-Topic: ${q?.topic || 'N/A'}
-Difficulty: ${q?.difficulty || 'N/A'}
+Question: ${q?.question || q?.text || "N/A"}
+${showResult ? `Answer: ${q?.answer || q?.correctAnswer}` : "Answer: (not yet revealed by flipping)"}
+Explanation: ${q?.explanation || "N/A"}
+Topic: ${q?.topic || "N/A"}
+Difficulty: ${q?.difficulty || "N/A"}
 
-User has seen the answer (flipped): ${showResult ? 'Yes' : 'No'}
-AI Tutor was used: ${quizData.aiTutorUsed ? 'Yes' : 'No'}
+User has seen the answer (flipped): ${showResult ? "Yes" : "No"}
+AI Tutor was used: ${quizData.aiTutorUsed ? "Yes" : "No"}
 
 Current study progress and state is available above.
 `.trim();
         } else {
           context = `
 Current Subject: ${subject}
-Current Question Number: ${(quizData.currentQuestionIndex ?? 0) + 1} / ${quizData.totalQuestions || quizData.questions?.length || '?'}
-Total Questions: ${quizData.totalQuestions || quizData.questions?.length || '?'}
+Current Question Number: ${(quizData.currentQuestionIndex ?? 0) + 1} / ${quizData.totalQuestions || quizData.questions?.length || "?"}
+Total Questions: ${quizData.totalQuestions || quizData.questions?.length || "?"}
 
-Current Question: ${q?.question || q?.text || 'N/A'}
-Question Topic: ${q?.topic || 'N/A'}
+Current Question: ${q?.question || q?.text || "N/A"}
+Question Topic: ${q?.topic || "N/A"}
 Options: ${optionsText}
 
 User's Selected Answer: ${selectedText}
-User has answered this question: ${hasAnswered ? 'Yes' : 'No'}
-Show Result / feedback visible: ${showResult ? 'Yes' : 'No'}
+User has answered this question: ${hasAnswered ? "Yes" : "No"}
+Show Result / feedback visible: ${showResult ? "Yes" : "No"}
 
-AI Tutor was used on this question: ${quizData.aiTutorUsed ? 'Yes' : 'No'}
+AI Tutor was used on this question: ${quizData.aiTutorUsed ? "Yes" : "No"}
 
 Time Info:
-- Time Spent so far: ${quizData.timeSpent ?? 'N/A'} seconds
-- Time Remaining: ${quizData.timeRemaining !== null && quizData.timeRemaining !== undefined ? `${quizData.timeRemaining  } seconds` : 'No limit'}
-- Timer is enabled: ${quizData.showTimer ? 'Yes' : 'No'}
-- Time Limit for this quiz: ${quizData.timeLimit !== null && quizData.timeLimit !== undefined ? `${quizData.timeLimit  } seconds` : 'No limit'}
+- Time Spent so far: ${quizData.timeSpent ?? "N/A"} seconds
+- Time Remaining: ${quizData.timeRemaining !== null && quizData.timeRemaining !== undefined ? `${quizData.timeRemaining} seconds` : "No limit"}
+- Timer is enabled: ${quizData.showTimer ? "Yes" : "No"}
+- Time Limit for this quiz: ${quizData.timeLimit !== null && quizData.timeLimit !== undefined ? `${quizData.timeLimit} seconds` : "No limit"}
 
 IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
 - The user is in the middle of solving a quiz.
@@ -298,7 +329,7 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
           context,
         },
         aiPreferences,
-        locale
+        locale,
       );
 
       const assistantMessage: AIChatMessage = {
@@ -374,7 +405,11 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
                 className="h-8 w-8 p-0 text-white hover:bg-white/20"
                 title={isFullscreen ? t("exitFullscreen") : t("fullscreen")}
               >
-                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                {isFullscreen ? (
+                  <Minimize2 className="w-4 h-4" />
+                ) : (
+                  <Maximize2 className="w-4 h-4" />
+                )}
               </Button>
               <Button
                 variant="ghost"
@@ -388,11 +423,11 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
           </div>
 
           {/* Messages */}
-          <div className={`flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-950 text-sm ${isFullscreen ? "p-6 text-base" : ""}`}>
+          <div
+            className={`flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-950 text-sm ${isFullscreen ? "p-6 text-base" : ""}`}
+          >
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 text-xs py-4">
-                {t("aiChatEmpty")}
-              </div>
+              <div className="text-center text-gray-500 text-xs py-4">{t("aiChatEmpty")}</div>
             )}
             {messages.map((msg) => (
               <div
@@ -420,7 +455,9 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
           </div>
 
           {/* Input */}
-          <div className={`p-3 border-t bg-white dark:bg-gray-900 flex gap-2 ${isFullscreen ? "p-4" : ""}`}>
+          <div
+            className={`p-3 border-t bg-white dark:bg-gray-900 flex gap-2 ${isFullscreen ? "p-4" : ""}`}
+          >
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -435,7 +472,9 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
               disabled={isLoading}
             />
             <Button
-              onClick={() => { void sendMessage(); }}
+              onClick={() => {
+                void sendMessage();
+              }}
               disabled={!input.trim() || isLoading}
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600"
@@ -451,13 +490,14 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("clearChat")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("clearChatConfirm")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("clearChatConfirm")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("no")}</AlertDialogCancel>
-            <AlertDialogAction onClick={clearChat} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={clearChat}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               {t("yes")}
             </AlertDialogAction>
           </AlertDialogFooter>

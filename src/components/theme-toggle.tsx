@@ -18,8 +18,10 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   // Gradient ve text ayarlarını merkezi hale getirdik
-  const itemClasses = "hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white transition-all cursor-pointer";
-  const activeClasses = "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white";
+  const itemClasses =
+    "hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:text-blue-900 dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white transition-all cursor-pointer";
+  const activeClasses =
+    "bg-gradient-to-r from-blue-200 to-purple-200 text-blue-900 dark:from-blue-600 dark:to-purple-600 dark:text-white";
 
   return (
     <DropdownMenu>

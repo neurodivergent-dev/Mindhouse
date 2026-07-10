@@ -1,9 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import {
-  generateQuestions,
-  type QuestionGenerationInput,
-} from "@/ai/flows/question-generator";
+import { generateQuestions, type QuestionGenerationInput } from "@/ai/flows/question-generator";
 import { shouldUseDemoData } from "@/data/demo-data";
 import { getUserScopedClient } from "@/lib/supabase/server";
 import { AIFactory } from "@/services/ai/AIFactory";
@@ -113,8 +110,7 @@ function generateMockQuestions(input: QuestionGenerationInput) {
   };
 
   const templates =
-    typeTemplates[input.type][input.language || "tr"] ||
-    typeTemplates[input.type].tr;
+    typeTemplates[input.type][input.language || "tr"] || typeTemplates[input.type].tr;
 
   // Generate requested number of questions, cycling through templates if needed
   for (let i = 0; i < input.count; i++) {
@@ -123,10 +119,8 @@ function generateMockQuestions(input: QuestionGenerationInput) {
 
     // Customize each question slightly to add variety
     const customizedText =
-      template?.text?.replace(
-        input.topic,
-        `${input.topic} (Soru ${questionNumber})`,
-      ) || `Question ${questionNumber} about ${input.topic}`;
+      template?.text?.replace(input.topic, `${input.topic} (Soru ${questionNumber})`) ||
+      `Question ${questionNumber} about ${input.topic}`;
 
     questions.push({
       text: customizedText,
@@ -158,12 +152,8 @@ function generateMockQuestions(input: QuestionGenerationInput) {
     qualityScore: 0.75, // Mock quality score
     suggestions:
       input.language === "en"
-        ? [
-            "This is a demo generation. Connect to Google AI for better results.",
-          ]
-        : [
-            "Bu bir demo üretimdir. Daha iyi sonuçlar için Google AI'ya bağlanın.",
-          ],
+        ? ["This is a demo generation. Connect to Google AI for better results."]
+        : ["Bu bir demo üretimdir. Daha iyi sonuçlar için Google AI'ya bağlanın."],
   };
 }
 
@@ -172,17 +162,10 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as QuestionGenerationInput;
 
     // Validate input
-    if (
-      !body.subject ||
-      !body.topic ||
-      !body.difficulty ||
-      !body.type ||
-      !body.count
-    ) {
+    if (!body.subject || !body.topic || !body.difficulty || !body.type || !body.count) {
       return NextResponse.json(
         {
-          error:
-            "Missing required fields: subject, topic, difficulty, type, count",
+          error: "Missing required fields: subject, topic, difficulty, type, count",
         },
         { status: 400 },
       );
@@ -196,8 +179,7 @@ export async function POST(request: NextRequest) {
     if (!shouldUseDemoData() && !auth && !hasClientKey) {
       return NextResponse.json(
         {
-          error:
-            "Sign in or configure your own AI API key in Settings to generate questions",
+          error: "Sign in or configure your own AI API key in Settings to generate questions",
         },
         { status: 401 },
       );

@@ -1,19 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import MobileNav from '@/components/mobile-nav';
+import { useState, useRef, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import MobileNav from "@/components/mobile-nav";
 import { getStoredAiPreferences } from "@/lib/ai-preferences";
 import { AIFactory } from "@/services/ai/AIFactory";
-import { type AiChatOutput } from '@/ai/flows/ai-chat';  // only for type of setAiResponse (we can simplify later)
-import { Brain, Bot, Palette, Zap, BookOpen, Lightbulb, Target, Users, Eye, Play, CheckCircle } from 'lucide-react';
-import { errorLogger } from '@/lib/error-logger';
+import { type AiChatOutput } from "@/ai/flows/ai-chat"; // only for type of setAiResponse (we can simplify later)
 import {
-  get3DEducationGeminiPrompt,
-  type ComplexityLevel,
-} from '@/lib/ai-3d-education-prompts';
+  Brain,
+  Bot,
+  Palette,
+  Zap,
+  BookOpen,
+  Lightbulb,
+  Target,
+  Users,
+  Eye,
+  Play,
+  CheckCircle,
+} from "lucide-react";
+import { errorLogger } from "@/lib/error-logger";
+import { get3DEducationGeminiPrompt, type ComplexityLevel } from "@/lib/ai-3d-education-prompts";
 import {
   Select,
   SelectContent,
@@ -43,7 +52,7 @@ interface GeminiComponent {
   rotation?: number[];
   scale?: number[];
   animation?: {
-    type: 'rotation' | 'pulse' | 'orbit' | 'wave';
+    type: "rotation" | "pulse" | "orbit" | "wave";
     speed?: number;
     amplitude?: number;
   };
@@ -93,13 +102,13 @@ interface GeminiLightOptions {
 }
 
 export default function AI3DEducationPage() {
-  const t = useTranslations('Ai3dEducation');
+  const t = useTranslations("Ai3dEducation");
   const locale = useLocale();
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiResponse, setAiResponse] = useState<AiChatOutput | null>(null);
-  const [subject, setSubject] = useState('');
-  const [complexity, setComplexity] = useState<ComplexityLevel>('medium');
+  const [subject, setSubject] = useState("");
+  const [complexity, setComplexity] = useState<ComplexityLevel>("medium");
 
   // 3D Viewer controls (makes the experience dynamic and useful)
   const [autoRotate, setAutoRotate] = useState(true);
@@ -112,8 +121,12 @@ export default function AI3DEducationPage() {
   const animSpeedRef = useRef(animSpeed);
 
   // Keep animation refs in sync (avoids stale closures in RAF)
-  useEffect(() => { autoRotateRef.current = autoRotate; }, [autoRotate]);
-  useEffect(() => { animSpeedRef.current = animSpeed; }, [animSpeed]);
+  useEffect(() => {
+    autoRotateRef.current = autoRotate;
+  }, [autoRotate]);
+  useEffect(() => {
+    animSpeedRef.current = animSpeed;
+  }, [animSpeed]);
 
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -124,7 +137,9 @@ export default function AI3DEducationPage() {
   // Three.js scene kurulumu - FIXED sizing + rich visuals + proper resize
   useEffect(() => {
     const currentMount = mountRef.current;
-    if (!currentMount) {return;}
+    if (!currentMount) {
+      return;
+    }
 
     // Scene
     const scene = new THREE.Scene();
@@ -137,10 +152,10 @@ export default function AI3DEducationPage() {
     camera.lookAt(0, 0.5, 0);
 
     // Renderer sized to the container element (not full window!)
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
       alpha: true,
-      powerPreference: 'high-performance' 
+      powerPreference: "high-performance",
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -148,7 +163,9 @@ export default function AI3DEducationPage() {
 
     // Initial size from container
     const updateSize = () => {
-      if (!currentMount) {return;}
+      if (!currentMount) {
+        return;
+      }
       const w = currentMount.clientWidth || 800;
       const h = currentMount.clientHeight || 600;
       renderer.setSize(w, h);
@@ -197,11 +214,11 @@ export default function AI3DEducationPage() {
     // Ground plane + grid for depth (makes it feel real, not floating in void)
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(20, 20),
-      new THREE.MeshLambertMaterial({ 
-        color: 0x1a1f2e, 
-        transparent: true, 
-        opacity: 0.85 
-      })
+      new THREE.MeshLambertMaterial({
+        color: 0x1a1f2e,
+        transparent: true,
+        opacity: 0.85,
+      }),
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -1.8;
@@ -251,12 +268,16 @@ export default function AI3DEducationPage() {
 
       // Drive per-mesh animations (pulse, orbit, rotation, blink) with speed multiplier
       animatedMeshesRef.current.forEach((obj) => {
-        if (!obj?.userData) {return;}
+        if (!obj?.userData) {
+          return;
+        }
         const ud = obj.userData;
 
         if (ud.rotationSpeed) {
           obj.rotation.y += (ud.rotationSpeed || 0.01) * speed;
-          if (ud.rotationSpeedX) {obj.rotation.x += (ud.rotationSpeedX * speed);}
+          if (ud.rotationSpeedX) {
+            obj.rotation.x += ud.rotationSpeedX * speed;
+          }
         }
 
         // Orbiting (used by electrons etc)
@@ -266,7 +287,9 @@ export default function AI3DEducationPage() {
           const yOff = ud.yOffset || 0;
           obj.position.x = Math.cos(ud.angle) * r;
           obj.position.z = Math.sin(ud.angle) * r;
-          if (yOff) {obj.position.y = yOff + Math.sin(ud.angle * 1.3) * (ud.yAmp || 0.15);}
+          if (yOff) {
+            obj.position.y = yOff + Math.sin(ud.angle * 1.3) * (ud.yAmp || 0.15);
+          }
         }
 
         // Pulse / scale animation
@@ -298,7 +321,7 @@ export default function AI3DEducationPage() {
 
     // Resize handling (critical fix - makes it usable on all screen sizes)
     const handleResize = () => updateSize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Use ResizeObserver for container size changes (better)
     const ro = new ResizeObserver(() => updateSize());
@@ -306,10 +329,12 @@ export default function AI3DEducationPage() {
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       ro.disconnect();
       if (currentMount && renderer.domElement) {
-        try { currentMount.removeChild(renderer.domElement); } catch {}
+        try {
+          currentMount.removeChild(renderer.domElement);
+        } catch {}
       }
       renderer.dispose();
       controls.dispose();
@@ -319,12 +344,14 @@ export default function AI3DEducationPage() {
 
   // Doğrudan provider ile 3D model verisi üretimi (tutor wrapper olmadan anlık model oluşturmak için)
   const generate3DModel = async () => {
-    if (!prompt.trim()) {return;}
+    if (!prompt.trim()) {
+      return;
+    }
 
     setIsGenerating(true);
 
     try {
-      const resolvedSubject = subject.trim() || t('defaultSubject');
+      const resolvedSubject = subject.trim() || t("defaultSubject");
       const complexityLabel = t(`complexity.${complexity}`);
       const rawPrompt = get3DEducationGeminiPrompt(locale, {
         prompt: prompt.trim(),
@@ -337,7 +364,7 @@ export default function AI3DEducationPage() {
 
       // Raw prompt'u doğrudan gönder (sadece JSON 3D veri bekliyoruz)
       await provider.generateText({
-        prompt: `${rawPrompt  }\n\nIMPORTANT: Output ONLY the raw JSON object for the 3D scene. No extra text, no explanations, start with { and end with }.`,
+        prompt: `${rawPrompt}\n\nIMPORTANT: Output ONLY the raw JSON object for the 3D scene. No extra text, no explanations, start with { and end with }.`,
       });
 
       // Basit bir response objesi oluştur (UI için) - LLM'in "ben oluşturdum" demesini engelle
@@ -354,138 +381,179 @@ export default function AI3DEducationPage() {
       if (sceneRef.current) {
         create3DModelFromGemini(prompt, fakeResponse);
       }
-
     } catch (error) {
-      errorLogger.logError('AI generation error', error);
+      errorLogger.logError("AI generation error", error);
       createSample3DModel(prompt);
     } finally {
       setIsGenerating(false);
     }
   };
 
-   // Tüm modelleri temizleme fonksiyonu (improved cleanup)
-   const clearAllModels = () => {
-     if (!sceneRef.current) {return;}
+  // Tüm modelleri temizleme fonksiyonu (improved cleanup)
+  const clearAllModels = () => {
+    if (!sceneRef.current) {
+      return;
+    }
 
-     const childrenToRemove: THREE.Object3D[] = [];
+    const childrenToRemove: THREE.Object3D[] = [];
 
-     sceneRef.current.children.forEach((child) => {
-       // Preserve lights + ground + grid
-       const isLight = child.type.includes('Light');
-       const isGround = child.userData?.isGround || (child.type === 'Mesh' && (child as THREE.Mesh).geometry?.type === 'PlaneGeometry');
-       const isGrid = child.type === 'GridHelper';
-       if (!isLight && !isGround && !isGrid) {
-         childrenToRemove.push(child);
-       }
-     });
+    sceneRef.current.children.forEach((child) => {
+      // Preserve lights + ground + grid
+      const isLight = child.type.includes("Light");
+      const isGround =
+        child.userData?.isGround ||
+        (child.type === "Mesh" && (child as THREE.Mesh).geometry?.type === "PlaneGeometry");
+      const isGrid = child.type === "GridHelper";
+      if (!isLight && !isGround && !isGrid) {
+        childrenToRemove.push(child);
+      }
+    });
 
-     childrenToRemove.forEach((child) => {
-       // Stop legacy animation loops
-       if (child.userData?.animationLoop) {
-         cancelAnimationFrame(child.userData.animationLoop);
-       }
-       if (child.type === 'Group') {
-         child.children.forEach((groupChild) => {
-           if (groupChild.userData?.animationLoop) {
-             cancelAnimationFrame(groupChild.userData.animationLoop);
-           }
-         });
-       }
+    childrenToRemove.forEach((child) => {
+      // Stop legacy animation loops
+      if (child.userData?.animationLoop) {
+        cancelAnimationFrame(child.userData.animationLoop);
+      }
+      if (child.type === "Group") {
+        child.children.forEach((groupChild) => {
+          if (groupChild.userData?.animationLoop) {
+            cancelAnimationFrame(groupChild.userData.animationLoop);
+          }
+        });
+      }
 
-       // Dispose resources
-       if (child.type === 'Mesh') {
-         const mesh = child as THREE.Mesh;
-         if (mesh.geometry) {mesh.geometry.dispose();}
-         if (mesh.material) {
-           if (Array.isArray(mesh.material)) {
-             mesh.material.forEach(mat => mat.dispose());
-           } else {
-             (mesh.material).dispose();
-           }
-         }
-       }
+      // Dispose resources
+      if (child.type === "Mesh") {
+        const mesh = child as THREE.Mesh;
+        if (mesh.geometry) {
+          mesh.geometry.dispose();
+        }
+        if (mesh.material) {
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((mat) => mat.dispose());
+          } else {
+            mesh.material.dispose();
+          }
+        }
+      }
 
-       sceneRef.current!.remove(child);
-     });
+      sceneRef.current!.remove(child);
+    });
 
-     // Clear tracked animated objects
-     animatedMeshesRef.current = [];
-    };
+    // Clear tracked animated objects
+    animatedMeshesRef.current = [];
+  };
 
   // Gemini response'dan 3D model oluşturma
   const create3DModelFromGemini = (modelPrompt: string, aiData: AiChatOutput) => {
-     if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
-     // Tüm önceki modelleri temizle (sadece ışıkları koru)
-     clearAllModels();
+    // Tüm önceki modelleri temizle (sadece ışıkları koru)
+    clearAllModels();
 
     try {
       // Gemini response'u parse et
       const geminiResponse = aiData.response;
       let modelData;
 
-             // JSON formatında response var mı kontrol et
+      // JSON formatında response var mı kontrol et
 
-       if (geminiResponse.includes('{') && geminiResponse.includes('}')) {
-         // Markdown code blocks'ları temizle
-         let cleanResponse = geminiResponse;
+      if (geminiResponse.includes("{") && geminiResponse.includes("}")) {
+        // Markdown code blocks'ları temizle
+        let cleanResponse = geminiResponse;
 
-         // ```json ve ``` bloklarını kaldır
-         if (cleanResponse.includes('```json')) {
-           cleanResponse = cleanResponse.replace(/```json\s*/g, '');
-         }
-         if (cleanResponse.includes('```')) {
-           cleanResponse = cleanResponse.replace(/```/g, '');
-         }
+        // ```json ve ``` bloklarını kaldır
+        if (cleanResponse.includes("```json")) {
+          cleanResponse = cleanResponse.replace(/```json\s*/g, "");
+        }
+        if (cleanResponse.includes("```")) {
+          cleanResponse = cleanResponse.replace(/```/g, "");
+        }
 
-         // JSON başlangıç ve bitiş noktalarını bul
-         const jsonStart = cleanResponse.indexOf('{');
-         const jsonEnd = cleanResponse.lastIndexOf('}') + 1;
+        // JSON başlangıç ve bitiş noktalarını bul
+        const jsonStart = cleanResponse.indexOf("{");
+        const jsonEnd = cleanResponse.lastIndexOf("}") + 1;
 
-         if (jsonStart !== -1 && jsonEnd > jsonStart) {
-           const jsonString = cleanResponse.substring(jsonStart, jsonEnd);
+        if (jsonStart !== -1 && jsonEnd > jsonStart) {
+          const jsonString = cleanResponse.substring(jsonStart, jsonEnd);
 
-           try {
-             modelData = JSON.parse(jsonString);
-            } catch (parseError) {
-               errorLogger.logError('JSON parsing error', parseError);
-               modelData = null;
-           }
-         } else {
+          try {
+            modelData = JSON.parse(jsonString);
+          } catch (parseError) {
+            errorLogger.logError("JSON parsing error", parseError);
             modelData = null;
-         }
-       } else {
+          }
+        } else {
           modelData = null;
-       }
+        }
+      } else {
+        modelData = null;
+      }
 
-             // Gemini'den gelen veri ile model oluştur (assets veya components varsa)
-       if (modelData && (modelData.assets || modelData.components || modelData.geometry)) {
-              createGeminiModel(modelData);
-       } else {
-         // Fallback: Prompt'a göre basit model
-          const promptLower = modelPrompt.toLowerCase();
-        if (promptLower.includes('dna') || promptLower.includes('genetik')) {
+      // Gemini'den gelen veri ile model oluştur (assets veya components varsa)
+      if (modelData && (modelData.assets || modelData.components || modelData.geometry)) {
+        createGeminiModel(modelData);
+      } else {
+        // Fallback: Prompt'a göre basit model
+        const promptLower = modelPrompt.toLowerCase();
+        if (promptLower.includes("dna") || promptLower.includes("genetik")) {
           createDNAModel();
-        } else if (promptLower.includes('atom') || promptLower.includes('molekül') || promptLower.includes('kimyasal')) {
+        } else if (
+          promptLower.includes("atom") ||
+          promptLower.includes("molekül") ||
+          promptLower.includes("kimyasal")
+        ) {
           createAtomModel();
-        } else if (promptLower.includes('hücre') || promptLower.includes('cell') || promptLower.includes('organel')) {
+        } else if (
+          promptLower.includes("hücre") ||
+          promptLower.includes("cell") ||
+          promptLower.includes("organel")
+        ) {
           createCellModel();
-        } else if (promptLower.includes('kalp') || promptLower.includes('heart') || promptLower.includes('kardiyak')) {
+        } else if (
+          promptLower.includes("kalp") ||
+          promptLower.includes("heart") ||
+          promptLower.includes("kardiyak")
+        ) {
           createHeartModel();
-        } else if (promptLower.includes('beyin') || promptLower.includes('brain') || promptLower.includes('sinir')) {
+        } else if (
+          promptLower.includes("beyin") ||
+          promptLower.includes("brain") ||
+          promptLower.includes("sinir")
+        ) {
           createBrainModel();
-        } else if (promptLower.includes('iskelet') || promptLower.includes('kemik') || promptLower.includes('skeleton')) {
+        } else if (
+          promptLower.includes("iskelet") ||
+          promptLower.includes("kemik") ||
+          promptLower.includes("skeleton")
+        ) {
           createSkeletonModel();
-        } else if (promptLower.includes('kas') || promptLower.includes('muscle') || promptLower.includes('kas sistemi')) {
+        } else if (
+          promptLower.includes("kas") ||
+          promptLower.includes("muscle") ||
+          promptLower.includes("kas sistemi")
+        ) {
           createMuscleModel();
-        } else if (promptLower.includes('mitokondri') || promptLower.includes('mitochondria') || promptLower.includes('enerji')) {
+        } else if (
+          promptLower.includes("mitokondri") ||
+          promptLower.includes("mitochondria") ||
+          promptLower.includes("enerji")
+        ) {
           createMitochondriaModel();
         } else if (
-          promptLower.includes('graph') || promptLower.includes('grafik') ||
-          promptLower.includes('plot') || promptLower.includes('chart') ||
-          promptLower.includes('fonksiyon') || promptLower.includes('function') ||
-          promptLower.includes('eğri') || promptLower.includes('curve') ||
-          promptLower.includes('sin') || promptLower.includes('cos') || promptLower.includes('veriler')
+          promptLower.includes("graph") ||
+          promptLower.includes("grafik") ||
+          promptLower.includes("plot") ||
+          promptLower.includes("chart") ||
+          promptLower.includes("fonksiyon") ||
+          promptLower.includes("function") ||
+          promptLower.includes("eğri") ||
+          promptLower.includes("curve") ||
+          promptLower.includes("sin") ||
+          promptLower.includes("cos") ||
+          promptLower.includes("veriler")
         ) {
           createGraphModel(modelPrompt);
         } else {
@@ -494,21 +562,23 @@ export default function AI3DEducationPage() {
         }
       }
     } catch (error) {
-      errorLogger.logError('3D model creation error', error);
+      errorLogger.logError("3D model creation error", error);
       createSample3DModel(modelPrompt);
     }
   };
 
   // Gemini'den gelen veri ile 3D model oluşturma
   const createGeminiModel = (modelData: GeminiModelData) => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     const geminiGroup = new THREE.Group();
 
     // Ana model geometrisi
     if (modelData.geometry) {
       const geometry = createGeometryFromGemini(modelData.geometry);
-      const material = createMaterialFromGemini(modelData.materials?.[0] || { type: 'standard' });
+      const material = createMaterialFromGemini(modelData.materials?.[0] || { type: "standard" });
 
       if (geometry && material) {
         const mainMesh = new THREE.Mesh(geometry, material);
@@ -529,27 +599,35 @@ export default function AI3DEducationPage() {
           const compMesh = new THREE.Mesh(compGeometry, compMaterial);
 
           // Pozisyon, rotasyon, ölçek
-                     if (component.position && Array.isArray(component.position) && component.position.length >= 3) {
-             compMesh.position.set(
-               component.position[0] ?? 0,
-               component.position[1] ?? 0,
-               component.position[2] ?? 0,
-             );
-           }
-                     if (component.rotation && Array.isArray(component.rotation) && component.rotation.length >= 3) {
-             compMesh.rotation.set(
-               component.rotation[0] ?? 0,
-               component.rotation[1] ?? 0,
-               component.rotation[2] ?? 0,
-             );
-           }
-                     if (component.scale && Array.isArray(component.scale) && component.scale.length >= 3) {
-             compMesh.scale.set(
-               component.scale[0] ?? 1,
-               component.scale[1] ?? 1,
-               component.scale[2] ?? 1,
-             );
-           }
+          if (
+            component.position &&
+            Array.isArray(component.position) &&
+            component.position.length >= 3
+          ) {
+            compMesh.position.set(
+              component.position[0] ?? 0,
+              component.position[1] ?? 0,
+              component.position[2] ?? 0,
+            );
+          }
+          if (
+            component.rotation &&
+            Array.isArray(component.rotation) &&
+            component.rotation.length >= 3
+          ) {
+            compMesh.rotation.set(
+              component.rotation[0] ?? 0,
+              component.rotation[1] ?? 0,
+              component.rotation[2] ?? 0,
+            );
+          }
+          if (component.scale && Array.isArray(component.scale) && component.scale.length >= 3) {
+            compMesh.scale.set(
+              component.scale[0] ?? 1,
+              component.scale[1] ?? 1,
+              component.scale[2] ?? 1,
+            );
+          }
 
           // Animasyon verisi
           if (component.animation) {
@@ -574,20 +652,28 @@ export default function AI3DEducationPage() {
 
     // Kamera ayarları
     if (modelData.camera && cameraRef.current) {
-             if (modelData.camera.position && Array.isArray(modelData.camera.position) && modelData.camera.position.length >= 3) {
-         cameraRef.current.position.set(
-           modelData.camera.position[0] as number,
-           modelData.camera.position[1] as number,
-           modelData.camera.position[2] as number,
-         );
-       }
-             if (modelData.camera.lookAt && Array.isArray(modelData.camera.lookAt) && modelData.camera.lookAt.length >= 3) {
-         cameraRef.current.lookAt(
-           modelData.camera.lookAt[0] as number,
-           modelData.camera.lookAt[1] as number,
-           modelData.camera.lookAt[2] as number,
-         );
-       }
+      if (
+        modelData.camera.position &&
+        Array.isArray(modelData.camera.position) &&
+        modelData.camera.position.length >= 3
+      ) {
+        cameraRef.current.position.set(
+          modelData.camera.position[0] as number,
+          modelData.camera.position[1] as number,
+          modelData.camera.position[2] as number,
+        );
+      }
+      if (
+        modelData.camera.lookAt &&
+        Array.isArray(modelData.camera.lookAt) &&
+        modelData.camera.lookAt.length >= 3
+      ) {
+        cameraRef.current.lookAt(
+          modelData.camera.lookAt[0] as number,
+          modelData.camera.lookAt[1] as number,
+          modelData.camera.lookAt[2] as number,
+        );
+      }
       if (modelData.camera.fov) {
         cameraRef.current.fov = modelData.camera.fov;
         cameraRef.current.updateProjectionMatrix();
@@ -611,59 +697,67 @@ export default function AI3DEducationPage() {
     geminiGroup.children.forEach((child) => {
       if (child.userData?.animation) {
         const anim = child.userData.animation;
-        if (anim.type === 'rotation') {child.userData.rotationSpeed = anim.speed || 0.015;}
-        if (anim.type === 'pulse') {
+        if (anim.type === "rotation") {
+          child.userData.rotationSpeed = anim.speed || 0.015;
+        }
+        if (anim.type === "pulse") {
           child.userData.pulse = 0;
           child.userData.pulseSpeed = (anim.speed || 1) * 0.06;
           child.userData.pulseAmp = anim.amplitude || 0.12;
         }
-        if (anim.type === 'orbit') {
+        if (anim.type === "orbit") {
           child.userData.orbitRadius = anim.amplitude || 1.8;
           child.userData.speed = (anim.speed || 1) * 0.015;
           child.userData.angle = Math.random() * Math.PI * 2;
         }
-        if (anim.type === 'wave') {
+        if (anim.type === "wave") {
           child.userData.float = 0;
           child.userData.floatSpeed = 0.03;
         }
       }
-      if (child.type === 'Mesh') {animatedMeshesRef.current.push(child);}
+      if (child.type === "Mesh") {
+        animatedMeshesRef.current.push(child);
+      }
     });
     animatedMeshesRef.current.push(geminiGroup);
   };
 
   // Gemini geometry verisinden Three.js geometry oluşturma
-  const createGeometryFromGemini = (geoData: GeminiGeometry | null | undefined): THREE.BufferGeometry | null => {
-    if (!geoData?.type) {return null;}
+  const createGeometryFromGemini = (
+    geoData: GeminiGeometry | null | undefined,
+  ): THREE.BufferGeometry | null => {
+    if (!geoData?.type) {
+      return null;
+    }
 
     switch (geoData.type.toLowerCase()) {
-      case 'sphere':
+      case "sphere":
         return new THREE.SphereGeometry(
           geoData.radius || 1,
           geoData.segments || 32,
           geoData.segments || 16,
         );
-      case 'box':
+      case "box":
         return new THREE.BoxGeometry(
           geoData.dimensions?.[0] || 1,
           geoData.dimensions?.[1] || 1,
           geoData.dimensions?.[2] || 1,
         );
-      case 'cylinder':
+      case "cylinder":
         return new THREE.CylinderGeometry(
           geoData.radius || 1,
           geoData.radius || 1,
           geoData.dimensions?.[1] || 2,
           geoData.segments || 32,
         );
-      case 'torus':
+      case "torus":
         return new THREE.TorusGeometry(
           geoData.radius || 1,
           geoData.dimensions?.[0] || 0.3,
           geoData.segments || 16,
           geoData.segments || 100,
         );
-      case 'capsule':
+      case "capsule":
         return new THREE.CapsuleGeometry(
           geoData.radius || 0.5,
           geoData.dimensions?.[1] || 1,
@@ -677,14 +771,16 @@ export default function AI3DEducationPage() {
 
   // Gemini material verisinden Three.js material oluşturma
   const createMaterialFromGemini = (matData: GeminiMaterial | null | undefined): THREE.Material => {
-    if (!matData) {return new THREE.MeshPhongMaterial({ color: 0x888888 });}
+    if (!matData) {
+      return new THREE.MeshPhongMaterial({ color: 0x888888 });
+    }
 
     // Hex string'i hex number'a çevir
     let color = 0x888888;
     if (matData.color) {
-      if (typeof matData.color === 'string' && matData.color.startsWith('#')) {
-        color = parseInt(matData.color.replace('#', ''), 16);
-      } else if (typeof matData.color === 'number') {
+      if (typeof matData.color === "string" && matData.color.startsWith("#")) {
+        color = parseInt(matData.color.replace("#", ""), 16);
+      } else if (typeof matData.color === "number") {
         color = matData.color;
       }
     }
@@ -698,16 +794,16 @@ export default function AI3DEducationPage() {
     };
 
     switch (matData.type?.toLowerCase()) {
-      case 'basic':
+      case "basic":
         return new THREE.MeshBasicMaterial(materialOptions);
-      case 'emissive':
+      case "emissive":
         return new THREE.MeshPhongMaterial({
           ...materialOptions,
           emissive: materialOptions.color || 0x888888,
           emissiveIntensity: 0.5,
         });
-      case 'standard':
-      case 'phong':
+      case "standard":
+      case "phong":
       default:
         return new THREE.MeshPhongMaterial(materialOptions);
     }
@@ -715,14 +811,16 @@ export default function AI3DEducationPage() {
 
   // Gemini light verisinden Three.js light oluşturma
   const createLightFromGemini = (lightData: GeminiLight | null | undefined): THREE.Light | null => {
-    if (!lightData?.type) {return null;}
+    if (!lightData?.type) {
+      return null;
+    }
 
     // Hex string'i hex number'a çevir
     let color = 0xffffff;
     if (lightData.color) {
-      if (typeof lightData.color === 'string' && lightData.color.startsWith('#')) {
-        color = parseInt(lightData.color.replace('#', ''), 16);
-      } else if (typeof lightData.color === 'number') {
+      if (typeof lightData.color === "string" && lightData.color.startsWith("#")) {
+        color = parseInt(lightData.color.replace("#", ""), 16);
+      } else if (typeof lightData.color === "number") {
         color = lightData.color;
       }
     }
@@ -733,27 +831,35 @@ export default function AI3DEducationPage() {
     };
 
     switch (lightData.type.toLowerCase()) {
-      case 'ambient':
+      case "ambient":
         return new THREE.AmbientLight(lightOptions.color, lightOptions.intensity);
-      case 'directional':
+      case "directional":
         const dirLight = new THREE.DirectionalLight(lightOptions.color, lightOptions.intensity);
-                 if (lightData.position && Array.isArray(lightData.position) && lightData.position.length >= 3) {
-           dirLight.position.set(
-             lightData.position[0] ?? 0,
-             lightData.position[1] ?? 0,
-             lightData.position[2] ?? 0,
-           );
-         }
+        if (
+          lightData.position &&
+          Array.isArray(lightData.position) &&
+          lightData.position.length >= 3
+        ) {
+          dirLight.position.set(
+            lightData.position[0] ?? 0,
+            lightData.position[1] ?? 0,
+            lightData.position[2] ?? 0,
+          );
+        }
         return dirLight;
-      case 'point':
+      case "point":
         const pointLight = new THREE.PointLight(lightOptions.color, lightOptions.intensity);
-                 if (lightData.position && Array.isArray(lightData.position) && lightData.position.length >= 3) {
-           pointLight.position.set(
-             lightData.position[0] ?? 0,
-             lightData.position[1] ?? 0,
-             lightData.position[2] ?? 0,
-           );
-         }
+        if (
+          lightData.position &&
+          Array.isArray(lightData.position) &&
+          lightData.position.length >= 3
+        ) {
+          pointLight.position.set(
+            lightData.position[0] ?? 0,
+            lightData.position[1] ?? 0,
+            lightData.position[2] ?? 0,
+          );
+        }
         return pointLight;
       default:
         return new THREE.AmbientLight(0x404040, 0.6);
@@ -762,7 +868,9 @@ export default function AI3DEducationPage() {
 
   // DNA modeli oluşturma - clean + nice double helix
   const createDNAModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const dnaGroup = new THREE.Group();
@@ -779,7 +887,7 @@ export default function AI3DEducationPage() {
       // Strand 1
       const b1 = new THREE.Mesh(
         new THREE.SphereGeometry(0.09, 14, 10),
-        new THREE.MeshPhongMaterial({ color: 0x33ffaa, shininess: 22 })
+        new THREE.MeshPhongMaterial({ color: 0x33ffaa, shininess: 22 }),
       );
       b1.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
       b1.castShadow = true;
@@ -788,7 +896,7 @@ export default function AI3DEducationPage() {
       // Strand 2
       const b2 = new THREE.Mesh(
         new THREE.SphereGeometry(0.09, 14, 10),
-        new THREE.MeshPhongMaterial({ color: 0xff5599, shininess: 22 })
+        new THREE.MeshPhongMaterial({ color: 0xff5599, shininess: 22 }),
       );
       b2.position.set(Math.cos(t + Math.PI) * radius, y, Math.sin(t + Math.PI) * radius);
       b2.castShadow = true;
@@ -798,7 +906,7 @@ export default function AI3DEducationPage() {
       if (i % 2 === 0) {
         const rung = new THREE.Mesh(
           new THREE.CylinderGeometry(0.032, 0.032, radius * 1.85, 4),
-          new THREE.MeshPhongMaterial({ color: 0xffee55, shininess: 30 })
+          new THREE.MeshPhongMaterial({ color: 0xffee55, shininess: 30 }),
         );
         rung.position.set(0, y, 0);
         const dir = new THREE.Vector3().subVectors(b1.position, b2.position).normalize();
@@ -810,7 +918,7 @@ export default function AI3DEducationPage() {
     // Central backbone
     const axis = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.035, 5.1),
-      new THREE.MeshPhongMaterial({ color: 0x445566, transparent: true, opacity: 0.6 })
+      new THREE.MeshPhongMaterial({ color: 0x445566, transparent: true, opacity: 0.6 }),
     );
     dnaGroup.add(axis);
 
@@ -819,14 +927,18 @@ export default function AI3DEducationPage() {
 
     // Apply current wireframe preference
     if (wireframeMode) {
-      dnaGroup.traverse((o) => { if ((o as THREE.Mesh).material) {((o as THREE.Mesh).material as THREE.MeshStandardMaterial).wireframe = true;} });
+      dnaGroup.traverse((o) => {
+        if ((o as THREE.Mesh).material) {
+          ((o as THREE.Mesh).material as THREE.MeshStandardMaterial).wireframe = true;
+        }
+      });
     }
 
     // Register everything that should animate
     dnaGroup.children.forEach((child) => {
-      if (child.type === 'Mesh') {
+      if (child.type === "Mesh") {
         const m = child as THREE.Mesh;
-        if (m.geometry.type?.includes('Sphere')) {
+        if (m.geometry.type?.includes("Sphere")) {
           m.userData.pulse = Math.random() * 2;
           m.userData.pulseSpeed = 0.07;
           m.userData.pulseAmp = 0.085;
@@ -839,7 +951,9 @@ export default function AI3DEducationPage() {
 
   // Atom modeli oluşturma - proper orbiting electrons (visually rich)
   const createAtomModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const atomGroup = new THREE.Group();
@@ -847,7 +961,7 @@ export default function AI3DEducationPage() {
     // Nucleus (glowing)
     const nucleus = new THREE.Mesh(
       new THREE.SphereGeometry(0.48, 28, 20),
-      new THREE.MeshPhongMaterial({ color: 0x3366ff, emissive: 0x112244, shininess: 12 })
+      new THREE.MeshPhongMaterial({ color: 0x3366ff, emissive: 0x112244, shininess: 12 }),
     );
     nucleus.castShadow = true;
     nucleus.receiveShadow = true;
@@ -858,7 +972,7 @@ export default function AI3DEducationPage() {
     for (let i = 0; i < 14; i++) {
       const p = new THREE.Mesh(
         new THREE.SphereGeometry(0.09),
-        new THREE.MeshPhongMaterial({ color: i % 2 ? 0xff3366 : 0x66ff99, emissive: 0x331122 })
+        new THREE.MeshPhongMaterial({ color: i % 2 ? 0xff3366 : 0x66ff99, emissive: 0x331122 }),
       );
       p.position.set(
         (Math.random() - 0.5) * 0.55,
@@ -875,24 +989,39 @@ export default function AI3DEducationPage() {
       const r = 1.65 + i * 0.72;
       const orbit = new THREE.Mesh(
         new THREE.TorusGeometry(r, 0.018, 6, 48),
-        new THREE.MeshBasicMaterial({ color: orbitColors[i] ?? 0x44ffff, transparent: true, opacity: 0.45 })
+        new THREE.MeshBasicMaterial({
+          color: orbitColors[i] ?? 0x44ffff,
+          transparent: true,
+          opacity: 0.45,
+        }),
       );
       // Rotate to get 3D orbitals
-      if (i === 0) {orbit.rotation.x = Math.PI * 0.5;}
-      if (i === 1) {orbit.rotation.y = Math.PI * 0.5;}
-      if (i === 2) {orbit.rotation.z = Math.PI * 0.35;}
+      if (i === 0) {
+        orbit.rotation.x = Math.PI * 0.5;
+      }
+      if (i === 1) {
+        orbit.rotation.y = Math.PI * 0.5;
+      }
+      if (i === 2) {
+        orbit.rotation.z = Math.PI * 0.35;
+      }
       atomGroup.add(orbit);
 
       // 2 electrons per shell, different phase
       for (let e = 0; e < 2; e++) {
         const electron = new THREE.Mesh(
           new THREE.SphereGeometry(0.11),
-          new THREE.MeshPhongMaterial({ color: 0x88ffff, emissive: 0x44aaff, emissiveIntensity: 0.7, shininess: 40 })
+          new THREE.MeshPhongMaterial({
+            color: 0x88ffff,
+            emissive: 0x44aaff,
+            emissiveIntensity: 0.7,
+            shininess: 40,
+          }),
         );
         electron.userData = {
           orbitRadius: r,
           speed: 0.018 + i * 0.006 + e * 0.004,
-          angle: (e * Math.PI) + (i * 1.1),
+          angle: e * Math.PI + i * 1.1,
           yOffset: (i - 1) * 0.2,
           yAmp: 0.12,
         };
@@ -905,15 +1034,19 @@ export default function AI3DEducationPage() {
     sceneRef.current.add(atomGroup);
 
     animatedMeshesRef.current.push(nucleus);
-    atomGroup.children.forEach(c => {
-      if (c.userData?.pulse) {animatedMeshesRef.current.push(c);}
+    atomGroup.children.forEach((c) => {
+      if (c.userData?.pulse) {
+        animatedMeshesRef.current.push(c);
+      }
     });
     animatedMeshesRef.current.push(atomGroup);
   };
 
   // Hücre modeli oluşturma (cleaned + registered animations)
   const createCellModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const cellGroup = new THREE.Group();
@@ -1085,7 +1218,9 @@ export default function AI3DEducationPage() {
 
   // Kalp modeli oluşturma
   const createHeartModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const heartGroup = new THREE.Group();
@@ -1156,12 +1291,16 @@ export default function AI3DEducationPage() {
     leftVentricle.userData = { pulse: 1.8, pulseSpeed: 0.085, pulseAmp: 0.11 };
     rightVentricle.userData = { pulse: 2.5, pulseSpeed: 0.08, pulseAmp: 0.09 };
 
-    [heartMesh, leftVentricle, rightVentricle, heartGroup].forEach(o => animatedMeshesRef.current.push(o));
+    [heartMesh, leftVentricle, rightVentricle, heartGroup].forEach((o) =>
+      animatedMeshesRef.current.push(o),
+    );
   };
 
   // Beyin modeli oluşturma
   const createBrainModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const brainGroup = new THREE.Group();
@@ -1276,7 +1415,9 @@ export default function AI3DEducationPage() {
 
   // İskelet modeli oluşturma
   const createSkeletonModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     // Tüm önceki modelleri temizle
     clearAllModels();
@@ -1397,7 +1538,9 @@ export default function AI3DEducationPage() {
 
   // Kas modeli oluşturma
   const createMuscleModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     // Tüm önceki modelleri temizle
     clearAllModels();
@@ -1480,7 +1623,9 @@ export default function AI3DEducationPage() {
 
   // Mitokondri modeli oluşturma
   const createMitochondriaModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     // Tüm önceki modelleri temizle
     clearAllModels();
@@ -1608,13 +1753,15 @@ export default function AI3DEducationPage() {
 
   // Özel model oluşturma
   const createCustomModel = (_modelPrompt: string, aiData: AiChatOutput) => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     // Mevcut modelleri temizle
-    const existingModels = sceneRef.current.children.filter(child =>
-      child.type === 'Mesh' && child !== sceneRef.current!.children[0], // Işıkları koru
+    const existingModels = sceneRef.current.children.filter(
+      (child) => child.type === "Mesh" && child !== sceneRef.current!.children[0], // Işıkları koru
     );
-    existingModels.forEach(model => sceneRef.current!.remove(model));
+    existingModels.forEach((model) => sceneRef.current!.remove(model));
 
     const customGroup = new THREE.Group();
 
@@ -1643,11 +1790,7 @@ export default function AI3DEducationPage() {
             opacity: 0.8,
           }),
         );
-        sphere.position.set(
-          Math.cos(index * 0.8) * 3,
-          Math.sin(index * 0.8) * 3,
-          0,
-        );
+        sphere.position.set(Math.cos(index * 0.8) * 3, Math.sin(index * 0.8) * 3, 0);
         sphere.userData = {
           orbitRadius: 3,
           angle: index * 0.8,
@@ -1755,7 +1898,9 @@ export default function AI3DEducationPage() {
 
   // Grafik / Plot / Fonksiyon için anlık 3D model oluşturucu (kullanıcının istediği gibi gerçek grafik)
   const createGraphModel = (modelPrompt: string) => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     const graphGroup = new THREE.Group();
@@ -1793,8 +1938,12 @@ export default function AI3DEducationPage() {
 
     // Prompt'a göre basit fonksiyon seç (kullanıcı "sin grafiği", "parabol" vs. diyebilir)
     const promptLower = modelPrompt.toLowerCase();
-    const isSin = promptLower.includes('sin') || promptLower.includes('dalga') || promptLower.includes('wave');
-    const isParabola = promptLower.includes('parabol') || promptLower.includes('kare') || promptLower.includes('x^2');
+    const isSin =
+      promptLower.includes("sin") || promptLower.includes("dalga") || promptLower.includes("wave");
+    const isParabola =
+      promptLower.includes("parabol") ||
+      promptLower.includes("kare") ||
+      promptLower.includes("x^2");
 
     for (let i = 0; i < positions.count; i++) {
       const x = positions.getX(i);
@@ -1833,12 +1982,16 @@ export default function AI3DEducationPage() {
       const px = (Math.random() - 0.5) * 3.5;
       const pz = (Math.random() - 0.5) * 3.5;
       let py = Math.sin(px * 1.5) * Math.cos(pz * 1.2) * 1.1;
-      if (isSin) {py = Math.sin(px * 1.2) * 0.8 + Math.cos(pz * 1.5) * 0.5;}
-      if (isParabola) {py = (px * px + pz * pz) * 0.15 - 1.2;}
+      if (isSin) {
+        py = Math.sin(px * 1.2) * 0.8 + Math.cos(pz * 1.5) * 0.5;
+      }
+      if (isParabola) {
+        py = (px * px + pz * pz) * 0.15 - 1.2;
+      }
 
       const point = new THREE.Mesh(
         new THREE.SphereGeometry(0.08),
-        new THREE.MeshPhongMaterial({ color: 0xffdd44, emissive: 0x664400 })
+        new THREE.MeshPhongMaterial({ color: 0xffdd44, emissive: 0x664400 }),
       );
       point.position.set(px, py + 0.15, pz);
       graphGroup.add(point);
@@ -1862,8 +2015,12 @@ export default function AI3DEducationPage() {
           const x = pos.getX(i);
           const z = pos.getZ(i);
           let baseY = Math.sin(x * 1.5) * Math.cos(z * 1.2) * 1.1;
-          if (isSin) {baseY = Math.sin(x * 1.2) * 0.8 + Math.cos(z * 1.5) * 0.5;}
-          if (isParabola) {baseY = (x * x + z * z) * 0.15 - 1.2;}
+          if (isSin) {
+            baseY = Math.sin(x * 1.2) * 0.8 + Math.cos(z * 1.5) * 0.5;
+          }
+          if (isParabola) {
+            baseY = (x * x + z * z) * 0.15 - 1.2;
+          }
 
           const wave = Math.sin(graphGroup.userData.wavePhase + x * 0.5) * 0.12;
           pos.setY(i, baseY + wave);
@@ -1878,24 +2035,25 @@ export default function AI3DEducationPage() {
 
   // Örnek 3D model oluşturma (fallback)
   const createSample3DModel = (modelPrompt: string) => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
     clearAllModels();
 
     // Prompt'a göre farklı modeller
-    if (modelPrompt.toLowerCase().includes('dna')) {
+    if (modelPrompt.toLowerCase().includes("dna")) {
       createDNAModel();
-
-    } else if (modelPrompt.toLowerCase().includes('atom')) {
+    } else if (modelPrompt.toLowerCase().includes("atom")) {
       createAtomModel();
-
-    } else if (modelPrompt.toLowerCase().includes('hücre') || modelPrompt.toLowerCase().includes('cell')) {
+    } else if (
+      modelPrompt.toLowerCase().includes("hücre") ||
+      modelPrompt.toLowerCase().includes("cell")
+    ) {
       createCellModel();
-
     } else if (
       modelPrompt.toLowerCase().match(/graph|grafik|plot|chart|fonksiyon|function|eğri|curve/)
     ) {
       createGraphModel(modelPrompt);
-
     } else {
       // Varsayılan animasyonlu model
       createAnimatedDefaultModel();
@@ -1904,14 +2062,16 @@ export default function AI3DEducationPage() {
 
   // Much nicer default animated model (educational "molecule / energy" feel)
   const createAnimatedDefaultModel = () => {
-    if (!sceneRef.current) {return;}
+    if (!sceneRef.current) {
+      return;
+    }
 
     const defaultGroup = new THREE.Group();
 
     // Central glowing core
     const core = new THREE.Mesh(
       new THREE.SphereGeometry(0.7, 24, 18),
-      new THREE.MeshPhongMaterial({ color: 0x6677ff, emissive: 0x2233aa, shininess: 35 })
+      new THREE.MeshPhongMaterial({ color: 0x6677ff, emissive: 0x2233aa, shininess: 35 }),
     );
     core.userData = { pulse: 0, pulseSpeed: 0.055, pulseAmp: 0.12 };
     defaultGroup.add(core);
@@ -1920,7 +2080,11 @@ export default function AI3DEducationPage() {
     for (let r = 0; r < 2; r++) {
       const ring = new THREE.Mesh(
         new THREE.TorusGeometry(1.6 + r * 0.7, 0.025, 5, 42),
-        new THREE.MeshBasicMaterial({ color: (r === 0 ? 0x44ffcc : 0xff88dd), transparent: true, opacity: 0.5 })
+        new THREE.MeshBasicMaterial({
+          color: r === 0 ? 0x44ffcc : 0xff88dd,
+          transparent: true,
+          opacity: 0.5,
+        }),
       );
       ring.rotation.x = 0.6 + r;
       defaultGroup.add(ring);
@@ -1930,13 +2094,17 @@ export default function AI3DEducationPage() {
     for (let i = 0; i < 9; i++) {
       const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.12),
-        new THREE.MeshPhongMaterial({ color: 0xaaffdd, emissive: 0x55aa99, emissiveIntensity: 0.6 })
+        new THREE.MeshPhongMaterial({
+          color: 0xaaffdd,
+          emissive: 0x55aa99,
+          emissiveIntensity: 0.6,
+        }),
       );
       orb.userData = {
         orbitRadius: 1.7 + (i % 3) * 0.65,
         speed: 0.023 + (i % 3) * 0.009,
         angle: i * 0.75,
-        yOffset: (i % 2 - 0.5) * 0.9,
+        yOffset: ((i % 2) - 0.5) * 0.9,
         yAmp: 0.25,
       };
       defaultGroup.add(orb);
@@ -1947,12 +2115,16 @@ export default function AI3DEducationPage() {
     for (let i = 0; i < 18; i++) {
       const p = new THREE.Mesh(
         new THREE.SphereGeometry(0.045),
-        new THREE.MeshPhongMaterial({ color: 0xffee88, emissive: 0xffaa22, emissiveIntensity: 0.8 })
+        new THREE.MeshPhongMaterial({
+          color: 0xffee88,
+          emissive: 0xffaa22,
+          emissiveIntensity: 0.8,
+        }),
       );
       p.position.set(
         (Math.random() - 0.5) * 4.5,
         (Math.random() - 0.5) * 3.5 + 0.5,
-        (Math.random() - 0.5) * 4.5
+        (Math.random() - 0.5) * 4.5,
       );
       p.userData = {
         blink: Math.random() * 6,
@@ -1980,11 +2152,9 @@ export default function AI3DEducationPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
             <Bot className="w-10 h-10 text-blue-600 dark:text-purple-500" />
-            {t('title')}
+            {t("title")}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
-            {t('subtitle')}
-          </p>
+          <p className="text-xl text-gray-600 dark:text-gray-300">{t("subtitle")}</p>
         </div>
 
         {/* AI Prompt Input */}
@@ -1994,7 +2164,7 @@ export default function AI3DEducationPage() {
               type="text"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder={t('promptPlaceholder')}
+              placeholder={t("promptPlaceholder")}
               className="md:col-span-2 px-4 py-3 rounded-lg bg-white/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500"
             />
             <button
@@ -2007,12 +2177,12 @@ export default function AI3DEducationPage() {
               {isGenerating ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {t('generating')}
+                  {t("generating")}
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4" />
-                  {t('generateButton')}
+                  {t("generateButton")}
                 </>
               )}
             </button>
@@ -2023,7 +2193,7 @@ export default function AI3DEducationPage() {
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={t('subjectPlaceholder')}
+              placeholder={t("subjectPlaceholder")}
               className="px-4 py-3 rounded-lg bg-white/80 dark:bg-white/10 border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500"
             />
             <Select
@@ -2031,93 +2201,103 @@ export default function AI3DEducationPage() {
               onValueChange={(value) => setComplexity(value as ComplexityLevel)}
             >
               <SelectTrigger className="h-[50px] rounded-lg bg-white/80 dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500">
-                <SelectValue placeholder={t('complexity.medium')} />
+                <SelectValue placeholder={t("complexity.medium")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="simple">{t('complexity.simple')}</SelectItem>
-                <SelectItem value="medium">{t('complexity.medium')}</SelectItem>
-                <SelectItem value="complex">{t('complexity.complex')}</SelectItem>
+                <SelectItem value="simple">{t("complexity.simple")}</SelectItem>
+                <SelectItem value="medium">{t("complexity.medium")}</SelectItem>
+                <SelectItem value="complex">{t("complexity.complex")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-                     <div className="mt-4 flex flex-col sm:flex-row gap-3">
-             <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-               <Lightbulb className="w-4 h-4 text-yellow-500" />
-               {t('suggestions')}
-             </div>
-             <div className="flex gap-2 flex-wrap">
-               <button
-                 onClick={() => createDNAModel()}
-                 className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
-               >
-                 {t('quickModels.dna')}
-               </button>
-               <button
-                 onClick={() => createAtomModel()}
-                 className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
-               >
-                 {t('quickModels.atom')}
-               </button>
-               <button
-                 onClick={() => createCellModel()}
-                 className="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors"
-               >
-                 {t('quickModels.cell')}
-               </button>
-               <button
-                 onClick={() => createHeartModel()}
-                 className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
-               >
-                 {t('quickModels.heart') || 'Heart'}
-               </button>
-             </div>
-           </div>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-yellow-500" />
+              {t("suggestions")}
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => createDNAModel()}
+                className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+              >
+                {t("quickModels.dna")}
+              </button>
+              <button
+                onClick={() => createAtomModel()}
+                className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+              >
+                {t("quickModels.atom")}
+              </button>
+              <button
+                onClick={() => createCellModel()}
+                className="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors"
+              >
+                {t("quickModels.cell")}
+              </button>
+              <button
+                onClick={() => createHeartModel()}
+                className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+              >
+                {t("quickModels.heart") || "Heart"}
+              </button>
+            </div>
+          </div>
         </div>
 
-                          {/* AI Response Display */}
-         {aiResponse && (
-           <div className="max-w-4xl mx-auto mb-8 border-gradient-question shadow-lg rounded-xl p-6">
-             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-               <Brain className="w-6 h-6 text-purple-600" />
-               {t('aiResponse.title')}
-             </h3>
-             <div className="grid md:grid-cols-2 gap-6 text-gray-600 dark:text-gray-300">
-               <div>
-                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('aiResponse.answer')}</h4>
-                 <p className="text-sm whitespace-pre-wrap font-mono bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-auto max-h-40">
-                   {aiResponse.response}
-                 </p>
-               </div>
-               <div>
-                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('aiResponse.confidence')}</h4>
-                 <p className="text-sm">{(aiResponse.confidence * 100).toFixed(1)}%</p>
-               </div>
-               <div>
-                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('aiResponse.suggestedTopics')}</h4>
-                 <div className="flex flex-wrap gap-2">
-                   {aiResponse.suggestedTopics.map((topic, index) => (
-                     <span key={index} className="px-2 py-1 bg-blue-600/20 dark:bg-purple-600/20 rounded text-xs">
-                       {topic}
-                     </span>
-                   ))}
-                 </div>
-               </div>
-               <div>
-                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('aiResponse.learningTips')}</h4>
-                 <div className="space-y-1">
-                   {aiResponse.learningTips.map((tip, index) => (
-                     <p key={index} className="text-xs flex items-center gap-2">
-                       <Lightbulb className="w-3 h-3 text-yellow-500" />
-                       {tip}
-                     </p>
-                   ))}
-                 </div>
-               </div>
-             </div>
-
-           </div>
-         )}
+        {/* AI Response Display */}
+        {aiResponse && (
+          <div className="max-w-4xl mx-auto mb-8 border-gradient-question shadow-lg rounded-xl p-6">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Brain className="w-6 h-6 text-purple-600" />
+              {t("aiResponse.title")}
+            </h3>
+            <div className="grid md:grid-cols-2 gap-6 text-gray-600 dark:text-gray-300">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {t("aiResponse.answer")}
+                </h4>
+                <p className="text-sm whitespace-pre-wrap font-mono bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-auto max-h-40">
+                  {aiResponse.response}
+                </p>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {t("aiResponse.confidence")}
+                </h4>
+                <p className="text-sm">{(aiResponse.confidence * 100).toFixed(1)}%</p>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {t("aiResponse.suggestedTopics")}
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {aiResponse.suggestedTopics.map((topic, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-blue-600/20 dark:bg-purple-600/20 rounded text-xs"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {t("aiResponse.learningTips")}
+                </h4>
+                <div className="space-y-1">
+                  {aiResponse.learningTips.map((tip, index) => (
+                    <p key={index} className="text-xs flex items-center gap-2">
+                      <Lightbulb className="w-3 h-3 text-yellow-500" />
+                      {tip}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 3D Model Viewer - now dynamic, pretty and useful */}
         <div className="relative">
@@ -2141,15 +2321,16 @@ export default function AI3DEducationPage() {
               className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1 transition"
               title="Reset camera view"
             >
-              <Target className="w-3.5 h-3.5" /> {t('controls.reset')}
+              <Target className="w-3.5 h-3.5" /> {t("controls.reset")}
             </button>
 
             <button
               onClick={() => setAutoRotate(!autoRotate)}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1 transition ${autoRotate ? 'bg-emerald-500/80 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-              title={t('controls.autoRotate')}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1 transition ${autoRotate ? "bg-emerald-500/80 text-white" : "bg-white/10 hover:bg-white/20 text-white"}`}
+              title={t("controls.autoRotate")}
             >
-              <Play className="w-3.5 h-3.5" /> {autoRotate ? t('controls.stopRotate') : t('controls.autoRotate')}
+              <Play className="w-3.5 h-3.5" />{" "}
+              {autoRotate ? t("controls.stopRotate") : t("controls.autoRotate")}
             </button>
 
             <button
@@ -2158,24 +2339,29 @@ export default function AI3DEducationPage() {
                 setWireframeMode(newWf);
                 if (sceneRef.current) {
                   sceneRef.current.traverse((obj) => {
-                    if (obj.type === 'Mesh') {
+                    if (obj.type === "Mesh") {
                       const mat = (obj as THREE.Mesh).material as THREE.MeshStandardMaterial;
-                      if (mat && 'wireframe' in mat) {mat.wireframe = newWf;}
+                      if (mat && "wireframe" in mat) {
+                        mat.wireframe = newWf;
+                      }
                     }
                   });
                 }
               }}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1 transition ${wireframeMode ? 'bg-amber-500/80 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1 transition ${wireframeMode ? "bg-amber-500/80 text-white" : "bg-white/10 hover:bg-white/20 text-white"}`}
               title="Toggle wireframe / solid"
             >
-              <Eye className="w-3.5 h-3.5" /> {wireframeMode ? t('controls.solid') : t('controls.wireframe')}
+              <Eye className="w-3.5 h-3.5" />{" "}
+              {wireframeMode ? t("controls.solid") : t("controls.wireframe")}
             </button>
 
             <div className="flex items-center gap-2 px-2 text-white/90">
-              <span className="text-[10px] opacity-70">{t('controls.speed')}</span>
+              <span className="text-[10px] opacity-70">{t("controls.speed")}</span>
               <input
                 type="range"
-                min="0.2" max="3" step="0.1"
+                min="0.2"
+                max="3"
+                step="0.1"
                 value={animSpeed}
                 onChange={(e) => setAnimSpeed(parseFloat(e.target.value))}
                 className="w-20 accent-purple-400"
@@ -2187,12 +2373,14 @@ export default function AI3DEducationPage() {
           {aiResponse && (
             <div className="absolute top-3 left-3 bg-emerald-600/90 text-white px-3 py-1 rounded-lg text-xs flex items-center gap-1.5 shadow">
               <CheckCircle className="w-3.5 h-3.5" />
-              {t('modelGenerated')}
+              {t("modelGenerated")}
             </div>
           )}
 
           <div className="absolute bottom-3 left-3 text-[10px] text-white/50 bg-black/40 px-2 py-0.5 rounded pointer-events-none">
-            {locale === 'tr' ? 'Sürükle: döndür • Tekerlek: zoom • Sağ sürükle: pan' : 'Drag to rotate • Scroll to zoom • Right-drag to pan'}
+            {locale === "tr"
+              ? "Sürükle: döndür • Tekerlek: zoom • Sağ sürükle: pan"
+              : "Drag to rotate • Scroll to zoom • Right-drag to pan"}
           </div>
         </div>
 
@@ -2202,9 +2390,11 @@ export default function AI3DEducationPage() {
             <div className="text-3xl mb-4 flex justify-center">
               <Brain className="w-12 h-12 text-purple-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('features.aiChatFlow.title')}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {t("features.aiChatFlow.title")}
+            </h3>
             <p className="text-gray-600 dark:text-gray-300">
-              {t('features.aiChatFlow.description')}
+              {t("features.aiChatFlow.description")}
             </p>
           </div>
 
@@ -2212,19 +2402,21 @@ export default function AI3DEducationPage() {
             <div className="text-3xl mb-4 flex justify-center">
               <Palette className="w-12 h-12 text-blue-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('features.threeJs.title')}</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t('features.threeJs.description')}
-            </p>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {t("features.threeJs.title")}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">{t("features.threeJs.description")}</p>
           </div>
 
           <div className="border-gradient-question shadow-lg rounded-xl p-6">
             <div className="text-3xl mb-4 flex justify-center">
               <Zap className="w-12 h-12 text-yellow-500" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('features.serverless.title')}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {t("features.serverless.title")}
+            </h3>
             <p className="text-gray-600 dark:text-gray-300">
-              {t('features.serverless.description')}
+              {t("features.serverless.description")}
             </p>
           </div>
         </div>
@@ -2233,36 +2425,36 @@ export default function AI3DEducationPage() {
         <div className="mt-12 border-gradient-question shadow-lg rounded-xl p-6">
           <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-blue-600" />
-            {t('howToUse.title')}
+            {t("howToUse.title")}
           </h3>
           <div className="grid md:grid-cols-2 gap-6 text-gray-600 dark:text-gray-300">
             <div>
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <Target className="w-5 h-5 text-green-600" />
-                {t('howToUse.step1.title')}
+                {t("howToUse.step1.title")}
               </h4>
-              <p>{t('howToUse.step1.description')}</p>
+              <p>{t("howToUse.step1.description")}</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <Bot className="w-5 h-5 text-purple-600" />
-                {t('howToUse.step2.title')}
+                {t("howToUse.step2.title")}
               </h4>
-              <p>{t('howToUse.step2.description')}</p>
+              <p>{t("howToUse.step2.description")}</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <Eye className="w-5 h-5 text-blue-600" />
-                {t('howToUse.step3.title')}
+                {t("howToUse.step3.title")}
               </h4>
-              <p>{t('howToUse.step3.description')}</p>
+              <p>{t("howToUse.step3.description")}</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <Users className="w-5 h-5 text-green-600" />
-                {t('howToUse.step4.title')}
+                {t("howToUse.step4.title")}
               </h4>
-              <p>{t('howToUse.step4.description')}</p>
+              <p>{t("howToUse.step4.description")}</p>
             </div>
           </div>
         </div>

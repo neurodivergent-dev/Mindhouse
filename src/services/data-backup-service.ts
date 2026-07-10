@@ -111,9 +111,7 @@ export class DataBackupService {
   /**
    * Get all questions created by the user
    */
-  private static async getAllUserQuestions(
-    userId: string,
-  ): Promise<Question[]> {
+  private static async getAllUserQuestions(userId: string): Promise<Question[]> {
     const { data, error } = await supabase
       .from("questions")
       .select("*")
@@ -131,9 +129,7 @@ export class DataBackupService {
   /**
    * Get all AI chat messages for a user
    */
-  private static async getAllMessagesByUser(
-    userId: string,
-  ): Promise<AiChatMessage[]> {
+  private static async getAllMessagesByUser(userId: string): Promise<AiChatMessage[]> {
     const { data, error } = await supabase
       .from("ai_chat_history")
       .select("*")
@@ -181,9 +177,7 @@ export class DataBackupService {
   /**
    * Update user's last backup timestamp
    */
-  private static async updateLastBackupTimestamp(
-    userId: string,
-  ): Promise<void> {
+  private static async updateLastBackupTimestamp(userId: string): Promise<void> {
     try {
       await supabase.from("user_backup_metadata").upsert({
         user_id: userId,
@@ -301,18 +295,13 @@ export class DataBackupService {
   /**
    * Restore user data from backup
    */
-  private static async restoreUserData(
-    _userId: string,
-    backupData: UserBackupData,
-  ): Promise<void> {
+  private static async restoreUserData(_userId: string, backupData: UserBackupData): Promise<void> {
     try {
       const { data } = backupData;
 
       // Restore subjects first
       if (data.subjects.length > 0) {
-        const { error: subjectsError } = await supabase
-          .from("subjects")
-          .insert(data.subjects);
+        const { error: subjectsError } = await supabase.from("subjects").insert(data.subjects);
 
         if (subjectsError) {
           throw subjectsError;
@@ -321,9 +310,7 @@ export class DataBackupService {
 
       // Restore questions
       if (data.questions.length > 0) {
-        const { error: questionsError } = await supabase
-          .from("questions")
-          .insert(data.questions);
+        const { error: questionsError } = await supabase.from("questions").insert(data.questions);
 
         if (questionsError) {
           throw questionsError;
@@ -332,9 +319,7 @@ export class DataBackupService {
 
       // Restore quiz results
       if (data.quizResults.length > 0) {
-        const { error: quizError } = await supabase
-          .from("quiz_results")
-          .insert(data.quizResults);
+        const { error: quizError } = await supabase.from("quiz_results").insert(data.quizResults);
 
         if (quizError) {
           throw quizError;
@@ -376,21 +361,19 @@ export class DataBackupService {
 
       // Restore AI chat sessions
       if (data.aiChatSessions.length > 0) {
-        const { error: sessionsError } = await supabase
-          .from("ai_chat_sessions")
-          .insert(
-            data.aiChatSessions.map((session) => ({
-              id: session.id,
-              user_id: session.userId,
-              session_id: session.sessionId,
-              subject: session.subject,
-              title: session.title,
-              message_count: session.messageCount,
-              last_message_at: session.lastMessageAt,
-              created_at: session.createdAt,
-              updated_at: session.updatedAt,
-            })),
-          );
+        const { error: sessionsError } = await supabase.from("ai_chat_sessions").insert(
+          data.aiChatSessions.map((session) => ({
+            id: session.id,
+            user_id: session.userId,
+            session_id: session.sessionId,
+            subject: session.subject,
+            title: session.title,
+            message_count: session.messageCount,
+            last_message_at: session.lastMessageAt,
+            created_at: session.createdAt,
+            updated_at: session.updatedAt,
+          })),
+        );
 
         if (sessionsError) {
           throw sessionsError;
@@ -399,20 +382,18 @@ export class DataBackupService {
 
       // Restore AI chat messages
       if (data.aiChatMessages.length > 0) {
-        const { error: messagesError } = await supabase
-          .from("ai_chat_history")
-          .insert(
-            data.aiChatMessages.map((message) => ({
-              id: message.id,
-              user_id: message.userId,
-              session_id: message.sessionId,
-              subject: message.subject,
-              role: message.role,
-              content: message.content,
-              timestamp: message.timestamp,
-              created_at: message.createdAt,
-            })),
-          );
+        const { error: messagesError } = await supabase.from("ai_chat_history").insert(
+          data.aiChatMessages.map((message) => ({
+            id: message.id,
+            user_id: message.userId,
+            session_id: message.sessionId,
+            subject: message.subject,
+            role: message.role,
+            content: message.content,
+            timestamp: message.timestamp,
+            created_at: message.createdAt,
+          })),
+        );
 
         if (messagesError) {
           throw messagesError;
@@ -453,28 +434,16 @@ export class DataBackupService {
       }
 
       // Clear backup metadata
-      await supabase
-        .from("user_backup_metadata")
-        .delete()
-        .eq("user_id", user.id);
+      await supabase.from("user_backup_metadata").delete().eq("user_id", user.id);
 
       // Clear AI generation logs
-      await supabase
-        .from("ai_generation_logs")
-        .delete()
-        .eq("user_id", user.id);
+      await supabase.from("ai_generation_logs").delete().eq("user_id", user.id);
 
       // Clear main flashcards table
-      await supabase
-        .from("flashcards")
-        .delete()
-        .eq("user_id", user.id);
+      await supabase.from("flashcards").delete().eq("user_id", user.id);
 
       // Clear subjects table - handle both field types safely
-      await supabase
-        .from("subjects")
-        .delete()
-        .or(`created_by.eq.${user.id},user_id.eq.${user.id}`);
+      await supabase.from("subjects").delete().or(`created_by.eq.${user.id},user_id.eq.${user.id}`);
 
       // For authenticated users, we only clear Supabase data
       // LocalStorage data remains untouched (user might have guest data they want to keep)
@@ -506,36 +475,30 @@ export class DataBackupService {
         throw new Error(`Session error: ${sessionError.message}`);
       }
 
-      const activeSession =
-        session || (await supabase.auth.refreshSession()).data.session;
+      const activeSession = session || (await supabase.auth.refreshSession()).data.session;
 
       if (!activeSession) {
         throw new Error("No active session and refresh failed");
       }
 
       // Call the Edge Function to delete the account
-      const { data, error } = await supabase.functions.invoke(
-        "delete_account",
-        {
-          headers: {
-            Authorization: `Bearer ${activeSession.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            confirmEmail: user.email,
-            timestamp: new Date().toISOString(),
-          }),
+      const { data, error } = await supabase.functions.invoke("delete_account", {
+        headers: {
+          Authorization: `Bearer ${activeSession.access_token}`,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          confirmEmail: user.email,
+          timestamp: new Date().toISOString(),
+        }),
+      });
 
       if (error) {
         throw new Error(`Account deletion failed: ${error.message}`);
       }
 
       if (!data?.success) {
-        throw new Error(
-          `Account deletion failed: ${data?.error || "Unknown error"}`,
-        );
+        throw new Error(`Account deletion failed: ${data?.error || "Unknown error"}`);
       }
 
       // Force sign out and redirect since user is deleted

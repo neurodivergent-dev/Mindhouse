@@ -50,6 +50,7 @@ The application includes a fallback mode when no API key is configured:
 ## Features in Production
 
 ### With API Key:
+
 - Full AI-powered question generation using Google's Gemini model
 - High-quality, contextual questions
 - Support for multiple question types
@@ -57,6 +58,7 @@ The application includes a fallback mode when no API key is configured:
 - Learning objectives and keywords
 
 ### Without API Key (Demo Mode):
+
 - Template-based question generation
 - Basic question types support
 - Limited to predefined patterns
@@ -87,16 +89,16 @@ The application logs AI generation activities to `ai_generation_logs` table:
 
 ```sql
 -- View recent AI generations
-SELECT * FROM ai_generation_logs 
-ORDER BY created_at DESC 
+SELECT * FROM ai_generation_logs
+ORDER BY created_at DESC
 LIMIT 100;
 
 -- Monitor quality scores
-SELECT 
+SELECT
   AVG(quality_score) as avg_quality,
   COUNT(*) as total_generations,
   subject
-FROM ai_generation_logs 
+FROM ai_generation_logs
 GROUP BY subject;
 ```
 
@@ -139,7 +141,7 @@ Enable debug logging:
 
 ```javascript
 // In your API route
-console.log('🤖 AI Generation Debug:', {
+console.log("🤖 AI Generation Debug:", {
   hasApiKey: !!process.env.GOOGLE_GENAI_API_KEY,
   isDemoMode: shouldUseDemoData(),
   request: body,

@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -95,65 +89,75 @@ export default function EnhancedDashboard() {
   const t = useTranslations("Dashboard");
   const locale = useLocale();
 
-  const translateSubject = useCallback((subject: string) => {
-    if (locale === "tr") { return subject; }
+  const translateSubject = useCallback(
+    (subject: string) => {
+      if (locale === "tr") {
+        return subject;
+      }
 
-    const map: Record<string, string> = {
-      "Matematik": "Mathematics",
-      "Fizik": "Physics",
-      "Kimya": "Chemistry",
-      "Biyoloji": "Biology",
-      "Tarih": "History",
-      "Türk Dili ve Edebiyatı": "Turkish Language & Lit.",
-      "İngilizce": "English",
-      "Coğrafya": "Geography",
-      "Felsefe": "Philosophy",
-      "Din Kültürü": "Religion"
-    };
+      const map: Record<string, string> = {
+        Matematik: "Mathematics",
+        Fizik: "Physics",
+        Kimya: "Chemistry",
+        Biyoloji: "Biology",
+        Tarih: "History",
+        "Türk Dili ve Edebiyatı": "Turkish Language & Lit.",
+        İngilizce: "English",
+        Coğrafya: "Geography",
+        Felsefe: "Philosophy",
+        "Din Kültürü": "Religion",
+      };
 
-    return map[subject] || subject;
-  }, [locale]);
+      return map[subject] || subject;
+    },
+    [locale],
+  );
 
-  const translateTopic = useCallback((topic: string) => {
-    if (locale === "tr") { return topic; }
+  const translateTopic = useCallback(
+    (topic: string) => {
+      if (locale === "tr") {
+        return topic;
+      }
 
-    const map: Record<string, string> = {
-      "Türev Uygulamaları": "Derivative Applications",
-      "İntegral Hesabı": "Integral Calculus",
-      "Logaritma": "Logarithms",
-      "Geometri": "Geometry",
-      "Cebir": "Algebra",
-      "Analiz": "Calculus",
-      "Elektrik ve Manyetizma": "Electricity & Magnetism",
-      "Dalga Hareketi": "Wave Motion",
-      "Modern Fizik": "Modern Physics",
-      "Mekanik": "Mechanics",
-      "Termodinamik": "Thermodynamics",
-      "Elektrik": "Electricity",
-      "Organik Kimya": "Organic Chemistry",
-      "Elektrokimya": "Electrochemistry",
-      "Kimyasal Reaksiyonlar": "Chemical Reactions",
-      "Anorganik Kimya": "Inorganic Chemistry",
-      "Kimyasal Bağlar": "Chemical Bonds",
-      "Genetik": "Genetics",
-      "Ekoloji": "Ecology",
-      "Hücre Bölünmesi": "Cell Division",
-      "Hücre Biyolojisi": "Cell Biology",
-      "Sistemler": "Systems",
-      "Dokular": "Tissues",
-      "Osmanlı Duraklama Dönemi": "Ottoman Stagnation Period",
-      "Tarih": "History",
-      "Tarihsel Olaylar": "Historical Events",
-      "Tarihsel Süreçler": "Historical Processes",
-      "Divan Edebiyatı": "Divan Literature",
-      "Çağdaş Türk Edebiyatı": "Modern Turkish Lit.",
-      "Dil Bilgisi": "Grammar",
-      "Edebiyat": "Literature",
-      "Çağdaş Edebiyat": "Modern Literature"
-    };
+      const map: Record<string, string> = {
+        "Türev Uygulamaları": "Derivative Applications",
+        "İntegral Hesabı": "Integral Calculus",
+        Logaritma: "Logarithms",
+        Geometri: "Geometry",
+        Cebir: "Algebra",
+        Analiz: "Calculus",
+        "Elektrik ve Manyetizma": "Electricity & Magnetism",
+        "Dalga Hareketi": "Wave Motion",
+        "Modern Fizik": "Modern Physics",
+        Mekanik: "Mechanics",
+        Termodinamik: "Thermodynamics",
+        Elektrik: "Electricity",
+        "Organik Kimya": "Organic Chemistry",
+        Elektrokimya: "Electrochemistry",
+        "Kimyasal Reaksiyonlar": "Chemical Reactions",
+        "Anorganik Kimya": "Inorganic Chemistry",
+        "Kimyasal Bağlar": "Chemical Bonds",
+        Genetik: "Genetics",
+        Ekoloji: "Ecology",
+        "Hücre Bölünmesi": "Cell Division",
+        "Hücre Biyolojisi": "Cell Biology",
+        Sistemler: "Systems",
+        Dokular: "Tissues",
+        "Osmanlı Duraklama Dönemi": "Ottoman Stagnation Period",
+        Tarih: "History",
+        "Tarihsel Olaylar": "Historical Events",
+        "Tarihsel Süreçler": "Historical Processes",
+        "Divan Edebiyatı": "Divan Literature",
+        "Çağdaş Türk Edebiyatı": "Modern Turkish Lit.",
+        "Dil Bilgisi": "Grammar",
+        Edebiyat: "Literature",
+        "Çağdaş Edebiyat": "Modern Literature",
+      };
 
-    return map[topic] || topic;
-  }, [locale]);
+      return map[topic] || topic;
+    },
+    [locale],
+  );
 
   const translatedFeatures = useMemo(
     () =>
@@ -236,14 +240,16 @@ export default function EnhancedDashboard() {
               subject: translateSubject(item.subject),
               weakTopics: item.weakTopics.map(translateTopic),
               strongTopics: item.strongTopics.map(translateTopic),
-            }))
+            })),
           );
           setRecentResults(
             demoRecentResults.map((item) => ({
               ...item,
               subject: translateSubject(item.subject),
-              weakTopics: Array.isArray(item.weakTopics) ? item.weakTopics.map(translateTopic) : item.weakTopics,
-            }))
+              weakTopics: Array.isArray(item.weakTopics)
+                ? item.weakTopics.map(translateTopic)
+                : item.weakTopics,
+            })),
           );
           setTotalStats(demoTotalStats);
           setIsLoading(false);
@@ -298,16 +304,26 @@ export default function EnhancedDashboard() {
 
                   savedTopics.forEach((st: SavedTopic) => {
                     // Check if this topic is already in results
-                    const alreadyExists = results.find((r: QuizResult) => r.type === "TopicExplainer" && r.subject === st.subject && (r.topic === st.topic || r.topic === (st.content && JSON.parse(st.content).title)));
+                    const alreadyExists = results.find(
+                      (r: QuizResult) =>
+                        r.type === "TopicExplainer" &&
+                        r.subject === st.subject &&
+                        (r.topic === st.topic ||
+                          r.topic === (st.content && JSON.parse(st.content).title)),
+                    );
                     if (!alreadyExists) {
                       // Compute total time if available
                       let tTime = 300;
                       let realTopicName = st.topic;
                       try {
                         const parsedContent = JSON.parse(st.content || "{}");
-                        if (parsedContent.totalTime) { tTime = parsedContent.totalTime; }
-                        if (parsedContent.title) { realTopicName = parsedContent.title; }
-                      } catch { }
+                        if (parsedContent.totalTime) {
+                          tTime = parsedContent.totalTime;
+                        }
+                        if (parsedContent.title) {
+                          realTopicName = parsedContent.title;
+                        }
+                      } catch {}
 
                       results.push({
                         id: `explainer_migrated_${st.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -319,7 +335,7 @@ export default function EnhancedDashboard() {
                         totalQuestions: 1,
                         timeSpent: tTime,
                         weakTopics: [],
-                        createdAt: st.createdAt || new Date().toISOString()
+                        createdAt: st.createdAt || new Date().toISOString(),
                       });
                       hasNewMigrations = true;
                     }
@@ -391,75 +407,62 @@ export default function EnhancedDashboard() {
                 !Array.isArray(result.weakTopics)
               ) {
                 Object.entries(result.weakTopics).forEach(([topic, count]) => {
-                  subjectData.weakTopics[topic] =
-                    (subjectData.weakTopics[topic] || 0) + count;
+                  subjectData.weakTopics[topic] = (subjectData.weakTopics[topic] || 0) + count;
                 });
               }
             });
 
-            const performanceData = Object.entries(performanceMap).map(
-              ([subject, data]) => {
-                // Calculate strong topics for this subject (topics not in weak topics)
-                const allTopicsInSubject = new Set<string>();
-                const topicPerformance: Record<
-                  string,
-                  { correct: number; total: number }
-                > = {};
+            const performanceData = Object.entries(performanceMap).map(([subject, data]) => {
+              // Calculate strong topics for this subject (topics not in weak topics)
+              const allTopicsInSubject = new Set<string>();
+              const topicPerformance: Record<string, { correct: number; total: number }> = {};
 
-                // Collect all topics from this subject's results
-                filteredResults
-                  .filter((result: QuizResult) => result.subject === subject)
-                  .forEach((result: QuizResult) => {
-                    const { weakTopics } = result;
-                    if (
-                      weakTopics &&
-                      typeof weakTopics === "object" &&
-                      !Array.isArray(weakTopics)
-                    ) {
-                      Object.keys(weakTopics).forEach((topic) => {
-                        allTopicsInSubject.add(topic);
-                        if (!topicPerformance[topic]) {
-                          topicPerformance[topic] = { correct: 0, total: 0 };
-                        }
-                        const weakCount = weakTopics[topic] || 0;
-                        topicPerformance[topic].total += 3;
-                        topicPerformance[topic].correct += Math.max(
-                          0,
-                          3 - weakCount,
-                        );
-                      });
-                    }
-                  });
+              // Collect all topics from this subject's results
+              filteredResults
+                .filter((result: QuizResult) => result.subject === subject)
+                .forEach((result: QuizResult) => {
+                  const { weakTopics } = result;
+                  if (weakTopics && typeof weakTopics === "object" && !Array.isArray(weakTopics)) {
+                    Object.keys(weakTopics).forEach((topic) => {
+                      allTopicsInSubject.add(topic);
+                      if (!topicPerformance[topic]) {
+                        topicPerformance[topic] = { correct: 0, total: 0 };
+                      }
+                      const weakCount = weakTopics[topic] || 0;
+                      topicPerformance[topic].total += 3;
+                      topicPerformance[topic].correct += Math.max(0, 3 - weakCount);
+                    });
+                  }
+                });
 
-                // Find strong topics (not in weak topics and good performance)
-                const strongTopics = Array.from(allTopicsInSubject)
-                  .filter((topic) => {
-                    const performance = topicPerformance[topic];
-                    if (!performance || performance.total < 2) {
-                      return false;
-                    }
+              // Find strong topics (not in weak topics and good performance)
+              const strongTopics = Array.from(allTopicsInSubject)
+                .filter((topic) => {
+                  const performance = topicPerformance[topic];
+                  if (!performance || performance.total < 2) {
+                    return false;
+                  }
 
-                    const successRate =
-                      (performance.correct / performance.total) * 100;
-                    return successRate >= 70 && !data.weakTopics[topic];
-                  })
-                  .slice(0, 2);
+                  const successRate = (performance.correct / performance.total) * 100;
+                  return successRate >= 70 && !data.weakTopics[topic];
+                })
+                .slice(0, 2);
 
-                return {
-                  subject: translateSubject(subject),
-                  averageScore: data.totalQuestions > 0 ? Math.round(
-                    (data.totalScore / data.totalQuestions) * 100,
-                  ) : 0,
-                  totalTests: data.totalTests,
-                  weakTopics: Object.entries(data.weakTopics)
-                    .sort(([, a], [, b]) => b - a)
-                    .slice(0, 3)
-                    .map(([topic]) => translateTopic(topic)),
-                  strongTopics: strongTopics.map(translateTopic), // Add strong topics to performance data
-                  lastUpdated: new Date().toISOString(),
-                };
-              },
-            );
+              return {
+                subject: translateSubject(subject),
+                averageScore:
+                  data.totalQuestions > 0
+                    ? Math.round((data.totalScore / data.totalQuestions) * 100)
+                    : 0,
+                totalTests: data.totalTests,
+                weakTopics: Object.entries(data.weakTopics)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 3)
+                  .map(([topic]) => translateTopic(topic)),
+                strongTopics: strongTopics.map(translateTopic), // Add strong topics to performance data
+                lastUpdated: new Date().toISOString(),
+              };
+            });
 
             // Recent results
             const recentResults = filteredResults
@@ -479,7 +482,9 @@ export default function EnhancedDashboard() {
               }));
 
             // Total stats (exclude TopicExplainer from test counts and scores)
-            const quizOnlyResults = filteredResults.filter((r: QuizResult) => r.type !== "TopicExplainer");
+            const quizOnlyResults = filteredResults.filter(
+              (r: QuizResult) => r.type !== "TopicExplainer",
+            );
 
             const totalTests = quizOnlyResults.length;
             const totalCorrectAnswers = quizOnlyResults.reduce(
@@ -491,12 +496,9 @@ export default function EnhancedDashboard() {
               0,
             );
             const averageScore =
-              totalQuestions > 0
-                ? Math.round((totalCorrectAnswers / totalQuestions) * 100)
-                : 0;
+              totalQuestions > 0 ? Math.round((totalCorrectAnswers / totalQuestions) * 100) : 0;
             const totalTimeSpent = filteredResults.reduce(
-              (sum: number, result: QuizResult) =>
-                sum + (result.timeSpent || 0),
+              (sum: number, result: QuizResult) => sum + (result.timeSpent || 0),
               0,
             );
 
@@ -509,8 +511,7 @@ export default function EnhancedDashboard() {
 
             // Storage info (simple calculation)
             const used =
-              JSON.stringify(filteredResults).length +
-              JSON.stringify(subjectsData).length;
+              JSON.stringify(filteredResults).length + JSON.stringify(subjectsData).length;
             const storageInfo = {
               used,
               available: 5242880, // 5MB
@@ -562,8 +563,7 @@ export default function EnhancedDashboard() {
     if (!isGuest) {
       toast({
         title: t("toasts.guestOnly"),
-        description:
-          t("toasts.guestOnlyDesc"),
+        description: t("toasts.guestOnlyDesc"),
         variant: "destructive",
       });
       return;
@@ -583,8 +583,7 @@ export default function EnhancedDashboard() {
 
       toast({
         title: t("toasts.exportSuccess"),
-        description:
-          t("toasts.exportSuccessDesc"),
+        description: t("toasts.exportSuccessDesc"),
       });
     } catch {
       toast({
@@ -599,8 +598,7 @@ export default function EnhancedDashboard() {
     if (!isGuest) {
       toast({
         title: "Bu özellik sadece misafir kullanıcılar içindir",
-        description:
-          "Giriş yapmış kullanıcılar verilerini profil ayarlarından yönetebilir.",
+        description: "Giriş yapmış kullanıcılar verilerini profil ayarlarından yönetebilir.",
         variant: "destructive",
       });
       return;
@@ -621,8 +619,7 @@ export default function EnhancedDashboard() {
             if (success) {
               toast({
                 title: t("toasts.importSuccess"),
-                description:
-                  t("toasts.importSuccessDesc"),
+                description: t("toasts.importSuccessDesc"),
               });
               setTimeout(() => window.location.reload(), 1500);
             } else {
@@ -679,9 +676,7 @@ export default function EnhancedDashboard() {
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>{t("loginRequired")}</CardTitle>
-            <CardDescription>
-              {t("loginToAccess")}
-            </CardDescription>
+            <CardDescription>{t("loginToAccess")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/login">
@@ -695,7 +690,7 @@ export default function EnhancedDashboard() {
 
   // Build context for AI assistant - uses current data (demo or real)
   const dashboardContext = `
-Dashboard Overview (${useDemoData ? 'DEMO MODE - sample data' : 'Real user data'}):
+Dashboard Overview (${useDemoData ? "DEMO MODE - sample data" : "Real user data"}):
 
 Total Tests: ${totalStats.totalTests}
 Average Score: ${totalStats.averageScore}%
@@ -703,17 +698,26 @@ Total Study Time: ${totalStats.totalTimeSpent} minutes
 Number of Subjects: ${performanceData.length}
 
 Recent Activity:
-${recentResults.slice(0, 5).map(r =>
-    `- ${r.subject}: ${r.score}/${r.totalQuestions} (${Math.round(r.timeSpent / 60)} min)`
-  ).join('\n')}
+${recentResults
+  .slice(0, 5)
+  .map(
+    (r) => `- ${r.subject}: ${r.score}/${r.totalQuestions} (${Math.round(r.timeSpent / 60)} min)`,
+  )
+  .join("\n")}
 
 Subject Performance:
-${performanceData.map(p =>
-    `- ${p.subject}: Average ${p.averageScore}%, ${p.totalTests} tests`
-  ).join('\n')}
+${performanceData
+  .map((p) => `- ${p.subject}: Average ${p.averageScore}%, ${p.totalTests} tests`)
+  .join("\n")}
 
-Weak Topics Overall: ${performanceData.flatMap(p => p.weakTopics).slice(0, 10).join(', ')}
-Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 10).join(', ')}
+Weak Topics Overall: ${performanceData
+    .flatMap((p) => p.weakTopics)
+    .slice(0, 10)
+    .join(", ")}
+Strong Topics Overall: ${performanceData
+    .flatMap((p) => p.strongTopics)
+    .slice(0, 10)
+    .join(", ")}
 `.trim();
 
   return (
@@ -793,7 +797,10 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                 <AlertDescription className="text-gray-600 dark:text-gray-300">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <span>
-                      <strong className="text-gray-800 dark:text-white">{t("demoModeActive")}</strong> {t("demoModeDesc")}
+                      <strong className="text-gray-800 dark:text-white">
+                        {t("demoModeActive")}
+                      </strong>{" "}
+                      {t("demoModeDesc")}
                     </span>
                   </div>
                 </AlertDescription>
@@ -806,9 +813,7 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
               <Alert className="border-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-[11px] backdrop-blur-sm">
                 <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <AlertDescription className="text-gray-700 dark:text-gray-300">
-                  <strong className="text-gray-800 dark:text-white">
-                    {t("guestModeActive")}
-                  </strong>{" "}
+                  <strong className="text-gray-800 dark:text-white">{t("guestModeActive")}</strong>{" "}
                   {t("guestModeDesc1")}
                   <Link
                     href="/login?mode=register"
@@ -892,7 +897,10 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                     <Clock className="h-5 w-5 text-[#af52de] dark:text-[#bf5af2]" />
                   </div>
                   <div className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">
-                    {Math.round(totalStats.totalTimeSpent)}<span className="text-xl font-semibold text-[#86868b] dark:text-[#a1a1a6] ml-1">dk</span>
+                    {Math.round(totalStats.totalTimeSpent)}
+                    <span className="text-xl font-semibold text-[#86868b] dark:text-[#a1a1a6] ml-1">
+                      dk
+                    </span>
                   </div>
                   <p className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">
                     {t("studyTime")}
@@ -927,8 +935,12 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                     <div className="flex items-center mb-6">
                       <TrendingUp className="h-6 w-6 mr-2 text-[#007aff] dark:text-[#0a84ff]" />
                       <div>
-                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectPerformance")}</h2>
-                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("subjectPerformanceDesc")}</p>
+                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("subjectPerformance")}
+                        </h2>
+                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                          {t("subjectPerformanceDesc")}
+                        </p>
                       </div>
                     </div>
 
@@ -940,16 +952,15 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                             className="border-b border-gray-100 dark:border-gray-800 pb-4 last:border-b-0"
                           >
                             <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-semibold text-lg">
-                                {subject.subject}
-                              </h4>
+                              <h4 className="font-semibold text-lg">{subject.subject}</h4>
                               <Badge
-                                className={`text-sm ${subject.averageScore >= 80
-                                  ? "badge-gradient-high"
-                                  : subject.averageScore >= 70
-                                    ? "badge-gradient-medium"
-                                    : "badge-gradient-low"
-                                  }`}
+                                className={`text-sm ${
+                                  subject.averageScore >= 80
+                                    ? "badge-gradient-high"
+                                    : subject.averageScore >= 70
+                                      ? "badge-gradient-medium"
+                                      : "badge-gradient-low"
+                                }`}
                               >
                                 %{subject.averageScore.toFixed(0)}
                               </Badge>
@@ -961,11 +972,11 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                               />
                             </div>
                             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                              <span>{subject.totalTests} {t("testsCompleted")}</span>
                               <span>
-                                {new Date(
-                                  subject.lastUpdated,
-                                ).toLocaleDateString("tr-TR")}
+                                {subject.totalTests} {t("testsCompleted")}
+                              </span>
+                              <span>
+                                {new Date(subject.lastUpdated).toLocaleDateString("tr-TR")}
                               </span>
                             </div>
                             {subject.weakTopics.length > 0 && (
@@ -974,17 +985,15 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                                   {t("topicsToImprove")}
                                 </p>
                                 <div className="flex flex-wrap gap-1.5">
-                                  {subject.weakTopics
-                                    .slice(0, 3)
-                                    .map((topic, i) => (
-                                      <Badge
-                                        key={i}
-                                        variant="outline"
-                                        className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
-                                      >
-                                        {topic}
-                                      </Badge>
-                                    ))}
+                                  {subject.weakTopics.slice(0, 3).map((topic, i) => (
+                                    <Badge
+                                      key={i}
+                                      variant="outline"
+                                      className="text-xs bg-[#ff3b30]/10 text-[#ff3b30] border-[#ff3b30]/20 font-medium"
+                                    >
+                                      {topic}
+                                    </Badge>
+                                  ))}
                                   {subject.weakTopics.length > 3 && (
                                     <Badge
                                       variant="outline"
@@ -996,35 +1005,33 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                                 </div>
                               </div>
                             )}
-                            {subject.strongTopics &&
-                              subject.strongTopics.length > 0 && (
-                                <div className="mt-3">
-                                  <p className="text-xs font-medium text-[#34c759] mb-2">
-                                    {t("strongTopics")}
-                                  </p>
-                                  <div className="flex flex-wrap gap-1.5">
-                                    {subject.strongTopics
-                                      .slice(0, 2)
-                                      .map((topic, i) => (
-                                        <Badge
-                                          key={i}
-                                          variant="outline"
-                                          className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
-                                        >
-                                          {topic}
-                                        </Badge>
-                                      ))}
-                                    {subject.strongTopics.length > 2 && (
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
-                                      >
-                                        +{subject.strongTopics.length - 2} {t("others") || (locale === "tr" ? "diğer" : "other")}
-                                      </Badge>
-                                    )}
-                                  </div>
+                            {subject.strongTopics && subject.strongTopics.length > 0 && (
+                              <div className="mt-3">
+                                <p className="text-xs font-medium text-[#34c759] mb-2">
+                                  {t("strongTopics")}
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {subject.strongTopics.slice(0, 2).map((topic, i) => (
+                                    <Badge
+                                      key={i}
+                                      variant="outline"
+                                      className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
+                                    >
+                                      {topic}
+                                    </Badge>
+                                  ))}
+                                  {subject.strongTopics.length > 2 && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs bg-[#34c759]/10 text-[#34c759] border-[#34c759]/20 font-medium"
+                                    >
+                                      +{subject.strongTopics.length - 2}{" "}
+                                      {t("others") || (locale === "tr" ? "diğer" : "other")}
+                                    </Badge>
+                                  )}
                                 </div>
-                              )}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1128,14 +1135,21 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                     <div className="flex items-center mb-6">
                       <Activity className="h-6 w-6 mr-2 text-[#ff2d55] dark:text-[#ff375f]" />
                       <div>
-                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{t("recentActivities")}</h2>
-                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">{t("recentActivitiesDesc")}</p>
+                        <h2 className="text-xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                          {t("recentActivities")}
+                        </h2>
+                        <p className="text-sm font-medium text-[#86868b] dark:text-[#a1a1a6]">
+                          {t("recentActivitiesDesc")}
+                        </p>
                       </div>
                     </div>
                     {recentResults.length > 0 ? (
                       <div className="space-y-4">
                         {recentResults.map((result) => (
-                          <div key={result.id} className="flex items-center justify-between p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#1d1d1f]/50 hover:bg-[#e8e8ed] dark:hover:bg-[#2c2c2e] transition-colors border border-transparent dark:border-[#333336]">
+                          <div
+                            key={result.id}
+                            className="flex items-center justify-between p-3 rounded-xl bg-[#f5f5f7] dark:bg-[#1d1d1f]/50 hover:bg-[#e8e8ed] dark:hover:bg-[#2c2c2e] transition-colors border border-transparent dark:border-[#333336]"
+                          >
                             <div className="flex items-center gap-4">
                               <div className="w-10 h-10 rounded-xl bg-[#007aff]/10 dark:bg-[#0a84ff]/20 flex items-center justify-center border border-[#007aff]/20">
                                 <Activity className="w-5 h-5 text-[#007aff] dark:text-[#0a84ff]" />
@@ -1143,25 +1157,33 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                               <div>
                                 <div className="flex items-center gap-2">
                                   <h4 className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                                    {result.type === "TopicExplainer" ? t("topicRead") : t("testSolved")}: {result.subject}
+                                    {result.type === "TopicExplainer"
+                                      ? t("topicRead")
+                                      : t("testSolved")}
+                                    : {result.subject}
                                   </h4>
                                 </div>
                                 <div className="flex items-center gap-3 mt-1">
                                   <div className="flex items-center text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                                     {result.isDemo ? (
-                                      <Badge variant="outline" className="text-xs bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 font-medium">
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs bg-[#ff9500]/10 text-[#ff9500] border-[#ff9500]/20 font-medium"
+                                      >
                                         Demo
                                       </Badge>
                                     ) : (
                                       <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
                                         {result.type !== "TopicExplainer" && (
                                           <>
-                                            {result.score}/{result.totalQuestions} {t("correct")} •{" "}
+                                            {result.score}/{result.totalQuestions} {t("correct")}{" "}
+                                            •{" "}
                                           </>
                                         )}
-                                        {Math.round(result.timeSpent / 60)} dk
-                                        {" "}•{" "}
-                                        {new Date(result.createdAt).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US")}
+                                        {Math.round(result.timeSpent / 60)} dk •{" "}
+                                        {new Date(result.createdAt).toLocaleDateString(
+                                          locale === "tr" ? "tr-TR" : "en-US",
+                                        )}
                                       </span>
                                     )}
                                   </div>
@@ -1171,20 +1193,29 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                             <div className="flex items-center gap-4">
                               <div className="text-right">
                                 {result.type === "TopicExplainer" ? (
-                                  <Badge className="badge-gradient-high shadow-none">{t("read")}</Badge>
+                                  <Badge className="badge-gradient-high shadow-none">
+                                    {t("read")}
+                                  </Badge>
                                 ) : (
-                                  <Badge className={`text-sm px-2 py-0.5 shadow-none ${result.score / result.totalQuestions >= 0.8
-                                    ? "badge-gradient-high"
-                                    : result.score / result.totalQuestions >= 0.7
-                                      ? "badge-gradient-medium"
-                                      : "badge-gradient-low"
-                                    }`}>
+                                  <Badge
+                                    className={`text-sm px-2 py-0.5 shadow-none ${
+                                      result.score / result.totalQuestions >= 0.8
+                                        ? "badge-gradient-high"
+                                        : result.score / result.totalQuestions >= 0.7
+                                          ? "badge-gradient-medium"
+                                          : "badge-gradient-low"
+                                    }`}
+                                  >
                                     %{Math.round((result.score / result.totalQuestions) * 100)}
                                   </Badge>
                                 )}
                               </div>
                               <Link href={`/quiz/${result.id}`}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-[#86868b] hover:text-[#007aff] hover:bg-[#007aff]/10 rounded-full transition-colors">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-[#86868b] hover:text-[#007aff] hover:bg-[#007aff]/10 rounded-full transition-colors"
+                                >
                                   <ArrowRight className="h-4 w-4" />
                                 </Button>
                               </Link>
@@ -1239,9 +1270,14 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
               <div className="lg:col-span-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
                   <div className="apple-glass-card h-full">
-                    <Link href="/quiz" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                    <Link
+                      href="/quiz"
+                      className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center"
+                    >
                       <Zap className="h-8 w-8 mx-auto mb-3 text-[#007aff]" />
-                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("quickTest")}</h3>
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("quickTest")}
+                      </h3>
                       <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                         {userSettings.studyPreferences.questionsPerQuiz} {t("quickTestDesc")}
                       </p>
@@ -1249,9 +1285,14 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                   </div>
 
                   <div className="apple-glass-card h-full">
-                    <Link href="/flashcard" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                    <Link
+                      href="/flashcard"
+                      className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center"
+                    >
                       <Brain className="h-8 w-8 mx-auto mb-3 text-[#34c759]" />
-                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">Flashcard</h3>
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        Flashcard
+                      </h3>
                       <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                         {t("flashcardDesc")}
                       </p>
@@ -1259,9 +1300,14 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                   </div>
 
                   <div className="apple-glass-card h-full">
-                    <Link href="/ai-chat" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                    <Link
+                      href="/ai-chat"
+                      className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center"
+                    >
                       <BookOpen className="h-8 w-8 mx-auto mb-3 text-[#af52de]" />
-                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">AI Tutor</h3>
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        AI Tutor
+                      </h3>
                       <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                         {t("aiTutorDesc")}
                       </p>
@@ -1269,9 +1315,14 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
                   </div>
 
                   <div className="apple-glass-card h-full">
-                    <Link href="/subject-manager" className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center">
+                    <Link
+                      href="/subject-manager"
+                      className="flex flex-col h-full w-full relative z-10 p-6 text-center justify-center"
+                    >
                       <Database className="h-8 w-8 mx-auto mb-3 text-[#ff9500]" />
-                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">{t("subjectManagement")}</h3>
+                      <h3 className="font-semibold mb-2 text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                        {t("subjectManagement")}
+                      </h3>
                       <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
                         {t("subjectManagementDesc")}
                       </p>
@@ -1289,10 +1340,7 @@ Strong Topics Overall: ${performanceData.flatMap(p => p.strongTopics).slice(0, 1
             />
 
             {/* AI Floating Chat - uses current dashboard data (demo or real) */}
-            <AIFloatingChat
-              subject="Dashboard"
-              context={dashboardContext}
-            />
+            <AIFloatingChat subject="Dashboard" context={dashboardContext} />
           </>
         )}
       </div>

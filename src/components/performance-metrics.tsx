@@ -29,7 +29,7 @@ export default function PerformanceMetrics() {
       icon: <Shield className="h-6 w-6 text-green-500" />,
       color: "border-gradient-green",
       bgHover: "hover:shadow-green-500/10",
-    }
+    },
   ];
 
   return (
@@ -43,16 +43,14 @@ export default function PerformanceMetrics() {
                 {t("title")}
               </span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t("subtitle")}
-            </p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("subtitle")}</p>
           </div>
 
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {metrics.map((metric, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`${metric.color} p-[1px] transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-xl ${metric.bgHover}`}
               >
                 <Card className="h-full w-full border-0 bg-white dark:bg-gray-900/50 rounded-[11px] backdrop-blur-sm">
@@ -60,9 +58,7 @@ export default function PerformanceMetrics() {
                     <div className="w-14 h-14 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mx-auto shadow-sm">
                       {metric.icon}
                     </div>
-                    <CardTitle className="text-lg font-bold">
-                      {metric.title}
-                    </CardTitle>
+                    <CardTitle className="text-lg font-bold">{metric.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center pt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">

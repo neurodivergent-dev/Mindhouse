@@ -56,7 +56,7 @@ export class UnifiedStorageService {
     questions: null as Question[] | null,
     subjects: null as Subject[] | null,
     flashcards: null as Flashcard[] | null,
-    topics: {} as Record<string, SavedTopicContent[]>
+    topics: {} as Record<string, SavedTopicContent[]>,
   };
   private static isInitialized = false;
 
@@ -118,7 +118,7 @@ export class UnifiedStorageService {
         if (this.cache.subjects && this.cache.subjects.length > 0) {
           const originalLength = this.cache.subjects.length;
           this.cache.subjects = this.cache.subjects.filter(
-            (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_")
+            (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_"),
           );
           if (this.cache.subjects.length !== originalLength) {
             await localforage.setItem(this.SUBJECTS_KEY, this.cache.subjects);
@@ -127,7 +127,7 @@ export class UnifiedStorageService {
         if (this.cache.questions && this.cache.questions.length > 0) {
           const originalLength = this.cache.questions.length;
           this.cache.questions = this.cache.questions.filter(
-            (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025"
+            (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025",
           );
           if (this.cache.questions.length !== originalLength) {
             await localforage.setItem(this.QUESTIONS_KEY, this.cache.questions);
@@ -135,9 +135,7 @@ export class UnifiedStorageService {
         }
         if (this.cache.flashcards && this.cache.flashcards.length > 0) {
           const originalLength = this.cache.flashcards.length;
-          this.cache.flashcards = this.cache.flashcards.filter(
-            (f) => !f.id.startsWith("fc_")
-          );
+          this.cache.flashcards = this.cache.flashcards.filter((f) => !f.id.startsWith("fc_"));
           if (this.cache.flashcards.length !== originalLength) {
             await localforage.setItem(this.FLASHCARDS_KEY, this.cache.flashcards);
           }
@@ -203,7 +201,7 @@ export class UnifiedStorageService {
       // Filter out demo questions if demo mode is off
       if (!shouldUseDemoData()) {
         questions = questions.filter(
-          (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025"
+          (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025",
         );
       }
 
@@ -378,7 +376,7 @@ export class UnifiedStorageService {
       // Filter out demo subjects if demo mode is off
       if (!shouldUseDemoData()) {
         subjects = subjects.filter(
-          (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_")
+          (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_"),
         );
       }
 
@@ -501,9 +499,7 @@ export class UnifiedStorageService {
       const processedFlashcards = flashcards.map((flashcard: Flashcard) => ({
         ...flashcard,
         createdAt:
-          flashcard.createdAt instanceof Date
-            ? flashcard.createdAt
-            : new Date(flashcard.createdAt),
+          flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
       }));
 
       return processedFlashcards;
@@ -520,9 +516,7 @@ export class UnifiedStorageService {
     localforage.setItem(this.FLASHCARDS_KEY, flashcards).catch(console.error);
   }
 
-  static async addFlashcard(
-    flashcard: Omit<Flashcard, "id">,
-  ): Promise<Flashcard> {
+  static async addFlashcard(flashcard: Omit<Flashcard, "id">): Promise<Flashcard> {
     const newFlashcard: Flashcard = {
       ...flashcard,
       id: `flashcard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -556,9 +550,7 @@ export class UnifiedStorageService {
   }
 
   // Sync single flashcard to Supabase with enhanced error handling
-  private static async syncFlashcardToSupabase(
-    flashcard: Flashcard,
-  ): Promise<void> {
+  private static async syncFlashcardToSupabase(flashcard: Flashcard): Promise<void> {
     try {
       const userId = await this.getCurrentUserId();
       if (!userId) {
@@ -674,15 +666,11 @@ export class UnifiedStorageService {
     });
 
     // Ensure createdAt is a Date object for filtered flashcards
-    const processedFlashcards = filteredFlashcards.map(
-      (flashcard: Flashcard) => ({
-        ...flashcard,
-        createdAt:
-          flashcard.createdAt instanceof Date
-            ? flashcard.createdAt
-            : new Date(flashcard.createdAt),
-      }),
-    );
+    const processedFlashcards = filteredFlashcards.map((flashcard: Flashcard) => ({
+      ...flashcard,
+      createdAt:
+        flashcard.createdAt instanceof Date ? flashcard.createdAt : new Date(flashcard.createdAt),
+    }));
 
     if (process.env.NODE_ENV === "development") {
       //console.log(`🔍 Found ${processedFlashcards.length} flashcards for subject: ${subject}`);
@@ -807,8 +795,7 @@ export class UnifiedStorageService {
 
       // Remove duplicates by ID (keep the first occurrence)
       const uniqueQuestions = questions.filter(
-        (question, index, self) =>
-          index === self.findIndex((q) => q.id === question.id),
+        (question, index, self) => index === self.findIndex((q) => q.id === question.id),
       );
 
       const removed = total - uniqueQuestions.length;
@@ -846,18 +833,10 @@ export class UnifiedStorageService {
       let invalid = 0;
 
       questions.forEach((question, index) => {
-        if (
-          !question.id ||
-          !question.subject ||
-          !question.text ||
-          !question.explanation
-        ) {
+        if (!question.id || !question.subject || !question.text || !question.explanation) {
           invalid++;
           errors.push(`Question at index ${index}: Missing required fields`);
-        } else if (
-          !Array.isArray(question.options) ||
-          question.options.length === 0
-        ) {
+        } else if (!Array.isArray(question.options) || question.options.length === 0) {
           invalid++;
           errors.push(`Question at index ${index}: Invalid options array`);
         } else {
@@ -933,10 +912,7 @@ export class UnifiedStorageService {
   }
 
   // Update topic content
-  static updateTopic(
-    id: string,
-    updates: Partial<Omit<SavedTopicContent, "id">>,
-  ): boolean {
+  static updateTopic(id: string, updates: Partial<Omit<SavedTopicContent, "id">>): boolean {
     const topics = this.getSavedTopics();
     const index = topics.findIndex((t) => t.id === id);
     if (index === -1) {
@@ -1020,10 +996,7 @@ export class UnifiedStorageService {
   }
 
   // Private method to save topics for a specific subject
-  private static saveTopicsBySubject(
-    subject: string,
-    topics: SavedTopicContent[],
-  ): void {
+  private static saveTopicsBySubject(subject: string, topics: SavedTopicContent[]): void {
     if (typeof window === "undefined") {
       return;
     }
@@ -1120,10 +1093,7 @@ export class UnifiedStorageService {
         }
 
         // Handle specific error cases
-        if (
-          response.status === 500 &&
-          errorData.details?.includes("does not exist")
-        ) {
+        if (response.status === 500 && errorData.details?.includes("does not exist")) {
           return { loaded: 0, merged: 0, authStatus: "unauthenticated" };
         }
 
@@ -1213,9 +1183,7 @@ export class UnifiedStorageService {
       }
 
       // Try a simple query to check access
-      const response = await fetch(
-        `/api/flashcards/check-access?userId=${userId}`,
-      );
+      const response = await fetch(`/api/flashcards/check-access?userId=${userId}`);
       const hasAccess = response.ok;
 
       return { hasAccess, isAuthenticated, userId };

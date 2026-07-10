@@ -49,10 +49,7 @@ export class QuizRepository {
   /**
    * Get quiz results for a user and subject
    */
-  static async getQuizResults(
-    userId: string,
-    subject: string,
-  ): Promise<QuizResultDisplay[]> {
+  static async getQuizResults(userId: string, subject: string): Promise<QuizResultDisplay[]> {
     try {
       const db = getDb();
       const results = await db
@@ -64,9 +61,7 @@ export class QuizRepository {
           createdAt: quizResults.createdAt,
         })
         .from(quizResults)
-        .where(
-          and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)),
-        )
+        .where(and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)))
         .orderBy(desc(quizResults.createdAt));
 
       return results.map((result) => ({
@@ -84,9 +79,7 @@ export class QuizRepository {
   /**
    * Get all quiz results for a user
    */
-  static async getAllQuizResults(
-    userId: string,
-  ): Promise<Record<string, QuizResultDisplay[]>> {
+  static async getAllQuizResults(userId: string): Promise<Record<string, QuizResultDisplay[]>> {
     try {
       const db = getDb();
       const results = await db
@@ -144,9 +137,7 @@ export class QuizRepository {
           createdAt: quizResults.createdAt,
         })
         .from(quizResults)
-        .where(
-          and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)),
-        )
+        .where(and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)))
         .orderBy(desc(quizResults.createdAt))
         .limit(limit);
 
@@ -165,10 +156,7 @@ export class QuizRepository {
   /**
    * Update performance analytics for a user and subject
    */
-  private static async updatePerformanceAnalytics(
-    userId: string,
-    subject: string,
-  ): Promise<void> {
+  private static async updatePerformanceAnalytics(userId: string, subject: string): Promise<void> {
     try {
       const db = getDb();
       const results = await this.getQuizResults(userId, subject);
@@ -179,15 +167,11 @@ export class QuizRepository {
 
       const totalTests = results.length;
       const averageScore =
-        results.reduce(
-          (acc, result) => acc + (result.score / result.totalQuestions) * 100,
-          0,
-        ) / totalTests;
+        results.reduce((acc, result) => acc + (result.score / result.totalQuestions) * 100, 0) /
+        totalTests;
 
       const averageTimeSpent =
-        results.reduce((acc, result) => acc + result.timeSpent, 0) /
-        totalTests /
-        60; // Convert to minutes
+        results.reduce((acc, result) => acc + result.timeSpent, 0) / totalTests / 60; // Convert to minutes
 
       // Aggregate weak topics
       const allWeakTopics: Record<string, number> = {};
@@ -236,10 +220,7 @@ export class QuizRepository {
         .select()
         .from(performanceAnalytics)
         .where(
-          and(
-            eq(performanceAnalytics.userId, userId),
-            eq(performanceAnalytics.subject, subject),
-          ),
+          and(eq(performanceAnalytics.userId, userId), eq(performanceAnalytics.subject, subject)),
         )
         .limit(1);
 
@@ -291,26 +272,18 @@ export class QuizRepository {
   /**
    * Delete quiz results for a user and subject
    */
-  static async deleteQuizResults(
-    userId: string,
-    subject: string,
-  ): Promise<void> {
+  static async deleteQuizResults(userId: string, subject: string): Promise<void> {
     try {
       const db = getDb();
       await db
         .delete(quizResults)
-        .where(
-          and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)),
-        );
+        .where(and(eq(quizResults.userId, userId), eq(quizResults.subject, subject)));
 
       // Also delete performance analytics
       await db
         .delete(performanceAnalytics)
         .where(
-          and(
-            eq(performanceAnalytics.userId, userId),
-            eq(performanceAnalytics.subject, subject),
-          ),
+          and(eq(performanceAnalytics.userId, userId), eq(performanceAnalytics.subject, subject)),
         );
     } catch (error) {
       throw error;

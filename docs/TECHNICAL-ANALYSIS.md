@@ -1,6 +1,7 @@
 # 🏗️ Mindhouse - Comprehensive Project Analysis
 
 ## 📋 Table of Contents
+
 1. [General Architecture Structure](#1--general-architecture-structure)
 2. [Folder Structure and Purposes](#2--folder-structure-and-purposes)
 3. [Main Component Communication](#3--main-component-communication)
@@ -13,6 +14,7 @@
 ## 1. 📐 General Architecture Structure
 
 ### **Technology Stack:**
+
 - **Frontend:** Next.js 15.3.3 (React 18.3.1) + TypeScript
 - **Styling:** Tailwind CSS + Radix UI + Framer Motion
 - **Backend:** Next.js API Routes + Server Actions
@@ -46,6 +48,7 @@
 ## 2. 📁 Folder Structure and Purposes
 
 ### **`/src/app/` - Next.js App Router**
+
 - **Page Routes:** Each folder represents a route
   - `dashboard/` - Main control panel
   - `quiz/` - Quiz solving module
@@ -58,6 +61,7 @@
   - `auth/` - Authentication pages
 
 ### **`/src/ai/` - AI Integration**
+
 - `flows/` - Genkit AI flows
   - `ai-tutor.ts` - AI teacher assistant
   - `ai-chat.ts` - Chat system
@@ -65,22 +69,26 @@
   - `personalize-question-difficulty.ts` - Difficulty level personalization
 
 ### **`/src/components/` - React Components**
+
 - `ui/` - Basic UI components (Button, Card, Dialog, etc.)
 - `ai/` - AI-powered components
 - Main components (Quiz, Dashboard, FlashCard, etc.)
 
 ### **`/src/lib/` - Helper Libraries**
+
 - `database/` - Database configuration
   - `schema.ts` - Drizzle ORM schemas
   - `connection.ts` - DB connection management
   - `repositories/` - Repository pattern implementation
 
 ### **`/src/services/` - Business Logic Services**
+
 - `performance-service.ts` - Performance analytics
 - `supabase-service.ts` - Supabase integration
 - `localStorage-service.ts` - Local storage management
 
 ### **`/src/hooks/` - Custom React Hooks**
+
 - `useAuth.ts` - Authentication hook
 - `useLocalAuth.ts` - Local auth management
 - `use-toast.ts` - Notification system
@@ -88,6 +96,7 @@
 ## 3. 🔄 Main Component Communication
 
 ### **API Endpoints:**
+
 ```typescript
 // Quiz API
 POST /api/quiz - Create test
@@ -112,6 +121,7 @@ DELETE /api/delete-avatar - Delete avatar
 ```
 
 ### **Data Flow:**
+
 ```
 User Action → React Component → API Route/Server Action
                                         ↓
@@ -123,6 +133,7 @@ User Action → React Component → API Route/Server Action
 ```
 
 ### **AI Flow Example:**
+
 ```typescript
 // AI Tutor Flow
 1. User requests help with question
@@ -134,6 +145,7 @@ User Action → React Component → API Route/Server Action
 ## 4. 📊 Code Quality Analysis
 
 ### **✅ Strengths:**
+
 1. **TypeScript Strict Mode:** Full type safety
 2. **Repository Pattern:** Clean data access layer
 3. **Modular Structure:** Well-organized folder structure
@@ -144,6 +156,7 @@ User Action → React Component → API Route/Server Action
 8. **Gradient Design Language:** Consistent visual language
 
 ### **⚠️ Areas for Improvement:**
+
 1. **Missing Tests:** No test files present
 2. **Missing Error Boundary:** No global error handling
 3. **TypeScript Build Errors:** Using `ignoreBuildErrors: true`
@@ -155,6 +168,7 @@ User Action → React Component → API Route/Server Action
 ## 5. 🔒 Security and Performance
 
 ### **Security:**
+
 - ✅ Supabase RLS (Row Level Security) implementation
 - ✅ TypeScript type safety
 - ✅ Secure file uploads with Cloudinary
@@ -166,6 +180,7 @@ User Action → React Component → API Route/Server Action
 - ⚠️ Missing security headers
 
 ### **Performance:**
+
 - ✅ Next.js SSR/SSG optimizations
 - ✅ PWA with offline support
 - ✅ Lazy loading components
@@ -178,36 +193,23 @@ User Action → React Component → API Route/Server Action
 
 ## 6. 🧪 Testing Structure
 
-### **Current Status:** 
+### **Current Status:**
+
 No test files present ❌
 
 ### **Recommended Testing Strategy:**
+
 ```typescript
-src/
-  __tests__/
-    unit/
-      services/
-        - performance-service.test.ts
-        - supabase-service.test.ts
-      hooks/
-        - useAuth.test.ts
-        - useLocalAuth.test.ts
-      utils/
-        - helpers.test.ts
-    integration/
-      api/
-        - quiz.test.ts
-        - subjects.test.ts
-        - questions.test.ts
-      database/
-        - repositories.test.ts
-    e2e/
-      user-flows/
-        - quiz-flow.test.ts
-        - auth-flow.test.ts
+src / __tests__ / unit / services / -performance - service.test.ts - supabase - service.test.ts;
+hooks / -useAuth.test.ts - useLocalAuth.test.ts;
+utils / -helpers.test.ts;
+integration / api / -quiz.test.ts - subjects.test.ts - questions.test.ts;
+database / -repositories.test.ts;
+e2e / user - flows / -quiz - flow.test.ts - auth - flow.test.ts;
 ```
 
 ### **Recommended Testing Tools:**
+
 - **Unit Tests:** Jest + React Testing Library
 - **Integration Tests:** Jest + Supertest
 - **E2E Tests:** Playwright or Cypress
@@ -216,24 +218,28 @@ src/
 ## 7. 🔧 Refactoring Recommendations
 
 ### **1. Code Duplication:**
+
 ```typescript
 // Problem: Repeated Supabase auth checks
-const { data: { user } } = await supabase.auth.getUser();
+const {
+  data: { user },
+} = await supabase.auth.getUser();
 
 // Solution: Custom hook
 function useSupabaseUser() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     // Centralized user management
   }, []);
-  
+
   return { user, loading };
 }
 ```
 
 ### **2. Complex Functions:**
+
 ```typescript
 // Problem: handleAnswer function in Quiz component is too long
 
@@ -242,15 +248,16 @@ const answerHandlers = {
   validate: validateAnswer,
   updateScore: updateScore,
   saveProgress: saveProgress,
-  moveNext: moveToNext
+  moveNext: moveToNext,
 };
 
 function handleAnswer(answer: string) {
-  Object.values(answerHandlers).forEach(handler => handler(answer));
+  Object.values(answerHandlers).forEach((handler) => handler(answer));
 }
 ```
 
 ### **3. API Response Standardization:**
+
 ```typescript
 // Recommended response wrapper
 interface ApiResponse<T> {
@@ -269,24 +276,22 @@ interface ApiResponse<T> {
 }
 
 // Usage
-export function createApiResponse<T>(
-  data?: T, 
-  error?: any
-): ApiResponse<T> {
+export function createApiResponse<T>(data?: T, error?: any): ApiResponse<T> {
   return {
     success: !error,
     data,
     error,
     metadata: {
       timestamp: new Date().toISOString(),
-      version: '1.0.0',
-      requestId: generateRequestId()
-    }
+      version: "1.0.0",
+      requestId: generateRequestId(),
+    },
   };
 }
 ```
 
 ### **4. Error Handling Standardization:**
+
 ```typescript
 // Global error handler
 class AppError extends Error {
@@ -294,7 +299,7 @@ class AppError extends Error {
     public code: string,
     public message: string,
     public statusCode: number = 500,
-    public details?: any
+    public details?: any,
   ) {
     super(message);
   }
@@ -307,9 +312,10 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
 ```
 
 ### **5. Environment Variables Validation:**
+
 ```typescript
 // env.schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -328,6 +334,7 @@ export function validateEnv() {
 ## 8. 📚 Technical Documentation Summary
 
 ### **Quick Start:**
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/melihcanndemir/mindhouse.git
@@ -355,12 +362,14 @@ npm run genkit:dev
 ### **Core Data Models:**
 
 #### **Users Table:**
+
 - `id`: CUID2 primary key
 - `email`: Unique email
 - `name`: User name
 - `createdAt`, `updatedAt`: Timestamps
 
 #### **Subjects Table:**
+
 - `id`: CUID2 primary key
 - `name`: Subject name
 - `description`: Description
@@ -370,6 +379,7 @@ npm run genkit:dev
 - `isActive`: Active status
 
 #### **Questions Table:**
+
 - `id`: CUID2 primary key
 - `subjectId`: Foreign key to subjects
 - `type`: Question type (multiple-choice, true-false, etc.)
@@ -379,6 +389,7 @@ npm run genkit:dev
 - `explanation`: Explanation
 
 #### **Quiz Results Table:**
+
 - `id`: CUID2 primary key
 - `userId`: Foreign key to users
 - `subject`: Subject
@@ -388,6 +399,7 @@ npm run genkit:dev
 - `weakTopics`: Weak topics (JSON)
 
 ### **Critical Dependencies:**
+
 ```json
 {
   "next": "15.3.3",
@@ -402,6 +414,7 @@ npm run genkit:dev
 ```
 
 ### **Deployment Checklist:**
+
 - [ ] Create Supabase project
 - [ ] Set up Cloudinary account
 - [ ] Get Google AI API key
@@ -414,6 +427,7 @@ npm run genkit:dev
 - [ ] Define backup strategy
 
 ### **Monitoring and Maintenance:**
+
 - **Error Tracking:** Sentry integration recommended
 - **Analytics:** Google Analytics or Plausible
 - **Performance:** Lighthouse CI integration
