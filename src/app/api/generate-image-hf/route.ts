@@ -32,13 +32,18 @@ export async function POST(request: NextRequest) {
       const response = await fetch(fluxUrl, { 
         method: "HEAD", 
         headers: fetchHeaders,
-        signal: AbortSignal.timeout(2000) 
+        signal: AbortSignal.timeout(4000) // Increase timeout to 4s to avoid false-negative fallbacks
       });
       if (response.status === 429 || !response.ok) {
-        imageUrl = defaultUrl;
+        // Fallback to default (or flux model) but keep authentication headers
+        imageUrl = pollinationsApiKey 
+          ? `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`
+          : defaultUrl;
       }
     } catch {
-      imageUrl = defaultUrl;
+      imageUrl = pollinationsApiKey 
+        ? `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`
+        : defaultUrl;
     }
 
     return NextResponse.json({
