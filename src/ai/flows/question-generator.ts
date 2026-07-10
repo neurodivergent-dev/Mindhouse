@@ -1,7 +1,9 @@
 "use server";
 
-import { ai } from "@/ai/genkit";
-import { z } from "genkit";
+import { z } from "zod";
+import type { IAIProvider } from "@/services/ai/core/IAIProvider";
+import type { AIPreferences } from "@/services/ai/AIFactory";
+import { AIFactory } from "@/services/ai/AIFactory";
 
 const QuestionGenerationInputSchema = z.object({
   subject: z.string().describe("The subject for which to generate questions"),
@@ -44,16 +46,19 @@ const GeneratedQuestionSchema = z.object({
   explanation: z
     .string()
     .describe("Detailed explanation of the correct answer"),
-  topic: z.string().describe("The specific topic this question covers"),
+  topic: z.string().optional().describe("The specific topic this question covers"),
   formula: z.string().optional().describe("Mathematical formula if applicable"),
   difficulty: z
     .enum(["Easy", "Medium", "Hard"])
+    .optional()
     .describe("Actual difficulty of the generated question"),
   keywords: z
     .array(z.string())
+    .optional()
     .describe("Key concepts covered in the question"),
   learningObjective: z
     .string()
+    .optional()
     .describe("What the student should learn from this question"),
 });
 
@@ -67,14 +72,14 @@ const QuestionGenerationOutputSchema = z.object({
     generationTimestamp: z
       .string()
       .describe("When the questions were generated"),
-  }),
+  }).optional(),
   qualityScore: z
     .number()
-    .min(0)
-    .max(1)
+    .optional()
     .describe("Overall quality score of generated questions"),
   suggestions: z
-    .array(z.string())
+    .union([z.array(z.string()), z.string()])
+    .optional()
     .describe("Suggestions for improving question quality"),
 });
 
@@ -84,22 +89,14 @@ export type QuestionGenerationOutput = z.infer<
 
 export async function generateQuestions(
   input: QuestionGenerationInput,
+  providerOrPrefs?: IAIProvider | Partial<AIPreferences>
 ): Promise<QuestionGenerationOutput> {
   try {
-    const response = await questionGeneratorFlow(input);
-    return response;
-  } catch {
-    throw new Error("Failed to generate questions");
-  }
-}
+    const provider = 
+      providerOrPrefs && 'generateObject' in providerOrPrefs
+        ? providerOrPrefs
+        : AIFactory.getProviderFromPreferences((providerOrPrefs as Partial<AIPreferences>) || {});
 
-const questionGeneratorFlow = ai.defineFlow(
-  {
-    name: "questionGenerator",
-    inputSchema: QuestionGenerationInputSchema,
-    outputSchema: QuestionGenerationOutputSchema,
-  },
-  async (input) => {
     const typeDescriptions = {
       "multiple-choice":
         "multiple choice questions with 4 options where exactly one is correct",
@@ -119,35 +116,6 @@ Your task is to generate ${input.count} ${typeDescriptions[input.type]} for the 
 
 ${languageInstructions}
 
-IMPORTANT: You must respond with ONLY valid JSON in the following format:
-{
-  "questions": [
-    {
-      "text": "Question text here",
-      "options": [
-        {"text": "Option A", "isCorrect": true},
-        {"text": "Option B", "isCorrect": false},
-        {"text": "Option C", "isCorrect": false},
-        {"text": "Option D", "isCorrect": false}
-      ],
-      "explanation": "Detailed explanation here",
-      "topic": "Topic name",
-      "difficulty": "Easy|Medium|Hard",
-      "keywords": ["keyword1", "keyword2"],
-      "learningObjective": "Learning objective description"
-    }
-  ],
-  "metadata": {
-    "totalGenerated": ${input.count},
-    "subject": "${input.subject}",
-    "topic": "${input.topic}",
-    "averageDifficulty": "${input.difficulty}",
-    "generationTimestamp": ""
-  },
-  "qualityScore": 0.85,
-  "suggestions": []
-}
-
 Requirements:
 1. Questions must be clear, unambiguous, and educationally valuable
 2. Difficulty level should match "${input.difficulty}":
@@ -159,7 +127,6 @@ Requirements:
 5. Include detailed explanations that help students learn
 6. For calculation questions, include the formula used
 7. Ensure factual accuracy and pedagogical soundness
-8. RESPOND WITH ONLY VALID JSON - NO MARKDOWN, NO EXPLANATIONS OUTSIDE THE JSON
 
 ${input.guidelines ? `Additional Guidelines: ${input.guidelines}` : ""}
 
@@ -169,69 +136,96 @@ Quality Criteria:
 - Discrimination: Questions should differentiate between students who understand and those who don't
 - Validity: Questions should measure what they intend to measure
 
-REMEMBER: Return ONLY the JSON object, no other text.`;
+CRITICAL INSTRUCTION: You MUST output a JSON object containing the exact keys defined in the schema (e.g. 'questions' array, 'metadata' object, 'qualityScore', 'suggestions'). DO NOT output just an array of questions.`;
 
-    const response = await ai.generate(systemPrompt);
+    // We use a simplified and highly permissive schema for the LLM to prevent Zod validation errors
+    // because local models often hallucinate slightly different key names (e.g. questionText instead of question).
+    const LLMQuestionSchema = z.object({
+      question: z.string().optional().describe("The question text"),
+      questionText: z.string().optional(),
+      text: z.string().optional(),
+      
+      options: z.array(z.any()).optional().describe("Answer options as an array of strings"),
+      
+      correctAnswer: z.string().optional().describe("The correct answer exactly matching one of the options"),
+      correctOption: z.string().optional(),
+      correct_answer: z.string().optional(),
+      
+      explanation: z.string().optional().describe("Detailed explanation of the correct answer"),
+    }).catchall(z.any());
 
-    // Check if response is valid
-    if (!response?.text) {
-      throw new Error("AI generation failed - invalid response");
-    }
+    const LLMOutputSchema = z.object({
+      questions: z.array(LLMQuestionSchema).optional().describe("Generated questions"),
+      metadata: z.any().optional(),
+      qualityScore: z.any().optional(),
+      suggestions: z.any().optional()
+    }).catchall(z.any());
 
-    // Clean the response text to remove markdown formatting
-    let cleanedText = response.text;
+    const output = await provider.generateObject<any>({
+      prompt: `Generate ${input.count} questions.`,
+      systemPrompt,
+      schema: LLMOutputSchema,
+      temperature: 0.7,
+    });
 
-    // Remove markdown code blocks if present
-    if (cleanedText.includes("```json")) {
-      cleanedText = cleanedText
-        .replace(/```json\s*/, "")
-        .replace(/\s*```$/, "");
-    } else if (cleanedText.includes("```")) {
-      cleanedText = cleanedText.replace(/```\s*/, "").replace(/\s*```$/, "");
-    }
+    // Map the simplified LLM output back to our complex application schema
+    const mappedQuestions = (output?.questions || []).map((q: any) => {
+      // Sometimes local models return options as objects despite the string array schema
+      const mappedOptions = (q.options || []).map((opt: any) => {
+        const textStr = typeof opt === 'string' ? opt : (opt.optionText || opt.text || String(opt));
+        const correctStr = q.correctAnswer || q.correctOption || q.correct_answer;
+        return {
+          text: textStr,
+          isCorrect: typeof opt === 'object' && typeof opt.isCorrect === 'boolean' 
+            ? opt.isCorrect 
+            : textStr === correctStr
+        };
+      });
 
-    // Trim whitespace
-    cleanedText = cleanedText.trim();
+      return {
+        text: q.question || q.questionText || q.text || "",
+        options: mappedOptions,
+        explanation: q.explanation || "",
+        topic: input.topic,
+        difficulty: input.difficulty,
+        keywords: [input.topic],
+        learningObjective: `Understand ${input.topic}`,
+      };
+    });
 
-    // Parse the cleaned text as JSON
-    let output;
-    try {
-      output = JSON.parse(cleanedText);
-    } catch {
-      throw new Error(
-        "AI generation failed - invalid JSON response. The AI returned natural language instead of JSON format.",
-      );
-    }
+    const finalOutput = {
+      questions: mappedQuestions,
+      metadata: {
+        totalGenerated: mappedQuestions.length,
+        subject: input.subject,
+        topic: input.topic,
+        averageDifficulty: input.difficulty,
+        generationTimestamp: new Date().toISOString()
+      },
+      qualityScore: 1.0,
+      suggestions: []
+    };
 
-    // Validate output structure
-    if (!output?.metadata || !output.questions) {
-      throw new Error("AI generation failed - invalid output structure");
-    }
-
-    // Add timestamp
-    if (output.metadata) {
-      output.metadata.generationTimestamp = new Date().toISOString();
-    }
-
-    // Validate and ensure quality
-    const validatedOutput = validateGeneratedQuestions(output, input);
-
-    return validatedOutput;
-  },
-);
+    return validateGeneratedQuestions(finalOutput, input);
+  } catch (error) {
+    console.error("Failed to generate questions:", error);
+    throw new Error("Failed to generate questions");
+  }
+}
 
 function validateGeneratedQuestions(
-  output: QuestionGenerationOutput,
+  output: any,
   input: QuestionGenerationInput,
 ): QuestionGenerationOutput {
   // Ensure we have the requested number of questions
-  if (output.questions.length < input.count) {
+  if (!output.questions) {
+    output.questions = [];
   }
 
   // Validate each question
-  output.questions = output.questions.map((question) => {
+  output.questions = output.questions.map((question: any) => {
     // Ensure multiple choice questions have exactly 4 options
-    if (input.type === "multiple-choice" && question.options.length !== 4) {
+    if (input.type === "multiple-choice" && Array.isArray(question.options) && question.options.length !== 4) {
       // Pad or trim options
       while (question.options.length < 4) {
         question.options.push({
@@ -243,13 +237,13 @@ function validateGeneratedQuestions(
     }
 
     // Ensure exactly one correct answer for multiple choice
-    if (input.type === "multiple-choice") {
+    if (input.type === "multiple-choice" && Array.isArray(question.options)) {
       const correctCount = question.options.filter(
-        (opt) => opt.isCorrect,
+        (opt: any) => opt.isCorrect,
       ).length;
       if (correctCount !== 1) {
         // Reset all to false and set first as correct
-        question.options.forEach((opt) => (opt.isCorrect = false));
+        question.options.forEach((opt: any) => (opt.isCorrect = false));
         if (question.options[0]) {
           question.options[0].isCorrect = true;
         }
@@ -257,41 +251,71 @@ function validateGeneratedQuestions(
     }
 
     // Ensure true/false questions have exactly 2 options
-    if (input.type === "true-false" && question.options.length !== 2) {
-      question.options = [
-        { text: input.language === "tr" ? "Doğru" : "True", isCorrect: true },
-        {
-          text: input.language === "tr" ? "Yanlış" : "False",
-          isCorrect: false,
-        },
-      ];
+    if (input.type === "true-false") {
+      if (!Array.isArray(question.options) || question.options.length !== 2) {
+        question.options = [
+          { text: input.language === "tr" ? "Doğru" : "True", isCorrect: true },
+          {
+            text: input.language === "tr" ? "Yanlış" : "False",
+            isCorrect: false,
+          },
+        ];
+      }
     }
+
+    // Fill in missing optional fields
+    question.topic = question.topic || input.topic;
+    question.difficulty = question.difficulty || input.difficulty;
+    question.keywords = question.keywords || [input.topic];
+    question.learningObjective = question.learningObjective || `Understand ${input.topic}`;
 
     return question;
   });
 
+  // Ensure metadata exists
+  if (!output.metadata) {
+    output.metadata = {
+      totalGenerated: output.questions.length,
+      subject: input.subject,
+      topic: input.topic,
+      averageDifficulty: input.difficulty,
+      generationTimestamp: new Date().toISOString()
+    };
+  }
+
+  // Normalize quality score
+  if (output.qualityScore === undefined) {
+    output.qualityScore = 1.0;
+  } else if (output.qualityScore > 1) {
+    output.qualityScore = output.qualityScore / 10;
+  }
+
+  // Normalize suggestions
+  if (!output.suggestions) {
+    output.suggestions = [];
+  } else if (typeof output.suggestions === 'string') {
+    output.suggestions = [output.suggestions];
+  }
+
   // Calculate quality score based on various factors
-  let qualityScore = 1.0;
+  let calculatedQualityScore = output.qualityScore;
 
   // Deduct for missing questions
   if (output.questions.length < input.count) {
-    qualityScore -= (input.count - output.questions.length) * 0.1;
+    calculatedQualityScore -= (input.count - output.questions.length) * 0.1;
   }
 
   // Check for empty fields
-  output.questions.forEach((q) => {
+  output.questions.forEach((q: any) => {
     if (!q.text || q.text.trim().length < 10) {
-      qualityScore -= 0.1;
+      calculatedQualityScore -= 0.1;
     }
     if (!q.explanation || q.explanation.trim().length < 20) {
-      qualityScore -= 0.05;
-    }
-    if (!q.learningObjective) {
-      qualityScore -= 0.05;
+      calculatedQualityScore -= 0.05;
     }
   });
 
-  output.qualityScore = Math.max(0, Math.min(1, qualityScore));
+  output.qualityScore = Math.max(0, Math.min(1, calculatedQualityScore));
 
-  return output;
+  return output as QuestionGenerationOutput;
 }

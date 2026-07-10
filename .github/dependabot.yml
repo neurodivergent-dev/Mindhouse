@@ -1,4 +1,4 @@
-# AkılHane - Dependabot version updates configuration
+# Mindhouse - Dependabot version updates configuration
 version: 2
 updates:
   # NPM paketleri için (Next.js, React, TypeScript, Tailwind CSS)

@@ -1,4 +1,4 @@
-name: 🎮 AkılHane CI/CD Game
+name: 🎮 Mindhouse CI/CD Game
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
         echo "🎮 GAME COMPLETED!"
         echo "🏆 Total XP: 750"
         echo "⭐ All missions completed successfully!"
-        echo "🎯 AkılHane is ready for deployment!"
+        echo "🎯 Mindhouse is ready for deployment!"
     
     - name: "❌ Mission Failed"
       if: failure()
@@ -105,6 +105,6 @@ jobs:
     - name: "🎯 Deploy Mission Complete"
       run: |
         echo "🎉 DEPLOYMENT MISSION COMPLETED!"
-        echo "✅ AkılHane deployed successfully!"
+        echo "✅ Mindhouse deployed successfully!"
         echo "🏆 +500 XP for deployment!"
         echo "🎮 Total Game Score: 1250 XP" 

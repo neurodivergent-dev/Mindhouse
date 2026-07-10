@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +24,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import localStorageService from "@/services/localStorage-service";
+import { aiChatSessionRepository } from "@/services/ai-chat-session-storage";
 
 interface AiChatSession {
   id: string;
@@ -43,29 +44,40 @@ interface AiChatSession {
 
 interface AiChatHistoryProps {
   onSessionSelect: (sessionId: string) => void;
+  onSessionDelete?: (sessionId: string) => void;
   currentSessionId?: string | undefined;
 }
 
+const GENERAL_SUBJECT = "Genel";
+
 export default function AiChatHistory({
   onSessionSelect,
+  onSessionDelete,
   currentSessionId,
 }: AiChatHistoryProps) {
+  const t = useTranslations("AIChat");
+  const tCommon = useTranslations("Common");
   const [sessions, setSessions] = useState<AiChatSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
+  const getSubjectLabel = useCallback(
+    (subject: string) => (subject === GENERAL_SUBJECT ? t("general") : subject),
+    [t],
+  );
+
   const fetchSessions = async (search?: string) => {
     try {
       setIsLoading(true);
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
 
       let allSessions: AiChatSession[] = [];
 
-      // Try to fetch from Supabase first
       if (user) {
         try {
           const url = search
@@ -81,12 +93,8 @@ export default function AiChatHistory({
         } catch {}
       }
 
-      // Get sessions from localStorage
-      const localSessions = user
-        ? localStorageService.getAIChatSessionsByUser(user.id)
-        : localStorageService.getAIChatSessions();
+      const localSessions = await aiChatSessionRepository.getSessions(user?.id);
 
-      // Convert localStorage sessions to the expected format
       let localFormattedSessions: AiChatSession[] = localSessions.map(
         (session) => {
           const lastMessage = session.messages && session.messages.length > 0
@@ -111,26 +119,21 @@ export default function AiChatHistory({
         },
       );
 
-      // Filter localStorage sessions by search term if provided
       if (search?.trim()) {
         const searchLower = search.toLowerCase().trim();
         localFormattedSessions = localFormattedSessions.filter((session) => {
-          // Search in title
           if (session.title?.toLowerCase().includes(searchLower)) {
             return true;
           }
 
-          // Search in subject
           if (session.subject.toLowerCase().includes(searchLower)) {
             return true;
           }
 
-          // Search in last message content
           if (session.lastMessage?.content?.toLowerCase().includes(searchLower)) {
             return true;
           }
 
-          // Search in all messages
           const originalSession = localSessions.find(s => s.sessionId === session.sessionId);
           if (originalSession?.messages) {
             return originalSession.messages.some(msg =>
@@ -142,10 +145,8 @@ export default function AiChatHistory({
         });
       }
 
-      // Combine Supabase and localStorage sessions
       const combinedSessions = [...allSessions, ...localFormattedSessions];
 
-      // Sort by last message date (newest first)
       combinedSessions.sort(
         (a, b) =>
           new Date(b.lastMessageAt).getTime() -
@@ -161,58 +162,67 @@ export default function AiChatHistory({
   };
 
   const deleteSession = async (sessionId: string) => {
+    console.log("deleteSession called with ID:", sessionId);
+    let deletedFromSupabase = false;
+    let userId: string | null = null;
+
     try {
-      // Get user ID
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      let deletedFromSupabase = false;
-
-      // Try to delete from Supabase first
-      if (user) {
-        try {
-          const response = await fetch(
-            `/api/ai-chat/${sessionId}?userId=${user.id}`,
-            {
-              method: "DELETE",
-            },
-          );
-
-          if (response.ok) {
-            deletedFromSupabase = true;
-          }
-        } catch {}
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        userId = session.user.id;
       }
+    } catch (e) {
+      console.warn("Could not get user for database delete, proceeding locally:", e);
+    }
 
-      // Try to delete from localStorage
+    if (userId) {
       try {
-        const deletedFromLocal =
-          localStorageService.deleteAIChatSession(sessionId);
-        if (deletedFromLocal || deletedFromSupabase) {
-          toast({
-            title: "Başarılı",
-            description: "Konuşma geçmişi silindi.",
-          });
-          fetchSessions(searchTerm);
+        console.log("Attempting to delete from Supabase for user:", userId);
+        const response = await fetch(
+          `/api/ai-chat/${sessionId}?userId=${userId}`,
+          {
+            method: "DELETE",
+          },
+        );
+
+        if (response.ok) {
+          deletedFromSupabase = true;
+          console.log("Successfully deleted from Supabase");
         } else {
-          toast({
-            title: "Hata",
-            description: "Konuşma geçmişi bulunamadı.",
-            variant: "destructive",
-          });
+          console.warn("Supabase delete response not OK:", response.status);
         }
-      } catch {
+      } catch (e) {
+        console.error("Failed to delete session from Supabase:", e);
+      }
+    }
+
+    try {
+      console.log("Attempting to delete from IndexedDB local repo...");
+      const deletedFromLocal = await aiChatSessionRepository.deleteSession(sessionId);
+      console.log("IndexedDB delete result:", deletedFromLocal);
+      
+      if (deletedFromLocal || deletedFromSupabase) {
         toast({
-          title: "Hata",
-          description: "Konuşma geçmişi silinirken bir hata oluştu.",
+          title: t("success"),
+          description: t("deleteSuccess"),
+        });
+        if (onSessionDelete) {
+          onSessionDelete(sessionId);
+        }
+        await fetchSessions(searchTerm);
+      } else {
+        console.warn("Session not found in local IndexedDB or Supabase");
+        toast({
+          title: tCommon("error"),
+          description: t("deleteNotFound"),
           variant: "destructive",
         });
       }
-    } catch {
+    } catch (e) {
+      console.error("Failed to delete session from local storage:", e);
       toast({
-        title: "Hata",
-        description: "Konuşma geçmişi silinirken bir hata oluştu.",
+        title: tCommon("error"),
+        description: t("deleteError"),
         variant: "destructive",
       });
     }
@@ -230,12 +240,12 @@ export default function AiChatHistory({
     );
 
     if (diffInHours < 1) {
-      return "Az önce";
+      return t("justNow");
     } else if (diffInHours < 24) {
-      return `${diffInHours} saat önce`;
+      return t("hoursAgo", { hours: diffInHours });
     } else {
       const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays} gün önce`;
+      return t("daysAgo", { days: diffInDays });
     }
   };
 
@@ -254,21 +264,20 @@ export default function AiChatHistory({
           className="gap-1 sm:gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0 text-xs sm:text-sm h-8 sm:h-9"
         >
           <History className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Geçmiş</span>
+          <span className="hidden sm:inline">{t("history")}</span>
         </Button>
       </DialogTrigger>
-                                                       <DialogContent
-           className="
-     max-w-7xl
-     max-h-[128vh]
-     overflow-hidden
-     flex
-     flex-col
-     w-[94vw] mx-auto
-     lg:w-[90vw] lg:max-w-[90vw] lg:mx-auto
-     p-3 sm:p-4 lg:p-6
-   "
-         >
+      <DialogContent
+        className="
+          max-w-2xl
+          h-[600px]
+          overflow-hidden
+          flex
+          flex-col
+          w-[94vw] mx-auto
+          p-4 sm:p-6
+        "
+      >
         <DialogHeader className="border-b border-gray-200 dark:border-gray-700 pb-4">
           <DialogTitle className="flex items-center gap-3 lg:gap-4">
             <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -276,10 +285,10 @@ export default function AiChatHistory({
             </div>
             <div>
               <span className="text-xl lg:text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                AI Tutor Geçmişi
+                {t("historyTitle")}
               </span>
               <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 mt-1">
-                Önceki konuşmalarınızı görüntüleyin ve devam edin
+                {t("historySubtitle")}
               </p>
             </div>
           </DialogTitle>
@@ -289,7 +298,7 @@ export default function AiChatHistory({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
             <Input
-              placeholder="Konuşma geçmişinde ara..."
+              placeholder={t("historySearch")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSearch()}
@@ -302,98 +311,91 @@ export default function AiChatHistory({
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 lg:h-12 lg:px-6"
           >
             <Search className="w-4 h-4 lg:w-5 lg:h-5" />
-            <span className="hidden sm:inline ml-2">Ara</span>
+            <span className="hidden sm:inline ml-2">{t("search")}</span>
           </Button>
         </div>
 
-                 <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-4">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-4">
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
               <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
-                Yükleniyor...
+                {t("loading")}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                Konuşma geçmişi getiriliyor
+                {t("loadingHistory")}
               </p>
             </div>
           ) : sessions.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-10 h-10 lg:w-12 lg:h-12 text-gray-400" />
+            <div className="flex flex-col items-center justify-center py-12 h-[350px] text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-500/20 dark:border-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <MessageSquare className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
               </div>
-              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {searchTerm
-                  ? "Arama sonucu bulunamadı"
-                  : "Henüz konuşma geçmişi yok"}
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {searchTerm ? t("noSearchResults") : t("noHistory")}
               </h3>
-              <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                {searchTerm
-                  ? "Arama kriterlerinize uygun konuşma bulunamadı. Farklı kelimeler deneyin."
-                  : "AI Tutor ile ilk konuşmanızı başlatın ve burada görünecek."}
+              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-center leading-relaxed">
+                {searchTerm ? t("noSearchResultsDesc") : t("noHistoryDesc")}
               </p>
             </div>
           ) : (
             sessions.map((session) => (
               <Card
                 key={session.sessionId}
-                className={`group cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
+                className={`group cursor-pointer transition-all duration-300 hover:shadow-md border ${
                   currentSessionId === session.sessionId
-                    ? "ring-2 ring-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700"
-                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600"
+                    ? "bg-gradient-to-r from-blue-500/[0.03] to-purple-500/[0.03] dark:from-blue-500/[0.06] dark:to-purple-500/[0.04] border-blue-400/50 dark:border-blue-800/60 shadow-sm"
+                    : "bg-white/[0.4] dark:bg-white/[0.02] border-slate-200/50 dark:border-white/[0.05] hover:border-blue-500/30 dark:hover:border-blue-500/20"
                 }`}
                 onClick={() => {
                   onSessionSelect(session.sessionId);
                   setIsDialogOpen(false);
                 }}
               >
-                                 <CardContent className="p-4 lg:p-6">
-                   <div className="flex items-start justify-between">
-                     <div className="flex-1 min-w-0">
-                       {/* Header with icon and title */}
-                       <div className="flex items-center gap-3 mb-3">
-                         <div className="flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-                           <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
-                         </div>
-                         <div className="flex-1 min-w-0">
-                           <h3 className="font-semibold text-base lg:text-lg truncate text-gray-900 dark:text-gray-100">
-                             {session.title || `AI Tutor - ${session.subject}`}
-                           </h3>
-                           <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 truncate">
-                             {session.subject} konusunda sohbet
-                           </p>
-                         </div>
-                       </div>
+                <CardContent className="p-4 lg:p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                          <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base lg:text-lg truncate text-gray-900 dark:text-gray-100">
+                            {session.title || t("sessionTitle", { subject: getSubjectLabel(session.subject) })}
+                          </h3>
+                          <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 truncate">
+                            {t("chatAbout", { subject: getSubjectLabel(session.subject) })}
+                          </p>
+                        </div>
+                      </div>
 
-                                             {/* Stats row */}
-                       <div className="flex items-center gap-6 mb-3">
-                         <div className="flex items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
-                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                           <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5" />
-                           <span className="font-medium">
-                             {session.messageCount} mesaj
-                           </span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
-                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                           <Calendar className="w-4 h-4 lg:w-5 lg:h-5" />
-                           <span className="font-medium">
-                             {formatDate(session.lastMessageAt)}
-                           </span>
-                         </div>
-                       </div>
+                      <div className="flex items-center gap-6 mb-3">
+                        <div className="flex items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5" />
+                          <span className="font-medium">
+                            {t("messageCount", { count: session.messageCount })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <Calendar className="w-4 h-4 lg:w-5 lg:h-5" />
+                          <span className="font-medium">
+                            {formatDate(session.lastMessageAt)}
+                          </span>
+                        </div>
+                      </div>
 
-                      {/* Last message preview */}
                       {session.lastMessage && (
                         <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                            Son mesaj:
+                            {t("lastMessage")}
                           </p>
                           <div className="flex items-start gap-2">
                             {session.lastMessage.image && (
                               <Image
                                 src={session.lastMessage.image}
-                                alt="Son mesaj resmi"
+                                alt={t("lastMessageImageAlt")}
                                 width={48}
                                 height={48}
                                 className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
@@ -406,36 +408,35 @@ export default function AiChatHistory({
                         </div>
                       )}
 
-                      {/* Subject badge */}
                       <div className="flex items-center gap-1 mt-2">
                         <Badge
                           variant="secondary"
                           className="text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 dark:from-blue-900/30 dark:to-purple-900/30 dark:text-blue-200 border border-blue-200 dark:border-blue-700"
                         >
-                          {session.subject}
+                          {getSubjectLabel(session.subject)}
                         </Badge>
                         {session.messageCount > 0 && (
                           <Badge
                             variant="outline"
                             className="text-xs font-medium text-green-600 border-green-300 dark:text-green-400 dark:border-green-700"
                           >
-                            Aktif
+                            {t("active")}
                           </Badge>
                         )}
                       </div>
                     </div>
 
-                    {/* Delete button */}
                     <Button
+                      type="button"
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteSession(session.sessionId);
                       }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 lg:p-2"
+                      className="opacity-70 hover:opacity-100 text-red-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 w-8 h-8 rounded-lg transition-all"
                     >
-                      <Trash2 className="w-3 h-3 lg:w-4 lg:h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </CardContent>

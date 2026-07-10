@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AkılHane Project Checker
+Mindhouse Project Checker
 Proje kalite kontrolü ve validasyon
 """
 
@@ -24,7 +24,7 @@ class Colors:
 def print_header():
     print(f"{Colors.HEADER}{Colors.BOLD}")
     print("╔══════════════════════════════════════════════════════════════╗")
-    print("║                    🧠 AKILHANE CHECKER 🧠                    ║")
+    print("║                    🧠 MINDHOUSE CHECKER 🧠                    ║")
     print("║                   Project Quality Validator                  ║")
     print("╚══════════════════════════════════════════════════════════════╝")
     print(f"{Colors.ENDC}")

@@ -1,0 +1,5231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 231 48% 97%;
+    --foreground: 231 48% 15%;
+    --card: 231 48% 100%;
+    --card-foreground: 231 48% 15%;
+    --popover: 231 48% 100%;
+    --popover-foreground: 231 48% 15%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 231 48% 90%;
+    --secondary-foreground: 231 48% 25%;
+    --muted: 231 48% 90%;
+    --muted-foreground: 231 48% 40%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 231 48% 88%;
+    --input: 231 48% 88%;
+    --ring: 217 91% 60%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 231 20% 12%;
+    --foreground: 0 0% 98%;
+    --card: 231 20% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 231 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 231 20% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 231 20% 20%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 217 91% 70%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 231 20% 25%;
+    --input: 231 20% 25%;
+    --ring: 217 91% 70%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+}
+
+.dark body {
+  /* Gradient removed, theme's own dark color will be used */
+}
+
+/* Code Highlighting Styles */
+.hljs {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.hljs-keyword {
+  color: #fbbf24;
+}
+
+.hljs-string {
+  color: #34d399;
+}
+
+.hljs-number {
+  color: #60a5fa;
+}
+
+.hljs-comment {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.hljs-function {
+  color: #a78bfa;
+}
+
+.hljs-variable {
+  color: #f87171;
+}
+
+.hljs-operator {
+  color: #f59e0b;
+}
+
+.hljs-punctuation {
+  color: #e5e7eb;
+}
+
+/* Dark mode adjustments */
+.dark .hljs {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.dark .hljs-keyword {
+  color: #fbbf24;
+}
+
+.dark .hljs-string {
+  color: #34d399;
+}
+
+.dark .hljs-number {
+  color: #60a5fa;
+}
+
+.dark .hljs-comment {
+  color: #64748b;
+}
+
+.dark .hljs-function {
+  color: #a78bfa;
+}
+
+.dark .hljs-variable {
+  color: #f87171;
+}
+
+.dark .hljs-operator {
+  color: #f59e0b;
+}
+
+.dark .hljs-punctuation {
+  color: #cbd5e1;
+}
+
+/* Compact Mode Styles */
+.compact-mode {
+  --compact-spacing: 0.5rem;
+}
+
+.compact-mode .p-4 {
+  padding: var(--compact-spacing) !important;
+}
+
+.compact-mode .p-8 {
+  padding: calc(var(--compact-spacing) * 2) !important;
+}
+
+.compact-mode .space-y-4>*+* {
+  margin-top: var(--compact-spacing) !important;
+}
+
+.compact-mode .space-y-8>*+* {
+  margin-top: calc(var(--compact-spacing) * 2) !important;
+}
+
+.compact-mode .gap-4 {
+  gap: var(--compact-spacing) !important;
+}
+
+.compact-mode .gap-8 {
+  gap: calc(var(--compact-spacing) * 2) !important;
+}
+
+.compact-mode .h-16 {
+  height: 3rem !important;
+}
+
+.compact-mode .text-3xl {
+  font-size: 1.5rem !important;
+}
+
+.compact-mode .w-8 {
+  width: 1.5rem !important;
+}
+
+.compact-mode .h-8 {
+  height: 1.5rem !important;
+}
+
+/* Markdown Styles */
+.markdown {
+  @apply text-foreground;
+}
+
+.markdown h1 {
+  @apply text-2xl font-bold mb-4 text-foreground;
+}
+
+.markdown h2 {
+  @apply text-xl font-semibold mb-3 text-foreground;
+}
+
+.markdown h3 {
+  @apply text-lg font-medium mb-2 text-foreground;
+}
+
+.markdown h4 {
+  @apply text-base font-medium mb-2 text-foreground;
+}
+
+.markdown h5 {
+  @apply text-sm font-medium mb-1 text-foreground;
+}
+
+.markdown h6 {
+  @apply text-xs font-medium mb-1 text-foreground;
+}
+
+.markdown p {
+  @apply mb-3 text-muted-foreground leading-relaxed;
+}
+
+.markdown ul {
+  @apply mb-3 pl-6 list-disc text-muted-foreground;
+}
+
+.markdown ol {
+  @apply mb-3 pl-6 list-decimal text-muted-foreground;
+}
+
+.markdown li {
+  @apply mb-1;
+}
+
+.markdown blockquote {
+  @apply border-l-4 border-primary/30 pl-4 py-2 mb-3 bg-muted/30 rounded-r-lg;
+}
+
+.markdown code {
+  @apply bg-muted px-2 py-1 rounded text-sm font-mono text-foreground;
+}
+
+.markdown pre {
+  @apply bg-muted p-4 rounded-lg mb-3 overflow-x-auto;
+}
+
+.markdown pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown strong {
+  @apply font-semibold text-foreground;
+}
+
+.markdown em {
+  @apply italic text-muted-foreground;
+}
+
+.markdown a {
+  @apply text-primary hover:underline;
+}
+
+.markdown table {
+  @apply w-full border-collapse mb-3;
+}
+
+.markdown th {
+  @apply border border-border px-3 py-2 text-left font-medium bg-muted;
+}
+
+.markdown td {
+  @apply border border-border px-3 py-2;
+}
+
+.markdown hr {
+  @apply border-border my-4;
+}
+
+/* AI Tutor specific styles */
+.ai-tutor-markdown {
+  @apply text-sm leading-relaxed;
+}
+
+.ai-tutor-markdown h1,
+.ai-tutor-markdown h2,
+.ai-tutor-markdown h3 {
+  @apply text-base font-semibold mb-2 text-foreground;
+}
+
+.ai-tutor-markdown p {
+  @apply mb-2 text-muted-foreground;
+}
+
+.ai-tutor-markdown ul,
+.ai-tutor-markdown ol {
+  @apply mb-2 pl-4;
+}
+
+.ai-tutor-markdown li {
+  @apply mb-1 text-muted-foreground;
+}
+
+.ai-tutor-markdown strong {
+  @apply font-semibold text-foreground;
+}
+
+.ai-tutor-markdown code {
+  @apply bg-muted/50 px-1 py-0.5 rounded text-xs font-mono;
+}
+
+/* REAL GLASS BACKGROUND - TRANSPARENT GLASSMORPHISM */
+.glass-card {
+  /* Light theme: More opaque and bright white base */
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 2px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, #3b82f6, #8b5cf6) border-box !important;
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.15),
+    0 0 16px 0 rgba(59, 130, 246, 0.2) !important;
+  border-radius: 12px !important;
+}
+
+.dark .glass-card {
+  /* Dark theme: More transparent and prominent glass effect */
+  background: rgba(40, 48, 64, 0.75) !important;
+  border: 2px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, #3b82f6, #8b5cf6) border-box !important;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    0 0 16px 0 rgba(59, 130, 246, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.glass-card-inner {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+}
+
+/* BORDER GRADIENT FOR ACTIVE SUBJECT CARDS */
+.border-gradient-active {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(37, 99, 235, 0.4), rgba(147, 51, 234, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.dark .border-gradient-active {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(147, 51, 234, 0.8)) border-box !important;
+  box-shadow: none !important;
+}
+
+/* BORDER GRADIENT FOR QUESTION CARDS */
+.border-gradient-question {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(37, 99, 235, 0.4), rgba(147, 51, 234, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.dark .border-gradient-question {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(37, 99, 235, 0.8), rgba(147, 51, 234, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR GREEN CARDS */
+.border-gradient-green {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(16, 185, 129, 0.1) !important;
+}
+
+.dark .border-gradient-green {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR BLUE CARDS */
+.border-gradient-blue {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(59, 130, 246, 0.4), rgba(29, 78, 216, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.dark .border-gradient-blue {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(59, 130, 246, 0.8), rgba(29, 78, 216, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR PURPLE CARDS */
+.border-gradient-purple {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(147, 51, 234, 0.4), rgba(124, 58, 237, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(147, 51, 234, 0.1) !important;
+}
+
+.dark .border-gradient-purple {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR ORANGE CARDS */
+.border-gradient-orange {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(249, 115, 22, 0.4), rgba(220, 38, 38, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(249, 115, 22, 0.1) !important;
+}
+
+.dark .border-gradient-orange {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(249, 115, 22, 0.8), rgba(220, 38, 38, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR YELLOW CARDS */
+.border-gradient-yellow {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(234, 179, 8, 0.4), rgba(217, 119, 6, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(234, 179, 8, 0.1) !important;
+}
+
+.dark .border-gradient-yellow {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(234, 179, 8, 0.8), rgba(217, 119, 6, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR TEAL CARDS */
+.border-gradient-teal {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(20, 184, 166, 0.4), rgba(8, 145, 178, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(20, 184, 166, 0.1) !important;
+}
+
+.dark .border-gradient-teal {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(20, 184, 166, 0.8), rgba(8, 145, 178, 0.8)) border-box !important;
+}
+
+/* BORDER GRADIENT FOR PINK CARDS */
+.border-gradient-pink {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, rgba(236, 72, 153, 0.4), rgba(147, 51, 234, 0.4)) border-box !important;
+  box-shadow: 0 4px 15px -3px rgba(236, 72, 153, 0.1) !important;
+}
+
+.dark .border-gradient-pink {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, rgba(236, 72, 153, 0.8), rgba(147, 51, 234, 0.8)) border-box !important;
+}
+
+/* 🍎 APPLE DESIGN AWARDS QUALITY LIGHT MODE 🍎 */
+html:not(.dark) .apple-glass-card,
+html:not(.dark) .border-gradient-active,
+html:not(.dark) .border-gradient-question,
+html:not(.dark) .border-gradient-green,
+html:not(.dark) .border-gradient-blue,
+html:not(.dark) .border-gradient-purple,
+html:not(.dark) .border-gradient-orange,
+html:not(.dark) .border-gradient-yellow,
+html:not(.dark) .border-gradient-teal,
+html:not(.dark) .border-gradient-pink {
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(32px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    0 4px 12px -4px rgba(0, 0, 0, 0.03),
+    0 16px 40px -8px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 24px !important;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Force inner cards to be completely transparent to inherit the premium glass blur */
+html:not(.dark) .border-gradient-active>*,
+html:not(.dark) .border-gradient-question>*,
+html:not(.dark) .border-gradient-green>*,
+html:not(.dark) .border-gradient-blue>*,
+html:not(.dark) .border-gradient-purple>*,
+html:not(.dark) .border-gradient-orange>*,
+html:not(.dark) .border-gradient-yellow>*,
+html:not(.dark) .border-gradient-teal>*,
+html:not(.dark) .border-gradient-pink>* {
+  background: transparent !important;
+  border-radius: 23px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html:not(.dark) .apple-glass-card:hover,
+html:not(.dark) .border-gradient-active:hover,
+html:not(.dark) .border-gradient-question:hover,
+html:not(.dark) .border-gradient-green:hover,
+html:not(.dark) .border-gradient-blue:hover,
+html:not(.dark) .border-gradient-purple:hover,
+html:not(.dark) .border-gradient-orange:hover,
+html:not(.dark) .border-gradient-yellow:hover,
+html:not(.dark) .border-gradient-teal:hover,
+html:not(.dark) .border-gradient-pink:hover {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 8px 20px -4px rgba(0, 0, 0, 0.04),
+    0 32px 64px -12px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-4px) scale(1.005) !important;
+}
+
+/* 🍎 APPLE DESIGN AWARDS QUALITY DARK MODE 🍎 */
+html.dark .apple-glass-card,
+html.dark .border-gradient-active,
+html.dark .border-gradient-question,
+html.dark .border-gradient-green,
+html.dark .border-gradient-blue,
+html.dark .border-gradient-purple,
+html.dark .border-gradient-orange,
+html.dark .border-gradient-yellow,
+html.dark .border-gradient-teal,
+html.dark .border-gradient-pink {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(17, 24, 39, 0.65) !important;
+  /* Premium dark glass */
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    /* Volumetric top edge glow */
+    0 8px 32px -8px rgba(0, 0, 0, 0.6) !important;
+  /* Deep ambient shadow */
+  border-radius: 24px !important;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Force inner cards to be completely transparent to inherit the premium glass blur */
+html.dark .border-gradient-active>*,
+html.dark .border-gradient-question>*,
+html.dark .border-gradient-green>*,
+html.dark .border-gradient-blue>*,
+html.dark .border-gradient-purple>*,
+html.dark .border-gradient-orange>*,
+html.dark .border-gradient-yellow>*,
+html.dark .border-gradient-teal>*,
+html.dark .border-gradient-pink>* {
+  background: transparent !important;
+  border-radius: 23px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html.dark .apple-glass-card:hover,
+html.dark .border-gradient-active:hover,
+html.dark .border-gradient-question:hover,
+html.dark .border-gradient-green:hover,
+html.dark .border-gradient-blue:hover,
+html.dark .border-gradient-purple:hover,
+html.dark .border-gradient-orange:hover,
+html.dark .border-gradient-yellow:hover,
+html.dark .border-gradient-teal:hover,
+html.dark .border-gradient-pink:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(31, 41, 55, 0.75) !important;
+  /* Slightly lighter on hover to simulate moving closer to light */
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
+    0 16px 48px -12px rgba(0, 0, 0, 0.8) !important;
+  transform: translateY(-4px) scale(1.005) !important;
+}
+
+.glass-sheet {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.dark .glass-sheet {
+  background: rgba(17, 25, 40, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.125) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* LIQUID GLASS NAVIGATION */
+.glass-nav {
+  /* NAVIGATION GLASS */
+  background: rgba(255, 255, 255, 0.1) !important;
+  /* VERY TRANSPARENT */
+  backdrop-filter: blur(25px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .glass-nav {
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* APPLE QUALITY PROGRESS BAR */
+.progress-gradient {
+  background: #007aff !important;
+  /* Apple Blue */
+}
+
+.dark .progress-gradient {
+  background: #0a84ff !important;
+  /* Apple Blue Dark */
+}
+
+.progress-gradient-bg {
+  background: rgba(0, 122, 255, 0.1) !important;
+}
+
+.dark .progress-gradient-bg {
+  background: rgba(10, 132, 255, 0.15) !important;
+}
+
+/* APPLE QUALITY BADGES */
+.badge-gradient-high {
+  background: #34c759 !important;
+  /* Apple Green */
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(52, 199, 89, 0.3) !important;
+}
+
+.badge-gradient-medium {
+  background: #ff9500 !important;
+  /* Apple Orange */
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(255, 149, 0, 0.3) !important;
+}
+
+.badge-gradient-low {
+  background: #ff3b30 !important;
+  /* Apple Red */
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3) !important;
+}
+
+/* GRADIENT TOAST BORDER */
+.border-gradient-toast {
+  border: 2px solid transparent !important;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, #2563eb, #9333ea) border-box !important;
+  border-radius: 0.5rem !important;
+}
+
+.dark .border-gradient-toast {
+  background:
+    linear-gradient(#1f2937, #1f2937) padding-box,
+    linear-gradient(to right, #2563eb, #9333ea) border-box !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Bubble Floating Animations */
+@keyframes float-1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(20px, -30px);
+  }
+
+  50% {
+    transform: translate(40px, -20px);
+  }
+
+  75% {
+    transform: translate(20px, -10px);
+  }
+}
+
+@keyframes float-2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-30px, 20px);
+  }
+
+  50% {
+    transform: translate(-20px, 40px);
+  }
+
+  75% {
+    transform: translate(-10px, 20px);
+  }
+}
+
+@keyframes float-3 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(15px, -15px) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(30px, 0px) rotate(180deg);
+  }
+
+  75% {
+    transform: translate(15px, 15px) rotate(270deg);
+  }
+}
+
+@keyframes float-4 {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-40px);
+  }
+}
+
+@keyframes float-5 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(25px, -25px);
+  }
+
+  50% {
+    transform: translate(50px, -50px);
+  }
+
+  75% {
+    transform: translate(25px, -25px);
+  }
+}
+
+@keyframes float-6 {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes float-7 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(20px, -20px);
+  }
+
+  50% {
+    transform: translate(0, -40px);
+  }
+
+  75% {
+    transform: translate(-20px, -20px);
+  }
+}
+
+@keyframes float-8 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(15px, -10px);
+  }
+
+  50% {
+    transform: translate(-10px, -20px);
+  }
+
+  75% {
+    transform: translate(-15px, -5px);
+  }
+}
+
+.animate-float-1 {
+  animation: float-1 8s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 10s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 12s ease-in-out infinite;
+}
+
+.animate-float-4 {
+  animation: float-4 6s ease-in-out infinite;
+}
+
+.animate-float-5 {
+  animation: float-5 9s ease-in-out infinite;
+}
+
+.animate-float-6 {
+  animation: float-6 7s ease-in-out infinite;
+}
+
+.animate-float-7 {
+  animation: float-7 11s ease-in-out infinite;
+}
+
+.animate-float-8 {
+  animation: float-8 8.5s ease-in-out infinite;
+}
+
+/* Particle System Animations */
+@keyframes particle-1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(30px, -20px);
+  }
+
+  50% {
+    transform: translate(60px, -40px);
+  }
+
+  75% {
+    transform: translate(30px, -60px);
+  }
+}
+
+@keyframes particle-2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-25px, 15px);
+  }
+
+  50% {
+    transform: translate(-50px, 30px);
+  }
+
+  75% {
+    transform: translate(-25px, 45px);
+  }
+}
+
+@keyframes particle-3 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(20px, -15px);
+  }
+
+  50% {
+    transform: translate(40px, -30px);
+  }
+
+  75% {
+    transform: translate(20px, -45px);
+  }
+}
+
+@keyframes particle-4 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-30px, -10px);
+  }
+
+  50% {
+    transform: translate(-60px, -20px);
+  }
+
+  75% {
+    transform: translate(-30px, -30px);
+  }
+}
+
+@keyframes particle-5 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(15px, -25px);
+  }
+
+  50% {
+    transform: translate(30px, -50px);
+  }
+
+  75% {
+    transform: translate(15px, -75px);
+  }
+}
+
+@keyframes particle-6 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-20px, 20px);
+  }
+
+  50% {
+    transform: translate(-40px, 40px);
+  }
+
+  75% {
+    transform: translate(-20px, 60px);
+  }
+}
+
+@keyframes particle-7 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(25px, -20px);
+  }
+
+  50% {
+    transform: translate(50px, -40px);
+  }
+
+  75% {
+    transform: translate(25px, -60px);
+  }
+}
+
+@keyframes particle-8 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-15px, -25px);
+  }
+
+  50% {
+    transform: translate(-30px, -50px);
+  }
+
+  75% {
+    transform: translate(-15px, -75px);
+  }
+}
+
+@keyframes particle-9 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(10px, -30px);
+  }
+
+  50% {
+    transform: translate(20px, -60px);
+  }
+
+  75% {
+    transform: translate(10px, -90px);
+  }
+}
+
+@keyframes particle-10 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-25px, 15px);
+  }
+
+  50% {
+    transform: translate(-50px, 30px);
+  }
+
+  75% {
+    transform: translate(-25px, 45px);
+  }
+}
+
+@keyframes particle-11 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(20px, -20px);
+  }
+
+  50% {
+    transform: translate(40px, -40px);
+  }
+
+  75% {
+    transform: translate(20px, -60px);
+  }
+}
+
+@keyframes particle-12 {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-30px, -15px);
+  }
+
+  50% {
+    transform: translate(-60px, -30px);
+  }
+
+  75% {
+    transform: translate(-30px, -45px);
+  }
+}
+
+@keyframes particle-diamond-1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(20px, -20px) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(40px, -40px) rotate(180deg);
+  }
+
+  75% {
+    transform: translate(20px, -60px) rotate(270deg);
+  }
+}
+
+@keyframes particle-diamond-2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(-25px, 25px) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(-50px, 50px) rotate(180deg);
+  }
+
+  75% {
+    transform: translate(-25px, 75px) rotate(270deg);
+  }
+}
+
+@keyframes particle-diamond-3 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(30px, -15px) rotate(90deg);
+  }
+
+  50% {
+    transform: translate(60px, -30px) rotate(180deg);
+  }
+
+  75% {
+    transform: translate(30px, -45px) rotate(270deg);
+  }
+}
+
+@keyframes particle-star-1 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.5) rotate(180deg);
+  }
+}
+
+@keyframes particle-star-2 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(180deg);
+  }
+}
+
+@keyframes particle-star-3 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.7) rotate(180deg);
+  }
+}
+
+@keyframes particle-glow-1 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(2);
+  }
+}
+
+@keyframes particle-glow-2 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.8);
+  }
+}
+
+@keyframes particle-glow-3 {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(2.2);
+  }
+}
+
+.animate-particle-1 {
+  animation: particle-1 4s ease-in-out infinite;
+}
+
+.animate-particle-2 {
+  animation: particle-2 5s ease-in-out infinite;
+}
+
+.animate-particle-3 {
+  animation: particle-3 6s ease-in-out infinite;
+}
+
+.animate-particle-4 {
+  animation: particle-4 4.5s ease-in-out infinite;
+}
+
+.animate-particle-5 {
+  animation: particle-5 7s ease-in-out infinite;
+}
+
+.animate-particle-6 {
+  animation: particle-6 8s ease-in-out infinite;
+}
+
+.animate-particle-7 {
+  animation: particle-7 6.5s ease-in-out infinite;
+}
+
+.animate-particle-8 {
+  animation: particle-8 7.5s ease-in-out infinite;
+}
+
+.animate-particle-9 {
+  animation: particle-9 10s ease-in-out infinite;
+}
+
+.animate-particle-10 {
+  animation: particle-10 12s ease-in-out infinite;
+}
+
+.animate-particle-11 {
+  animation: particle-11 9s ease-in-out infinite;
+}
+
+.animate-particle-12 {
+  animation: particle-12 11s ease-in-out infinite;
+}
+
+.animate-particle-diamond-1 {
+  animation: particle-diamond-1 8s ease-in-out infinite;
+}
+
+.animate-particle-diamond-2 {
+  animation: particle-diamond-2 10s ease-in-out infinite;
+}
+
+.animate-particle-diamond-3 {
+  animation: particle-diamond-3 9s ease-in-out infinite;
+}
+
+.animate-particle-star-1 {
+  animation: particle-star-1 3s ease-in-out infinite;
+}
+
+.animate-particle-star-2 {
+  animation: particle-star-2 4s ease-in-out infinite;
+}
+
+.animate-particle-star-3 {
+  animation: particle-star-3 3.5s ease-in-out infinite;
+}
+
+.animate-particle-glow-1 {
+  animation: particle-glow-1 2.5s ease-in-out infinite;
+}
+
+.animate-particle-glow-2 {
+  animation: particle-glow-2 3.5s ease-in-out infinite;
+}
+
+.animate-particle-glow-3 {
+  animation: particle-glow-3 2.8s ease-in-out infinite;
+}
+
+/* Quantum Tunnel Animations */
+@keyframes quantum-tunnel-1 {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) scale(1);
+    opacity: 0.8;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: perspective(1000px) rotateX(90deg) scale(1.2);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateX(180deg) scale(0.8);
+    opacity: 0.6;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: perspective(1000px) rotateX(270deg) scale(1.1);
+    opacity: 0.9;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateX(360deg) scale(1);
+    opacity: 0.8;
+    filter: blur(0px);
+  }
+}
+
+@keyframes quantum-tunnel-2 {
+  0% {
+    transform: perspective(1000px) rotateY(0deg) scale(1);
+    opacity: 0.7;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: perspective(1000px) rotateY(90deg) scale(1.3);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateY(180deg) scale(0.7);
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: perspective(1000px) rotateY(270deg) scale(1.2);
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateY(360deg) scale(1);
+    opacity: 0.7;
+    filter: blur(0px);
+  }
+}
+
+@keyframes quantum-tunnel-3 {
+  0% {
+    transform: perspective(1000px) rotateZ(0deg) scale(1);
+    opacity: 0.6;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: perspective(1000px) rotateZ(90deg) scale(1.4);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateZ(180deg) scale(0.6);
+    opacity: 0.4;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: perspective(1000px) rotateZ(270deg) scale(1.3);
+    opacity: 0.7;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateZ(360deg) scale(1);
+    opacity: 0.6;
+    filter: blur(0px);
+  }
+}
+
+@keyframes quantum-tunnel-4 {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1);
+    opacity: 0.5;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: perspective(1000px) rotateX(90deg) rotateY(90deg) scale(1.5);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateX(180deg) rotateY(180deg) scale(0.5);
+    opacity: 0.3;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: perspective(1000px) rotateX(270deg) rotateY(270deg) scale(1.4);
+    opacity: 0.6;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateX(360deg) rotateY(360deg) scale(1);
+    opacity: 0.5;
+    filter: blur(0px);
+  }
+}
+
+@keyframes quantum-tunnel-5 {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) rotateZ(0deg) scale(1);
+    opacity: 0.4;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: perspective(1000px) rotateX(90deg) rotateZ(90deg) scale(1.6);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateX(180deg) rotateZ(180deg) scale(0.4);
+    opacity: 0.2;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: perspective(1000px) rotateX(270deg) rotateZ(270deg) scale(1.5);
+    opacity: 0.5;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateX(360deg) rotateZ(360deg) scale(1);
+    opacity: 0.4;
+    filter: blur(0px);
+  }
+}
+
+/* Quantum Particle Animations */
+@keyframes quantum-particle-1 {
+  0% {
+    transform: translateZ(0) scale(1);
+    opacity: 0;
+    filter: blur(0px);
+  }
+
+  25% {
+    transform: translateZ(100px) scale(1.5);
+    opacity: 1;
+    filter: blur(1px);
+  }
+
+  50% {
+    transform: translateZ(200px) scale(0.5);
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+
+  75% {
+    transform: translateZ(150px) scale(1.3);
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+
+  100% {
+    transform: translateZ(0) scale(1);
+    opacity: 0;
+    filter: blur(0px);
+  }
+}
+
+@keyframes quantum-particle-2 {
+  0% {
+    transform: translateZ(0) rotateY(0deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translateZ(80px) rotateY(90deg) scale(1.4);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateZ(160px) rotateY(180deg) scale(0.6);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: translateZ(120px) rotateY(270deg) scale(1.2);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateZ(0) rotateY(360deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-particle-3 {
+  0% {
+    transform: translateZ(0) rotateX(0deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translateZ(120px) rotateX(90deg) scale(1.6);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateZ(240px) rotateX(180deg) scale(0.4);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translateZ(180px) rotateX(270deg) scale(1.4);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateZ(0) rotateX(360deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-particle-4 {
+  0% {
+    transform: translateZ(0) rotateZ(0deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translateZ(90px) rotateZ(90deg) scale(1.3);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateZ(180px) rotateZ(180deg) scale(0.7);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: translateZ(135px) rotateZ(270deg) scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateZ(0) rotateZ(360deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-particle-5 {
+  0% {
+    transform: translateZ(0) rotateX(0deg) rotateY(0deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translateZ(110px) rotateX(90deg) rotateY(90deg) scale(1.7);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateZ(220px) rotateX(180deg) rotateY(180deg) scale(0.3);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translateZ(165px) rotateX(270deg) rotateY(270deg) scale(1.5);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateZ(0) rotateX(360deg) rotateY(360deg) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Quantum Wave Animations */
+@keyframes quantum-wave-1 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.5) scaleY(2);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.5) scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-wave-2 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6) scaleY(1.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.4) scaleY(0.6);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-wave-3 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7) scaleY(1.6);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleX(0.3) scaleY(0.7);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Quantum Field Animations */
+@keyframes quantum-field-1 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-field-2 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.6);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleY(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-field-3 {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.5);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.5);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes quantum-field-4 {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.4);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+/* Quantum Core Animation */
+@keyframes quantum-core {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow:
+      0 0 20px #3b82f6,
+      0 0 40px #3b82f6,
+      0 0 60px #3b82f6;
+  }
+
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    box-shadow:
+      0 0 30px #a855f7,
+      0 0 60px #a855f7,
+      0 0 90px #a855f7;
+  }
+
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    box-shadow:
+      0 0 25px #ec4899,
+      0 0 50px #ec4899,
+      0 0 75px #ec4899;
+  }
+
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    box-shadow:
+      0 0 35px #06b6d4,
+      0 0 70px #06b6d4,
+      0 0 105px #06b6d4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    box-shadow:
+      0 0 20px #3b82f6,
+      0 0 40px #3b82f6,
+      0 0 60px #3b82f6;
+  }
+}
+
+/* Animation Classes */
+.animate-quantum-tunnel-1 {
+  animation: quantum-tunnel-1 4s ease-in-out infinite;
+}
+
+.animate-quantum-tunnel-2 {
+  animation: quantum-tunnel-2 4.5s ease-in-out infinite;
+}
+
+.animate-quantum-tunnel-3 {
+  animation: quantum-tunnel-3 5s ease-in-out infinite;
+}
+
+.animate-quantum-tunnel-4 {
+  animation: quantum-tunnel-4 5.5s ease-in-out infinite;
+}
+
+.animate-quantum-tunnel-5 {
+  animation: quantum-tunnel-5 6s ease-in-out infinite;
+}
+
+.animate-quantum-particle-1 {
+  animation: quantum-particle-1 3s ease-in-out infinite;
+}
+
+.animate-quantum-particle-2 {
+  animation: quantum-particle-2 3.5s ease-in-out infinite;
+}
+
+.animate-quantum-particle-3 {
+  animation: quantum-particle-3 4s ease-in-out infinite;
+}
+
+.animate-quantum-particle-4 {
+  animation: quantum-particle-4 4.5s ease-in-out infinite;
+}
+
+.animate-quantum-particle-5 {
+  animation: quantum-particle-5 5s ease-in-out infinite;
+}
+
+.animate-quantum-wave-1 {
+  animation: quantum-wave-1 2.5s ease-in-out infinite;
+}
+
+.animate-quantum-wave-2 {
+  animation: quantum-wave-2 3s ease-in-out infinite;
+}
+
+.animate-quantum-wave-3 {
+  animation: quantum-wave-3 3.5s ease-in-out infinite;
+}
+
+.animate-quantum-field-1 {
+  animation: quantum-field-1 2s ease-in-out infinite;
+}
+
+.animate-quantum-field-2 {
+  animation: quantum-field-2 2.5s ease-in-out infinite;
+}
+
+.animate-quantum-field-3 {
+  animation: quantum-field-3 3s ease-in-out infinite;
+}
+
+.animate-quantum-field-4 {
+  animation: quantum-field-4 3.5s ease-in-out infinite;
+}
+
+.animate-quantum-core {
+  animation: quantum-core 2s ease-in-out infinite;
+}
+
+/* Neural Network Animations - Updated for SVG */
+@keyframes neural-node-1 {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 8px #3b82f6;
+  }
+
+  25% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 15px #3b82f6;
+  }
+
+  50% {
+    transform: scale(0.9);
+    opacity: 0.6;
+    box-shadow: 0 0 4px #3b82f6;
+  }
+
+  75% {
+    transform: scale(1.1);
+    opacity: 0.9;
+    box-shadow: 0 0 12px #3b82f6;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 8px #3b82f6;
+  }
+}
+
+@keyframes neural-node-2 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #a855f7;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 12px #a855f7;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.5;
+    box-shadow: 0 0 3px #a855f7;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 10px #a855f7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #a855f7;
+  }
+}
+
+@keyframes neural-node-3 {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 10px #ec4899;
+  }
+
+  25% {
+    transform: scale(1.4);
+    opacity: 1;
+    box-shadow: 0 0 18px #ec4899;
+  }
+
+  50% {
+    transform: scale(0.7);
+    opacity: 0.4;
+    box-shadow: 0 0 5px #ec4899;
+  }
+
+  75% {
+    transform: scale(1.3);
+    opacity: 0.7;
+    box-shadow: 0 0 15px #ec4899;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 10px #ec4899;
+  }
+}
+
+@keyframes neural-node-4 {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 6px #06b6d4;
+  }
+
+  25% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 12px #06b6d4;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.6;
+    box-shadow: 0 0 3px #06b6d4;
+  }
+
+  75% {
+    transform: scale(1.1);
+    opacity: 0.9;
+    box-shadow: 0 0 10px #06b6d4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 6px #06b6d4;
+  }
+}
+
+@keyframes neural-node-5 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 15px #10b981;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.5;
+    box-shadow: 0 0 4px #10b981;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 12px #10b981;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 8px #10b981;
+  }
+}
+
+@keyframes neural-node-6 {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 6px #f97316;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 12px #f97316;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    box-shadow: 0 0 3px #f97316;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.7;
+    box-shadow: 0 0 10px #f97316;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 6px #f97316;
+  }
+}
+
+@keyframes neural-node-7 {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 6px #6366f1;
+  }
+
+  25% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 12px #6366f1;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.6;
+    box-shadow: 0 0 3px #6366f1;
+  }
+
+  75% {
+    transform: scale(1.1);
+    opacity: 0.9;
+    box-shadow: 0 0 10px #6366f1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 6px #6366f1;
+  }
+}
+
+@keyframes neural-node-8 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 8px #14b8a6;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 15px #14b8a6;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.5;
+    box-shadow: 0 0 4px #14b8a6;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 12px #14b8a6;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 8px #14b8a6;
+  }
+}
+
+@keyframes neural-node-9 {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 4px #ef4444;
+  }
+
+  25% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 8px #ef4444;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    box-shadow: 0 0 2px #ef4444;
+  }
+
+  75% {
+    transform: scale(1.1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #ef4444;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 4px #ef4444;
+  }
+}
+
+@keyframes neural-node-10 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #eab308;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 12px #eab308;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.5;
+    box-shadow: 0 0 3px #eab308;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 10px #eab308;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #eab308;
+  }
+}
+
+@keyframes neural-node-11 {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 4px #10b981;
+  }
+
+  25% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    box-shadow: 0 0 2px #10b981;
+  }
+
+  75% {
+    transform: scale(1.1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #10b981;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 4px #10b981;
+  }
+}
+
+@keyframes neural-node-12 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #8b5cf6;
+  }
+
+  25% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 12px #8b5cf6;
+  }
+
+  50% {
+    transform: scale(0.8);
+    opacity: 0.5;
+    box-shadow: 0 0 3px #8b5cf6;
+  }
+
+  75% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 10px #8b5cf6;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+    box-shadow: 0 0 6px #8b5cf6;
+  }
+}
+
+/* SVG Connection Animations */
+@keyframes neural-connection-1 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 25 75;
+    opacity: 0.6;
+  }
+
+  50% {
+    stroke-dasharray: 50 50;
+    opacity: 1;
+  }
+
+  75% {
+    stroke-dasharray: 75 25;
+    opacity: 0.6;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-2 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 30 70;
+    opacity: 0.5;
+  }
+
+  50% {
+    stroke-dasharray: 60 40;
+    opacity: 0.9;
+  }
+
+  75% {
+    stroke-dasharray: 80 20;
+    opacity: 0.5;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-3 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 35 65;
+    opacity: 0.6;
+  }
+
+  50% {
+    stroke-dasharray: 70 30;
+    opacity: 0.8;
+  }
+
+  75% {
+    stroke-dasharray: 85 15;
+    opacity: 0.4;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-4 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 20 80;
+    opacity: 0.7;
+  }
+
+  50% {
+    stroke-dasharray: 50 50;
+    opacity: 1;
+  }
+
+  75% {
+    stroke-dasharray: 70 30;
+    opacity: 0.7;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-5 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 40 60;
+    opacity: 0.4;
+  }
+
+  50% {
+    stroke-dasharray: 80 20;
+    opacity: 0.7;
+  }
+
+  75% {
+    stroke-dasharray: 90 10;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-6 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 25 75;
+    opacity: 0.6;
+  }
+
+  50% {
+    stroke-dasharray: 60 40;
+    opacity: 0.8;
+  }
+
+  75% {
+    stroke-dasharray: 75 25;
+    opacity: 0.4;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-7 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 30 70;
+    opacity: 0.7;
+  }
+
+  50% {
+    stroke-dasharray: 65 35;
+    opacity: 0.9;
+  }
+
+  75% {
+    stroke-dasharray: 80 20;
+    opacity: 0.5;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-8 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 35 65;
+    opacity: 0.5;
+  }
+
+  50% {
+    stroke-dasharray: 70 30;
+    opacity: 0.7;
+  }
+
+  75% {
+    stroke-dasharray: 85 15;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-9 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 20 80;
+    opacity: 0.4;
+  }
+
+  50% {
+    stroke-dasharray: 50 50;
+    opacity: 0.6;
+  }
+
+  75% {
+    stroke-dasharray: 70 30;
+    opacity: 0.4;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-10 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 25 75;
+    opacity: 0.3;
+  }
+
+  50% {
+    stroke-dasharray: 60 40;
+    opacity: 0.5;
+  }
+
+  75% {
+    stroke-dasharray: 80 20;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-11 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 30 70;
+    opacity: 0.4;
+  }
+
+  50% {
+    stroke-dasharray: 65 35;
+    opacity: 0.6;
+  }
+
+  75% {
+    stroke-dasharray: 85 15;
+    opacity: 0.4;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-12 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 20 80;
+    opacity: 0.3;
+  }
+
+  50% {
+    stroke-dasharray: 50 50;
+    opacity: 0.5;
+  }
+
+  75% {
+    stroke-dasharray: 70 30;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-13 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 15 85;
+    opacity: 0.2;
+  }
+
+  50% {
+    stroke-dasharray: 40 60;
+    opacity: 0.4;
+  }
+
+  75% {
+    stroke-dasharray: 60 40;
+    opacity: 0.2;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-14 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 25 75;
+    opacity: 0.3;
+  }
+
+  50% {
+    stroke-dasharray: 55 45;
+    opacity: 0.5;
+  }
+
+  75% {
+    stroke-dasharray: 75 25;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-connection-15 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 20 80;
+    opacity: 0.2;
+  }
+
+  50% {
+    stroke-dasharray: 45 55;
+    opacity: 0.4;
+  }
+
+  75% {
+    stroke-dasharray: 65 35;
+    opacity: 0.2;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+/* Particle Path Animations - Following SVG Lines */
+@keyframes neural-particle-path-1 {
+  0% {
+    transform: translate(25%, 25%);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(40%, 27%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(55%, 29%);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: translate(67%, 33%);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(67%, 33%);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-particle-path-2 {
+  0% {
+    transform: translate(67%, 33%);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(55%, 40%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(43%, 47%);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: translate(33%, 67%);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(33%, 67%);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-particle-path-3 {
+  0% {
+    transform: translate(33%, 67%);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(45%, 62%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(57%, 57%);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translate(75%, 50%);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translate(75%, 50%);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-particle-path-4 {
+  0% {
+    transform: translate(75%, 50%);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(67%, 56%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(59%, 62%);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: translate(50%, 75%);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(50%, 75%);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-particle-path-5 {
+  0% {
+    transform: translate(50%, 75%);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(50%, 60%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(50%, 45%);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translate(50%, 17%);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(50%, 17%);
+    opacity: 0;
+  }
+}
+
+/* Neural Wave Animations */
+@keyframes neural-wave-1 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.5) scaleY(2);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.5) scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-wave-2 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6) scaleY(1.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.4) scaleY(0.6);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-wave-3 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7) scaleY(1.6);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleX(0.3) scaleY(0.7);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Neural Core Animation */
+@keyframes neural-core {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow:
+      0 0 15px #3b82f6,
+      0 0 30px #3b82f6,
+      0 0 45px #3b82f6;
+  }
+
+  25% {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow:
+      0 0 20px #a855f7,
+      0 0 40px #a855f7,
+      0 0 60px #a855f7;
+  }
+
+  50% {
+    transform: scale(0.9) rotate(180deg);
+    box-shadow:
+      0 0 18px #ec4899,
+      0 0 36px #ec4899,
+      0 0 54px #ec4899;
+  }
+
+  75% {
+    transform: scale(1.05) rotate(270deg);
+    box-shadow:
+      0 0 22px #06b6d4,
+      0 0 44px #06b6d4,
+      0 0 66px #06b6d4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    box-shadow:
+      0 0 15px #3b82f6,
+      0 0 30px #3b82f6,
+      0 0 45px #3b82f6;
+  }
+}
+
+/* Neural Stream Animations */
+@keyframes neural-stream-1 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-stream-2 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.6);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleY(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes neural-stream-3 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.7);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* Animation Classes */
+.animate-neural-node-1 {
+  animation: neural-node-1 3s ease-in-out infinite;
+}
+
+.animate-neural-node-2 {
+  animation: neural-node-2 3.5s ease-in-out infinite;
+}
+
+.animate-neural-node-3 {
+  animation: neural-node-3 4s ease-in-out infinite;
+}
+
+.animate-neural-node-4 {
+  animation: neural-node-4 4.5s ease-in-out infinite;
+}
+
+.animate-neural-node-5 {
+  animation: neural-node-5 5s ease-in-out infinite;
+}
+
+.animate-neural-node-6 {
+  animation: neural-node-6 5.5s ease-in-out infinite;
+}
+
+.animate-neural-node-7 {
+  animation: neural-node-7 6s ease-in-out infinite;
+}
+
+.animate-neural-node-8 {
+  animation: neural-node-8 6.5s ease-in-out infinite;
+}
+
+.animate-neural-node-9 {
+  animation: neural-node-9 3.2s ease-in-out infinite;
+}
+
+.animate-neural-node-10 {
+  animation: neural-node-10 3.7s ease-in-out infinite;
+}
+
+.animate-neural-node-11 {
+  animation: neural-node-11 4.2s ease-in-out infinite;
+}
+
+.animate-neural-node-12 {
+  animation: neural-node-12 4.7s ease-in-out infinite;
+}
+
+.animate-neural-connection-1 {
+  animation: neural-connection-1 2.5s ease-in-out infinite;
+}
+
+.animate-neural-connection-2 {
+  animation: neural-connection-2 3s ease-in-out infinite;
+}
+
+.animate-neural-connection-3 {
+  animation: neural-connection-3 3.5s ease-in-out infinite;
+}
+
+.animate-neural-connection-4 {
+  animation: neural-connection-4 4s ease-in-out infinite;
+}
+
+.animate-neural-connection-5 {
+  animation: neural-connection-5 4.5s ease-in-out infinite;
+}
+
+.animate-neural-connection-6 {
+  animation: neural-connection-6 5s ease-in-out infinite;
+}
+
+.animate-neural-connection-7 {
+  animation: neural-connection-7 5.5s ease-in-out infinite;
+}
+
+.animate-neural-connection-8 {
+  animation: neural-connection-8 6s ease-in-out infinite;
+}
+
+.animate-neural-connection-9 {
+  animation: neural-connection-9 2.8s ease-in-out infinite;
+}
+
+.animate-neural-connection-10 {
+  animation: neural-connection-10 3.3s ease-in-out infinite;
+}
+
+.animate-neural-connection-11 {
+  animation: neural-connection-11 3.8s ease-in-out infinite;
+}
+
+.animate-neural-connection-12 {
+  animation: neural-connection-12 4.3s ease-in-out infinite;
+}
+
+.animate-neural-connection-13 {
+  animation: neural-connection-13 2.2s ease-in-out infinite;
+}
+
+.animate-neural-connection-14 {
+  animation: neural-connection-14 2.7s ease-in-out infinite;
+}
+
+.animate-neural-connection-15 {
+  animation: neural-connection-15 3.2s ease-in-out infinite;
+}
+
+.animate-neural-particle-path-1 {
+  animation: neural-particle-path-1 2s ease-in-out infinite;
+}
+
+.animate-neural-particle-path-2 {
+  animation: neural-particle-path-2 2.5s ease-in-out infinite;
+}
+
+.animate-neural-particle-path-3 {
+  animation: neural-particle-path-3 3s ease-in-out infinite;
+}
+
+.animate-neural-particle-path-4 {
+  animation: neural-particle-path-4 3.5s ease-in-out infinite;
+}
+
+.animate-neural-particle-path-5 {
+  animation: neural-particle-path-5 4s ease-in-out infinite;
+}
+
+.animate-neural-wave-1 {
+  animation: neural-wave-1 2s ease-in-out infinite;
+}
+
+.animate-neural-wave-2 {
+  animation: neural-wave-2 2.5s ease-in-out infinite;
+}
+
+.animate-neural-wave-3 {
+  animation: neural-wave-3 3s ease-in-out infinite;
+}
+
+.animate-neural-core {
+  animation: neural-core 2.5s ease-in-out infinite;
+}
+
+.animate-neural-stream-1 {
+  animation: neural-stream-1 2s ease-in-out infinite;
+}
+
+.animate-neural-stream-2 {
+  animation: neural-stream-2 2.5s ease-in-out infinite;
+}
+
+.animate-neural-stream-3 {
+  animation: neural-stream-3 3s ease-in-out infinite;
+}
+
+/* Time Warp Animations */
+@keyframes time-warp-core {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow:
+      0 0 20px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(0, 0, 0, 0.4);
+  }
+
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    box-shadow:
+      0 0 30px rgba(0, 0, 0, 0.9),
+      0 0 60px rgba(0, 0, 0, 0.7),
+      0 0 90px rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    box-shadow:
+      0 0 25px rgba(0, 0, 0, 0.8),
+      0 0 50px rgba(0, 0, 0, 0.6),
+      0 0 75px rgba(0, 0, 0, 0.4);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    box-shadow:
+      0 0 35px rgba(0, 0, 0, 0.9),
+      0 0 70px rgba(0, 0, 0, 0.7),
+      0 0 105px rgba(0, 0, 0, 0.5);
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    box-shadow:
+      0 0 20px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(0, 0, 0, 0.6),
+      0 0 60px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes time-warp-ring-1 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  25% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(0.7) rotate(180deg);
+    opacity: 0.2;
+  }
+
+  75% {
+    transform: scale(1.2) rotate(270deg);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.4;
+  }
+}
+
+@keyframes time-warp-ring-2 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: scale(1.4) rotate(90deg);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(0.6) rotate(180deg);
+    opacity: 0.1;
+  }
+
+  75% {
+    transform: scale(1.3) rotate(270deg);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes time-warp-ring-3 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.25;
+  }
+
+  25% {
+    transform: scale(1.5) rotate(90deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(0.5) rotate(180deg);
+    opacity: 0.05;
+  }
+
+  75% {
+    transform: scale(1.4) rotate(270deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes time-warp-ring-4 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: scale(1.6) rotate(90deg);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(0.4) rotate(180deg);
+    opacity: 0.02;
+  }
+
+  75% {
+    transform: scale(1.5) rotate(270deg);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+@keyframes time-warp-ring-5 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.15;
+  }
+
+  25% {
+    transform: scale(1.7) rotate(90deg);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(0.3) rotate(180deg);
+    opacity: 0.01;
+  }
+
+  75% {
+    transform: scale(1.6) rotate(270deg);
+    opacity: 0.25;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.15;
+  }
+}
+
+/* Temporal Distortion Waves */
+@keyframes time-warp-wave-1 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6) scaleY(3);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.4) scaleY(0.3);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-wave-2 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7) scaleY(2.5);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.3) scaleY(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-wave-3 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.8) scaleY(2);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleX(0.2) scaleY(0.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Time Dilation Particles */
+@keyframes time-warp-particle-slow {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(20px, -10px) scale(1.5);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(40px, -20px) scale(0.5);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translate(60px, -30px) scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(80px, -40px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-particle-fast {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(-30px, 20px) scale(0.3);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-60px, 40px) scale(2);
+    opacity: 0.7;
+  }
+
+  75% {
+    transform: translate(-90px, 60px) scale(0.8);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-120px, 80px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-particle-relativistic {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(25px, 25px) scale(1.8);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(50px, 50px) scale(0.2);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translate(75px, 75px) scale(1.6);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(100px, 100px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-particle-reverse {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(-15px, -15px) scale(0.4);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-30px, -30px) scale(2.5);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: translate(-45px, -45px) scale(0.6);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-60px, -60px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-particle-quantum {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(40px, -20px) scale(0.1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(80px, -40px) scale(3);
+    opacity: 0.2;
+  }
+
+  75% {
+    transform: translate(120px, -60px) scale(0.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translate(160px, -80px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Spacetime Curvature Lines */
+@keyframes time-warp-curvature-1 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 25 75;
+    opacity: 0.4;
+  }
+
+  50% {
+    stroke-dasharray: 50 50;
+    opacity: 0.8;
+  }
+
+  75% {
+    stroke-dasharray: 75 25;
+    opacity: 0.4;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-curvature-2 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 30 70;
+    opacity: 0.3;
+  }
+
+  50% {
+    stroke-dasharray: 60 40;
+    opacity: 0.6;
+  }
+
+  75% {
+    stroke-dasharray: 80 20;
+    opacity: 0.3;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-curvature-3 {
+  0% {
+    stroke-dasharray: 0 100;
+    opacity: 0;
+  }
+
+  25% {
+    stroke-dasharray: 20 80;
+    opacity: 0.2;
+  }
+
+  50% {
+    stroke-dasharray: 40 60;
+    opacity: 0.4;
+  }
+
+  75% {
+    stroke-dasharray: 60 40;
+    opacity: 0.2;
+  }
+
+  100% {
+    stroke-dasharray: 100 0;
+    opacity: 0;
+  }
+}
+
+/* Quantum Fluctuations */
+@keyframes time-warp-fluctuation-1 {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scale(2);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.1);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: scale(1.8);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-fluctuation-2 {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(2.5);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-fluctuation-3 {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.2);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: scale(2.2);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-fluctuation-4 {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(2.8);
+    opacity: 0.2;
+  }
+
+  75% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Relativistic Doppler Effect */
+@keyframes time-warp-doppler-1 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.6);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.4);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-doppler-2 {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes time-warp-doppler-3 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* Temporal Anomalies */
+@keyframes time-warp-anomaly-1 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: scale(1.4) rotate(90deg);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(0.6) rotate(180deg);
+    opacity: 0.1;
+  }
+
+  75% {
+    transform: scale(1.3) rotate(270deg);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes time-warp-anomaly-2 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.25;
+  }
+
+  25% {
+    transform: scale(1.6) rotate(90deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(0.4) rotate(180deg);
+    opacity: 0.05;
+  }
+
+  75% {
+    transform: scale(1.5) rotate(270deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes time-warp-anomaly-3 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: scale(1.8) rotate(90deg);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(0.2) rotate(180deg);
+    opacity: 0.02;
+  }
+
+  75% {
+    transform: scale(1.7) rotate(270deg);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+/* Einstein-Rosen Bridge Effect */
+@keyframes time-warp-bridge {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.1;
+  }
+
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    opacity: 0.05;
+  }
+
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    opacity: 0.25;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.1;
+  }
+}
+
+/* Animation Classes */
+.animate-time-warp-core {
+  animation: time-warp-core 3s ease-in-out infinite;
+}
+
+.animate-time-warp-ring-1 {
+  animation: time-warp-ring-1 2.5s ease-in-out infinite;
+}
+
+.animate-time-warp-ring-2 {
+  animation: time-warp-ring-2 3s ease-in-out infinite;
+}
+
+.animate-time-warp-ring-3 {
+  animation: time-warp-ring-3 3.5s ease-in-out infinite;
+}
+
+.animate-time-warp-ring-4 {
+  animation: time-warp-ring-4 4s ease-in-out infinite;
+}
+
+.animate-time-warp-ring-5 {
+  animation: time-warp-ring-5 4.5s ease-in-out infinite;
+}
+
+.animate-time-warp-wave-1 {
+  animation: time-warp-wave-1 2s ease-in-out infinite;
+}
+
+.animate-time-warp-wave-2 {
+  animation: time-warp-wave-2 2.5s ease-in-out infinite;
+}
+
+.animate-time-warp-wave-3 {
+  animation: time-warp-wave-3 3s ease-in-out infinite;
+}
+
+.animate-time-warp-particle-slow {
+  animation: time-warp-particle-slow 4s ease-in-out infinite;
+}
+
+.animate-time-warp-particle-fast {
+  animation: time-warp-particle-fast 1.5s ease-in-out infinite;
+}
+
+.animate-time-warp-particle-relativistic {
+  animation: time-warp-particle-relativistic 3.5s ease-in-out infinite;
+}
+
+.animate-time-warp-particle-reverse {
+  animation: time-warp-particle-reverse 2.8s ease-in-out infinite;
+}
+
+.animate-time-warp-particle-quantum {
+  animation: time-warp-particle-quantum 5s ease-in-out infinite;
+}
+
+.animate-time-warp-curvature-1 {
+  animation: time-warp-curvature-1 3s ease-in-out infinite;
+}
+
+.animate-time-warp-curvature-2 {
+  animation: time-warp-curvature-2 3.5s ease-in-out infinite;
+}
+
+.animate-time-warp-curvature-3 {
+  animation: time-warp-curvature-3 4s ease-in-out infinite;
+}
+
+.animate-time-warp-fluctuation-1 {
+  animation: time-warp-fluctuation-1 2.2s ease-in-out infinite;
+}
+
+.animate-time-warp-fluctuation-2 {
+  animation: time-warp-fluctuation-2 2.7s ease-in-out infinite;
+}
+
+.animate-time-warp-fluctuation-3 {
+  animation: time-warp-fluctuation-3 3.2s ease-in-out infinite;
+}
+
+.animate-time-warp-fluctuation-4 {
+  animation: time-warp-fluctuation-4 3.7s ease-in-out infinite;
+}
+
+.animate-time-warp-doppler-1 {
+  animation: time-warp-doppler-1 2.5s ease-in-out infinite;
+}
+
+.animate-time-warp-doppler-2 {
+  animation: time-warp-doppler-2 3s ease-in-out infinite;
+}
+
+.animate-time-warp-doppler-3 {
+  animation: time-warp-doppler-3 3.5s ease-in-out infinite;
+}
+
+.animate-time-warp-anomaly-1 {
+  animation: time-warp-anomaly-1 4s ease-in-out infinite;
+}
+
+.animate-time-warp-anomaly-2 {
+  animation: time-warp-anomaly-2 4.5s ease-in-out infinite;
+}
+
+.animate-time-warp-anomaly-3 {
+  animation: time-warp-anomaly-3 5s ease-in-out infinite;
+}
+
+.animate-time-warp-bridge {
+  animation: time-warp-bridge 3.5s ease-in-out infinite;
+}
+
+/* Holographic Animations */
+@keyframes holographic-core {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow:
+      0 0 20px rgba(6, 182, 212, 0.5),
+      0 0 40px rgba(6, 182, 212, 0.3),
+      0 0 60px rgba(6, 182, 212, 0.2);
+  }
+
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    box-shadow:
+      0 0 30px rgba(139, 92, 246, 0.6),
+      0 0 60px rgba(139, 92, 246, 0.4),
+      0 0 90px rgba(139, 92, 246, 0.3);
+  }
+
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    box-shadow:
+      0 0 25px rgba(236, 72, 153, 0.5),
+      0 0 50px rgba(236, 72, 153, 0.3),
+      0 0 75px rgba(236, 72, 153, 0.2);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    box-shadow:
+      0 0 35px rgba(249, 115, 22, 0.6),
+      0 0 70px rgba(249, 115, 22, 0.4),
+      0 0 105px rgba(249, 115, 22, 0.3);
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    box-shadow:
+      0 0 20px rgba(6, 182, 212, 0.5),
+      0 0 40px rgba(6, 182, 212, 0.3),
+      0 0 60px rgba(6, 182, 212, 0.2);
+  }
+}
+
+@keyframes holographic-ring-red {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  25% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(0.7) rotate(180deg);
+    opacity: 0.2;
+  }
+
+  75% {
+    transform: scale(1.2) rotate(270deg);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.4;
+  }
+}
+
+@keyframes holographic-ring-orange {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.35;
+  }
+
+  25% {
+    transform: scale(1.4) rotate(90deg);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(0.6) rotate(180deg);
+    opacity: 0.1;
+  }
+
+  75% {
+    transform: scale(1.3) rotate(270deg);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.35;
+  }
+}
+
+@keyframes holographic-ring-yellow {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: scale(1.5) rotate(90deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(0.5) rotate(180deg);
+    opacity: 0.05;
+  }
+
+  75% {
+    transform: scale(1.4) rotate(270deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes holographic-ring-green {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.25;
+  }
+
+  25% {
+    transform: scale(1.6) rotate(90deg);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(0.4) rotate(180deg);
+    opacity: 0.02;
+  }
+
+  75% {
+    transform: scale(1.5) rotate(270deg);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes holographic-ring-blue {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: scale(1.7) rotate(90deg);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(0.3) rotate(180deg);
+    opacity: 0.01;
+  }
+
+  75% {
+    transform: scale(1.6) rotate(270deg);
+    opacity: 0.25;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+@keyframes holographic-ring-indigo {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.15;
+  }
+
+  25% {
+    transform: scale(1.8) rotate(90deg);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(0.2) rotate(180deg);
+    opacity: 0.005;
+  }
+
+  75% {
+    transform: scale(1.7) rotate(270deg);
+    opacity: 0.2;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.15;
+  }
+}
+
+@keyframes holographic-ring-violet {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.1;
+  }
+
+  25% {
+    transform: scale(1.9) rotate(90deg);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: scale(0.1) rotate(180deg);
+    opacity: 0.001;
+  }
+
+  75% {
+    transform: scale(1.8) rotate(270deg);
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.1;
+  }
+}
+
+/* Prismatic Light Refraction */
+@keyframes holographic-prism-1 {
+  0% {
+    transform: rotate(45deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: rotate(90deg) scale(1.5);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(135deg) scale(0.5);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: rotate(180deg) scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: rotate(225deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-prism-2 {
+  0% {
+    transform: rotate(-45deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: rotate(-90deg) scale(1.3);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(-135deg) scale(0.7);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: rotate(-180deg) scale(1.1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: rotate(-225deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-prism-3 {
+  0% {
+    transform: rotate(90deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: rotate(135deg) scale(1.4);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(180deg) scale(0.6);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: rotate(225deg) scale(1.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: rotate(270deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-prism-4 {
+  0% {
+    transform: rotate(-90deg) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: rotate(-135deg) scale(1.2);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(-180deg) scale(0.8);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: rotate(-225deg) scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: rotate(-270deg) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Glitch Effect Lines */
+@keyframes holographic-glitch-1 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6) scaleY(3);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.4) scaleY(0.3);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-glitch-2 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7) scaleY(2.5);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.3) scaleY(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-glitch-3 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.8) scaleY(2);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleX(0.2) scaleY(0.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-glitch-4 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.9) scaleY(1.5);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.7;
+  }
+
+  75% {
+    transform: scaleX(0.1) scaleY(0.6);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Holographic Data Streams */
+@keyframes holographic-stream-1 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.6);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.4);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-stream-2 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.7);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-stream-3 {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleY(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleY(0.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* Spectrum Particles */
+@keyframes holographic-particle-red {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(20px, -10px) scale(1.5);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(40px, -20px) scale(0.5);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translate(60px, -30px) scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(80px, -40px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-orange {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(-30px, 20px) scale(0.3);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-60px, 40px) scale(2);
+    opacity: 0.7;
+  }
+
+  75% {
+    transform: translate(-90px, 60px) scale(0.8);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-120px, 80px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-yellow {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(25px, 25px) scale(1.8);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(50px, 50px) scale(0.2);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translate(75px, 75px) scale(1.6);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(100px, 100px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-green {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(-15px, -15px) scale(0.4);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-30px, -30px) scale(2.5);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: translate(-45px, -45px) scale(0.6);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-60px, -60px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-blue {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(40px, -20px) scale(0.1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(80px, -40px) scale(3);
+    opacity: 0.2;
+  }
+
+  75% {
+    transform: translate(120px, -60px) scale(0.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translate(160px, -80px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-indigo {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(-25px, 15px) scale(1.6);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(-50px, 30px) scale(0.3);
+    opacity: 0.5;
+  }
+
+  75% {
+    transform: translate(-75px, 45px) scale(1.9);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(-100px, 60px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-particle-violet {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: translate(35px, -25px) scale(0.2);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(70px, -50px) scale(2.8);
+    opacity: 0.3;
+  }
+
+  75% {
+    transform: translate(105px, -75px) scale(0.4);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(140px, -100px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Holographic Grid */
+@keyframes holographic-grid {
+  0% {
+    opacity: 0.3;
+    transform: translateX(0);
+  }
+
+  25% {
+    opacity: 0.6;
+    transform: translateX(10px);
+  }
+
+  50% {
+    opacity: 0.3;
+    transform: translateX(0);
+  }
+
+  75% {
+    opacity: 0.6;
+    transform: translateX(-10px);
+  }
+
+  100% {
+    opacity: 0.3;
+    transform: translateX(0);
+  }
+}
+
+/* Holographic Waves */
+@keyframes holographic-wave-1 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.6) scaleY(3);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: scaleX(0.4) scaleY(0.3);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-wave-2 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.7) scaleY(2.5);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.9;
+  }
+
+  75% {
+    transform: scaleX(0.3) scaleY(0.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+@keyframes holographic-wave-3 {
+  0% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+
+  25% {
+    transform: scaleX(0.8) scaleY(2);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.8;
+  }
+
+  75% {
+    transform: scaleX(0.2) scaleY(0.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scaleX(0) scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Holographic Anomalies */
+@keyframes holographic-anomaly-1 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+
+  25% {
+    transform: scale(1.4) rotate(90deg);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(0.6) rotate(180deg);
+    opacity: 0.1;
+  }
+
+  75% {
+    transform: scale(1.3) rotate(270deg);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes holographic-anomaly-2 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.25;
+  }
+
+  25% {
+    transform: scale(1.6) rotate(90deg);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(0.4) rotate(180deg);
+    opacity: 0.05;
+  }
+
+  75% {
+    transform: scale(1.5) rotate(270deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes holographic-anomaly-3 {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: scale(1.8) rotate(90deg);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(0.2) rotate(180deg);
+    opacity: 0.02;
+  }
+
+  75% {
+    transform: scale(1.7) rotate(270deg);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+/* Holographic Energy Field */
+@keyframes holographic-field {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: scale(1.2) rotate(90deg);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    opacity: 0.1;
+  }
+
+  75% {
+    transform: scale(1.1) rotate(270deg);
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+/* Animation Classes */
+.animate-holographic-core {
+  animation: holographic-core 3s ease-in-out infinite;
+}
+
+.animate-holographic-ring-red {
+  animation: holographic-ring-red 2.5s ease-in-out infinite;
+}
+
+.animate-holographic-ring-orange {
+  animation: holographic-ring-orange 3s ease-in-out infinite;
+}
+
+.animate-holographic-ring-yellow {
+  animation: holographic-ring-yellow 3.5s ease-in-out infinite;
+}
+
+.animate-holographic-ring-green {
+  animation: holographic-ring-green 4s ease-in-out infinite;
+}
+
+.animate-holographic-ring-blue {
+  animation: holographic-ring-blue 4.5s ease-in-out infinite;
+}
+
+.animate-holographic-ring-indigo {
+  animation: holographic-ring-indigo 5s ease-in-out infinite;
+}
+
+.animate-holographic-ring-violet {
+  animation: holographic-ring-violet 5.5s ease-in-out infinite;
+}
+
+.animate-holographic-prism-1 {
+  animation: holographic-prism-1 2.2s ease-in-out infinite;
+}
+
+.animate-holographic-prism-2 {
+  animation: holographic-prism-2 2.7s ease-in-out infinite;
+}
+
+.animate-holographic-prism-3 {
+  animation: holographic-prism-3 3.2s ease-in-out infinite;
+}
+
+.animate-holographic-prism-4 {
+  animation: holographic-prism-4 3.7s ease-in-out infinite;
+}
+
+.animate-holographic-glitch-1 {
+  animation: holographic-glitch-1 2s ease-in-out infinite;
+}
+
+.animate-holographic-glitch-2 {
+  animation: holographic-glitch-2 2.5s ease-in-out infinite;
+}
+
+.animate-holographic-glitch-3 {
+  animation: holographic-glitch-3 3s ease-in-out infinite;
+}
+
+.animate-holographic-glitch-4 {
+  animation: holographic-glitch-4 3.5s ease-in-out infinite;
+}
+
+.animate-holographic-stream-1 {
+  animation: holographic-stream-1 2.5s ease-in-out infinite;
+}
+
+.animate-holographic-stream-2 {
+  animation: holographic-stream-2 3s ease-in-out infinite;
+}
+
+.animate-holographic-stream-3 {
+  animation: holographic-stream-3 3.5s ease-in-out infinite;
+}
+
+.animate-holographic-particle-red {
+  animation: holographic-particle-red 4s ease-in-out infinite;
+}
+
+.animate-holographic-particle-orange {
+  animation: holographic-particle-orange 3.5s ease-in-out infinite;
+}
+
+.animate-holographic-particle-yellow {
+  animation: holographic-particle-yellow 4.5s ease-in-out infinite;
+}
+
+.animate-holographic-particle-green {
+  animation: holographic-particle-green 3s ease-in-out infinite;
+}
+
+.animate-holographic-particle-blue {
+  animation: holographic-particle-blue 4.2s ease-in-out infinite;
+}
+
+.animate-holographic-particle-indigo {
+  animation: holographic-particle-indigo 3.8s ease-in-out infinite;
+}
+
+.animate-holographic-particle-violet {
+  animation: holographic-particle-violet 5s ease-in-out infinite;
+}
+
+.animate-holographic-grid {
+  animation: holographic-grid 4s ease-in-out infinite;
+}
+
+.animate-holographic-wave-1 {
+  animation: holographic-wave-1 2s ease-in-out infinite;
+}
+
+.animate-holographic-wave-2 {
+  animation: holographic-wave-2 2.5s ease-in-out infinite;
+}
+
+.animate-holographic-wave-3 {
+  animation: holographic-wave-3 3s ease-in-out infinite;
+}
+
+.animate-holographic-anomaly-1 {
+  animation: holographic-anomaly-1 4s ease-in-out infinite;
+}
+
+.animate-holographic-anomaly-2 {
+  animation: holographic-anomaly-2 4.5s ease-in-out infinite;
+}
+
+.animate-holographic-anomaly-3 {
+  animation: holographic-anomaly-3 5s ease-in-out infinite;
+}
+
+.animate-holographic-field {
+  animation: holographic-field 3.5s ease-in-out infinite;
+}

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X, Smartphone, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 // Extend Navigator interface for iOS Safari standalone property
 declare global {
@@ -22,6 +23,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function PWAInstallPrompt() {
+  const t = useTranslations("Pwa");
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
@@ -202,10 +204,10 @@ export default function PWAInstallPrompt() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white text-base">
-                  AkılHane&apos;i Yükle
+                  {t("installMindhouse")}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Daha hızlı erişim
+                  {t("fasterAccess")}
                 </p>
               </div>
             </div>
@@ -220,23 +222,22 @@ export default function PWAInstallPrompt() {
           {/* Content */}
           <div className="mb-6">
             <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-              AkılHane&apos;i ana ekranınıza ekleyerek daha hızlı erişim
-              sağlayın ve çevrimdışı çalışın.
+              {t("installDescription")}
             </p>
 
             {/* Benefits */}
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span>Hızlı erişim</span>
+                <span>{t("quickAccess")}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span>Çevrimdışı çalışma</span>
+                <span>{t("offlineWork")}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span>Push bildirimleri</span>
+                <span>{t("pushNotifications")}</span>
               </div>
             </div>
           </div>
@@ -251,7 +252,7 @@ export default function PWAInstallPrompt() {
               size="sm"
             >
               <Download className="w-4 h-4 mr-2" />
-              Yükle
+              {t("install")}
             </Button>
             <Button
               variant="outline"
@@ -259,7 +260,7 @@ export default function PWAInstallPrompt() {
               size="sm"
               className="min-h-[44px] text-sm font-medium hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
             >
-              Daha Sonra
+              {t("remindLater")}
             </Button>
           </div>
         </div>

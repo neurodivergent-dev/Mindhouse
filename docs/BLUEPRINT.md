@@ -1,4 +1,4 @@
-# **App Name**: Akılhane
+# **App Name**: Mindhouse
 
 ## Core Features:
 

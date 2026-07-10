@@ -5,9 +5,10 @@ import { initializeDatabase } from "@/lib/database/connection";
 import { shouldUseDemoData, getDemoQuestions } from "@/data/demo-data";
 
 export async function POST(request: NextRequest) {
+  let requestBody: any = null;
   try {
-    const body = await request.json();
-    const { subject, difficulty, questionCount = 10 } = body;
+    requestBody = await request.json();
+    const { subject, difficulty, questionCount = 10 } = requestBody;
 
     if (!subject) {
       return NextResponse.json(
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       let filteredQuestions = demoQuestions;
       if (difficulty && difficulty !== "all") {
         filteredQuestions = demoQuestions.filter(
-          (q) => q.difficulty === difficulty,
+          (q: { difficulty?: string }) => q.difficulty === difficulty,
         );
       }
 
@@ -91,11 +92,10 @@ export async function POST(request: NextRequest) {
       subject,
       difficulty: difficulty || "all",
     });
-  } catch {
+  } catch (err) {
     // Check if demo mode should be used in case of error
     if (shouldUseDemoData()) {
-      const body = await request.json();
-      const { subject } = body;
+      const subject = requestBody?.subject;
 
       if (subject) {
         const demoQuestions = getDemoQuestions(subject);

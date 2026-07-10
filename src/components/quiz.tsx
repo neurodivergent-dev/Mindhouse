@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAiTutorHelp, type AiTutorOutput } from "../ai/flows/ai-tutor";
+import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import VoiceAssistant from "./voice-assistant";
 import ReactMarkdown from "react-markdown";
@@ -14,7 +16,9 @@ import { QuizResult } from "./quiz-result";
 import LoadingSpinner from "./loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { QuestionService } from "@/services/supabase-service";
+import { UnifiedStorageService } from "@/services/unified-storage-service";
 import { getDemoQuestions } from "@/data/demo-data";
+import AIFloatingChat from "./ai-floating-chat";
 
 interface DemoQuestion {
   id: string;
@@ -73,6 +77,137 @@ const QuizComponent: React.FC<QuizProps> = ({
   isDemoMode = false,
 }) => {
   const { toast } = useToast();
+  const t = useTranslations("Quiz");
+  const locale = useLocale();
+  const tSubjects = useTranslations("Subjects");
+
+  const getDisplaySubject = (name: string) => {
+    const demoSubjectNames = [
+      "Matematik",
+      "Fizik",
+      "Kimya",
+      "Biyoloji",
+      "Tarih",
+      "Türk Dili ve Edebiyatı",
+      "İngilizce",
+    ];
+    if (!demoSubjectNames.includes(name)) {
+      return name;
+    }
+    try {
+      return tSubjects(name as any);
+    } catch {
+      return name;
+    }
+  };
+  const displaySubject = getDisplaySubject(subject);
+
+  // Translations for demo questions
+  const DEMO_QUESTION_TRANSLATIONS: Record<string, { question: string; options: string[]; explanation: string; tags: string[] }> = {
+    // Mathematics
+    "q_mat_001": {
+      question: "What is the value of f(5) for the function f(x) = 2x + 3?",
+      options: ["11", "13", "15", "17"],
+      explanation: "f(5) = 2(5) + 3 = 10 + 3 = 13",
+      tags: ["function", "algebra"],
+    },
+    "q_mat_002": {
+      question: "What is the sum of the interior angles of a triangle?",
+      options: ["90°", "180°", "270°", "360°"],
+      explanation: "The sum of the interior angles of a triangle is always 180 degrees.",
+      tags: ["geometry", "triangle"],
+    },
+    "q_mat_003": {
+      question: "What is the result of the integral ∫(2x + 1)dx?",
+      options: ["x² + x + C", "2x² + x + C", "x² + C", "2x + C"],
+      explanation: "∫(2x + 1)dx = ∫2x dx + ∫1 dx = x² + x + C",
+      tags: ["integral", "calculus"],
+    },
+    // Physics
+    "q_fiz_001": {
+      question: "What is the formula for Newton's second law?",
+      options: ["F = ma", "E = mc²", "P = mv", "W = Fd"],
+      explanation: "Newton's second law: Force = mass × acceleration (F = ma)",
+      tags: ["newton", "force", "mechanics"],
+    },
+    "q_fiz_002": {
+      question: "What is the approximate speed of light in a vacuum?",
+      options: ["3×10⁶ m/s", "3×10⁷ m/s", "3×10⁸ m/s", "3×10⁹ m/s"],
+      explanation: "The speed of light in a vacuum is approximately 3×10⁸ m/s (300,000,000 m/s).",
+      tags: ["light", "speed", "optics"],
+    },
+    "q_fiz_003": {
+      question: "What concept does the first law of thermodynamics express?",
+      options: ["Increase in entropy", "Conservation of energy", "Conservation of momentum", "Conservation of mass"],
+      explanation: "The first law of thermodynamics states the principle of energy conservation.",
+      tags: ["thermodynamics", "energy", "conservation"],
+    },
+    // Chemistry
+    "q_kim_001": {
+      question: "By what name are the elements in Group 1 of the periodic table known?",
+      options: ["Halogens", "Alkali metals", "Noble gases", "Alkaline earth metals"],
+      explanation: "Group 1 elements are known as alkali metals (Li, Na, K, Rb, Cs, Fr).",
+      tags: ["periodic table", "alkali metals"],
+    },
+    "q_kim_002": {
+      question: "What is the molecular geometry of H₂O?",
+      options: ["Linear", "Trigonal planar", "Bent", "Tetrahedral"],
+      explanation: "The water molecule (H₂O) has a bent (angular) geometry.",
+      tags: ["molecular geometry", "water", "hybridization"],
+    },
+    // Biology
+    "q_bio_001": {
+      question: "In which organelles does photosynthesis occur?",
+      options: ["Mitochondria", "Chloroplast", "Ribosome", "Golgi apparatus"],
+      explanation: "Photosynthesis occurs in the chloroplasts of plant cells.",
+      tags: ["photosynthesis", "chloroplast", "plant"],
+    },
+    "q_bio_002": {
+      question: "Who first discovered the structure of DNA?",
+      options: ["Darwin", "Mendel", "Watson and Crick", "Pasteur"],
+      explanation: "The double helix structure of DNA was discovered by Watson and Crick.",
+      tags: ["dna", "watson", "crick", "genetics"],
+    },
+    // History
+    "q_tar_001": {
+      question: "In what year was the Ottoman Empire founded?",
+      options: ["1299", "1326", "1354", "1389"],
+      explanation: "The Ottoman Empire was founded by Osman Gazi in 1299.",
+      tags: ["ottoman", "foundation", "osman gazi"],
+    },
+    "q_tar_002": {
+      question: "On what date was the Republic of Turkey proclaimed?",
+      options: ["May 19, 1919", "April 23, 1920", "August 30, 1922", "October 29, 1923"],
+      explanation: "The Republic of Turkey was proclaimed on October 29, 1923.",
+      tags: ["republic", "ataturk", "foundation"],
+    },
+    // Literature
+    "q_ede_001": {
+      question: "Who is the author of the novel 'The Red-Haired Woman'?",
+      options: ["Orhan Pamuk", "Yaşar Kemal", "Nazim Hikmet", "Sabahattin Ali"],
+      explanation: "The novel 'The Red-Haired Woman' was written by Nobel laureate Orhan Pamuk.",
+      tags: ["novel", "orhan pamuk", "contemporary literature"],
+    },
+    "q_ede_002": {
+      question: "What is the most important poetic form in Divan Literature?",
+      options: ["Ghazal", "Koshma", "Turku", "Mani"],
+      explanation: "The most important and common poetic form in Divan Literature is the ghazal.",
+      tags: ["divan literature", "ghazal", "poetry"],
+    },
+    // English
+    "q_ing_001": {
+      question: "Which sentence is grammatically correct?",
+      options: ["She don't like coffee", "She doesn't likes coffee", "She doesn't like coffee", "She not like coffee"],
+      explanation: "Third person singular uses \"doesn't\" and base form of verb.",
+      tags: ["grammar", "present simple", "negative"],
+    },
+    "q_ing_002": {
+      question: 'What is the past tense of "go"?',
+      options: ["goed", "went", "gone", "going"],
+      explanation: '"Go" is an irregular verb. Its past tense is "went".',
+      tags: ["irregular verbs", "past tense"],
+    }
+  };
 
   // Save demo mode to localStorage
   useEffect(() => {
@@ -97,6 +232,7 @@ const QuizComponent: React.FC<QuizProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [finalResult, setFinalResult] = useState({
     score: 0,
     totalQuestions: 0,
@@ -187,21 +323,24 @@ const QuizComponent: React.FC<QuizProps> = ({
         if (demoModeActive) {
           // Load demo questions from demo-data.ts
           const demoQuestionsFromData = getDemoQuestions(subject) as DemoQuestion[];
-          
+
           // Convert demo questions to Quiz component format
-          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map(q => ({
-            id: q.id,
-            subject, // Use the selected subject name directly
-            type: "multiple-choice",
-            difficulty: q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
-            text: q.question,
-            topic: (q.tags && q.tags.length > 0 ? q.tags[0] : "Genel") as string,
-            options: q.options.map((option, index) => ({
-              text: option,
-              isCorrect: index === q.correctAnswer
-            })),
-            explanation: q.explanation
-          }));
+          const convertedDemoQuestions: Question[] = demoQuestionsFromData.map(q => {
+            const tr = (locale !== "tr" && DEMO_QUESTION_TRANSLATIONS[q.id]) ? DEMO_QUESTION_TRANSLATIONS[q.id] : null;
+            return {
+              id: q.id,
+              subject, // Use the selected subject name directly
+              type: "multiple-choice",
+              difficulty: q.difficulty === "Başlangıç" ? "Easy" : q.difficulty === "Orta" ? "Medium" : "Hard",
+              text: tr ? tr.question : q.question,
+              topic: (tr ? tr.tags[0] : (q.tags && q.tags.length > 0 ? q.tags[0] : "Genel")) || "Genel",
+              options: q.options.map((option, index) => ({
+                text: (tr ? tr.options[index] : option) || option,
+                isCorrect: index === q.correctAnswer
+              })),
+              explanation: tr ? tr.explanation : q.explanation
+            };
+          });
 
           const demoQuestions = convertedDemoQuestions;
 
@@ -230,9 +369,7 @@ const QuizComponent: React.FC<QuizProps> = ({
           return;
         }
 
-        // USE DIRECT LOCALSTORAGE
-
-        // Load questions from both localStorage and Supabase
+        // Load questions from both IndexedDB (UnifiedStorageService) and Supabase
         const getQuestionsFromAllSources = async (): Promise<Question[]> => {
           if (typeof window === "undefined") {
             return [];
@@ -267,25 +404,20 @@ const QuizComponent: React.FC<QuizProps> = ({
               }
             }
 
-            // Also check localStorage and merge
-            const stored = localStorage.getItem("akilhane_questions");
-            if (stored) {
-              const localQuestions = JSON.parse(stored).filter(
-                (q: unknown) =>
-                  typeof q === "object" &&
-                  q !== null &&
-                  "subject" in q &&
-                  q.subject === subject,
-              ) as Question[];
+            // Also check IndexedDB and merge
+            await UnifiedStorageService.initialize();
+            const localQuestions = UnifiedStorageService.getQuestionsBySubject(subject).map(q => ({
+              ...q,
+              topic: q.topic || "",
+            })) as Question[];
 
-              // Add local questions that don't exist in cloud questions
-              localQuestions.forEach(localQ => {
-                if (!allQuestions.find(cloudQ => cloudQ.id === localQ.id)) {
-                  allQuestions.push(localQ);
-                }
-              });
+            // Add local questions that don't exist in cloud questions
+            localQuestions.forEach(localQ => {
+              if (!allQuestions.find(cloudQ => cloudQ.id === localQ.id)) {
+                allQuestions.push(localQ);
+              }
+            });
 
-            }
             return allQuestions;
           } catch {
             return [];
@@ -295,13 +427,13 @@ const QuizComponent: React.FC<QuizProps> = ({
         const localQuestions = await getQuestionsFromAllSources();
 
         if (localQuestions.length === 0) {
-          // Show error message and redirect to home page
+          // Show error message and redirect back to quiz selection
           toast({
-            title: "Hata",
-            description: "Bu ders için henüz soru bulunmuyor",
+            title: t("errorTitle"),
+            description: t("noQuestionsForSubject"),
             variant: "destructive",
           });
-          window.location.href = "/";
+          window.location.href = "/quiz";
           return;
         }
 
@@ -325,22 +457,24 @@ const QuizComponent: React.FC<QuizProps> = ({
       } catch (error) {
         // Show user-friendly error message
         toast({
-          title: "Hata",
-          description: `Soru yüklenirken hata oluştu: ${error instanceof Error ? error.message : "Bilinmeyen hata"}`,
+          title: t("errorTitle"),
+          description: `${t("errorLoadingQuestions")} ${error instanceof Error ? error.message : t("unknownError")}`,
           variant: "destructive",
         });
-        window.location.href = "/";
+        window.location.href = "/quiz";
       }
     };
 
     if (subject && userSettings) {
       loadQuestions();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     subject,
-    userSettings.studyPreferences.questionsPerQuiz,
-    userSettings.studyPreferences.timeLimit,
+    userSettings,
+    isDemoMode,
+    locale,
+    t,
+    toast,
   ]);
 
   // Timer for elapsed time
@@ -685,20 +819,6 @@ const QuizComponent: React.FC<QuizProps> = ({
     }
   };
 
-  // Convert difficulty from English to Turkish for AI Tutor
-  const convertDifficulty = (difficulty: string): "Kolay" | "Orta" | "Zor" => {
-    switch (difficulty.toLowerCase()) {
-      case "easy":
-        return "Kolay";
-      case "medium":
-        return "Orta";
-      case "hard":
-        return "Zor";
-      default:
-        return "Orta"; // Default fallback
-    }
-  };
-
   const requestAiTutorHelp = async (
     step: "hint" | "explanation" | "step-by-step" | "concept-review",
   ) => {
@@ -710,11 +830,19 @@ const QuizComponent: React.FC<QuizProps> = ({
     setTutorStep(step);
 
     try {
+      const aiPreferences = getStoredAiPreferences();
+      if (!isAiConfigured(aiPreferences)) {
+        setAiTutorHelp({
+          help: t("aiTutorUnavailable") || "AI service configuration error. Please check your API key in Settings.",
+        });
+        return;
+      }
+
       const result = await getAiTutorHelp({
         question: currentQuestion.text,
         subject: currentQuestion.subject,
         topic: currentQuestion.topic,
-        difficulty: convertDifficulty(currentQuestion.difficulty),
+        difficulty: currentQuestion.difficulty as "Kolay" | "Orta" | "Zor" | undefined,
         options: currentQuestion.options,
         correctAnswer:
           currentQuestion.options.find((opt) => opt.isCorrect)?.text || "",
@@ -724,13 +852,14 @@ const QuizComponent: React.FC<QuizProps> = ({
             ? currentQuestion.options[selectedAnswer]?.text
             : undefined,
         step,
-      });
+        language: locale === "en" ? "en" : "tr",
+      }, aiPreferences);
 
       setAiTutorHelp(result);
     } catch {
       // Show user-friendly error message
       setAiTutorHelp({
-        help: "Şu anda AI asistanına erişilemiyor. Lütfen daha sonra tekrar deneyin.",
+        help: t("aiTutorUnavailable"),
         confidence: 0,
       });
     } finally {
@@ -777,62 +906,66 @@ const QuizComponent: React.FC<QuizProps> = ({
       {/* Responsive Navigation Bar */}
       <MobileNav />
 
-      <div className="container mx-auto p-4 md:p-8">
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Link href="/quiz">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:border-0"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Test Sayfasına Dön
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-headline font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {subject} Quiz
-            </h1>
-          </div>
-          <div className="flex items-center justify-between text-base font-medium">
-            <span className="text-gray-700 dark:text-gray-300">
-              Soru {currentQuestionIndex + 1} / {totalQuestions}
-            </span>
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <Link href="/quiz">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 text-[#86868b] dark:text-[#a1a1a6] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors text-sm"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {t("backToTestPage")}
+                </Button>
+              </Link>
+              <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                {displaySubject}
+              </h1>
+            </div>
+
+            <div className="flex items-center gap-2.5">
               {userSettings.studyPreferences.showTimer && (
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-full flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
+                <span className="bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 rounded-full px-4 py-2 text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-2 backdrop-blur-sm shadow-sm shadow-slate-200/60">
+                  <Clock className="w-4 h-4 text-blue-500" />
                   {formatTime(timeSpent)}
                 </span>
               )}
               {timeLimit && timeRemaining !== null && (
                 <span
-                  className={`px-3 py-1 rounded-full flex items-center gap-1 ${
-                    timeRemaining <= 60
-                      ? "bg-red-500 text-white"
+                  className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 backdrop-blur-sm shadow-sm border ${timeRemaining <= 60
+                      ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
                       : timeRemaining <= 300
-                        ? "bg-yellow-500 text-white"
-                        : "bg-green-500 text-white"
-                  }`}
+                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                        : "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                    }`}
                 >
                   <Clock className="w-4 h-4" />
-                  Kalan: {formatTime(timeRemaining)}
+                  {t("remaining")} {formatTime(timeRemaining)}
                 </span>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="w-full bg-muted rounded-full h-2">
+          <div className="flex items-center justify-between text-xs font-bold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wider mb-2.5">
+            <span>
+              {t("questionCount", { current: currentQuestionIndex + 1, total: totalQuestions })}
+            </span>
+            <span>
+              {totalQuestions > 0 ? Math.round(((currentQuestionIndex + 1) / totalQuestions) * 100) : 0}% Complete
+            </span>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full bg-white/80 dark:bg-white/5 border border-slate-200/90 rounded-full h-2.5 overflow-hidden backdrop-blur-sm shadow-sm shadow-slate-200/60">
             <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 h-full rounded-full transition-all duration-300"
               style={{
                 width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`,
               }}
-            ></div>
+            />
           </div>
         </div>
 
@@ -842,237 +975,278 @@ const QuizComponent: React.FC<QuizProps> = ({
           timeRemaining <= 60 &&
           timeRemaining > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-4 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-lg"
+              className="mb-4 p-4 bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 rounded-2xl"
             >
-              <p className="text-red-800 dark:text-red-200 font-semibold text-center">
-                ⚠️ Dikkat! Sadece {timeRemaining} saniye kaldı!
+              <p className="text-red-700 dark:text-red-400 font-bold text-center text-base">
+                {t("timeWarning", { seconds: timeRemaining })}
               </p>
             </motion.div>
           )}
 
-        {/* Question */}
+        {/* Question Area */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestionIndex}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="bg-card rounded-lg p-6 mb-8 shadow-lg"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25 }}
+            className="apple-glass-card p-8 md:p-10 mb-6"
           >
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium border-0">
+            <div className="w-full relative z-10">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3.5 py-1.5 rounded-full text-xs font-bold">
                   {currentQuestion.topic}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium border-0 ${
-                    currentQuestion.difficulty === "Kolay" ||
-                    currentQuestion.difficulty === "Easy"
-                      ? "bg-gradient-to-r from-green-400 to-emerald-500 text-white"
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${currentQuestion.difficulty === "Kolay" ||
+                      currentQuestion.difficulty === "Easy"
+                      ? "bg-green-500/10 text-green-700 dark:text-green-400"
                       : currentQuestion.difficulty === "Orta" ||
-                          currentQuestion.difficulty === "Medium"
-                        ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white"
-                        : "bg-gradient-to-r from-red-400 to-pink-500 text-white"
-                  }`}
+                        currentQuestion.difficulty === "Medium"
+                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                        : "bg-red-500/10 text-red-700 dark:text-red-400"
+                    }`}
                 >
                   {currentQuestion.difficulty}
                 </span>
               </div>
 
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-8 leading-relaxed">
                 {currentQuestion.text}
               </h2>
-            </div>
 
-            {/* Options */}
-            <div className="space-y-3 mb-6">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(index)}
-                  disabled={showResult}
-                  className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                    selectedAnswer === index
-                      ? showResult
-                        ? option.isCorrect
-                          ? "border-gradient-question bg-blue-50 dark:bg-blue-950"
-                          : "border-gradient-question bg-red-50 dark:bg-red-950"
-                        : "border-gradient-question bg-primary/5"
-                      : "border-border hover:border-gradient-question"
-                  } ${showResult && option.isCorrect ? "border-gradient-question bg-blue-50 dark:bg-blue-950" : ""}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        selectedAnswer === index
-                          ? showResult
-                            ? option.isCorrect
-                              ? "border-blue-500 bg-blue-500 text-white"
-                              : "border-red-500 bg-red-500 text-white"
-                            : "border-primary bg-primary text-white"
-                          : "border-border"
-                      }`}
-                    >
-                      {selectedAnswer === index && (
-                        <span className="text-xs">✓</span>
-                      )}
-                    </div>
-                    <span className="font-medium">{option.text}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+              {/* Options */}
+              <div className="space-y-4 mb-8">
+                {currentQuestion.options.map((option, index) => {
+                  const isSelected = selectedAnswer === index;
+                  let optionStyle = "border-slate-200/90 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60";
+                  let dotStyle = "border-slate-200/80 dark:border-white/20";
+                  let checkMark = null;
 
-            {/* Explanation */}
-            {showResult && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="border-gradient-question bg-white dark:bg-gray-800 rounded-lg p-4 mb-6"
-              >
-                <h3 className="font-semibold mb-2">Açıklama:</h3>
-                <p className="text-muted-foreground">
-                  {currentQuestion.explanation}
-                </p>
-              </motion.div>
-            )}
+                  if (isSelected) {
+                    if (showResult) {
+                      if (option.isCorrect) {
+                        optionStyle = "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400";
+                        dotStyle = "border-green-500 bg-green-500 text-white";
+                        checkMark = "✓";
+                      } else {
+                        optionStyle = "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-400";
+                        dotStyle = "border-red-500 bg-red-500 text-white";
+                        checkMark = "✗";
+                      }
+                    } else {
+                      optionStyle = "border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-400";
+                      dotStyle = "border-blue-500 bg-blue-500 text-white";
+                      checkMark = "✓";
+                    }
+                  } else if (showResult && option.isCorrect) {
+                    optionStyle = "border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-400";
+                    dotStyle = "border-green-500 bg-green-500 text-white";
+                    checkMark = "✓";
+                  }
 
-            {/* AI Tutor Help */}
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3">AI Tutor Yardımı:</h3>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {!showResult ? (
-                  // Cevaplanmadan önce sadece İpucu butonu
-                  <button
-                    onClick={() => {
-                      void requestAiTutorHelp("hint");
-                    }}
-                    disabled={isLoadingTutor}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
-                  >
-                    💡 İpucu
-                  </button>
-                ) : (
-                  // Cevaplandıktan sonra tüm butonlar
-                  (
-                    [
-                      "hint",
-                      "explanation",
-                      "step-by-step",
-                      "concept-review",
-                    ] as const
-                  ).map((step) => (
+                  return (
                     <button
-                      key={step}
+                      key={index}
+                      onClick={() => handleAnswerSelect(index)}
+                      disabled={showResult}
+                      className={`w-full p-5 text-left rounded-2xl border transition-all duration-200 backdrop-blur-sm flex items-center justify-between group ${optionStyle}`}
+                    >
+                      <div className="flex items-center gap-4 pr-4 flex-1">
+                        <div
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${dotStyle}`}
+                        >
+                          {checkMark}
+                        </div>
+                        <span className="font-semibold text-base leading-relaxed">{option.text}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Explanation Panel */}
+              {showResult && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mb-8 p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 backdrop-blur-sm"
+                >
+                  <h3 className="font-bold text-base text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 flex items-center gap-1.5">
+                    📖 {t("explanationTitle")}
+                  </h3>
+                  <p className="text-sm text-[#86868b] dark:text-[#a1a1a6] leading-relaxed">
+                    {currentQuestion.explanation}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* AI Tutor Integration */}
+              <div className="mb-6 pt-4 border-t border-slate-200/90 dark:border-white/10">
+                <h3 className="font-bold text-xs text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wider mb-3">
+                  ✨ {t("aiTutorHelpTitle")}
+                </h3>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {!showResult ? (
+                    <button
                       onClick={() => {
-                        void requestAiTutorHelp(step);
+                        void requestAiTutorHelp("hint");
                       }}
                       disabled={isLoadingTutor}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all disabled:opacity-40"
                     >
-                      {step === "hint" && "💡 İpucu"}
-                      {step === "explanation" && "📚 Açıklama"}
-                      {step === "step-by-step" && "🔍 Adım Adım"}
-                      {step === "concept-review" && "🎯 Konu Tekrarı"}
+                      💡 {t("hint")}
                     </button>
-                  ))
+                  ) : (
+                    (
+                      [
+                        "hint",
+                        "explanation",
+                        "step-by-step",
+                        "concept-review",
+                      ] as const
+                    ).map((step) => (
+                      <button
+                        key={step}
+                        onClick={() => {
+                          void requestAiTutorHelp(step);
+                        }}
+                        disabled={isLoadingTutor}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${tutorStep === step && aiTutorHelp
+                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm"
+                            : "bg-white/80 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 hover:bg-white/90 dark:hover:bg-white/10 text-[#1d1d1f] dark:text-[#f5f5f7] shadow-sm shadow-slate-200/60"
+                          } disabled:opacity-40`}
+                      >
+                        {step === "hint" && "💡"}
+                        {step === "explanation" && "📚"}
+                        {step === "step-by-step" && "🔍"}
+                        {step === "concept-review" && "🎯"}
+                        {step === "hint" && t("hint")}
+                        {step === "explanation" && t("explanation")}
+                        {step === "step-by-step" && t("stepByStep")}
+                        {step === "concept-review" && t("conceptReview")}
+                      </button>
+                    ))
+                  )}
+                </div>
+
+                {isLoadingTutor && (
+                  <div className="flex flex-col items-center justify-center py-6">
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500 mb-2" />
+                    <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] font-medium">
+                      {t("preparingAiHelp")}
+                    </p>
+                  </div>
+                )}
+
+                {aiTutorHelp && !isLoadingTutor && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4.5 rounded-2xl bg-white/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 shadow-sm shadow-slate-200/60 backdrop-blur-sm"
+                  >
+                    <h4 className="font-bold text-xs text-[#1d1d1f] dark:text-[#f5f5f7] mb-2 flex items-center gap-1.5">
+                      {tutorStep === "hint" && "💡"}
+                      {tutorStep === "explanation" && "📚"}
+                      {tutorStep === "step-by-step" && "🔍"}
+                      {tutorStep === "concept-review" && "🎯"}
+                      {tutorStep === "hint" && t("hint")}
+                      {tutorStep === "explanation" && t("explanation")}
+                      {tutorStep === "step-by-step" && t("stepByStep")}
+                      {tutorStep === "concept-review" && t("conceptReview")}
+                    </h4>
+                    <div className="text-xs leading-relaxed text-[#515154] dark:text-[#d2d2d7] prose prose-invert max-w-none ai-tutor-markdown">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {aiTutorHelp.help}
+                      </ReactMarkdown>
+                    </div>
+                  </motion.div>
                 )}
               </div>
 
-              {isLoadingTutor && (
-                <div className="text-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-sm text-muted-foreground">
-                    AI yardımı hazırlanıyor...
-                  </p>
-                </div>
-              )}
-
-              {aiTutorHelp && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="border-gradient-question bg-white dark:bg-gray-800 rounded-lg p-4"
-                >
-                  <h4 className="font-semibold mb-2">
-                    {tutorStep === "hint" && "💡 İpucu"}
-                    {tutorStep === "explanation" && "📚 Açıklama"}
-                    {tutorStep === "step-by-step" && "🔍 Adım Adım"}
-                    {tutorStep === "concept-review" && "🎯 Konu Tekrarı"}
-                  </h4>
-                  <div className="ai-tutor-markdown">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {aiTutorHelp.help}
-                    </ReactMarkdown>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              {!showResult ? (
-                <button
-                  onClick={handleSubmit}
-                  disabled={selectedAnswer === null}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cevabı Gönder
-                </button>
-              ) : currentQuestionIndex < questions.length - 1 ? (
-                <button
-                  onClick={handleNext}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
-                >
-                  Sonraki Soru
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    void handleFinish();
-                  }}
-                  disabled={isSaving}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
-                >
-                  {isSaving ? "Kaydediliyor..." : "Testi Bitir"}
-                </button>
-              )}
+              {/* Action Button */}
+              <div className="pt-2">
+                {!showResult ? (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={selectedAnswer === null}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {t("submitAnswer")}
+                  </button>
+                ) : currentQuestionIndex < questions.length - 1 ? (
+                  <button
+                    onClick={handleNext}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all font-semibold text-sm"
+                  >
+                    {t("nextQuestion")}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      void handleFinish();
+                    }}
+                    disabled={isSaving}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all font-semibold text-sm disabled:opacity-40"
+                  >
+                    {isSaving ? t("saving") : t("finishTest")}
+                  </button>
+                )}
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Score Display */}
-        <div className="text-center">
-          <p className="text-lg font-semibold">
-            Puan: {score} / {totalQuestions}
-          </p>
-          <p className="text-muted-foreground">
-            Başarı Oranı:{" "}
-            {totalQuestions > 0
-              ? Math.round((score / totalQuestions) * 100)
-              : 0}
-            %
-          </p>
+        {/* Score Footer */}
+        <div className="flex items-center justify-between px-3 text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6]">
+          <span>
+            {t("score")}: {score} / {totalQuestions}
+          </span>
+          <span>
+            {t("successRate")}: {totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0}%
+          </span>
         </div>
       </div>
 
       {/* Voice Assistant */}
-      <VoiceAssistant
-        onCommand={handleVoiceCommand}
-        currentQuestion={currentQuestion.text}
-        currentOptions={currentQuestion.options}
-        currentAnswer={
-          currentQuestion.options.find((opt) => opt.isCorrect)?.text || ""
-        }
-        currentExplanation={currentQuestion.explanation}
-        aiTutorOutput={aiTutorHelp?.help || ""}
-        isListening={isListening}
-        onListeningChange={setIsListening}
-        showExplanation={showResult}
-        mode="quiz"
+      {!isChatOpen && (
+        <VoiceAssistant
+          onCommand={handleVoiceCommand}
+          currentQuestion={currentQuestion.text}
+          currentOptions={currentQuestion.options}
+          currentAnswer={
+            currentQuestion.options.find((opt) => opt.isCorrect)?.text || ""
+          }
+          currentExplanation={currentQuestion.explanation}
+          aiTutorOutput={aiTutorHelp?.help || ""}
+          isListening={isListening}
+          onListeningChange={setIsListening}
+          showExplanation={showResult}
+          mode="quiz"
+        />
+      )}
+
+      {/* AI Floating Chat - accesses quiz data */}
+      <AIFloatingChat
+        subject={subject}
+        quizData={{
+          questions,
+          currentQuestionIndex,
+          ...(currentQuestionIndex < questions.length ? { currentQuestion: questions[currentQuestionIndex] as unknown as Record<string, unknown> } : {}),
+          selectedAnswer,
+          timeSpent,
+          timeRemaining,
+          timeLimit,
+          showTimer: userSettings.studyPreferences.showTimer,
+          totalQuestions,
+          aiTutorUsed: Boolean(aiTutorHelp),
+          showResult,
+        }}
+        onOpenChange={setIsChatOpen}
       />
     </div>
   );

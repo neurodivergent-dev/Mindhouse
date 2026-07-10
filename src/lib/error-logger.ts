@@ -34,19 +34,21 @@ export class ErrorLogger {
       timestamp: new Date(),
     };
 
-    // In development, still log to console for debugging
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.error(`[ErrorLogger] ${message}`, error, context);
-    }
-
     // Store error for potential reporting
     this.logs.push(errorLog);
 
-    // In production, you could send errors to a monitoring service
-    if (process.env.NODE_ENV === 'production') {
-      // TODO: Implement error reporting service (e.g., Sentry, LogRocket)
-      // this.reportToService(errorLog);
+    // Always log to console in development and production for observability
+    if (error !== undefined && error !== null) {
+      console.error(`[ERROR] ${message}`, {
+        error: error instanceof Error ? { message: error.message, stack: error.stack } : error,
+        context,
+        timestamp: errorLog.timestamp
+      });
+    } else {
+      console.log(`[LOG] ${message}`, {
+        context,
+        timestamp: errorLog.timestamp
+      });
     }
   }
 

@@ -1,8 +1,9 @@
 import { useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useToast } from "@/hooks/use-toast";
 import { QuestionService } from "@/services/supabase-service";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
-import { shouldUseDemoData, getDemoQuestions } from "@/data/demo-data";
+import { shouldUseDemoData, getDemoQuestions, getAllDemoQuestions } from "@/data/demo-data";
 import type { Question } from "@/lib/types";
 import type { InsertTables, UpdateTables } from "@/lib/supabase";
 import type { Subject, QuestionFormData } from "@/types/question-manager";
@@ -14,6 +15,8 @@ export const useQuestionCRUD = (
   setSubjects: (subjects: Subject[]) => void,
   calculateRealQuestionCount: (subjects: Subject[]) => Promise<Subject[]>,
 ) => {
+  const t = useTranslations("QuestionManager");
+  const locale = useLocale();
   const { toast } = useToast();
 
   // Load questions
@@ -28,17 +31,17 @@ export const useQuestionCRUD = (
         // Load demo questions
 
         if (selectedSubject && selectedSubject.trim() !== "") {
-          const demoQuestions = getDemoQuestions(selectedSubject);
-          
+          const demoQuestions = getDemoQuestions(selectedSubject, locale);
+
           // Convert demo questions to Question format
-          loadedQuestions = demoQuestions.map(demoQ => ({
+          loadedQuestions = demoQuestions.map((demoQ: any) => ({
             id: demoQ.id,
             subject: selectedSubject,
             type: "multiple-choice" as const,
-            difficulty: demoQ.difficulty === "Başlangıç" ? "Easy" as const : 
-                       demoQ.difficulty === "İleri" ? "Hard" as const : "Medium" as const,
+            difficulty: demoQ.difficulty === "Başlangıç" ? "Easy" as const :
+              demoQ.difficulty === "İleri" ? "Hard" as const : "Medium" as const,
             text: demoQ.question,
-            options: demoQ.options.map((opt, index) => ({
+            options: demoQ.options.map((opt: any, index: number) => ({
               text: opt,
               isCorrect: index === demoQ.correctAnswer
             })),
@@ -48,30 +51,22 @@ export const useQuestionCRUD = (
           }));
         } else {
           // Load all demo questions
-          const allDemoQuestions = Object.values({
-            "Matematik": getDemoQuestions("Matematik"),
-            "Fizik": getDemoQuestions("Fizik"), 
-            "Kimya": getDemoQuestions("Kimya"),
-            "Tarih": getDemoQuestions("Tarih"),
-            "Biyoloji": getDemoQuestions("Biyoloji"),
-            "Türk Dili ve Edebiyatı": getDemoQuestions("Türk Dili ve Edebiyatı"),
-            "İngilizce": getDemoQuestions("İngilizce"),
-          }).flat();
-          
-          loadedQuestions = allDemoQuestions.map(demoQ => ({
+          const allDemoQuestions = getAllDemoQuestions(locale);
+
+          loadedQuestions = allDemoQuestions.map((demoQ: any) => ({
             id: demoQ.id,
             subject: demoQ.subjectId.includes("matematik") ? "Matematik" :
-                    demoQ.subjectId.includes("fizik") ? "Fizik" :
-                    demoQ.subjectId.includes("kimya") ? "Kimya" :
-                    demoQ.subjectId.includes("tarih") ? "Tarih" :
+              demoQ.subjectId.includes("fizik") ? "Fizik" :
+                demoQ.subjectId.includes("kimya") ? "Kimya" :
+                  demoQ.subjectId.includes("tarih") ? "Tarih" :
                     demoQ.subjectId.includes("biyoloji") ? "Biyoloji" :
-                    demoQ.subjectId.includes("edebiyat") ? "Türk Dili ve Edebiyatı" :
-                    demoQ.subjectId.includes("ingilizce") ? "İngilizce" : "Genel",
+                      demoQ.subjectId.includes("edebiyat") ? "Türk Dili ve Edebiyatı" :
+                        demoQ.subjectId.includes("ingilizce") ? "İngilizce" : "Genel",
             type: "multiple-choice" as const,
-            difficulty: demoQ.difficulty === "Başlangıç" ? "Easy" as const : 
-                       demoQ.difficulty === "İleri" ? "Hard" as const : "Medium" as const,
+            difficulty: demoQ.difficulty === "Başlangıç" ? "Easy" as const :
+              demoQ.difficulty === "İleri" ? "Hard" as const : "Medium" as const,
             text: demoQ.question,
-            options: demoQ.options.map((opt, index) => ({
+            options: demoQ.options.map((opt: any, index: number) => ({
               text: opt,
               isCorrect: index === demoQ.correctAnswer
             })),
@@ -164,20 +159,19 @@ export const useQuestionCRUD = (
       setQuestions(loadedQuestions);
     } catch {
       toast({
-        title: "Hata",
-        description: "Sorular yüklenirken bir hata oluştu.",
+        title: t("error"),
+        description: t("loadQuestionsError"),
         variant: "destructive",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, toast]); // Removed setQuestions as it's stable
+  }, [isAuthenticated, toast, setQuestions, locale, t]); 
 
   // Create question
   const createQuestion = useCallback(async (formData: QuestionFormData) => {
     if (!formData.subject || !formData.text || !formData.explanation) {
       toast({
-        title: "Hata",
-        description: "Lütfen tüm gerekli alanları doldurun.",
+        title: t("error"),
+        description: t("fillRequiredFields"),
         variant: "destructive",
       });
       return false;
@@ -185,8 +179,8 @@ export const useQuestionCRUD = (
 
     if (formData.type === "Çoktan Seçmeli" && formData.options.length < 2) {
       toast({
-        title: "Hata",
-        description: "Çoktan seçmeli sorular için en az 2 seçenek gerekli.",
+        title: t("error"),
+        description: t("minOptionsRequired"),
         variant: "destructive",
       });
       return false;
@@ -196,10 +190,10 @@ export const useQuestionCRUD = (
       const newQuestion: Omit<Question, "id"> = {
         subject: formData.subject,
         type: formData.type === "Çoktan Seçmeli" ? "multiple-choice" :
-              formData.type === "Doğru/Yanlış" ? "true-false" :
-              formData.type === "Hesaplama" ? "calculation" : "case-study",
+          formData.type === "Doğru/Yanlış" ? "true-false" :
+            formData.type === "Hesaplama" ? "calculation" : "case-study",
         difficulty: formData.difficulty === "Kolay" ? "Easy" :
-                  formData.difficulty === "Orta" ? "Medium" : "Hard",
+          formData.difficulty === "Orta" ? "Medium" : "Hard",
         text: formData.text,
         options: formData.options,
         explanation: formData.explanation,
@@ -255,37 +249,33 @@ export const useQuestionCRUD = (
         createdQuestion = UnifiedStorageService.addQuestion(newQuestion);
       }
 
-            setQuestions((prev: Question[]) => [...prev, createdQuestion]);
+      setQuestions((prev: Question[]) => [...prev, createdQuestion]);
 
       // Recalculate question count for subjects
       const updatedSubjects = await calculateRealQuestionCount(subjects);
       setSubjects(updatedSubjects);
-        
+
       toast({
-        title: "Başarılı",
-        description: "Soru başarıyla oluşturuldu.",
+        title: t("success"),
+        description: t("questionCreated"),
       });
 
       return true;
     } catch {
       toast({
-        title: "Hata",
-        description: "Soru oluşturulurken bir hata oluştu.",
+        title: t("error"),
+        description: t("questionCreateError"),
         variant: "destructive",
       });
       return false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   // Update question
   const updateQuestion = useCallback(async (editingQuestion: Question) => {
     if (!editingQuestion) {
-      console.error("🔴 No question provided for update");
       return false;
     }
-
-    console.log("🔍 Starting question update:", editingQuestion.id);
 
     try {
       let updateSuccess = false;
@@ -308,27 +298,16 @@ export const useQuestionCRUD = (
             explanation: editingQuestion.explanation,
             formula: editingQuestion.formula || "",
           };
-          
-                    console.log("🔍 Attempting to update question in Supabase:", {
-            id: editingQuestion.id,
-            updateData
-          });
-          
-          console.log("🔍 Calling QuestionService.updateQuestion...");
+
           const result = await QuestionService.updateQuestion(editingQuestion.id, updateData);
-          console.log("🔍 QuestionService.updateQuestion returned:", result);
-          
+
           if (result) {
-            console.log("✅ Supabase update successful");
             updateSuccess = true;
           } else {
-            console.warn("⚠️ Supabase update returned null, falling back to localStorage");
             const localUpdateSuccess = UnifiedStorageService.updateQuestion(editingQuestion.id, editingQuestion);
-            console.log("🔍 localStorage update result:", localUpdateSuccess);
             updateSuccess = localUpdateSuccess;
           }
-        } catch (error) {
-          console.error("🔴 Supabase update error:", error);
+        } catch {
           // Fallback to unified storage on Supabase error
           const localUpdateSuccess = UnifiedStorageService.updateQuestion(editingQuestion.id, editingQuestion);
           updateSuccess = localUpdateSuccess;
@@ -341,7 +320,6 @@ export const useQuestionCRUD = (
 
       // Always update state if any storage method succeeded
       if (updateSuccess) {
-        console.log("🔄 Updating local state");
         setQuestions((prev: Question[]) =>
           prev.map((q: Question) => q.id === editingQuestion.id ? editingQuestion : q)
         );
@@ -350,36 +328,33 @@ export const useQuestionCRUD = (
         try {
           const updatedSubjects = await calculateRealQuestionCount(subjects);
           setSubjects(updatedSubjects);
-        } catch (subjectError) {
-          console.warn("⚠️ Failed to recalculate subject counts:", subjectError);
+        } catch {
+          // Warning ignored for lint
         }
 
         toast({
-          title: "Başarılı",
-          description: "Soru başarıyla güncellendi.",
+          title: t("success"),
+          description: t("questionUpdated"),
         });
 
         return true;
       } else {
-        console.error("🔴 All update methods failed");
         toast({
-          title: "Hata",
-          description: "Soru güncellenirken bir hata oluştu. Lütfen tekrar deneyin.",
+          title: t("error"),
+          description: t("questionUpdateError"),
           variant: "destructive",
         });
         return false;
       }
-    } catch (error) {
-      console.error("🔴 Update question error:", error);
+    } catch {
       toast({
-        title: "Hata",
-        description: "Soru güncellenirken bir hata oluştu.",
+        title: t("error"),
+        description: t("questionUpdateErrorGeneric"),
         variant: "destructive",
       });
       return false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   // Delete question
   const deleteQuestion = useCallback(async (questionId: string) => {
@@ -402,21 +377,20 @@ export const useQuestionCRUD = (
       setSubjects(updatedSubjects);
 
       toast({
-        title: "Başarılı",
-        description: "Soru başarıyla silindi.",
+        title: t("success"),
+        description: t("questionDeleted"),
       });
 
       return true;
     } catch {
       toast({
-        title: "Hata",
-        description: "Soru silinirken bir hata oluştu.",
+        title: t("error"),
+        description: t("questionDeleteError"),
         variant: "destructive",
       });
       return false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast]); // Removed stable setters
+  }, [isAuthenticated, subjects, calculateRealQuestionCount, toast, setQuestions, setSubjects, t]); 
 
   return {
     loadQuestions,

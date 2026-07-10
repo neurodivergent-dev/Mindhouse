@@ -1,6 +1,8 @@
 import type { Question } from "@/lib/types";
 import type { Subject } from "@/types/question-manager";
 import { createClient } from "@supabase/supabase-js";
+import localforage from "localforage";
+import { shouldUseDemoData } from "@/data/demo-data";
 
 // Flashcard interface
 export interface Flashcard {
@@ -45,9 +47,112 @@ export interface SavedTopicContent {
 // Unified storage service with single storage keys
 export class UnifiedStorageService {
   // Single storage keys for the entire application
-  private static readonly QUESTIONS_KEY = "akilhane_questions";
-  private static readonly SUBJECTS_KEY = "akilhane_subjects";
-  private static readonly FLASHCARDS_KEY = "akilhane_flashcards";
+  private static readonly QUESTIONS_KEY = "mindhouse_questions";
+  private static readonly SUBJECTS_KEY = "mindhouse_subjects";
+  private static readonly FLASHCARDS_KEY = "mindhouse_flashcards";
+
+  // In-memory caches for synchronous access
+  private static cache = {
+    questions: null as Question[] | null,
+    subjects: null as Subject[] | null,
+    flashcards: null as Flashcard[] | null,
+    topics: {} as Record<string, SavedTopicContent[]>
+  };
+  private static isInitialized = false;
+
+  static get isReady() {
+    return this.isInitialized;
+  }
+
+  // Initialize storage from localforage to RAM
+  static async initialize(): Promise<void> {
+    if (typeof window === "undefined" || this.isInitialized) {
+      return;
+    }
+
+    try {
+      this.cache.questions = await localforage.getItem<Question[]>(this.QUESTIONS_KEY);
+      this.cache.subjects = await localforage.getItem<Subject[]>(this.SUBJECTS_KEY);
+      this.cache.flashcards = await localforage.getItem<Flashcard[]>(this.FLASHCARDS_KEY);
+
+      // Load all topic explainers (iterate over subjects)
+      if (this.cache.subjects) {
+        for (const subject of this.cache.subjects) {
+          const subjectKey = `mindhouse_topic_explainer_${subject.name}`;
+          const topics = await localforage.getItem<SavedTopicContent[]>(subjectKey);
+          if (topics) {
+            this.cache.topics[subject.name] = topics;
+          }
+        }
+      }
+
+      // Migration: If localforage is empty but localStorage has data, move it
+      if (!this.cache.questions && typeof localStorage !== "undefined") {
+        const lsQ = localStorage.getItem(this.QUESTIONS_KEY);
+        if (lsQ) {
+          this.cache.questions = JSON.parse(lsQ);
+          await localforage.setItem(this.QUESTIONS_KEY, this.cache.questions);
+        }
+      }
+      if (!this.cache.subjects && typeof localStorage !== "undefined") {
+        const lsS = localStorage.getItem(this.SUBJECTS_KEY);
+        if (lsS) {
+          this.cache.subjects = JSON.parse(lsS);
+          await localforage.setItem(this.SUBJECTS_KEY, this.cache.subjects);
+        }
+      }
+      if (!this.cache.flashcards && typeof localStorage !== "undefined") {
+        const lsF = localStorage.getItem(this.FLASHCARDS_KEY);
+        if (lsF) {
+          this.cache.flashcards = JSON.parse(lsF);
+          await localforage.setItem(this.FLASHCARDS_KEY, this.cache.flashcards);
+        }
+      }
+
+      this.cache.questions = this.cache.questions || [];
+      this.cache.subjects = this.cache.subjects || [];
+      this.cache.flashcards = this.cache.flashcards || [];
+
+      // Clean up demo data from local storage if demo mode is disabled
+      if (!shouldUseDemoData()) {
+        if (this.cache.subjects && this.cache.subjects.length > 0) {
+          const originalLength = this.cache.subjects.length;
+          this.cache.subjects = this.cache.subjects.filter(
+            (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_")
+          );
+          if (this.cache.subjects.length !== originalLength) {
+            await localforage.setItem(this.SUBJECTS_KEY, this.cache.subjects);
+          }
+        }
+        if (this.cache.questions && this.cache.questions.length > 0) {
+          const originalLength = this.cache.questions.length;
+          this.cache.questions = this.cache.questions.filter(
+            (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025"
+          );
+          if (this.cache.questions.length !== originalLength) {
+            await localforage.setItem(this.QUESTIONS_KEY, this.cache.questions);
+          }
+        }
+        if (this.cache.flashcards && this.cache.flashcards.length > 0) {
+          const originalLength = this.cache.flashcards.length;
+          this.cache.flashcards = this.cache.flashcards.filter(
+            (f) => !f.id.startsWith("fc_")
+          );
+          if (this.cache.flashcards.length !== originalLength) {
+            await localforage.setItem(this.FLASHCARDS_KEY, this.cache.flashcards);
+          }
+        }
+      }
+
+      this.isInitialized = true;
+    } catch (error) {
+      console.error("Storage init error:", error);
+      this.cache.questions = [];
+      this.cache.subjects = [];
+      this.cache.flashcards = [];
+      this.isInitialized = true;
+    }
+  }
 
   // Supabase client for server-side operations
   private static getSupabaseClient() {
@@ -88,9 +193,19 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return [];
     }
+    if (!this.cache.questions) {
+      return [];
+    }
+
     try {
-      const stored = localStorage.getItem(this.QUESTIONS_KEY);
-      const questions = stored ? JSON.parse(stored) : [];
+      let questions = this.cache.questions;
+
+      // Filter out demo questions if demo mode is off
+      if (!shouldUseDemoData()) {
+        questions = questions.filter(
+          (q) => !q.id.startsWith("q_") && (q as any).createdBy !== "demo_user_btk_2025"
+        );
+      }
 
       // Auto-cleanup duplicates on load (safety measure)
       if (questions.length > 0) {
@@ -100,19 +215,13 @@ export class UnifiedStorageService {
         );
 
         if (uniqueQuestions.length !== questions.length) {
-          if (process.env.NODE_ENV === "development") {
-            //console.warn(`🧹 Auto-cleanup: Removed ${questions.length - uniqueQuestions.length} duplicate questions`);
-          }
           this.saveQuestions(uniqueQuestions);
           return uniqueQuestions;
         }
       }
 
       return questions;
-    } catch /* (error) */ {
-      if (process.env.NODE_ENV === "development") {
-        //console.error("🔴 Error getting questions from localStorage:", error);
-      }
+    } catch {
       return [];
     }
   }
@@ -121,16 +230,8 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return;
     }
-    try {
-      localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(questions));
-      if (process.env.NODE_ENV === "development") {
-        //console.log("💾 Questions saved to localStorage:", questions.length);
-      }
-    } catch /* (error) */ {
-      if (process.env.NODE_ENV === "development") {
-        //console.error("🔴 Error saving questions to localStorage:", error);
-      }
-    }
+    this.cache.questions = questions;
+    localforage.setItem(this.QUESTIONS_KEY, questions).catch(console.error);
   }
 
   static addQuestion(question: Omit<Question, "id">): Question {
@@ -266,26 +367,23 @@ export class UnifiedStorageService {
   // Subjects storage methods
   static getSubjects(): Subject[] {
     if (typeof window === "undefined") {
-      if (process.env.NODE_ENV === "development") {
-        //console.log("🔄 UnifiedStorageService: Window undefined, returning empty array");
-      }
+      return [];
+    }
+    if (!this.cache.subjects) {
       return [];
     }
     try {
-      const stored = localStorage.getItem(this.SUBJECTS_KEY);
-      if (process.env.NODE_ENV === "development") {
-        //console.log("🔄 UnifiedStorageService: Raw localStorage value:", stored);
+      let subjects = this.cache.subjects;
+
+      // Filter out demo subjects if demo mode is off
+      if (!shouldUseDemoData()) {
+        subjects = subjects.filter(
+          (s) => (s as any).createdBy !== "demo_user_btk_2025" && !s.id.startsWith("subj_")
+        );
       }
-      const subjects = stored ? JSON.parse(stored) : [];
-      if (process.env.NODE_ENV === "development") {
-        //console.log("🔄 UnifiedStorageService: Parsed subjects:", subjects);
-        //console.log("🔄 UnifiedStorageService: Subjects length:", subjects.length);
-      }
+
       return subjects;
-    } catch /* (error) */ {
-      if (process.env.NODE_ENV === "development") {
-        //console.error("🔴 Error getting subjects from localStorage:", error);
-      }
+    } catch {
       return [];
     }
   }
@@ -294,16 +392,8 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return;
     }
-    try {
-      localStorage.setItem(this.SUBJECTS_KEY, JSON.stringify(subjects));
-      if (process.env.NODE_ENV === "development") {
-        //console.log("💾 Subjects saved to localStorage:", subjects.length);
-      }
-    } catch /* (error) */ {
-      if (process.env.NODE_ENV === "development") {
-        //console.error("🔴 Error saving subjects to localStorage:", error);
-      }
-    }
+    this.cache.subjects = subjects;
+    localforage.setItem(this.SUBJECTS_KEY, subjects).catch(console.error);
   }
 
   static addSubject(subject: Omit<Subject, "id">): Subject {
@@ -387,9 +477,12 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return [];
     }
+    if (!this.cache.flashcards) {
+      return [];
+    }
+
     try {
-      const stored = localStorage.getItem(this.FLASHCARDS_KEY);
-      const flashcards = stored ? JSON.parse(stored) : [];
+      const flashcards = this.cache.flashcards;
 
       // Auto-cleanup duplicates on load (safety measure)
       if (flashcards.length > 0) {
@@ -399,9 +492,6 @@ export class UnifiedStorageService {
         );
 
         if (uniqueFlashcards.length !== flashcards.length) {
-          if (process.env.NODE_ENV === "development") {
-            //console.warn(`🧹 Auto-cleanup: Removed ${flashcards.length - uniqueFlashcards.length} duplicate flashcards`);
-          }
           this.saveFlashcards(uniqueFlashcards);
           return uniqueFlashcards;
         }
@@ -417,8 +507,7 @@ export class UnifiedStorageService {
       }));
 
       return processedFlashcards;
-    } catch /* (error) */ {
-      //console.error("🔴 Error getting flashcards from localStorage:", error);
+    } catch {
       return [];
     }
   }
@@ -427,16 +516,8 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return;
     }
-    try {
-      localStorage.setItem(this.FLASHCARDS_KEY, JSON.stringify(flashcards));
-      if (process.env.NODE_ENV === "development") {
-        //console.log("💾 Flashcards saved to localStorage:", flashcards.length);
-      }
-    } catch /* (error) */ {
-      if (process.env.NODE_ENV === "development") {
-        //console.error("🔴 Error saving flashcards to localStorage:", error);
-      }
-    }
+    this.cache.flashcards = flashcards;
+    localforage.setItem(this.FLASHCARDS_KEY, flashcards).catch(console.error);
   }
 
   static async addFlashcard(
@@ -660,7 +741,7 @@ export class UnifiedStorageService {
       // Remove old storage keys
       const oldKeys = [
         "exam_training_questions",
-        "akilhane_questions_v2",
+        "mindhouse_questions_v2",
         "exam_training_subjects",
       ];
 
@@ -813,20 +894,13 @@ export class UnifiedStorageService {
       return [];
     }
     try {
-      // Get all topic content from all subjects
       const allTopics: SavedTopicContent[] = [];
-
-      // Get all subjects to find their topic data
-      const subjects = this.getSubjects();
-      subjects.forEach((subject) => {
-        const _subjectKey = `akilhane_topic_explainer_${subject.name}`;
-        const stored = localStorage.getItem(_subjectKey);
-        if (stored) {
-          const subjectTopics = JSON.parse(stored);
+      for (const subject in this.cache.topics) {
+        const subjectTopics = this.cache.topics[subject];
+        if (subjectTopics && Array.isArray(subjectTopics)) {
           allTopics.push(...subjectTopics);
         }
-      });
-
+      }
       return allTopics;
     } catch {
       return [];
@@ -878,7 +952,7 @@ export class UnifiedStorageService {
       ...topicToUpdate,
       ...updates,
       updatedAt: new Date().toISOString(),
-    } as SavedTopicContent;
+    };
 
     // Update in the specific subject's storage
     const subjectTopics = this.getTopicsBySubject(topicToUpdate.subject);
@@ -922,13 +996,7 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return [];
     }
-    try {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
-      const stored = localStorage.getItem(subjectKey);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
+    return this.cache.topics[subject] || [];
   }
 
   // Get topics by topic name
@@ -943,8 +1011,9 @@ export class UnifiedStorageService {
     const removedCount = topics.length;
 
     if (removedCount > 0) {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
-      localStorage.removeItem(subjectKey);
+      delete this.cache.topics[subject];
+      const subjectKey = `mindhouse_topic_explainer_${subject}`;
+      localforage.removeItem(subjectKey).catch(console.error);
     }
 
     return removedCount;
@@ -958,10 +1027,9 @@ export class UnifiedStorageService {
     if (typeof window === "undefined") {
       return;
     }
-    try {
-      const subjectKey = `akilhane_topic_explainer_${subject}`;
-      localStorage.setItem(subjectKey, JSON.stringify(topics));
-    } catch {}
+    this.cache.topics[subject] = topics;
+    const subjectKey = `mindhouse_topic_explainer_${subject}`;
+    localforage.setItem(subjectKey, topics).catch(console.error);
   }
 
   // 🆕 Bulk sync all localStorage flashcards to Supabase

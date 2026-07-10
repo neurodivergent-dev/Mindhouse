@@ -1,8 +1,8 @@
-# 🎮 AkılHane CI/CD Game
+# 🎮 Mindhouse CI/CD Game
 
 ## 🎯 Oyun Sistemi
 
-AkılHane projesinde CI/CD süreçlerini eğlenceli hale getiren oyun sistemi!
+Mindhouse projesinde CI/CD süreçlerini eğlenceli hale getiren oyun sistemi!
 
 ## 🚀 Nasıl Çalışır?
 
@@ -121,7 +121,7 @@ python scripts/game-score.py
 
 ## 🎉 Sonuç
 
-**AkılHane CI/CD Game** ile:
+**Mindhouse CI/CD Game** ile:
 - ✅ **Eğlenceli** development
 - ✅ **Motivasyonlu** team
 - ✅ **Kaliteli** kod

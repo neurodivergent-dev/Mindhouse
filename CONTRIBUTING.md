@@ -1,6 +1,6 @@
-# Contributing to AkılHane
+# Contributing to Mindhouse
 
-Thank you for your interest in contributing to AkılHane! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Mindhouse! This document provides guidelines and information for contributors.
 
 ## 🚀 Quick Start
 
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to AkılHane! This document provides
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/melihcanndemir/akilhane.git
-   cd akilhane
+   git clone https://github.com/melihcanndemir/mindhouse.git
+   cd mindhouse
    ```
 
 2. **Install Dependencies**
@@ -404,8 +404,8 @@ Contributors will be:
 
 ## 📄 License
 
-By contributing to AkılHane, you agree that your contributions will be licensed under the MIT License.
+By contributing to Mindhouse, you agree that your contributions will be licensed under the MIT License.
 
 ---
 
-**Thank you for contributing to AkılHane! 🚀** 
+**Thank you for contributing to Mindhouse! 🚀** 

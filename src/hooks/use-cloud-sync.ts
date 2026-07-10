@@ -25,20 +25,6 @@ export function useCloudSync() {
     lastSyncTime: null,
   });
 
-  // Check sync status when user authentication changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      checkSyncStatus();
-    } else {
-      setState(prev => ({
-        ...prev,
-        syncStatus: null,
-        error: null,
-      }));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user?.id]); // Only depend on user.id to avoid object reference changes
-
   const checkSyncStatus = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -59,6 +45,19 @@ export function useCloudSync() {
       }));
     }
   }, []); // No dependencies needed as it doesn't use external state
+
+  // Check sync status when user authentication changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      checkSyncStatus();
+    } else {
+      setState(prev => ({
+        ...prev,
+        syncStatus: null,
+        error: null,
+      }));
+    }
+  }, [isAuthenticated, user?.id, checkSyncStatus]); // Included checkSyncStatus after moving definition above
 
   // Silent version for refresh after sync operations
   const checkSyncStatusSilently = useCallback(async () => {
