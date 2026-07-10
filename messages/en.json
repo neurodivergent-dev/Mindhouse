@@ -1661,6 +1661,8 @@
     "ollama_local_warning": "⚠️ Make sure Ollama is running locally. To bypass production browser security blocks, start Ollama from terminal with CORS enabled: OLLAMA_ORIGINS=\"*\" ollama serve",
     "provider_desc_hint": "The AI system will use the provider you select here + its key. Configure the correct one for your setup.",
     "pollinations_heading": "Pollinations.ai Settings (BYOK)",
+    "image_generation_enabled": "Enable Image Generation",
+    "image_generation_enabled_desc": "Let AI generate images/visuals for explanations and chat requests.",
     "pollinations_api_key": "Pollinations API Key",
     "pollinations_key_hint": "Enter your API key obtained from Pollinations.ai.",
     "pollinations_model_hint": "Enter the Pollinations model name you want to use (e.g. flux, turbo, unity).",
