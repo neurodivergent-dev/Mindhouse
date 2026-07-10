@@ -16,10 +16,6 @@ import {
   RotateCcw,
   ArrowLeft,
   ArrowRight,
-  Volume2,
-  VolumeX,
-  Eye,
-  EyeOff,
   Loader2,
   Save,
   Trash2,
@@ -33,7 +29,6 @@ import { generateTopicStepContent } from "@/ai/flows/topic-explainer-ai";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
 import { logError } from "@/lib/error-logger";
 
-import HuggingFaceImageGenerator from "@/components/huggingface-image-generator";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -107,8 +102,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [showVisuals, setShowVisuals] = useState(true);
   const [progress, setProgress] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(() => new Set());
   const [userNotes, setUserNotes] = useState<string>("");
@@ -565,22 +558,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
     setIsPlaying(!isPlaying);
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    toast({
-      title: isMuted ? t("soundEnabled") : t("soundDisabled"),
-      description: isMuted ? t("soundEnabledDesc") : t("soundDisabledDesc"),
-    });
-  };
-
-  const toggleVisuals = () => {
-    setShowVisuals(!showVisuals);
-    toast({
-      title: showVisuals ? t("visualsHidden") : t("visualsShown"),
-      description: showVisuals ? t("visualsHiddenDesc") : t("visualsShownDesc"),
-    });
-  };
-
   // Save current topic content
   const handleSaveTopic = async () => {
     if (!topicData) {
@@ -807,27 +784,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
             </Button>
 
             <Button
-              onClick={toggleMute}
-              variant="outline"
-              size="sm"
-              className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title={isMuted ? t("unmute") : t("mute")}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-
-            <Button
-              onClick={toggleVisuals}
-              variant="outline"
-              size="sm"
-              className="hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-              title={showVisuals ? t("hideVisuals") : t("showVisuals")}
-            >
-              {showVisuals ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              <span className="hidden sm:inline">{t("visuals")}</span>
-            </Button>
-
-            <Button
               onClick={handleRestart}
               variant="outline"
               size="sm"
@@ -1027,28 +983,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                             </ReactMarkdown>
                           </div>
                         </div>
-
-                        {/* AI Image Generator */}
-                        {showVisuals && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="space-y-4"
-                          >
-                            {/* Hugging Face AI Image Generator */}
-                            <HuggingFaceImageGenerator
-                              description={
-                                currentStepData.visualDescription ||
-                                t("aiVisualFallback", { topic })
-                              }
-                              topic={topic}
-                              subject={subject}
-                              onImageGenerated={() => {
-                                // do nothing
-                              }}
-                            />
-                          </motion.div>
-                        )}
 
                         {/* Examples */}
                         <div className="space-y-4">
@@ -1434,15 +1368,6 @@ const TopicExplainer: React.FC<TopicExplainerProps> = ({
                 >
                   <Lightbulb className="w-4 h-4 mr-2" />
                   {showTips ? t("hideTips") : t("showTips")}
-                </Button>
-                <Button
-                  onClick={() => setShowVisuals(!showVisuals)}
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  {showVisuals ? t("hideVisuals") : t("showVisuals")}
                 </Button>
                 <Button
                   onClick={() => {
