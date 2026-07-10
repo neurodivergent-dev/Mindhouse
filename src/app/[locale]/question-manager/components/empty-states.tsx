@@ -149,17 +149,17 @@ export function NoQuestionsState({ onAIDialogOpenChange }: NoQuestionsStateProps
         <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mb-5">
           {t("noQuestionsInSubjectDesc")}
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 w-full">
+        <div className="flex flex-col gap-3 w-full">
           <Button
             onClick={() => document.getElementById("question-form")?.scrollIntoView({ behavior: "smooth" })}
-            className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold flex-1"
+            className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-sm font-semibold w-full"
           >
             <BookOpen className="w-4 h-4 mr-2" />
             {t("addFirstQuestion")}
           </Button>
           <Button
             variant="outline"
-            className="h-11 rounded-xl text-sm font-semibold flex-1 hover:bg-slate-50 dark:hover:bg-white/5"
+            className="h-11 rounded-xl text-sm font-semibold w-full hover:bg-slate-50 dark:hover:bg-white/5"
             onClick={() => onAIDialogOpenChange(true)}
           >
             <Sparkles className="w-4 h-4 mr-2 text-purple-500" />
