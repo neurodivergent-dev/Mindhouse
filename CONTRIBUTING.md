@@ -17,7 +17,7 @@ Thank you for your interest in contributing to Mindhouse! This document provides
 1. **Fork and Clone**
 
    ```bash
-   git clone https://github.com/melihcanndemir/mindhouse.git
+   git clone https://github.com/neurodivergent-dev/mindhouse.git
    cd mindhouse
    ```
 

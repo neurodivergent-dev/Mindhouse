@@ -143,7 +143,7 @@ contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 ## 📞 Contact Information
 
 - **Security Team:** security@mindhouse.com
-- **Project Maintainer:** [GitHub Profile](https://github.com/melihcanndemir)
+- **Project Maintainer:** [GitHub Profile](https://github.com/neurodivergent-dev)
 - **Emergency Contact:** Available through GitHub issues (private)
 
 ## 📄 License

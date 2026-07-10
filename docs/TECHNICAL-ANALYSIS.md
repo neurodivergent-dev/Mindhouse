@@ -337,7 +337,7 @@ export function validateEnv() {
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/melihcanndemir/mindhouse.git
+git clone https://github.com/neurodivergent-dev/mindhouse.git
 cd mindhouse
 
 # 2. Install dependencies
