@@ -342,7 +342,8 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
       const shouldGenerateImage = imageKeywords.some((keyword) => lowerMessage.includes(keyword));
 
       let imageUrl = undefined;
-      const targetImagePrompt = response.imagePrompt || (shouldGenerateImage ? currentInput : null);
+      const imageGenerationEnabled = aiPreferences.imageGenerationEnabled !== false;
+      const targetImagePrompt = imageGenerationEnabled ? (response.imagePrompt || (shouldGenerateImage ? currentInput : null)) : null;
 
       if (targetImagePrompt) {
         try {

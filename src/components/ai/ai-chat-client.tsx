@@ -824,7 +824,8 @@ export default function AiChatClient() {
 
       let imageUrl = null;
       // Trigger image generation if user requested it OR if the AI model determined that a visual explanation is highly relevant and produced a prompt
-      const targetImagePrompt = result.imagePrompt || (shouldGenerateImage ? messageContent : null);
+      const imageGenerationEnabled = aiPreferences.imageGenerationEnabled !== false;
+      const targetImagePrompt = imageGenerationEnabled ? (result.imagePrompt || (shouldGenerateImage ? messageContent : null)) : null;
       
       if (targetImagePrompt) {
         imageUrl = await generateImage(targetImagePrompt, currentSubject);

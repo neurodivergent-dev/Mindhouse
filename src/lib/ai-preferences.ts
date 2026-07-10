@@ -25,6 +25,7 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
       ollamaCloudModel: parsed.ollamaCloudModel || "llama3",
       pollinationsApiKey: parsed.pollinationsApiKey || "",
       pollinationsModel: parsed.pollinationsModel || "flux",
+      imageGenerationEnabled: parsed.imageGenerationEnabled !== undefined ? parsed.imageGenerationEnabled : true,
     };
   } catch {
     return {};
