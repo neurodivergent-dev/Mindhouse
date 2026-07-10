@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
+  // Diagnostic endpoint: development only
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const envVars = {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY ? "✅ SET" : "❌ MISSING",
     GOOGLE_GENAI_API_KEY: process.env.GOOGLE_GENAI_API_KEY

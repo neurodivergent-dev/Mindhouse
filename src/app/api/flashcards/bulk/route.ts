@@ -1,7 +1,7 @@
 import type { NextRequest} from "next/server";
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
 import { logError } from "@/lib/error-logger";
+import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // Interface for flashcard update data
 interface FlashcardUpdate {
@@ -23,13 +23,19 @@ export async function POST(request: NextRequest) {
   let userId: string | undefined;
 
   try {
-    const body = await request.json();
-    const { userId: extractedUserId, flashcards } = body;
-    userId = extractedUserId;
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const { user, supabase } = auth;
+    userId = user.id;
 
-    if (!userId || !Array.isArray(flashcards) || flashcards.length === 0) {
+    const body = await request.json();
+    const { flashcards } = body;
+
+    if (!Array.isArray(flashcards) || flashcards.length === 0) {
       return NextResponse.json(
-        { error: "User ID and flashcards array are required" },
+        { error: "Flashcards array is required" },
         { status: 400 },
       );
     }
@@ -94,14 +100,20 @@ export async function PUT(request: NextRequest) {
   let updates: FlashcardUpdate[] | undefined;
 
   try {
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const { user, supabase } = auth;
+    userId = user.id;
+
     const body = await request.json();
-    const { userId: extractedUserId, updates: extractedUpdates } = body;
-    userId = extractedUserId;
+    const { updates: extractedUpdates } = body;
     updates = extractedUpdates;
 
-    if (!userId || !Array.isArray(updates) || updates.length === 0) {
+    if (!Array.isArray(updates) || updates.length === 0) {
       return NextResponse.json(
-        { error: "User ID and updates array are required" },
+        { error: "Updates array is required" },
         { status: 400 },
       );
     }

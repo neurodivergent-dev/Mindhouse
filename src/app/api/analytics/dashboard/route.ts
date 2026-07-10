@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/database/connection";
 import { quizResults } from "@/lib/database/schema";
 import { sql, desc } from "drizzle-orm";
+import { getAuthUser } from "@/lib/supabase/server";
 
 // Local type for API response
 interface DashboardQuizResult {
@@ -14,11 +15,12 @@ interface DashboardQuizResult {
 }
 
 export async function GET(request: NextRequest) {
-  const userId = request.headers.get("x-user-id");
+  const user = await getAuthUser(request);
 
-  if (!userId) {
+  if (!user) {
     return new NextResponse("User ID is required", { status: 401 });
   }
+  const userId = user.id;
 
   try {
     const db = getDb();

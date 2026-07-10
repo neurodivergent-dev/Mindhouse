@@ -1,27 +1,20 @@
 import type { NextRequest} from "next/server";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { logError } from "@/lib/error-logger";
+import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
 
-// Create Supabase client (using anon key, same as other working APIs)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
-
-// GET - Get flashcards for a user
+// GET - Get flashcards for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const subject = searchParams.get("subject");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 },
-      );
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+    const { user, supabase } = auth;
+    const userId = user.id;
+
+    const { searchParams } = new URL(request.url);
+    const subject = searchParams.get("subject");
 
     let query = supabase
       .from("flashcards")
@@ -70,11 +63,16 @@ export async function GET(request: NextRequest) {
 // POST - Create a new flashcard
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const { user, supabase } = auth;
+    const userId = user.id;
 
     const body = await request.json();
 
     const {
-      userId,
       question,
       answer,
       explanation,
@@ -85,9 +83,9 @@ export async function POST(request: NextRequest) {
       reviewCount = 0,
     } = body;
 
-    if (!userId || !question || !answer || !subject) {
+    if (!question || !answer || !subject) {
       return NextResponse.json(
-        { error: "Missing required fields: userId, question, answer, subject" },
+        { error: "Missing required fields: question, answer, subject" },
         { status: 400 },
       );
     }
@@ -157,12 +155,19 @@ export async function POST(request: NextRequest) {
 // PUT - Update a flashcard
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { id, userId, updates } = body;
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const { user, supabase } = auth;
+    const userId = user.id;
 
-    if (!id || !userId) {
+    const body = await request.json();
+    const { id, updates } = body;
+
+    if (!id) {
       return NextResponse.json(
-        { error: "Flashcard ID and User ID are required" },
+        { error: "Flashcard ID is required" },
         { status: 400 },
       );
     }
@@ -208,13 +213,19 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete a flashcard
 export async function DELETE(request: NextRequest) {
   try {
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const { user, supabase } = auth;
+    const userId = user.id;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    const userId = searchParams.get("userId");
 
-    if (!id || !userId) {
+    if (!id) {
       return NextResponse.json(
-        { error: "Flashcard ID and User ID are required" },
+        { error: "Flashcard ID is required" },
         { status: 400 },
       );
     }

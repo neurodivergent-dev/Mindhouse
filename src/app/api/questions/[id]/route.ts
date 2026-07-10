@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/database/connection";
 import { questions } from "@/lib/database/schema";
 import { eq } from "drizzle-orm";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // GET a single question by ID (optional, but good practice)
 export async function GET(
@@ -37,6 +38,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const {
@@ -95,10 +101,15 @@ export async function PUT(
 
 // DELETE a question by ID
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     const { id } = await params;
     const db = getDb();
     const deletedQuestion = await db

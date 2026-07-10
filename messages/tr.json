@@ -129,7 +129,7 @@
     "featureSecurity": "Güvenlik & Gizlilik",
     "featureSecurityDesc": "Verileriniz güvenli bir şekilde saklanır, gizlilik politikalarımız şeffaftır",
     "badgeGoogleGemini": "BYOK (Gemini, Groq, Ollama)",
-    "badgeGenkit": "Genkit Framework",
+    "badgeVercelAiSdk": "Vercel AI SDK",
     "badgePerformanceTracking": "Performans Takibi",
     "badgeCharts": "Grafikler",
     "badgeOfflineSupport": "Offline Destek",

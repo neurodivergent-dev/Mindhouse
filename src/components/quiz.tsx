@@ -16,6 +16,7 @@ import { QuizResult } from "./quiz-result";
 import LoadingSpinner from "./loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { QuestionService } from "@/services/supabase-service";
+import { supabase } from "@/lib/supabase";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
 import { getDemoQuestions } from "@/data/demo-data";
 import AIFloatingChat from "./ai-floating-chat";
@@ -380,8 +381,10 @@ const QuizComponent: React.FC<QuizProps> = ({
           try {
             // Check authentication
             const guestUser = localStorage.getItem("guestUser");
-            const supabaseToken = localStorage.getItem("sb-gjdjjwvhxlhlftjwykcj-auth-token");
-            const isAuthenticated = Boolean(guestUser || supabaseToken);
+            const {
+              data: { session: authSession },
+            } = await supabase.auth.getSession();
+            const isAuthenticated = Boolean(guestUser || authSession);
 
             // Try to load from Supabase if authenticated
             if (isAuthenticated) {

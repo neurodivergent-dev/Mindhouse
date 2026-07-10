@@ -1,24 +1,18 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { getUserScopedClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const auth = await getUserScopedClient(request);
 
-    // Get the current user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!auth) {
       return NextResponse.json(
         { error: "Unauthorized: User must be logged in to migrate data" },
         { status: 401 },
       );
     }
+    const { user, supabase } = auth;
 
     // Get the guest data from request body
     const guestData = await request.json();

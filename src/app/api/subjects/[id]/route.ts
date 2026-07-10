@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { SubjectRepository } from "@/lib/database/repositories/subject-repository";
 import { initializeDatabase } from "@/lib/database/connection";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 export async function GET(
   _request: NextRequest,
@@ -33,6 +34,11 @@ export async function PUT(
 ) {
   const { id } = await params;
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     // Initialize database if not already done
     initializeDatabase();
 
@@ -69,11 +75,16 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     // Initialize database if not already done
     initializeDatabase();
 
@@ -108,6 +119,11 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     // Initialize database if not already done
     initializeDatabase();
 

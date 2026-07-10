@@ -129,7 +129,7 @@
     "featureSecurity": "Security & Privacy",
     "featureSecurityDesc": "Your data is stored securely and our privacy policies are transparent",
     "badgeGoogleGemini": "BYOK (Gemini, Groq, Ollama)",
-    "badgeGenkit": "Genkit Framework",
+    "badgeVercelAiSdk": "Vercel AI SDK",
     "badgePerformanceTracking": "Performance Tracking",
     "badgeCharts": "Charts",
     "badgeOfflineSupport": "Offline Support",

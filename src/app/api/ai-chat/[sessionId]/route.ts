@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { AiChatRepository } from "@/lib/database/repositories/ai-chat-repository";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // GET /api/ai-chat/[sessionId] - Get all messages for a specific session
 export async function GET(
@@ -8,20 +9,15 @@ export async function GET(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const { sessionId } = await params;
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId is required" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
 
+    const { sessionId } = await params;
     const messages = await AiChatRepository.getMessagesBySessionId(
       sessionId,
-      userId,
+      user.id,
     );
 
     return NextResponse.json({ messages });
@@ -39,18 +35,13 @@ export async function DELETE(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const { sessionId } = await params;
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId is required" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
 
-    const success = await AiChatRepository.deleteSession(sessionId, userId);
+    const { sessionId } = await params;
+    const success = await AiChatRepository.deleteSession(sessionId, user.id);
 
     if (!success) {
       return NextResponse.json(
@@ -74,21 +65,19 @@ export async function PUT(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const { sessionId } = await params;
-    const { title, userId } = await request.json();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId is required" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+
+    const { sessionId } = await params;
+    const { title } = await request.json();
 
     if (!title) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    await AiChatRepository.updateSessionTitle(sessionId, title, userId);
+    await AiChatRepository.updateSessionTitle(sessionId, title, user.id);
 
     return NextResponse.json({ message: "Session title updated successfully" });
   } catch {

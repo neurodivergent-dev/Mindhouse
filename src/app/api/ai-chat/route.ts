@@ -2,17 +2,18 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { AiChatRepository } from "@/lib/database/repositories/ai-chat-repository";
 import { logError } from "@/lib/error-logger";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
-// GET /api/ai-chat - Get all chat sessions for the user
+// GET /api/ai-chat - Get all chat sessions for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json({ error: "UserId required" }, { status: 400 });
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+    const userId = user.id;
 
+    const { searchParams } = new URL(request.url);
     const searchTerm = searchParams.get("search");
     const limit = parseInt(searchParams.get("limit") || "10");
 
@@ -35,20 +36,18 @@ export async function GET(request: NextRequest) {
 // POST /api/ai-chat - Create a new chat session
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+    const userId = user.id;
 
-    const { subject, title, userId } = body;
+    const body = await request.json();
+    const { subject, title } = body;
 
     if (!subject) {
       return NextResponse.json(
         { error: "Subject is required" },
-        { status: 400 },
-      );
-    }
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId is required" },
         { status: 400 },
       );
     }

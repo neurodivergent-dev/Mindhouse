@@ -286,8 +286,10 @@ export default function AiChatClient() {
 
       // Check authentication
       const guestUser = localStorage.getItem("guestUser");
-      const supabaseToken = localStorage.getItem("sb-gjdjjwvhxlhlftjwykcj-auth-token");
-      const isAuth = Boolean(guestUser || supabaseToken);
+      const {
+        data: { session: authSession },
+      } = await supabase.auth.getSession();
+      const isAuth = Boolean(guestUser || authSession);
 
       let loadedSubjects: Subject[] = [];
 

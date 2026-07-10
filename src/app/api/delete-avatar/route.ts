@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // Configure Cloudinary
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
@@ -19,38 +20,33 @@ cloudinary.config({
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { publicId } = body;
-
-    if (!publicId) {
-      return NextResponse.json(
-        { error: "No public ID provided" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
 
-    // Try multiple public ID formats
-    const formats = [
-      publicId,
-      publicId.replace(/\.[^/.]+$/, ""), // Without extension
-      publicId.replace(/^mindhouse-avatars\//, ""), // Remove folder prefix
-      `mindhouse-avatars/${publicId}`, // With folder
-      `mindhouse-avatars/${publicId.replace(/\.[^/.]+$/, "")}`, // Folder + no extension
+    // A user may only delete their own avatar slot; the public id is
+    // derived from the verified user id, never from the request body.
+    const candidates = [
+      `mindhouse-avatars/${user.id}`,
+      // Legacy avatars uploaded before public ids were pinned to user ids
+      // were stored under a random id the client sent back; those can no
+      // longer be deleted through this endpoint.
     ];
 
     let deleted = false;
     let successfulFormat = "";
 
-    for (const format of formats) {
+    for (const candidate of candidates) {
       try {
-        const result = await cloudinary.uploader.destroy(format, {
+        const result = await cloudinary.uploader.destroy(candidate, {
           resource_type: "image",
           type: "upload",
         });
 
         if (result.result === "ok" || result.result === "deleted") {
           deleted = true;
-          successfulFormat = format;
+          successfulFormat = candidate;
           break;
         }
       } catch {
@@ -60,8 +56,8 @@ export async function POST(request: NextRequest) {
 
     if (!deleted) {
       return NextResponse.json(
-        { error: "All deletion attempts failed" },
-        { status: 500 },
+        { error: "Avatar not found or already deleted" },
+        { status: 404 },
       );
     }
 

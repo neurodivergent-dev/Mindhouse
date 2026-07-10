@@ -1109,6 +1109,11 @@ export class UnifiedStorageService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
+        if (response.status === 401) {
+          // Guest or expired session: keep using local data
+          return { loaded: 0, merged: 0, authStatus: "unauthenticated" };
+        }
+
         if (response.status === 404) {
           // User has no flashcards in Supabase yet
           return { loaded: 0, merged: 0, authStatus: "unauthenticated" };
