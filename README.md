@@ -1,11 +1,11 @@
 <div align="center">
   <img src="public/favicon.svg" alt="Mindhouse Logo" width="150">
-  <h1>Mindhouse - AI Destekli Eğitim Platformu</h1>
+  <h1>Mindhouse - AI-Powered Learning Platform</h1>
   <p>
-    <strong>Öğrenme deneyiminizi kişiselleştiren, yapay zeka destekli yeni nesil eğitim platformu... Ama bu sadece başlangıç. Gerçek soru: Eğitim nedir? Bilinç nedir? Öğrenmek nedir?</strong>
+    <strong>A next-generation AI-powered study companion that personalizes your learning experience... But that's just the beginning. The real question: What is education? What is consciousness? What is learning?</strong>
   </p>
   <p>
-    <a href="https://mindhouse.vercel.app/"><strong>Canlı Demoyu Ziyaret Et »</strong></a>
+    <a href="https://mindhouse.vercel.app/"><strong>Visit Live Demo »</strong></a>
   </p>
   
   <!-- Project Status Badges -->
@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version">
     <img src="https://img.shields.io/badge/status-production-green.svg" alt="Status">
     <img src="https://deploy-badge.vercel.app/vercel/mindhouse?root=landing" alt="Vercel Deploy Status">
-    <img src="https://circleci.com/gh/melihcanndemir/mindhouse.svg?style=svg" alt="CircleCI">
+    <img src="https://circleci.com/gh/neurodivergent-dev/mindhouse.svg?style=svg" alt="CircleCI">
     <img src="https://img.shields.io/github/languages/top/melihcanndemir/mindhouse" alt="Top Language">
     <img src="https://img.shields.io/github/languages/code-size/melihcanndemir/mindhouse" alt="Code Size">
     <img src="https://img.shields.io/github/repo-size/melihcanndemir/mindhouse" alt="Repo Size">
@@ -27,90 +27,62 @@
 <!-- Landing Page Demo GIF -->
 <div align="center">
   <img src="assets/demo/landing-demo.gif" alt="Mindhouse Landing Page Demo" width="800">
-  <p><em>🎬 Canlı demo görüntüsü - Mindhouse ana sayfası etkileşimleri</em></p>
+  <p><em>🎬 Live demo showcase - Mindhouse landing page interactions</em></p>
 </div>
 
-## ✨ Neden Mindhouse?
+## ✨ Why Mindhouse?
 
-Mindhouse, standart eğitim platformlarının ötesine geçerek her öğrencinin bireysel ihtiyaçlarına odaklanır. Sadece soru çözmekle kalmaz, **zayıf yönlerinizi tespit eder, size özel çalışma stratejileri sunar ve öğrenme sürecinizi akıllı bir asistanla destekler.** Amacımız, eğitimi daha verimli, erişilebilir ve kişisel hale getirmektir.
+Mindhouse goes beyond traditional study tools by focusing on each student's unique needs. It doesn't just display question banks; **it detects your learning gaps, offers personalized study strategies, and supports your entire study workflow with an intelligent assistant.** Our mission is to make learning more efficient, accessible, and personal.
 
-Bu proje, modern eğitim teknolojileri ve yapay zeka kullanarak öğrenme deneyimini dönüştürmek amacıyla geliştirilmiştir.
+This project was built to transform the learning experience using modern web technologies and generative AI.
 
-## 🚀 Ana Özellikler
+## 🚀 Core Features
 
-### **🤖 Gelişmiş AI Destekli Öğrenme Sistemi:**
--   **AI Destekli Soru Üretimi:** Google Gemini AI ile otomatik olarak yüksek kaliteli sorular oluşturan, konu ve zorluk seviyesine göre özelleştirilebilen akıllı sistem.
--   **AI Destekli Ders ve Konu Üretimi:** Kategori, zorluk seviyesi ve özel yönergeler ile otomatik olarak dersler ve konular oluşturan, kalite kontrolü yapan ve öğrenme hedefleri belirleyen AI sistemi.
--   **AI Topic Explainer:** Markdown formatında konu anlatımları üreten, adım adım öğrenme süreci sağlayan AI sistemi.
--   **AI Görsel Üretimi:** Pollinations.ai ile konuya özel, alakalı görseller üreten AI sistemi.
--   **AI Tutor ile Anında Yardım:** Anlamadığınız sorularda size ipuçları veren, adım adım çözüm sunan ve konuyu özetleyen yapay zeka öğretmeni.
--   **Etkileşimli AI Sohbet:** Ders konuları hakkında yapay zeka ile sohbet etme ve derinlemesine bilgi alma imkanı.
--   **Sesli AI Asistan:** Türkçe konuşma tanıma ve sentez ile sesli etkileşim.
--   **Akıllı Resim Üretimi:** AI sohbetinde otomatik görsel üretimi ve localStorage'da saklama.
+### **🤖 Advanced AI-Powered Study System:**
+- **AI-Powered Question Generation:** Automatically generates high-quality questions using Google Gemini AI, customized by subject, topic, difficulty, and optional custom instructions.
+- **AI-Powered Subject & Topic Generation:** Automatically constructs subjects and topics, performs quality checks, and sets study objectives.
+- **AI Topic Explainer:** Generates comprehensive step-by-step topic summaries in clean Markdown layout.
+- **AI Image Generation:** Generates subject-relevant illustrations dynamically via Pollinations.ai.
+- **AI Tutor Chat:** Interactive chat helper to clarify concepts, offer hints, and walk through solutions step-by-step.
+- **Voice AI Assistant:** Hands-free interaction supporting Turkish speech-to-text and text-to-speech.
+- **Persistent Local History:** Local chat sessions saved securely in IndexedDB for guests and authenticated users.
 
-### **🎤 Sesli Asistan Özellikleri:**
--   **Türkçe Konuşma Tanıma:** Web Speech API ile gerçek zamanlı ses tanıma
--   **Sesli Komutlar:** "Soru oku", "Şıkları oku", "Açıklama oku", "İpucu oku" komutları
--   **Text-to-Speech:** AI yanıtlarını Türkçe sesli okuma
--   **Sesli Navigasyon:** Uygulamayı tamamen sesle kontrol etme
--   **Gerçek Zamanlı Transcript:** Konuşma sırasında anlık metin dönüşümü
+### **🎤 Voice Assistant Features:**
+- **Turkish Speech Recognition:** Real-time speech-to-text using Web Speech API.
+- **Voice Navigation Commands:** Voice controls like "read question", "show options", "read hint", and "explain solution".
+- **Text-to-Speech:** Natural audio readouts of AI responses and study texts.
+- **Real-time Transcript UI:** Live interactive text transcription as you speak.
 
-### **📚 Gelişmiş Öğrenme Araçları:**
--   **Kişiselleştirilmiş Öğrenme Asistanı:** Performansınıza göre size özel testler ve konular öneren akıllı sistem.
--   **Akıllı Flashcard'lar:** Spaced Repetition (Aralıklı Tekrar) algoritması ile çalışan, öğrenmenizi optimize eden dijital kartlar.
--   **Detaylı Performans Analizi:** Gelişiminizi takip edebileceğiniz görsel grafikler ve istatistikler.
--   **Markdown Destekli İçerik:** Zengin formatlanmış, kod blokları ve görsel elementler içeren eğitim materyalleri.
--   **Gelişmiş Chat History:** Resim önizlemeleri ile zenginleştirilmiş konuşma geçmişi.
+### **📚 Advanced Study Tools:**
+- **Smart Flashcards:** Digital study cards operating on a Spaced Repetition scientific interval algorithm to optimize retention.
+- **Performance Analytics:** Visual charts and metrics to track study progress and topic success rates.
+- **Rich Markdown Formatting:** Beautifully rendered educational contents with highlight code blocks and media.
 
-### **🎨 Modern Kullanıcı Deneyimi:**
--   **PWA (Progressive Web App):** Çevrimdışı çalışma ve mobil cihazınıza uygulama gibi kurma desteği.
--   **Sesli Asistan Desteği:** "Soru oku", "cevabı göster" gibi komutlarla uygulamayı sesle kontrol etme.
--   **Responsive Design:** Tüm cihazlarda mükemmel görünüm ve kullanım deneyimi.
--   **Dark/Light Mode:** Kullanıcı tercihine göre tema değiştirme.
--   **Gelişmiş Hata Yönetimi:** Spesifik hata mesajları ve kullanıcı dostu bildirimler.
+### **🎨 Modern User Experience:**
+- **PWA Support:** Progressive Web App capabilities for offline usage and home-screen installation.
+- **Premium Aesthetics:** Curated dark/light modes, premium glassmorphism, responsive comparison lists, and smooth micro-animations.
+- **Robust Error Handling:** Informative user-friendly notifications and fallbacks.
 
-### **⚙️ Yönetim ve Güvenlik:**
--   **Kapsamlı Yönetim Panelleri:** Hem dersleri hem de soruları kolayca yönetebileceğiniz arayüzler.
--   **Gelişmiş Profil Yönetimi:** Avatar yükleme/silme, şifre değiştirme ve veri yönetimi özellikleri.
--   **Cloudinary Avatar Sistemi:** Güvenli avatar yükleme ve yönetimi.
--   **Güvenli Şifre Değiştirme:** Ayrı sayfa üzerinden güvenli şifre güncelleme.
--   **Veri Yönetimi:** Cloud backup, restore, clear ve hesap silme işlemleri.
--   **Hybrid Storage:** localStorage + Supabase ile çevrimdışı çalışma desteği.
+### **⚙️ Security & Management:**
+- **Comprehensive Admin Panels:** Effortless CRUD management panels for subjects, topics, and question banks.
+- **Data Management:** Export, import, cloud backup, restore, and profile deletion tools.
+- **Secure Authentication:** Supabase Auth integrations with safe password update modules.
+- **Cloudinary Storage:** Secure avatar uploads and file management.
 
-## 📋 Kalite Güvencesi (Quality Assurance)
+## 📋 Quality Assurance
 
-Bu proje, **enterprise seviyesinde** kalite güvencesi standartlarına uygun olarak geliştirilmiştir. Kapsamlı test planımız ve kalite kontrol süreçlerimiz hakkında detaylı bilgi için:
+This project is built to **enterprise-level** quality assurance standards. For detailed information on our comprehensive QA processes:
 
-### **🔍 Manuel Test Listesi**
-- **[📋 QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md)** - 2000+ satır, 120+ test kategorisi içeren kapsamlı manuel test listesi
-- **Test Kapsamı:** UI/UX, Performance, Security, Accessibility, Cross-browser, Cross-device
-- **Test Kategorileri:** AI Özellikleri, Veri Yönetimi, PWA, Authentication, Analytics
-- **Test Senaryoları:** 600+ spesifik test maddesi ile enterprise seviyesi kalite kontrol
+### **🔍 Manual Test Checklist**
+- **[📋 QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md)** - Extensive QA checklist containing 120+ test categories and 2000+ lines.
+- **Test Coverage:** UI/UX, Performance, Security, Accessibility, Cross-browser, Cross-device
+- **Scenarios:** 600+ specific test points verifying AI features, data pipelines, PWAs, and authentication.
 
-### **🎯 Test Özellikleri**
-- **Responsive Design Testleri** - Tüm cihazlarda uyumluluk
-- **AI Integration Testleri** - Google Gemini, Pollinations.ai entegrasyonları
-- **Security Testleri** - Authentication, Authorization, Data encryption
-- **Performance Testleri** - Loading speed, Memory usage, Network optimization
-- **Accessibility Testleri** - Screen reader, Keyboard navigation, High contrast
-- **Cross-browser Testleri** - Chrome, Firefox, Safari, Edge uyumluluğu
+### **📊 Test Metrics**
+- **Quality Score:** 9.2/10 (Enterprise grade)
+- **Feature Coverage:** 95%+ feature validation
 
-### **📊 Test Metrikleri**
-- **Toplam Test Sayısı:** 600+ spesifik test maddesi
-- **Test Kategorileri:** 15+ ana test alanı
-- **Kalite Skoru:** 9.2/10 (Enterprise seviyesi)
-- **Test Kapsamı:** %95+ feature coverage
-
-## 🎨 UI/UX Özellikleri
-
--   **Gradient Design Language:** Tüm componentlerde tutarlı mavi-mor gradient tasarım dili.
--   **Glassmorphism Effects:** Kartlarda modern cam efekti.
--   **Responsive Design:** Tüm cihazlarda mükemmel görünüm.
--   **Dark/Light Mode:** Kullanıcı tercihine göre tema değiştirme.
--   **Enhanced Navigation:** Avatar display ve gelişmiş menü sistemi.
--   **Interactive Elements:** Hover efektleri ve animasyonlar.
-
-## 🛠️ Kullanılan Teknolojiler
+## 🛠️ Tech Stack
 
 <div align="center">
   <a href="https://circleci.com/" target="_blank"><img src="https://img.shields.io/badge/CircleCI-343434?style=for-the-badge&logo=circleci&logoColor=white" alt="CircleCI"></a>
@@ -119,7 +91,7 @@ Bu proje, **enterprise seviyesinde** kalite güvencesi standartlarına uygun ola
   <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
   <a href="https://tailwindcss.com/" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS"></a>
   <a href="https://cloud.google.com/vertex-ai/docs/generative-ai/gemini/gemini-api" target="_blank"><img src="https://img.shields.io/badge/Google_Gemini-8A2BE2?style=for-the-badge&logo=google-gemini&logoColor=white" alt="Google Gemini"></a>
-  <a href="https://firebase.google.com/docs/genkit" target="_blank"><img src="https://img.shields.io/badge/Genkit-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Genkit"></a>
+  <a href="https://sdk.vercel.ai/" target="_blank"><img src="https://img.shields.io/badge/Vercel_AI_SDK-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel AI SDK"></a>
   <a href="https://pollinations.ai/" target="_blank"><img src="https://img.shields.io/badge/Pollinations.ai-8A2BE2?style=for-the-badge&logo=ai&logoColor=white" alt="Pollinations.ai"></a>
   <a href="https://orm.drizzle.team/" target="_blank"><img src="https://img.shields.io/badge/Drizzle_ORM-C5F74F?style=for-the-badge" alt="Drizzle ORM"></a>
   <a href="https://supabase.com/" target="_blank"><img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"></a>
@@ -135,31 +107,11 @@ Bu proje, **enterprise seviyesinde** kalite güvencesi standartlarına uygun ola
   <a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black" alt="Prettier"></a>
   <a href="https://vercel.com/" target="_blank"><img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel"></a>
   <a href="https://huggingface.co/" target="_blank"><img src="https://img.shields.io/badge/Hugging%20Face-FF6C6C?style=for-the-badge&logo=huggingface&logoColor=white" alt="Hugging Face"></a>
-  <a href="https://jestjs.io/" target="_blank"><img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest"></a>
-  <a href="https://developers.google.com/web/tools/lighthouse" target="_blank"><img src="https://img.shields.io/badge/Lighthouse-F44B21?style=for-the-badge&logo=lighthouse&logoColor=white" alt="Lighthouse"></a>
-  <a href="https://web.dev/vitals/" target="_blank"><img src="https://img.shields.io/badge/Web%20Vitals-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Web Vitals"></a>
 </div>
 
-## 🔒 Security & Performance Features
+## 🏗️ Technical Architecture
 
-- **🔐 Row Level Security (RLS):** Supabase RLS policies ensure data isolation and secure access control
-- **📱 Mobile Responsive:** Fully responsive design optimized for all device sizes
-- **⚡ Progressive Web App (PWA):** Offline functionality and native app-like experience
-- **🛡️ TypeScript Strict Mode:** Complete type safety throughout the application
-- **🎯 SEO Optimized:** Server-side rendering and meta tags for better search visibility
-- **☁️ Cloudinary Integration:** Secure image upload and management
-- **🔐 Supabase Auth:** Complete authentication system with real-time updates
-- **🤖 AI-Powered Question Generation:** Generate high-quality exam questions using Google's Gemini AI with advanced JSON parsing and error handling
-- **✅ Question Review Workflow:** Review and approve AI-generated questions before adding to question bank with optional answer visibility
-
-- **📱 Mobile-Responsive AI Interface:** Fully responsive AI question generation and review interface
-- **💾 Hybrid Data Storage:** LocalStorage for offline functionality, Supabase for authenticated users
-
-## 🏗️ Teknik Derinlik ve Mimari
-
-Bu proje, **enterprise-level** bir mimari üzerine kurulmuş olup modern web development best practice'lerini takip eder.
-
-### **🎯 Katmanlı Mimari Yapısı:**
+Mindhouse relies on a robust layered N-tier architecture enforcing clean Separation of Concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -170,88 +122,57 @@ Bu proje, **enterprise-level** bir mimari üzerine kurulmuş olup modern web dev
 │     (Services + API Routes + Server Actions)           │
 ├─────────────────────────────────────────────────────────┤
 │                      AI Layer                          │
-│        (Genkit Flows + Google Gemini)                  │
+│        (Vercel AI SDK + Google Gemini API)              │
 ├─────────────────────────────────────────────────────────┤
 │                   Data Access Layer                     │
 │      (Drizzle ORM + Repository Pattern)                │
 ├─────────────────────────────────────────────────────────┤
 │                    Database Layer                       │
-│         (PostgreSQL via Supabase)                      │
+│     (PostgreSQL via Supabase + IndexedDB Cache)        │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### **🔧 Ana Teknoloji Yığını:**
--   **Frontend:** Next.js 15.3.3 (React 18.3.1) + TypeScript
--   **Styling:** Tailwind CSS + Radix UI + Framer Motion  
--   **Backend:** Next.js API Routes + Server Actions
--   **Veritabanı:** PostgreSQL (Supabase) + Drizzle ORM
--   **AI Entegrasyonu:** Google Genkit + Gemini AI
--   **Auth:** Supabase Auth + Row Level Security (RLS)
--   **Storage:** Cloudinary (avatar yönetimi) + Supabase Storage
--   **PWA:** next-pwa + Service Workers
+- **Frontend:** Next.js 15 + React 18 + TypeScript
+- **Styling:** Tailwind CSS + Radix UI Primitives + Framer Motion  
+- **Database:** PostgreSQL (Supabase) + localforage (IndexedDB Cache) + Drizzle ORM
+- **Row Level Security (RLS):** Supabase client policies isolate personal data.
 
-### **🚀 AI-Powered Features:**
--   **Intelligent Question Generation:** Google Gemini ile otomatik soru üretimi
--   **AI Topic Explainer:** Markdown formatında konu anlatımları üreten AI sistemi
--   **AI Görsel Üretimi:** Pollinations.ai ile konuya özel görseller üreten AI sistemi
--   **AI Chat with Image Generation:** Gerçek zamanlı AI sohbeti ve otomatik görsel üretimi
--   **Voice Assistant Integration:** Türkçe sesli asistan ve komut sistemi
--   **Quality Validation System:** AI ile kalite skorlama ve doğrulama
--   **Personalized Learning:** Performans bazlı zorluk seviyesi ayarlama
--   **Interactive AI Tutor:** Gerçek zamanlı öğrenme desteği
--   **Spaced Repetition Algorithm:** Bilimsel tekrar optimizasyonu
--   **Enhanced Error Handling:** Spesifik hata mesajları ve kullanıcı dostu bildirimler
+## 📚 Technical Documentation
 
-## 📚 Detaylı Teknik Dokümantasyon
+Explore detailed design specifications and integration plans:
+- 📖 **[AI Question Generation Guide](docs/AI_QUESTION_GENERATION.md)** - Workflow details for Gemini question generation pipelines.
+- 🚀 **[AI Deployment Guide](docs/AI_DEPLOYMENT_GUIDE.md)** - Production settings and API integrations.
+- 🔧 **[Environment Setup](docs/ENVIRONMENT_SETUP.md)** - Guide to local environment variables.
+- 🗄️ **[Supabase Storage Setup](docs/STORAGE-SETUP-GUIDE.md)** - Cloud storage bucket rules and asset configurations.
+- ⚡ **[Edge Functions Setup](docs/EDGE_FUNCTIONS_SETUP.md)** - Serverless function deployments.
+- 🎯 **[Project Blueprint](docs/BLUEPRINT.md)** - Platform blueprint and UI style guidelines.
+- 📊 **[Technical Analysis](docs/TECHNICAL-ANALYSIS.md)** - Code structure, repository patterns, and architecture audits.
 
-### **🤖 AI & Deployment Rehberleri:**
-- 📖 **[AI Question Generation Guide](docs/AI_QUESTION_GENERATION.md)** - AI destekli soru üretimi detayları
-- 🚀 **[AI Deployment Guide](docs/AI_DEPLOYMENT_GUIDE.md)** - Google Gemini entegrasyonu ve production setup
-- 🔧 **[Environment Setup](docs/ENVIRONMENT_SETUP.md)** - Çevre değişkenleri konfigürasyonu
+## 🚀 Quick Start - AI Service
 
-### **☁️ Infrastructure & Storage:**
-- 🗄️ **[Supabase Storage Setup](docs/STORAGE-SETUP-GUIDE.md)** - Cloud storage ve dosya yönetimi
-- ⚡ **[Edge Functions Setup](docs/EDGE_FUNCTIONS_SETUP.md)** - Serverless fonksiyon deployment
+Set up local AI-powered generation modules in minutes:
 
-### **🏗️ Architecture & Analysis:**
-- 🎯 **[Project Blueprint](docs/BLUEPRINT.md)** - Proje temel yapısı ve tasarım kılavuzu
-- 📊 **[Technical Analysis](docs/TECHNICAL-ANALYSIS.md)** - Kapsamlı kod kalitesi ve mimari analizi
+1. **Get a Google AI API Key:**
+   - Generate your API key at [Google AI Studio](https://aistudio.google.com/)
 
-> **💡 Pro Tip:** Bu dokümantasyonlar, projenin **enterprise-ready** seviyede olduğunu ve **production deployment** için hazır olduğunu gösterir.
-
-## 🚀 Hızlı Başlangıç - AI Servisi
-
-### **AI Destekli Soru Üretimi için Hızlı Kurulum:**
-
-1. **Google AI API Anahtarı Alın:**
-   - [Google AI Studio](https://aistudio.google.com/) adresine gidin
-   - API anahtarı oluşturun
-
-2. **Environment Variable Ekleyin:**
+2. **Configure your Environment:**
+   - Create a `.env.local` file in the project root:
    ```bash
-   # .env.local dosyasına ekleyin
    GEMINI_API_KEY=your_api_key_here
    ```
 
-3. **Projeyi Çalıştırın:**
+3. **Install and Run:**
    ```bash
    npm install
    npm run dev
    ```
 
-4. **AI Soru Üretimini Test Edin:**
-   - Soru Yöneticisi → "AI ile Soru Oluştur"
-   - Ders ve konu seçin
-   - AI'ya özel yönergeler verin
-   - Soruları oluşturun ve onaylayın
-
-> **📖 Detaylı Kurulum:** Kapsamlı AI setup ve deployment bilgileri için **[AI Deployment Guide](docs/AI_DEPLOYMENT_GUIDE.md)** ve **[AI Setup](docs/AI_SETUP.md)** dosyalarını inceleyin.
+4. **Verify Generation:**
+   - Navigate to `/question-manager`, click **"Generate Questions with AI"**, select a subject, and click generate.
 
 <details>
-<summary><b>🗺️ Proje Genel Mimarisi (Mermaid Şeması)</b></summary>
+<summary><b>🗺️ High-Level System Architecture (Mermaid Diagram)</b></summary>
 <br>
-
-Aşağıda, platformun ana modülleri ve veri akışlarını gösteren yüksek seviyeli bir mimari şema yer almaktadır:
 
 ```mermaid
 flowchart TD
@@ -279,7 +200,7 @@ flowchart TD
   end
 
   subgraph AI
-    Genkit
+    VercelAISDK
     GoogleGemini
     CustomFlows
   end
@@ -292,6 +213,7 @@ flowchart TD
     PerformanceAnalyticsTable
     AIRecommendationsTable
     FlashcardProgressTable
+    IndexedDBCache
   end
 
   subgraph Cloud
@@ -311,12 +233,13 @@ flowchart TD
   QuizService --> QuestionsTable
   QuizService --> QuizResultsTable
   SubjectService --> SubjectsTable
-  AIService --> Genkit
-  Genkit --> GoogleGemini
-  Genkit --> CustomFlows
+  AIService --> VercelAISDK
+  VercelAISDK --> GoogleGemini
+  VercelAISDK --> CustomFlows
 
   AIService --> AIRecommendationsTable
   Flashcard --> FlashcardProgressTable
+  AIChat --> IndexedDBCache
 
   AvatarService --> Cloudinary
   ProfileSettings --> SupabaseAuth
@@ -334,132 +257,82 @@ flowchart TD
   Flashcard --> VoiceAssistant
   Dashboard --> AnalyticsDashboard
 ```
-
-> **Not:** Bu şema, platformun temel veri ve iş akışlarını yüksek seviyede özetler. Detaylı alt modül ilişkileri için kodu inceleyebilirsiniz.
-
 </details>
 
 <details>
-<summary><b>📦 Kurulum ve Çalıştırma Adımları</b></summary>
+<summary><b>📦 Detailed Installation Guide</b></summary>
 <br>
 
-1.  **Projeyi klonlayın:**
-    ```bash
-    git clone https://github.com/melihcanndemir/mindhouse.git
-    cd mindhouse
-    ```
-2.  **Bağımlılıkları yükleyin:**
-```bash
-npm install
-```
-3.  **`.env.local` dosyasını oluşturun:** `.env.example` dosyasını kopyalayarak kendi API anahtarlarınızı ekleyin.
-    ```
-    # AI Configuration (Required for AI question generation)
-    GEMINI_API_KEY=your_google_ai_api_key_here
-    
-    # Supabase Configuration
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    DATABASE_URL=your_database_url
-    
-    # Cloudinary Configuration (Optional)
-    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-    CLOUDINARY_API_KEY=your_cloudinary_api_key
-    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-    
-    # Demo Mode (Optional)
-    NEXT_PUBLIC_DEMO_MODE=false
-    ```
-4.  **Veritabanını hazırlayın ve başlatın:**
-```bash
-npm run db:generate
-npm run db:init
-```
-5.  **Geliştirme sunucusunu başlatın:**
-```bash
-npm run dev
-```
-6.  Tarayıcınızda `http://localhost:9002` adresini açın.
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/neurodivergent-dev/Mindhouse.git
+   cd Mindhouse
+   ```
 
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Populate Environment Variables (`.env.local`):**
+   ```ini
+   # AI Settings
+   GEMINI_API_KEY=your_gemini_api_key
+
+   # Supabase Client Settings
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   DATABASE_URL=your_direct_postgres_url
+
+   # Cloudinary configuration
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+   CLOUDINARY_API_KEY=your_cloudinary_key
+   CLOUDINARY_API_SECRET=your_cloudinary_secret
+
+   # Settings
+   NEXT_PUBLIC_DEMO_MODE=false
+   ```
+
+4. **Initialize DB Schemas:**
+   ```bash
+   npm run db:generate
+   npm run db:init
+   ```
+
+5. **Start Dev Server:**
+   ```bash
+   npm run dev
+   ```
 </details>
 
 <details>
-<summary><b>🗄️ Veritabanı Yönetimi</b></summary>
+<summary><b>🗄️ Database Management CLI Commands</b></summary>
 <br>
 
--   **Migration Oluşturma:** Şemada değişiklik yaptığınızda yeni bir migration dosyası oluşturur.
-```bash
-npm run db:generate
-```
--   **Migration'ları Uygulama:** Oluşturulan migration'ları veritabanına uygular.
-```bash
-npm run db:migrate
-```
--   **Veritabanı Studio:** Veritabanını görsel bir arayüzde incelemek için.
-```bash
-npm run db:studio
-```
+- **Generate Migration Scripts:**
+  ```bash
+  npm run db:generate
+  ```
+- **Apply Migrations to Target DB:**
+  ```bash
+  npm run db:migrate
+  ```
+- **Launch Drizzle Studio GUI:**
+  ```bash
+  npm run db:studio
+  ```
 </details>
 
-<details>
-<summary><b>📊 Veritabanı Şeması</b></summary>
-<br>
+## 🤝 Contributing
 
--   **users**: Kullanıcı bilgileri
--   **subjects**: Ders konuları ve detayları
--   **questions**: Soru bankası, seçenekler ve açıklamalar
--   **quiz_results**: Kullanıcıların test sonuçları
--   **performance_analytics**: Konu bazlı performans analizleri
--   **ai_recommendations**: Kişiselleştirilmiş AI ders/konu önerileri
--   **flashcard_progress**: Flashcard'ların öğrenilme durumu
-
-</details>
-
-<details>
-<summary><b>📁 Yeni Sayfalar ve Özellikler</b></summary>
-<br>
-
-### **🤖 AI Destekli Özellikler**
-- **`/question-manager`** - AI destekli soru üretimi ve yönetimi
-- **`/topic-explainer`** - AI destekli konu anlatımı ve görsel üretimi
-- **`/ai-chat`** - AI Tutor ile etkileşimli sohbet (sesli asistan + resim üretimi)
-- **`/flashcard`** - AI destekli akıllı flashcard sistemi
-- **Sesli Asistan** - Türkçe konuşma tanıma ve komut sistemi
-- **Resim Üretimi** - AI sohbetinde otomatik görsel üretimi
-
-### **👤 Profil Yönetimi**
-- **`/profile`** - Gelişmiş profil ayarları, avatar yönetimi
-- **`/change-password`** - Güvenli şifre değiştirme sayfası
-- **`/data-management`** - Veri yönetimi (backup, restore, clear, delete)
-
-### **☁️ API Routes**
-- **`/api/upload-avatar`** - Cloudinary avatar yükleme
-- **`/api/delete-avatar`** - Cloudinary avatar silme
-
-### **🎨 UI/UX İyileştirmeleri**
-- **Gradient Design Language** - Tüm componentlerde tutarlı mavi-mor gradient
-- **Glassmorphism Effects** - Modern cam efekti kartlarda
-- **Enhanced Navigation** - Avatar display ve gelişmiş menü
-- **Responsive Design** - Tüm cihazlarda mükemmel görünüm
-- **Markdown Destekli İçerik** - Zengin formatlanmış eğitim materyalleri
-- **AI Görsel Entegrasyonu** - Konuya özel görsel üretimi
-- **Sesli Asistan Arayüzü** - Türkçe sesli komutlar ve gerçek zamanlı transcript
-- **Gelişmiş Chat History** - Resim önizlemeleri ile zenginleştirilmiş konuşma geçmişi
-- **Akıllı Hata Yönetimi** - Kullanıcı dostu hata mesajları ve spesifik bildirimler
-
-</details>
-
-## 🤝 Katkıda Bulunma
-
-Bu proje eğitime ve teknolojiye meraklı herkesin katkısına açıktır.
-
-1.  Bu repoyu **fork**'layın.
-2.  Yeni bir **feature branch** oluşturun (`git checkout -b feature/AmazingFeature`).
-3.  Değişikliklerinizi **commit**'leyin (`git commit -m 'Add some AmazingFeature'`).
-4.  Branch'inizi **push**'layın (`git push origin feature/AmazingFeature`).
-5.  Bir **Pull Request** açın.
+Contributions are welcome! Please follow these guidelines:
+1. **Fork** the repository.
+2. Create a **Feature Branch** (`git checkout -b feature/AmazingFeature`).
+3. **Commit** your modifications (`git commit -m 'Add some AmazingFeature'`).
+4. **Push** your branch (`git push origin feature/AmazingFeature`).
+5. Open a **Pull Request**.
 
 ---
 <div align="center">
-  <p><strong>Mindhouse</strong> - Bilginin ve Zekanın Buluştuğu Yer.</p>
+  <p><strong>Mindhouse</strong> - Where knowledge meets intelligence.</p>
 </div>
