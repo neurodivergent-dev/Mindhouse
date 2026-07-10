@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +25,7 @@ interface AIChatMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: string;
+  image?: string;
 }
 
 interface AIFloatingChatProps {
@@ -332,11 +334,44 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
         locale,
       );
 
+      // Check if user is asking for an image
+      const imageKeywords = locale === "tr"
+        ? ["resim", "görsel", "çiz", "göster"]
+        : ["image", "picture", "draw", "show", "illustrate"];
+      const lowerMessage = currentInput.toLowerCase();
+      const shouldGenerateImage = imageKeywords.some((keyword) => lowerMessage.includes(keyword));
+
+      let imageUrl = undefined;
+      const targetImagePrompt = response.imagePrompt || (shouldGenerateImage ? currentInput : null);
+
+      if (targetImagePrompt) {
+        try {
+          const imgResponse = await fetch("/api/generate-image-hf", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: targetImagePrompt,
+              subject,
+              topic: targetImagePrompt.substring(0, 50),
+              pollinationsApiKey: aiPreferences.pollinationsApiKey || "",
+              pollinationsModel: aiPreferences.pollinationsModel || "flux",
+            }),
+          });
+          if (imgResponse.ok) {
+            const data = await imgResponse.json();
+            imageUrl = data.imageUrl || undefined;
+          }
+        } catch {
+          // Fail silently for image generation
+        }
+      }
+
       const assistantMessage: AIChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: response.response,
         timestamp: new Date().toISOString(),
+        image: imageUrl,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -441,6 +476,23 @@ IMPORTANT INSTRUCTIONS FOR YOU (the AI assistant):
                       : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border rounded-bl-none"
                   }`}
                 >
+                  {msg.image && (
+                    <div className="mb-2 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-md bg-black/5 group relative transition-transform duration-300 hover:scale-[1.01]">
+                      <Image
+                        src={msg.image}
+                        alt="AI generated visual"
+                        width={768}
+                        height={432}
+                        className="w-full h-auto object-cover max-h-[220px]"
+                      />
+                      <a 
+                        href={msg.image} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="absolute inset-0 z-10"
+                      />
+                    </div>
+                  )}
                   {msg.content}
                 </div>
               </div>
