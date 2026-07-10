@@ -729,6 +729,8 @@ export default function AiChatClient() {
       currentSessionId || sessionIdRef.current || localStorage.getItem("currentAIChatSessionId");
     let sessionIdToUse = existingSessionId;
 
+    let updatedMessages: Message[] = [];
+
     if (!existingSessionId) {
       const newSessionId = await createNewSession();
       if (newSessionId) {
@@ -753,7 +755,7 @@ export default function AiChatClient() {
           content: messageContent,
         };
 
-        const updatedMessages = [...existingMessages, newUserMessage];
+        updatedMessages = [...existingMessages, newUserMessage];
         setMessages(updatedMessages);
         setIsLoading(true);
         setSuggestions(null);
@@ -777,7 +779,7 @@ export default function AiChatClient() {
         content: messageContent,
       };
 
-      const updatedMessages = [...messages, newUserMessage];
+      updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
       setIsLoading(true);
       setSuggestions(null);
@@ -791,7 +793,7 @@ export default function AiChatClient() {
     const chatInput: AiChatInput = {
       message: messageContent,
       subject: currentSubjectRef.current,
-      conversationHistory: messages.map((m) => ({
+      conversationHistory: updatedMessages.map((m) => ({
         role: m.role,
         content: m.content,
         timestamp: new Date().toISOString(),

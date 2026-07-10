@@ -106,7 +106,7 @@ export default function SettingsPage() {
   const [aiPreferences, setAiPreferences] = useState({
     provider: "gemini",
     geminiApiKey: "",
-    geminiModel: "gemini-2.0-flash",
+    geminiModel: "gemini-2.5-flash",
     groqApiKey: "",
     groqModel: "llama3-8b-8192",
     ollamaBaseUrl: "http://localhost:11434",
