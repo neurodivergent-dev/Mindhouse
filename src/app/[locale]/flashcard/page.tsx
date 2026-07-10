@@ -10,6 +10,7 @@ import FlashcardComponent from "@/components/flashcard";
 import FeatureCards from "@/components/ui/feature-cards";
 import { shouldUseDemoData, getDemoSubjects } from "@/data/demo-data";
 import { UnifiedStorageService } from "@/services/unified-storage-service";
+import { SubjectService } from "@/services/supabase-service";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Subject {
@@ -144,7 +145,7 @@ const FlashcardPageContent = () => {
       if (shouldAttemptSync && !authLoading) {
         try {
           const [subjectsResponse] = await Promise.all([
-            fetch("/api/subjects").then((res) => res.json()).catch(() => []),
+            SubjectService.getSubjects().catch(() => []),
             UnifiedStorageService.loadFlashcardsFromSupabase(),
           ]);
 

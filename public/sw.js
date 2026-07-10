@@ -1,4 +1,7 @@
 const CACHE_NAME = 'mindhouse-v1.0.0';
+// Static assets only. API routes are per-user and require a session, so
+// precaching them would fail cache.addAll() and could serve one user's data
+// to another.
 const urlsToCache = [
   '/',
   '/quiz',
@@ -7,11 +10,6 @@ const urlsToCache = [
   '/question-manager',
   '/subject-manager',
   '/settings',
-  '/api/subjects',
-  '/api/questions',
-  '/api/quiz',
-  '/api/results',
-  '/api/analytics/performance',
   '/favicon.svg',
   '/favicon.ico',
   '/manifest.json'

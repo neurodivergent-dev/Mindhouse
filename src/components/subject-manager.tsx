@@ -100,35 +100,8 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         return;
       }
 
-      // Fetch data from API
-      const response = await fetch("/api/subjects");
-      const apiSubjects = await response.json();
-
-      // If API returns demo data and demo mode is off, show empty state
-      if (
-        apiSubjects.length > 0 &&
-        apiSubjects[0].createdBy === "demo_user_btk_2025" &&
-        !shouldUseDemoData()
-      ) {
-        setSubjects([]);
-        setUseSupabase(false);
-        return;
-      }
-
-      // If API returns real data, use it
-      if (
-        apiSubjects.length > 0 &&
-        apiSubjects[0].createdBy !== "demo_user_btk_2025"
-      ) {
-        setSubjects(apiSubjects);
-        setUseSupabase(true);
-
-        // Save API subjects to localStorage for Question Manager to use
-        UnifiedStorageService.saveSubjects(apiSubjects);
-        return;
-      }
-
-      // If API returns empty, check localStorage
+      // Subjects are read through the Supabase client only, so that reads and
+      // writes hit the same table under the same RLS policies.
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -137,47 +110,9 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
         setUseSupabase(false);
         const localSubjects = UnifiedStorageService.getSubjects();
 
-        // Calculate real question count using both localStorage and Supabase
-        const getAllQuestions = async () => {
-          let allQuestions: Question[] = [];
-
-          try {
-            // Check authentication
-            const guestUser = localStorage.getItem("guestUser");
-            const {
-              data: { session: authSession },
-            } = await supabase.auth.getSession();
-            const isAuth = Boolean(guestUser || authSession);
-
-            if (isAuth) {
-              try {
-                // Try to load from Supabase first
-                const response = await fetch('/api/questions');
-                if (response.ok) {
-                  const dbQuestions = await response.json();
-                  allQuestions = [...dbQuestions];
-                }
-              } catch {
-                //do nothing
-              }
-            }
-
-            // Also get local questions from IndexedDB and merge
-            const localQuestions = UnifiedStorageService.getQuestions();
-            localQuestions.forEach((localQ: Question) => {
-              if (!allQuestions.find((cloudQ: Question) => cloudQ.id === localQ.id)) {
-                allQuestions.push(localQ);
-              }
-            });
-
-            return allQuestions;
-          } catch {
-            // Fallback to IndexedDB only
-            return UnifiedStorageService.getQuestions();
-          }
-        };
-
-        const questions = await getAllQuestions();
+        // Without a session there is no cloud data to read, so question counts
+        // come from the local store.
+        const questions = UnifiedStorageService.getQuestions();
         // Calculate real question count for each subject
         const updatedSubjects = localSubjects.map((subject) => {
           const subjectQuestions = questions.filter((q: Question) => {
@@ -248,32 +183,16 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
       const updatedMergedSubjects = await Promise.all(
         mergedSubjects.map(async (subject) => {
           try {
-            // Check if user is authenticated
-            const { data: { session } } = await supabase.auth.getSession();
+            // The session was already verified above.
+            const { count } = await supabase
+              .from('questions')
+              .select('*', { count: 'exact', head: true })
+              .eq('subject', subject.name);
 
-            if (session) {
-              // Authenticated user - get from Supabase
-              const { count } = await supabase
-                .from('questions')
-                .select('*', { count: 'exact', head: true })
-                .eq('subject', subject.name);
-
-              return {
-                ...subject,
-                questionCount: count || 0,
-              };
-            } else {
-              // Guest user - use local IndexedDB fallback
-              const questionCount = questions.filter(
-                (q: { subject: string }) =>
-                  q.subject?.trim().toLowerCase() === subject.name.trim().toLowerCase(),
-              ).length;
-
-              return {
-                ...subject,
-                questionCount,
-              };
-            }
+            return {
+              ...subject,
+              questionCount: count || 0,
+            };
           } catch {
             // Fallback to local IndexedDB data on error
             const questionCount = questions.filter(
@@ -459,17 +378,20 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
   const handleDeleteSubject = async (id: string) => {
     try {
-      if (useSupabase) {
-        const success = await SubjectService.deleteSubject(id);
-        if (success) {
-          setSubjects((prev) => prev.filter((s) => s.id !== id));
-        }
-      } else {
-        const success = UnifiedStorageService.deleteSubject(id);
-        if (success) {
-          setSubjects((prev) => prev.filter((s) => s.id !== id));
-        }
+      const success = useSupabase
+        ? await SubjectService.deleteSubject(id)
+        : UnifiedStorageService.deleteSubject(id);
+
+      if (!success) {
+        toast({
+          title: t("toasts.error"),
+          description: t("toasts.deleteError"),
+          variant: "destructive",
+        });
+        return;
       }
+
+      setSubjects((prev) => prev.filter((s) => s.id !== id));
 
       toast({
         title: t("toasts.success"),
