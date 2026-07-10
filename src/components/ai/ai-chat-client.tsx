@@ -80,7 +80,6 @@ export default function AiChatClient() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const sessionIdRef = useRef<string | null>(null);
   const currentSubjectRef = useRef<string>("Genel");
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -337,25 +336,6 @@ export default function AiChatClient() {
       setSubjects([]);
     }
   };
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsAuthenticated(Boolean(session));
-    };
-    checkAuth();
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((session) => {
-      setIsAuthenticated(Boolean(session));
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   // Load subjects on mount
   useEffect(() => {
