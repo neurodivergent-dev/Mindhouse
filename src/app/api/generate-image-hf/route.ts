@@ -27,33 +27,10 @@ export async function POST(request: NextRequest) {
       fetchHeaders.Authorization = `Bearer ${pollinationsApiKey}`;
     }
 
-    // If using the default 'flux' model, we don't need validation HEAD checks, return directly
-    if (model === "flux") {
-      return NextResponse.json({
-        imageUrl: fluxUrl,
-        success: true,
-        confidence: 0.9,
-      });
-    }
-
-    // Verify if the selected custom model (like zimage) is failing or not reachable
-    try {
-      const response = await fetch(fluxUrl, { 
-        method: "HEAD", 
-        headers: fetchHeaders,
-        signal: AbortSignal.timeout(4000) 
-      });
-      
-      // If the custom model does not exist or gives error, fallback to flux model keeping authorization
-      if (!response.ok) {
-        imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
-      }
-    } catch {
-      imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
-    }
-
+    // Directly return the generated URL without checking it via HEAD request first.
+    // This avoids latency issues, timeouts, and authorization header pre-fetch failures.
     return NextResponse.json({
-      imageUrl,
+      imageUrl: fluxUrl,
       success: true,
       confidence: 0.9,
     });
