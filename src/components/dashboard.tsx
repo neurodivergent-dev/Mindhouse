@@ -30,6 +30,7 @@ import Link from "next/link";
 import AnalyticsDashboard from "./analytics-dashboard";
 import MobileNav from "./mobile-nav";
 import LoadingSpinner from "./loading-spinner";
+import { supabase } from "@/lib/supabase";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
@@ -152,10 +153,12 @@ export default function Dashboard() {
     }
 
     try {
-      // For real data, we need the user ID
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        // If no user, show empty state
+      // Real data requires a signed-in user; the API derives the id from the
+      // session cookie, so an anonymous visitor gets the empty state.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
         setPerformanceData([]);
         setRecentResults([]);
         setTotalStats({ totalTests: 0, averageScore: 0, totalTimeSpent: 0 });
@@ -163,13 +166,11 @@ export default function Dashboard() {
         return;
       }
 
-      const headers = new Headers({ "x-user-id": userId });
-
       const [performanceResponse, resultsResponse, statsResponse] =
         await Promise.all([
-          fetch("/api/analytics/performance", { headers }),
-          fetch("/api/results?limit=5", { headers }),
-          fetch("/api/analytics/quick-stats", { headers }),
+          fetch("/api/analytics/performance"),
+          fetch("/api/results?limit=5"),
+          fetch("/api/analytics/quick-stats"),
         ]);
 
       const perfData = performanceResponse.ok

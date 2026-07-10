@@ -4,8 +4,8 @@ import {
   generateQuestions,
   type QuestionGenerationInput,
 } from "@/ai/flows/question-generator";
-import { supabase } from "@/lib/supabase";
 import { shouldUseDemoData } from "@/data/demo-data";
+import { getUserScopedClient } from "@/lib/supabase/server";
 import { AIFactory } from "@/services/ai/AIFactory";
 import { logError } from "@/lib/error-logger";
 
@@ -188,13 +188,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check authentication (optional for demo mode)
-    if (!shouldUseDemoData()) {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-      }
+    const auth = await getUserScopedClient(request);
+
+    // Anonymous callers may only use their own key (BYOK) or demo mode —
+    // never the server's API key.
+    const hasClientKey = Boolean(request.headers.get("x-ai-api-key"));
+    if (!shouldUseDemoData() && !auth && !hasClientKey) {
+      return NextResponse.json(
+        {
+          error:
+            "Sign in or configure your own AI API key in Settings to generate questions",
+        },
+        { status: 401 },
+      );
     }
 
     let result;
@@ -217,12 +223,9 @@ export async function POST(request: NextRequest) {
     // Log generation for monitoring
     if (!shouldUseDemoData()) {
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.from("ai_generation_logs").insert({
-            user_id: session.user.id,
+        if (auth) {
+          await auth.supabase.from("ai_generation_logs").insert({
+            user_id: auth.user.id,
             generation_type: "question",
             subject: body.subject,
             topic: body.topic,

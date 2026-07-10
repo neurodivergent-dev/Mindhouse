@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { SubjectRepository } from "@/lib/database/repositories/subject-repository";
 import { initializeDatabase } from "@/lib/database/connection";
 import { shouldUseDemoData } from "@/data/demo-data";
-import { checkAuth } from "@/lib/supabase";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // Force this route to be dynamic
 export const dynamic = "force-dynamic";
@@ -106,11 +106,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     // Initialize database if not already done
     initializeDatabase();
 
     const body = await request.json();
-    const { name, description, category, difficulty, createdBy } = body;
+    const { name, description, category, difficulty } = body;
+    const createdBy = user.id;
 
     // Validate required fields
     if (!name || !description || !category || !difficulty) {
@@ -205,9 +211,9 @@ export async function GET(request: NextRequest) {
 
     // 🔍 Session control - Check if the user is logged in
 
-    const { isLoggedIn, user } = await checkAuth();
+    const user = await getAuthUser(request);
 
-    if (!isLoggedIn) {
+    if (!user) {
       return NextResponse.json([], { status: 200 });
     }
 
@@ -230,9 +236,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Add user filter for data isolation
-    if (user?.id) {
-      filters.userId = user.id;
-    }
+    filters.userId = user.id;
 
     // Get subjects with user filtering
     const subjects = await SubjectRepository.getAllSubjects(filters);
@@ -251,6 +255,11 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     // Initialize database if not already done
     initializeDatabase();
 

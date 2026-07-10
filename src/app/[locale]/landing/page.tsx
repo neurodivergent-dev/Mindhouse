@@ -197,7 +197,7 @@ export default function LandingPage() {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-800/60 border-0">{t("badgeGoogleGemini")}</Badge>
-                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeGenkit")}</Badge>
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900/50 dark:text-purple-200 dark:hover:bg-purple-800/60 border-0">{t("badgeVercelAiSdk")}</Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -637,7 +637,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800/50">
                       <Cpu className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <span className="font-semibold text-purple-700 dark:text-purple-200">
-                        Genkit Framework
+                        Vercel AI SDK
                       </span>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800/50">

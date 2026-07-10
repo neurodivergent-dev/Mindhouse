@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { QuestionRepository } from "@/lib/database/repositories/question-repository";
 import { initializeDatabase } from "@/lib/database/connection";
 import { shouldUseDemoData, getDemoQuestions } from "@/data/demo-data";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   let requestBody: any = null;
@@ -124,16 +125,14 @@ export async function GET(request: NextRequest) {
     // Initialize database if not already done
     initializeDatabase();
 
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    const subject = searchParams.get("subject");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+    const userId = user.id;
+
+    const { searchParams } = new URL(request.url);
+    const subject = searchParams.get("subject");
 
     // Import here to avoid circular dependency
     const { getAllPerformanceData, getPerformanceHistoryForSubject } =

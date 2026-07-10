@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { AiChatRepository } from "@/lib/database/repositories/ai-chat-repository";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 // POST /api/ai-chat/[sessionId]/messages - Add a message to a session
 export async function POST(
@@ -8,15 +9,13 @@ export async function POST(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const { sessionId } = await params;
-    const { role, content, subject, userId } = await request.json();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "UserId is required" },
-        { status: 400 },
-      );
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+
+    const { sessionId } = await params;
+    const { role, content, subject } = await request.json();
 
     if (!role || !content || !subject) {
       return NextResponse.json(
@@ -37,7 +36,7 @@ export async function POST(
     }
 
     const message = await AiChatRepository.addMessage(
-      userId,
+      user.id,
       sessionId,
       subject,
       role,

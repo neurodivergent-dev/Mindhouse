@@ -7,7 +7,7 @@ import {
   getDemoQuestions,
   getAllDemoQuestions,
 } from "@/data/demo-data";
-import { checkAuth } from "@/lib/supabase";
+import { getAuthUser } from "@/lib/supabase/server";
 
 // Force this route to be dynamic
 export const dynamic = "force-dynamic";
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 🔍 Session control
-    const { isLoggedIn } = await checkAuth();
+    const user = await getAuthUser(request);
 
-    if (!isLoggedIn) {
+    if (!user) {
       return NextResponse.json(
         { error: "Oturum açmanız gerekiyor!" },
         { status: 401 },
@@ -145,9 +145,9 @@ export async function GET(request: NextRequest) {
     }
 
     // 🔍 Session control
-    const { isLoggedIn, user } = await checkAuth();
+    const user = await getAuthUser(request);
 
-    if (!isLoggedIn) {
+    if (!user) {
       return NextResponse.json([], { status: 200 });
     }
 
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
 
     // Get questions from database with user filtering
     let questions;
-    const userId = user?.id;
+    const userId = user.id;
 
     if (subjectId) {
       questions = await QuestionRepository.getQuestionsBySubject(

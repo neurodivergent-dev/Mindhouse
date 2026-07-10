@@ -3,23 +3,23 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/database/connection";
 import { quizResults } from "@/lib/database/schema";
 import { desc, eq } from "drizzle-orm";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
+  const user = await getAuthUser(request);
+  if (!user) {
+    return NextResponse.json(UNAUTHORIZED, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const limit = parseInt(searchParams.get("limit") || "10");
-  const userId = request.headers.get("x-user-id");
-
-  if (!userId) {
-    // Cannot fetch results without a user identifier
-    return NextResponse.json([]);
-  }
 
   try {
     const db = getDb();
     const results = await db
       .select()
       .from(quizResults)
-      .where(eq(quizResults.userId, userId))
+      .where(eq(quizResults.userId, user.id))
       .orderBy(desc(quizResults.createdAt))
       .limit(limit);
 
@@ -34,12 +34,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
+    }
+
     const body = await request.json();
-    const { userId, subject, score, totalQuestions, timeSpent, weakTopics } =
-      body;
+    const { subject, score, totalQuestions, timeSpent, weakTopics } = body;
 
     // Basic validation
-    if (!userId || !subject || score === undefined || !totalQuestions) {
+    if (!subject || score === undefined || !totalQuestions) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -50,7 +54,7 @@ export async function POST(request: NextRequest) {
     const newResult = await db
       .insert(quizResults)
       .values({
-        userId,
+        userId: user.id,
         subject,
         score,
         totalQuestions,

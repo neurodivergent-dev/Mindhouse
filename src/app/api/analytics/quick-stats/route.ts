@@ -3,14 +3,13 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/database/connection";
 import { quizResults } from "@/lib/database/schema";
 import { sql, avg, sum, count } from "drizzle-orm";
+import { getAuthUser } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   try {
-    // In a real app, you'd get the user ID from a secure session (e.g., NextAuth, Supabase Auth).
-    // For this project, we'll rely on a guest ID passed from the client via headers.
-    const userId = request.headers.get("x-user-id");
+    const user = await getAuthUser(request);
 
-    if (!userId) {
+    if (!user) {
       // Return zeroed stats if no user is identified.
       return NextResponse.json({
         totalTests: 0,
@@ -18,6 +17,7 @@ export async function GET(request: NextRequest) {
         totalTimeSpent: 0,
       });
     }
+    const userId = user.id;
 
     const db = getDb();
     const statsResult = await db

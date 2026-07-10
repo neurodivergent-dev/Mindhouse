@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import QuizComponent from "@/components/quiz";
+import { supabase } from "@/lib/supabase";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,10 +109,12 @@ function QuizPageContent() {
 
   // Check authentication status
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const guestUser = localStorage.getItem("guestUser");
-      const supabaseToken = localStorage.getItem("sb-gjdjjwvhxlhlftjwykcj-auth-token");
-      setIsAuthenticated(Boolean(guestUser || supabaseToken));
+      const {
+        data: { session: authSession },
+      } = await supabase.auth.getSession();
+      setIsAuthenticated(Boolean(guestUser || authSession));
     };
 
     checkAuth();

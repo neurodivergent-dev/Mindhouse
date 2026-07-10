@@ -1,19 +1,16 @@
 import type { NextRequest} from "next/server";
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
 import { logError } from "@/lib/error-logger";
+import { getUserScopedClient, UNAUTHORIZED } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
-
   try {
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 },
-      );
+    const auth = await getUserScopedClient(request);
+    if (!auth) {
+      return NextResponse.json(UNAUTHORIZED, { status: 401 });
     }
+    const { user, supabase } = auth;
+    const userId = user.id;
 
     // Simple check to see if user can access flashcards table
     const { error } = await supabase
@@ -39,7 +36,7 @@ export async function GET(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    logError("Check access error", error, { userId });
+    logError("Check access error", error, { url: request.url });
     return NextResponse.json(
       { error: "Internal server error", details: error instanceof Error ? error.message : String(error) },
       { status: 500 },

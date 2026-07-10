@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/database/connection";
 import { quizResults } from "@/lib/database/schema";
 import { sql } from "drizzle-orm";
+import { getAuthUser } from "@/lib/supabase/server";
 
 // Force this route to be dynamic
 export const dynamic = "force-dynamic";
@@ -12,11 +13,12 @@ interface WeakTopic {
 }
 
 export async function GET(request: NextRequest) {
-  const userId = request.headers.get("x-user-id");
+  const user = await getAuthUser(request);
 
-  if (!userId) {
+  if (!user) {
     return NextResponse.json([]);
   }
+  const userId = user.id;
 
   try {
     // 1. Get all results for the user

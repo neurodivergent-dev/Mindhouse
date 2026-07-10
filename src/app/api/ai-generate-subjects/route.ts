@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { AIFactory } from "@/services/ai/AIFactory";
 import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
+import { getAuthUser, UNAUTHORIZED } from "@/lib/supabase/server";
 import { z } from "zod";
 
 const SubjectGenerationInputSchema = z.object({
@@ -50,6 +51,16 @@ export async function POST(request: NextRequest) {
   let language = "tr";
 
   try {
+    // Anonymous callers may only use their own key (BYOK) — never the
+    // server's API key.
+    const hasClientKey = Boolean(request.headers.get("x-ai-api-key"));
+    if (!hasClientKey) {
+      const user = await getAuthUser(request);
+      if (!user) {
+        return NextResponse.json(UNAUTHORIZED, { status: 401 });
+      }
+    }
+
     const body = await request.json();
     language = typeof body?.language === "string" ? body.language : "tr";
     const input = SubjectGenerationInputSchema.parse(body);
