@@ -2,7 +2,7 @@
   <img src="public/favicon.svg" alt="Mindhouse Logo" width="150">
   <h1>Mindhouse - AI-Powered Learning Platform</h1>
   <p>
-    <strong>A next-generation AI-powered study companion that personalizes your learning experience... But that's just the beginning. The real question: What is education? What is consciousness? What is learning?</strong>
+    <strong>An AI-powered study companion that personalizes your learning: it detects knowledge gaps, generates practice questions, and guides you with an intelligent tutor.</strong>
   </p>
   <p>
     <a href="https://mindhouse.vercel.app/"><strong>Visit Live Demo »</strong></a>
@@ -57,7 +57,7 @@ This project was built to transform the learning experience using modern web tec
 ### **🎨 Modern User Experience:**
 
 - **PWA Support:** Progressive Web App capabilities for offline usage and home-screen installation.
-- **Premium Aesthetics:** Curated dark/light modes, premium glassmorphism, responsive comparison lists, and smooth micro-animations.
+- **Polished UI:** Dark/light modes, glassmorphism styling, responsive layouts, and smooth micro-animations.
 - **Robust Error Handling:** Informative user-friendly notifications and fallbacks.
 
 ### **⚙️ Security & Management:**
@@ -104,30 +104,31 @@ This project follows a comprehensive manual quality assurance process. For detai
 
 ## 🏗️ Technical Architecture
 
-Mindhouse relies on a robust layered N-tier architecture enforcing clean Separation of Concerns:
+Mindhouse uses a layered architecture with a clear separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Presentation Layer                   │
-│  (React Components + Next.js Pages + Tailwind CSS)     │
+│                   Presentation Layer                    │
+│   (React Components + Next.js App Router + Tailwind)    │
 ├─────────────────────────────────────────────────────────┤
-│                    Business Logic Layer                 │
-│     (Services + API Routes + Server Actions)           │
+│                  Business Logic Layer                   │
+│           (API Routes + Client-side Services)           │
 ├─────────────────────────────────────────────────────────┤
-│                      AI Layer                          │
-│        (Vercel AI SDK + Google Gemini API)              │
+│                        AI Layer                         │
+│    (Vercel AI SDK · Gemini / OpenAI · Pollinations)     │
 ├─────────────────────────────────────────────────────────┤
-│                   Data Access Layer                     │
-│      (Drizzle ORM + Repository Pattern)                │
+│                    Data Access Layer                    │
+│         (Drizzle ORM  +  Supabase Client / RLS)         │
 ├─────────────────────────────────────────────────────────┤
-│                    Database Layer                       │
-│     (PostgreSQL via Supabase + IndexedDB Cache)        │
+│                     Database Layer                      │
+│      (PostgreSQL via Supabase  +  IndexedDB Cache)      │
 └─────────────────────────────────────────────────────────┘
 ```
 
-- **Frontend:** Next.js 15 + React 18 + TypeScript
+- **Frontend:** Next.js 15 (App Router) + React 18 + TypeScript
 - **Styling:** Tailwind CSS + Radix UI Primitives + Framer Motion
-- **Database:** PostgreSQL (Supabase) + localforage (IndexedDB Cache) + Drizzle ORM
+- **AI:** Vercel AI SDK with Google Gemini / OpenAI (bring-your-own-key); Pollinations.ai for image generation
+- **Data:** PostgreSQL (Supabase) via Drizzle ORM on server routes; Supabase client (RLS) for subjects & questions; IndexedDB (localforage) as local cache
 - **Data Isolation:** Supabase Row Level Security (RLS) policies protect user data accessed through the Supabase client. Server routes that use Drizzle ORM enforce user ownership at the application layer.
 
 ## 📚 Technical Documentation
@@ -172,7 +173,7 @@ Set up local AI-powered generation modules in minutes:
 
 ```mermaid
 flowchart TD
-  subgraph UI
+  subgraph UI["Presentation (Next.js App Router)"]
     Dashboard
     Quiz
     Flashcard
@@ -182,76 +183,78 @@ flowchart TD
     VoiceAssistant
     AnalyticsDashboard
     ProfileSettings
-    ChangePassword
     DataManagement
   end
 
-  subgraph API
-    APIRoute
-    PerformanceService
-    QuizService
-    SubjectService
-    AIService
-    AvatarService
+  subgraph API["API Routes / Services"]
+    QuizAPI["/api/quiz + /api/results"]
+    AnalyticsAPI["/api/analytics/*"]
+    FlashcardAPI["/api/flashcards"]
+    AIChatAPI["/api/ai-chat"]
+    AIGenAPI["/api/ai-generate-*"]
+    ImageAPI["Image Generation API"]
+    AvatarAPI["/api/upload-avatar"]
   end
 
-  subgraph AI
-    VercelAISDK
-    GoogleGemini
-    CustomFlows
+  subgraph AILayer["AI Layer"]
+    VercelAISDK["Vercel AI SDK"]
+    Gemini["Google Gemini"]
+    OpenAI["OpenAI (BYOK)"]
+    Pollinations["Pollinations.ai"]
   end
 
-  subgraph DB
-    UsersTable
-    SubjectsTable
-    QuestionsTable
-    QuizResultsTable
-    PerformanceAnalyticsTable
-    AIRecommendationsTable
-    FlashcardProgressTable
-    IndexedDBCache
+  subgraph DAL["Data Access"]
+    SupabaseClient["Supabase Client (RLS)"]
+    Drizzle["Drizzle ORM"]
+  end
+
+  subgraph StorageLayer["Storage"]
+    Postgres[("PostgreSQL / Supabase")]
+    IndexedDB[("IndexedDB Cache")]
   end
 
   subgraph Cloud
     Cloudinary
-    SupabaseAuth
+    SupabaseAuth["Supabase Auth"]
   end
 
-  UI --> APIRoute
-  APIRoute --> PerformanceService
-  APIRoute --> QuizService
-  APIRoute --> SubjectService
-  APIRoute --> AIService
-  APIRoute --> AvatarService
+  %% Direct Supabase-client channel (subjects & questions)
+  SubjectManager --> SupabaseClient
+  QuestionManager --> SupabaseClient
+  SupabaseClient --> Postgres
 
-  PerformanceService --> QuizResultsTable
-  PerformanceService --> PerformanceAnalyticsTable
-  QuizService --> QuestionsTable
-  QuizService --> QuizResultsTable
-  SubjectService --> SubjectsTable
-  AIService --> VercelAISDK
-  VercelAISDK --> GoogleGemini
-  VercelAISDK --> CustomFlows
+  %% API-route channel (Drizzle ORM)
+  Quiz --> QuizAPI
+  Dashboard --> AnalyticsAPI
+  AnalyticsDashboard --> AnalyticsAPI
+  Flashcard --> FlashcardAPI
+  AIChat --> AIChatAPI
+  QuizAPI --> Drizzle
+  AnalyticsAPI --> Drizzle
+  FlashcardAPI --> Drizzle
+  AIChatAPI --> Drizzle
+  Drizzle --> Postgres
 
-  AIService --> AIRecommendationsTable
-  Flashcard --> FlashcardProgressTable
-  AIChat --> IndexedDBCache
+  %% AI generation
+  QuestionManager --> AIGenAPI
+  SubjectManager --> AIGenAPI
+  AIGenAPI --> VercelAISDK
+  VercelAISDK --> Gemini
+  VercelAISDK --> OpenAI
+  Flashcard --> ImageAPI
+  ImageAPI --> Pollinations
 
-  AvatarService --> Cloudinary
-  ProfileSettings --> SupabaseAuth
-  ChangePassword --> SupabaseAuth
-  DataManagement --> SupabaseAuth
-
-  UsersTable <---> QuizResultsTable
-  UsersTable <---> PerformanceAnalyticsTable
-  UsersTable <---> AIRecommendationsTable
-  UsersTable <---> FlashcardProgressTable
-  SubjectsTable <---> QuestionsTable
-
+  %% Local cache & voice
+  AIChat --> IndexedDB
   Quiz --> VoiceAssistant
-  Quiz --> AIChat
   Flashcard --> VoiceAssistant
-  Dashboard --> AnalyticsDashboard
+  Quiz --> AIChat
+
+  %% Cloud services
+  ProfileSettings --> AvatarAPI
+  AvatarAPI --> Cloudinary
+  ProfileSettings --> SupabaseAuth
+  DataManagement --> SupabaseAuth
 ```
 
 </details>
@@ -282,7 +285,10 @@ flowchart TD
    # Supabase Client Settings
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   DATABASE_URL=your_direct_postgres_url
+
+   # Database (Drizzle ORM)
+   DATABASE_URL=your_pooled_postgres_url   # Supabase pooler, port 6543
+   DIRECT_URL=your_direct_postgres_url     # Direct connection, port 5432 (used by migrations)
 
    # Cloudinary configuration
    CLOUDINARY_CLOUD_NAME=your_cloudinary_name
