@@ -13,6 +13,8 @@ export interface AIPreferences {
   ollamaLocalModel: string;
   ollamaCloudApiKey: string;
   ollamaCloudModel: string;
+  pollinationsApiKey?: string;
+  pollinationsModel?: string;
 }
 
 export class AIFactory {

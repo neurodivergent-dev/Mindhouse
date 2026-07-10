@@ -9,6 +9,8 @@ import { Image, Loader2, Download, RefreshCw, Eye, EyeOff, Zap } from "lucide-re
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
 
+import { getStoredAiPreferences } from "@/lib/ai-preferences";
+
 interface HuggingFaceImageGeneratorProps {
   description: string;
   topic: string;
@@ -34,6 +36,8 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
       setIsGenerating(true);
       setIsLoading(true);
 
+      const prefs = getStoredAiPreferences();
+
       // Backend API ile görsel üretimi
       const response = await fetch("/api/generate-image-hf", {
         method: "POST",
@@ -44,6 +48,8 @@ const HuggingFaceImageGenerator: React.FC<HuggingFaceImageGeneratorProps> = ({
           prompt: description,
           topic,
           subject,
+          pollinationsApiKey: prefs.pollinationsApiKey || "",
+          pollinationsModel: prefs.pollinationsModel || "flux",
         }),
       });
 

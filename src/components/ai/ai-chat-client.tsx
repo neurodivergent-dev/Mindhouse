@@ -690,6 +690,7 @@ export default function AiChatClient() {
   // Image generation function
   const generateImage = async (prompt: string, subject: string = "Genel") => {
     try {
+      const prefs = getStoredAiPreferences();
       const response = await fetch("/api/generate-image-hf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -697,6 +698,8 @@ export default function AiChatClient() {
           prompt,
           subject,
           topic: prompt.substring(0, 50),
+          pollinationsApiKey: prefs.pollinationsApiKey || "",
+          pollinationsModel: prefs.pollinationsModel || "flux",
         }),
       });
 
