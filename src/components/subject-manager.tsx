@@ -378,9 +378,14 @@ const SubjectManager = ({ onRefresh, refreshTrigger }: SubjectManagerProps) => {
 
   const handleDeleteSubject = async (id: string) => {
     try {
-      const success = useSupabase
+      // loadSubjects() merges the cloud list with the local one and writes the
+      // result back to local storage, so a subject can live in both places.
+      // Deleting only one of them lets the survivor reappear on the next load.
+      const deletedLocally = UnifiedStorageService.deleteSubject(id);
+      const deletedInCloud = useSupabase
         ? await SubjectService.deleteSubject(id)
-        : UnifiedStorageService.deleteSubject(id);
+        : false;
+      const success = deletedLocally || deletedInCloud;
 
       if (!success) {
         toast({
