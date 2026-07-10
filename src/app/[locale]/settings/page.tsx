@@ -113,6 +113,8 @@ export default function SettingsPage() {
     ollamaLocalModel: "llama3",
     ollamaCloudApiKey: "",
     ollamaCloudModel: "llama3",
+    pollinationsApiKey: "",
+    pollinationsModel: "flux",
   });
 
   const provider = aiPreferences.provider;
@@ -991,6 +993,54 @@ export default function SettingsPage() {
                     </div>
                   </>
                 )}
+
+                {/* Pollinations.ai Section */}
+                <div className="pt-4 border-t border-white/20 dark:border-white/10 mt-4">
+                  <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-3 flex items-center gap-1.5">
+                    🎨 {t("pollinations_heading") || "Pollinations.ai (BYOK)"}
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wide">
+                        {t("pollinations_api_key") || "Pollinations API Key"}
+                      </Label>
+                      <Input
+                        id="pollinations-key"
+                        type="password"
+                        placeholder="sk-pol-..."
+                        value={aiPreferences.pollinationsApiKey || ""}
+                        onChange={(e) => {
+                          const updated = { ...aiPreferences, pollinationsApiKey: e.target.value };
+                          setAiPreferences(updated);
+                          persistAiPreferences(updated);
+                        }}
+                        className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
+                      />
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("pollinations_key_hint") || "Pollinations.ai üzerinden aldığınız API anahtarını buraya girin."}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-[#86868b] dark:text-[#a1a1a6] uppercase tracking-wide">
+                        {t("model_name")}
+                      </Label>
+                      <Input
+                        id="pollinations-model"
+                        placeholder="flux, turbo, unity vs."
+                        value={aiPreferences.pollinationsModel || "flux"}
+                        onChange={(e) => {
+                          const updated = { ...aiPreferences, pollinationsModel: e.target.value };
+                          setAiPreferences(updated);
+                          persistAiPreferences(updated);
+                        }}
+                        className="bg-white/60 dark:bg-white/5 border-white/20 dark:border-white/10 rounded-xl"
+                      />
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {t("pollinations_model_hint") || "Görsel üretimi için kullanmak istediğiniz Pollinations model adını girin (Örn: flux, turbo, unity)."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

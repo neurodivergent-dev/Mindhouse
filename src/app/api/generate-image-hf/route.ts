@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json();
+    const { prompt, pollinationsApiKey, pollinationsModel } = await request.json();
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt gerekli" }, { status: 400 });
@@ -15,15 +15,25 @@ export async function POST(request: NextRequest) {
     const cleanPrompt = shortPrompt;
 
     const seed = Math.floor(Math.random() * 1000000);
+    const model = pollinationsModel || "flux";
 
-    const fluxUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
+    const fluxUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=${model}&enhance=false&nologo=true`;
     const defaultUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&enhance=false&nologo=true`;
 
     let imageUrl = fluxUrl;
 
-    // Verify if the high-quality Flux model is rate-limited (429) or failing
+    const fetchHeaders: Record<string, string> = {};
+    if (pollinationsApiKey) {
+      fetchHeaders["Authorization"] = `Bearer ${pollinationsApiKey}`;
+    }
+
+    // Verify if the selected model is rate-limited (429) or failing
     try {
-      const response = await fetch(fluxUrl, { method: "HEAD", signal: AbortSignal.timeout(2000) });
+      const response = await fetch(fluxUrl, { 
+        method: "HEAD", 
+        headers: fetchHeaders,
+        signal: AbortSignal.timeout(2000) 
+      });
       if (response.status === 429 || !response.ok) {
         imageUrl = defaultUrl;
       }

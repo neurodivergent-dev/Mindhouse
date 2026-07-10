@@ -23,6 +23,8 @@ export function getStoredAiPreferences(): Partial<AIPreferences> {
       ollamaLocalModel: parsed.ollamaLocalModel || "llama3",
       ollamaCloudApiKey: parsed.ollamaCloudApiKey || "",
       ollamaCloudModel: parsed.ollamaCloudModel || "llama3",
+      pollinationsApiKey: parsed.pollinationsApiKey || "",
+      pollinationsModel: parsed.pollinationsModel || "flux",
     };
   } catch {
     return {};
