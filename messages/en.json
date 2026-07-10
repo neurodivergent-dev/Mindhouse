@@ -1372,6 +1372,7 @@
     "send": "Send",
     "featuresTitle": "AI Chat Features",
     "generatedImageAlt": "AI generated educational image",
+    "openImageInNewTab": "Click to open image in a new tab",
     "welcomeMessageGeneral": "Hello! I'm your Mindhouse AI Tutor. You can ask me anything about general topics. Let's get started!",
     "welcomeMessage": "Hello! I'm your Mindhouse AI Tutor. You can ask me anything about {subject}. Let's get started!",
     "errorMessage": "Sorry, an error occurred and I couldn't process your request. Please try again later.",

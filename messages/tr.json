@@ -1376,6 +1376,7 @@
     "send": "Gönder",
     "featuresTitle": "AI Chat Özellikleri",
     "generatedImageAlt": "AI tarafından üretilen eğitim görseli",
+    "openImageInNewTab": "Görseli yeni sekmede açmak için tıklayın",
     "welcomeMessageGeneral": "Merhaba! Ben Mindhouse AI Tutor'ınız. Genel konularda aklınıza takılan her şeyi sorabilirsiniz. Hadi başlayalım!",
     "welcomeMessage": "Merhaba! Ben Mindhouse AI Tutor'ınız. {subject} dersiyle ilgili aklınıza takılan her şeyi sorabilirsiniz. Hadi başlayalım!",
     "errorMessage": "Üzgünüm, bir hata oluştu ve isteğinizi işleyemedim. Lütfen daha sonra tekrar deneyin.",
