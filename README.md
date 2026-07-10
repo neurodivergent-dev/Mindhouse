@@ -115,7 +115,7 @@ Mindhouse uses a layered architecture with a clear separation of concerns:
 │           (API Routes + Client-side Services)           │
 ├─────────────────────────────────────────────────────────┤
 │                        AI Layer                         │
-│    (Vercel AI SDK · Gemini / OpenAI · Pollinations)     │
+│ (Vercel AI SDK · Gemini / Groq / Ollama · Pollinations) │
 ├─────────────────────────────────────────────────────────┤
 │                    Data Access Layer                    │
 │         (Drizzle ORM  +  Supabase Client / RLS)         │
@@ -127,7 +127,7 @@ Mindhouse uses a layered architecture with a clear separation of concerns:
 
 - **Frontend:** Next.js 15 (App Router) + React 18 + TypeScript
 - **Styling:** Tailwind CSS + Radix UI Primitives + Framer Motion
-- **AI:** Vercel AI SDK with Google Gemini / OpenAI (bring-your-own-key); Pollinations.ai for image generation
+- **AI:** Vercel AI SDK with Google Gemini / Groq / Ollama (bring-your-own-key); Pollinations.ai for image generation
 - **Data:** PostgreSQL (Supabase) via Drizzle ORM on server routes; Supabase client (RLS) for subjects & questions; IndexedDB (localforage) as local cache
 - **Data Isolation:** Supabase Row Level Security (RLS) policies protect user data accessed through the Supabase client. Server routes that use Drizzle ORM enforce user ownership at the application layer.
 
@@ -199,7 +199,8 @@ flowchart TD
   subgraph AILayer["AI Layer"]
     VercelAISDK["Vercel AI SDK"]
     Gemini["Google Gemini"]
-    OpenAI["OpenAI (BYOK)"]
+    Groq["Groq"]
+    Ollama["Ollama (local / cloud)"]
     Pollinations["Pollinations.ai"]
   end
 
@@ -240,7 +241,8 @@ flowchart TD
   SubjectManager --> AIGenAPI
   AIGenAPI --> VercelAISDK
   VercelAISDK --> Gemini
-  VercelAISDK --> OpenAI
+  VercelAISDK --> Groq
+  VercelAISDK --> Ollama
   Flashcard --> ImageAPI
   ImageAPI --> Pollinations
 

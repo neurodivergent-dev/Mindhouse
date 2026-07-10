@@ -82,13 +82,13 @@ export default function DemoPage() {
   );
 
   React.useEffect(() => {
-    const savedPlayingState = localStorage.getItem("btk_demo_playing") === "true";
+    const savedPlayingState = localStorage.getItem("demo_playing") === "true";
     setIsPlaying(savedPlayingState);
   }, []);
 
   const handleStepAction = (step: DemoStep) => {
     setCompletedSteps((prev) => [...prev, step.id]);
-    localStorage.setItem("btk_demo_mode", "true");
+    localStorage.setItem("demo_mode", "true");
 
     toast({
       title: t("stepStarting", { title: step.title }),
@@ -116,17 +116,17 @@ export default function DemoPage() {
     setIsPlaying(newPlayingState);
 
     if (typeof window !== "undefined") {
-      localStorage.setItem("btk_demo_playing", newPlayingState.toString());
+      localStorage.setItem("demo_playing", newPlayingState.toString());
     }
 
     if (newPlayingState) {
-      localStorage.setItem("btk_demo_mode", "true");
+      localStorage.setItem("demo_mode", "true");
       toast({
         title: t("demoStartedTitle"),
         description: t("demoStartedDesc"),
       });
     } else {
-      localStorage.removeItem("btk_demo_mode");
+      localStorage.removeItem("demo_mode");
       toast({
         title: t("demoPausedTitle"),
         description: t("demoPausedDesc"),

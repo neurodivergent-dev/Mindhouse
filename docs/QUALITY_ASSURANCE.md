@@ -911,25 +911,25 @@
 - [ ] Guest modu network kullanımı optimize mi?
 - [ ] Guest modu cache mekanizması var mı?
 
-### **🏛️ BTK Demo Modu Testleri:**
+### **🏛️ Demo Modu Testleri:**
 
-**BTK Demo Switch Özellikleri:**
+**Demo Switch Özellikleri:**
 
-- [ ] BTK Demo switch'i görünüyor mu?
-- [ ] BTK Demo switch'i çalışıyor mu?
+- [ ] Demo switch'i görünüyor mu?
+- [ ] Demo switch'i çalışıyor mu?
 - [ ] Demo modu açılıp kapanabiliyor mu?
 - [ ] Switch durumu kaydediliyor mu?
 - [ ] Switch animasyonu düzgün mü?
 
-**BTK Demo Sayfaları:**
+**Demo Sayfaları:**
 
-- [ ] BTK Demo sayfası açılıyor mu?
+- [ ] Demo sayfası açılıyor mu?
 - [ ] Demo sayfaları responsive mi?
 - [ ] Demo sayfaları loading state'leri gösteriyor mu?
 - [ ] Demo sayfaları error handling çalışıyor mu?
 - [ ] Demo sayfaları navigation çalışıyor mu?
 
-**BTK Demo İçerikleri:**
+**Demo İçerikleri:**
 
 - [ ] Demo içerikleri yükleniyor mu?
 - [ ] Demo verileri doğru mu?
@@ -937,7 +937,7 @@
 - [ ] Demo açıklamaları anlaşılır mı?
 - [ ] Demo görselleri yükleniyor mu?
 
-**BTK Demo Etkileşimleri:**
+**Demo Etkileşimleri:**
 
 - [ ] Demo etkileşimleri çalışıyor mu?
 - [ ] Demo butonları responsive mi?
@@ -945,7 +945,7 @@
 - [ ] Demo animasyonları düzgün mü?
 - [ ] Demo hover efektleri çalışıyor mu?
 
-**BTK Demo Özellikleri:**
+**Demo Özellikleri:**
 
 - [ ] Demo AI özellikleri çalışıyor mu?
 - [ ] Demo test çözme çalışıyor mu?
@@ -953,7 +953,7 @@
 - [ ] Demo konu anlatımı çalışıyor mu?
 - [ ] Demo chat çalışıyor mu?
 
-**BTK Demo Veri Yönetimi:**
+**Demo Veri Yönetimi:**
 
 - [ ] Demo verileri ayrı saklanıyor mu?
 - [ ] Demo verileri gerçek verilerle karışmıyor mu?
@@ -961,7 +961,7 @@
 - [ ] Demo verileri export edilebiliyor mu?
 - [ ] Demo verileri import edilebiliyor mu?
 
-**BTK Demo UI/UX:**
+**Demo UI/UX:**
 
 - [ ] Demo arayüzü kullanıcı dostu mu?
 - [ ] Demo açıklamaları yeterli mi?
@@ -969,7 +969,7 @@
 - [ ] Demo responsive design var mı?
 - [ ] Demo loading state'leri gösteriliyor mu?
 
-**BTK Demo Performance:**
+**Demo Performance:**
 
 - [ ] Demo sayfaları hızlı yükleniyor mu?
 - [ ] Demo verileri optimize edilmiş mi?
@@ -977,7 +977,7 @@
 - [ ] Demo network kullanımı optimize mi?
 - [ ] Demo cache mekanizması var mı?
 
-**BTK Demo Güvenlik:**
+**Demo Güvenlik:**
 
 - [ ] Demo modu güvenli mi?
 - [ ] Demo verileri izole edilmiş mi?
@@ -985,7 +985,7 @@
 - [ ] Demo modu sınırlı mı?
 - [ ] Demo modu kontrollü mü?
 
-**BTK Demo Error Handling:**
+**Demo Error Handling:**
 
 - [ ] Demo hata mesajları gösteriliyor mu?
 - [ ] Demo network hataları yönetiliyor mu?
@@ -993,7 +993,7 @@
 - [ ] Demo timeout durumları yönetiliyor mu?
 - [ ] Demo retry mekanizması var mı?
 
-**BTK Demo Accessibility:**
+**Demo Accessibility:**
 
 - [ ] Demo sayfaları erişilebilir mi?
 - [ ] Demo klavye navigasyonu çalışıyor mu?

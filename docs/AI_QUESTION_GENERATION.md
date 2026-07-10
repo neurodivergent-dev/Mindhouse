@@ -11,7 +11,7 @@ The AI-powered question generation feature enables automatic creation of high-qu
 - **Multiple Question Types**: Supports multiple-choice, true/false, calculation, and case study questions
 - **Difficulty Levels**: Generate questions at Easy, Medium, or Hard difficulty levels
 - **Language Support**: Currently supports Turkish (tr) and English (en)
-- **Bulk Generation**: Generate up to 10 questions at once
+- **Bulk Generation**: Generate up to 25 questions at once
 - **Custom Guidelines**: Provide additional instructions to the AI for specific requirements
 
 ### 2. Quality Validation
@@ -46,7 +46,7 @@ The AI-powered question generation feature enables automatic creation of high-qu
 ### Architecture
 
 1. **AI Flow** (`src/ai/flows/question-generator.ts`):
-   - Defines the question generation logic using Google's Genkit framework
+   - Defines the question generation logic on top of `AIFactory` (Vercel AI SDK, provider-agnostic BYOK)
    - Implements prompt engineering for high-quality question generation
    - Includes validation and quality scoring
 
@@ -55,7 +55,7 @@ The AI-powered question generation feature enables automatic creation of high-qu
    - Manages authentication and authorization
    - Logs generation activities
 
-3. **UI Components** (in `src/app/question-manager/page.tsx`):
+3. **UI Components** (in `src/app/[locale]/question-manager/page.tsx`):
    - AI generation dialog with form inputs
    - Question preview and selection interface
    - Integration with existing question management
@@ -104,7 +104,7 @@ CREATE TABLE ai_generation_logs (
    - Update validation logic in `validateGeneratedQuestions()`
 
 2. **Customizing Prompts**:
-   - Modify the `systemPrompt` in `questionGeneratorFlow`
+   - Modify the `systemPrompt` in `generateQuestions()`
    - Add language-specific instructions
    - Adjust quality criteria
 

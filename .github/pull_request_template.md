@@ -13,7 +13,7 @@
 - [ ] 🔒 **Security enhancement** (security fixes, authentication improvements)
 - [ ] 🧪 **Test addition** (adding missing tests, improving test coverage)
 - [ ] 🔧 **Refactoring** (code restructuring, no functional changes)
-- [ ] 🤖 **AI feature** (AI integration, Genkit flows, Gemini features)
+- [ ] 🤖 **AI feature** (AI integration, AIFactory providers, Gemini/Groq/Ollama)
 - [ ] 🗄️ **Database change** (schema changes, migrations)
 - [ ] 🚀 **Deployment** (CI/CD, infrastructure changes)
 
@@ -63,7 +63,7 @@ Related to #
 
 #### AI Features (if applicable)
 
-- [ ] **Genkit Integration**: AI flows working correctly
+- [ ] **AIFactory Integration**: AI flows working correctly
 - [ ] **Error Handling**: AI request failures handled gracefully
 - [ ] **Rate Limiting**: API limits respected
 - [ ] **Input Validation**: All inputs validated before AI processing

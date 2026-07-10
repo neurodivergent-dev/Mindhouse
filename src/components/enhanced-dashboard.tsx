@@ -232,7 +232,7 @@ export default function EnhancedDashboard() {
         // Make sure the IndexedDB-backed cache is ready before reading
         await UnifiedStorageService.initialize();
 
-        // BTK Hackathon Demo Mode
+        // Demo Mode
         if (useDemoData) {
           setPerformanceData(
             demoPerformanceData.map((item) => ({

@@ -287,7 +287,7 @@ export const Card: React.FC<CardProps> = ({
 
 ### Adding AI Features
 
-1. **Use Genkit Framework**: All AI features should use Google Genkit
+1. **Use the AIFactory provider pattern**: Route all AI calls through `AIFactory` so features stay provider-agnostic (Gemini / Groq / Ollama, BYOK)
 2. **Error Handling**: Implement proper error handling for AI requests
 3. **Rate Limiting**: Respect API rate limits
 4. **Validation**: Validate all inputs before sending to AI services
@@ -295,18 +295,26 @@ export const Card: React.FC<CardProps> = ({
 ### Example AI Integration
 
 ```typescript
-// ✅ Good - Proper AI integration
-import { genkit } from "@genkit-ai/core";
+// ✅ Good - Proper AI integration via the provider factory
+import { z } from "zod";
+import { AIFactory } from "@/services/ai/AIFactory";
+
+const QuestionSchema = z.object({
+  text: z.string(),
+  options: z.array(z.object({ text: z.string(), isCorrect: z.boolean() })),
+  explanation: z.string(),
+});
 
 export async function generateQuestion(topic: string, difficulty: string) {
   try {
-    const result = await genkit.run("generate-question", {
-      topic,
-      difficulty,
-      format: "multiple-choice",
-    });
+    // Provider is chosen from the user's BYOK preferences (Gemini / Groq / Ollama)
+    const provider = AIFactory.getProviderFromPreferences({ provider: "gemini" });
 
-    return result;
+    return await provider.generateObject({
+      systemPrompt: "You are an expert question generator.",
+      prompt: `Generate a ${difficulty} multiple-choice question about ${topic}.`,
+      schema: QuestionSchema,
+    });
   } catch (error) {
     console.error("AI generation failed:", error);
     throw new Error("Failed to generate question");

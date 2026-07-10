@@ -15,11 +15,11 @@
 
 ### **Technology Stack:**
 
-- **Frontend:** Next.js 15.3.3 (React 18.3.1) + TypeScript
+- **Frontend:** Next.js 15.5.20 (React 18.3.1) + TypeScript
 - **Styling:** Tailwind CSS + Radix UI + Framer Motion
-- **Backend:** Next.js API Routes + Server Actions
-- **Database:** PostgreSQL (Supabase) + Drizzle ORM
-- **AI Integration:** Google Genkit + Gemini AI
+- **Backend:** Next.js API Routes + Client-side Services
+- **Database:** PostgreSQL (Supabase) + Drizzle ORM + IndexedDB (localforage) cache
+- **AI Integration:** Vercel AI SDK (BYOK) — Google Gemini / Groq / Ollama
 - **Auth:** Supabase Auth
 - **Storage:** Cloudinary (avatar management)
 - **PWA:** next-pwa
@@ -35,7 +35,7 @@
 │     (Services + API Routes + Server Actions)            │
 ├─────────────────────────────────────────────────────────┤
 │                      AI Layer                           │
-│        (Genkit Flows + Google Gemini)                   │
+│        (AIFactory Gemini/Groq/Ollama)                   │
 ├─────────────────────────────────────────────────────────┤
 │                   Data Access Layer                      │
 │      (Drizzle ORM + Repository Pattern)                 │
@@ -60,13 +60,22 @@
   - `settings/` - Settings
   - `auth/` - Authentication pages
 
-### **`/src/ai/` - AI Integration**
+### **`/src/ai/` - AI Flows**
 
-- `flows/` - Genkit AI flows
+- `flows/` - AI flows (thin wrappers built on `AIFactory` / Vercel AI SDK)
+  - `question-generator.ts` - Question generation
+  - `topic-explainer-ai.ts` - Topic explanations
   - `ai-tutor.ts` - AI teacher assistant
   - `ai-chat.ts` - Chat system
+  - `flashcard-generation.ts` - Flashcard generation
   - `flashcard-recommendation.ts` - Personalized card recommendations
   - `personalize-question-difficulty.ts` - Difficulty level personalization
+
+### **`/src/services/ai/` - AI Provider Layer (BYOK)**
+
+- `AIFactory.ts` - Picks a provider from request headers / user preferences
+- `providers/` - `GeminiProvider`, `GroqProvider`, `OllamaProvider`
+- `core/IAIProvider.ts` - Common provider interface
 
 ### **`/src/components/` - React Components**
 
@@ -108,12 +117,18 @@ GET  /api/quiz - Get test results
 // and the same RLS policies.
 
 // AI Chat API
-POST /api/ai-chat/sessions - Start new session
-POST /api/ai-chat/messages - Send message
-GET  /api/ai-chat/history - Chat history
+GET/POST /api/ai-chat                 - List / create sessions
+/api/ai-chat/[sessionId]              - Session detail & delete
+/api/ai-chat/[sessionId]/messages     - Session messages
+
+// AI Generation API
+POST /api/ai-generate-questions       - Generate questions
+POST /api/ai-generate-subjects        - Generate subjects & topics
 
 // Analytics API
-GET  /api/analytics - Performance analytics
+GET  /api/analytics/dashboard         - Dashboard analytics
+GET  /api/analytics/performance       - Performance analytics
+GET  /api/analytics/quick-stats       - Quick stats
 
 // Avatar API
 POST /api/upload-avatar - Upload avatar
@@ -138,7 +153,7 @@ User Action → React Component → API Route/Server Action
 // AI Tutor Flow
 1. User requests help with question
 2. Component → AI Tutor API call
-3. Genkit Flow → Google Gemini
+3. AIFactory → selected provider (Gemini / Groq / Ollama)
 4. Structured response → UI display
 ```
 
@@ -149,7 +164,7 @@ User Action → React Component → API Route/Server Action
 1. **TypeScript Strict Mode:** Full type safety
 2. **Repository Pattern:** Clean data access layer
 3. **Modular Structure:** Well-organized folder structure
-4. **AI Integration:** Structured AI flows with Genkit
+4. **AI Integration:** Provider-agnostic AI flows (BYOK) on the Vercel AI SDK
 5. **Modern UI:** Radix UI + Tailwind CSS combination
 6. **PWA Support:** Offline working capability
 7. **Responsive Design:** Compatible across all devices
@@ -159,11 +174,9 @@ User Action → React Component → API Route/Server Action
 
 1. **Missing Tests:** No test files present
 2. **Missing Error Boundary:** No global error handling
-3. **TypeScript Build Errors:** Using `ignoreBuildErrors: true`
-4. **ESLint Disabled:** Using `ignoreDuringBuilds: true`
-5. **Environment Variable Validation:** Missing .env validation
-6. **API Rate Limiting:** No DDoS protection
-7. **Logging System:** Missing centralized log management
+3. **Environment Variable Validation:** Missing .env validation
+4. **API Rate Limiting:** Rate limiting on only one endpoint
+5. **Logging System:** Missing centralized log management
 
 ## 5. 🔒 Security and Performance
 
@@ -213,7 +226,7 @@ e2e / user - flows / -quiz - flow.test.ts - auth - flow.test.ts;
 - **Unit Tests:** Jest + React Testing Library
 - **Integration Tests:** Jest + Supertest
 - **E2E Tests:** Playwright or Cypress
-- **AI Flow Tests:** Genkit Test Utils
+- **AI Flow Tests:** Mock the AI provider (AIFactory)
 
 ## 7. 🔧 Refactoring Recommendations
 
@@ -354,9 +367,6 @@ npm run db:init
 
 # 5. Start development server
 npm run dev
-
-# 6. Genkit UI (optional)
-npm run genkit:dev
 ```
 
 ### **Core Data Models:**
@@ -402,12 +412,12 @@ npm run genkit:dev
 
 ```json
 {
-  "next": "15.3.3",
+  "next": "15.5.20",
   "react": "18.3.1",
   "@supabase/supabase-js": "2.52.1",
-  "drizzle-orm": "0.37.0",
-  "genkit": "1.15.5",
-  "@genkit-ai/googleai": "1.15.5",
+  "drizzle-orm": "0.45.2",
+  "ai": "7.0.11",
+  "@ai-sdk/google": "4.0.5",
   "@radix-ui/react-*": "latest",
   "tailwindcss": "3.4.1"
 }

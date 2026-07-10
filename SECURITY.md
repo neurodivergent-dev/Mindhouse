@@ -7,8 +7,8 @@ currently being supported with security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 2.0.x   | :white_check_mark: |
+| < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -49,7 +49,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ### Authentication & Authorization
 
 - ✅ **Supabase Auth Integration:** Secure user authentication with JWT tokens
-- ✅ **Row Level Security (RLS):** Database-level access control for all tables
+- ✅ **Row Level Security (RLS):** Enforced on data accessed via the Supabase client; server routes using Drizzle ORM enforce user ownership in application code
 - ✅ **TypeScript Strict Mode:** Complete type safety throughout the application
 - ✅ **Secure Password Management:** Encrypted password storage and secure change process
 
@@ -64,7 +64,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 
 - ✅ **API Key Management:** Secure storage of AI service credentials
 - ✅ **Request Validation:** All AI requests validated before processing
-- ✅ **Rate Limiting:** Protection against API abuse
+- ⚠️ **Rate Limiting:** Applied to a limited set of endpoints (see Known Limitations)
 - ✅ **Error Handling:** Secure error responses without information leakage
 
 ## 🛡️ Security Best Practices
@@ -152,6 +152,6 @@ This security policy is part of the Mindhouse project and is covered under the s
 
 ---
 
-**Last Updated:** August 2025  
-**Version:** 1.0.0  
-**Next Review:** August 2025
+**Last Updated:** July 2026  
+**Version:** 2.0.0  
+**Next Review:** January 2027

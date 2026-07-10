@@ -223,7 +223,7 @@ const QuizComponent: React.FC<QuizProps> = ({ subject, isDemoMode = false }) => 
   // Save demo mode to localStorage
   useEffect(() => {
     if (typeof window !== "undefined" && isDemoMode) {
-      localStorage.setItem("btk_demo_mode", "true");
+      localStorage.setItem("demo_mode", "true");
     }
   }, [isDemoMode]);
 
@@ -328,7 +328,7 @@ const QuizComponent: React.FC<QuizProps> = ({ subject, isDemoMode = false }) => 
         // Check demo mode
         const demoModeActive =
           isDemoMode ||
-          (typeof window !== "undefined" && localStorage.getItem("btk_demo_mode") === "true");
+          (typeof window !== "undefined" && localStorage.getItem("demo_mode") === "true");
 
         if (demoModeActive) {
           // Load demo questions from demo-data.ts

@@ -1,7 +1,7 @@
 {
   "back_to_home": "Ana Sayfaya Dön",
   "quiz_page": "Quiz Sayfası",
-  "btk_demo": "BTK Demo",
+  "demo_label": "Demo",
   "page_description": "Bilgilerinizi test etmek için bir ders seçin ve quiz'e başlayın.",
   "subject_selection": "Ders Seçimi",
   "subject_selection_description": "Quiz başlatmak için aşağıdan bir ders seçin",
