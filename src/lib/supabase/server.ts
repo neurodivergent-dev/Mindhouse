@@ -1,7 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import type { NextRequest, NextResponse } from "next/server";
+
+type CookiesToSet = { name: string; value: string; options: CookieOptions }[];
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -20,9 +24,40 @@ async function getCookieClient(): Promise<SupabaseClient | null> {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      // Route handlers cannot write cookies through next/headers;
-      // token refresh happens in the browser client.
-      setAll: () => {},
+      setAll: (cookiesToSet: CookiesToSet) => {
+        try {
+          for (const { name, value, options } of cookiesToSet) {
+            cookieStore.set(name, value, options);
+          }
+        } catch {
+          // Server Components cannot write cookies; a refreshed token is
+          // persisted by the browser client instead.
+        }
+      },
+    },
+  });
+}
+
+/**
+ * Supabase client for the OAuth callback route: reads the incoming request's
+ * cookies (including the PKCE code verifier) and writes the resulting session
+ * cookies onto `response`, which must be the response the route returns.
+ */
+export function createCallbackClient(
+  request: NextRequest,
+  response: NextResponse,
+): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
+  }
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookiesToSet: CookiesToSet) => {
+        for (const { name, value, options } of cookiesToSet) {
+          response.cookies.set(name, value, options);
+        }
+      },
     },
   });
 }

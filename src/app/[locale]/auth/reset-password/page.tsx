@@ -48,8 +48,14 @@ function ResetPasswordContent() {
         data: { session },
       } = await supabase.auth.getSession();
 
-      // If no session and no access token, the reset link is invalid
-      if (!session && !searchParams.get("access_token")) {
+      // PKCE recovery links carry `code`; legacy implicit links carry
+      // `access_token`. Either one means the browser client is still
+      // establishing the session.
+      const hasRecoveryParam = Boolean(
+        searchParams.get("code") || searchParams.get("access_token"),
+      );
+
+      if (!session && !hasRecoveryParam) {
         setIsValidToken(false);
       }
     };

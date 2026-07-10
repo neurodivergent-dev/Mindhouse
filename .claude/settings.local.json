@@ -8,7 +8,8 @@
       "Bash(grep -rnEi \"\\(api[_-]?key|secret|password|token\\)\\\\s*[:=]\\\\s*[\\\\\"'][A-Za-z0-9_\\\\-]{16,}[\\\\\"']\" src --include=\"*.ts\" --include=\"*.tsx\")",
       "Bash(npx next *)",
       "Bash(node -e \"console.log\\('installed next:', require\\('next/package.json'\\).version\\)\")",
-      "Bash(npm audit *)"
+      "Bash(npm audit *)",
+      "Bash(node -p \"require\\('./node_modules/@supabase/ssr/package.json'\\).version\")"
     ],
     "deny": [],
     "ask": []
