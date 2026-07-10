@@ -5,7 +5,7 @@ import type { AIPreferences } from "@/services/ai/AIFactory";
 import { AIFactory } from "@/services/ai/AIFactory";
 import { resolveAiErrorMessage } from "@/lib/ai-error-messages";
 
-const AiChatInputSchema = z.object({
+export const AiChatInputSchema = z.object({
   message: z.string().describe("Kullanıcının gönderdiği mesaj"),
   subject: z.string().describe("Hangi ders konusunda konuşuyoruz"),
   conversationHistory: z
@@ -166,12 +166,13 @@ export async function getAiChatResponse(
   `;
 
     const result = await provider.generateObject<AiChatOutput>({
-      schema: AiChatOutputSchema as any,
+      schema: AiChatOutputSchema,
       prompt,
     });
 
     return result;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("AI Chat Error:", error);
 
     const errorMessage = resolveAiErrorMessage(error, locale, "apiKey");
