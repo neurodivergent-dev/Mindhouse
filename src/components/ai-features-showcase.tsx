@@ -110,7 +110,7 @@ export default function AIFeaturesShowcase() {
                     </Badge>
                   </div>
                   <div className="mt-auto">
-                    <Link href="/topic-explainer">
+                    <Link href="/ai-chat">
                       <Button
                         size="sm"
                         className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
