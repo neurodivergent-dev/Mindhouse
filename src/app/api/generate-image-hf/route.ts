@@ -27,23 +27,29 @@ export async function POST(request: NextRequest) {
       fetchHeaders.Authorization = `Bearer ${pollinationsApiKey}`;
     }
 
-    // Verify if the selected model is rate-limited (429) or failing
+    // If using the default 'flux' model, we don't need validation HEAD checks, return directly
+    if (model === "flux") {
+      return NextResponse.json({
+        imageUrl: fluxUrl,
+        success: true,
+        confidence: 0.9,
+      });
+    }
+
+    // Verify if the selected custom model (like zimage) is failing or not reachable
     try {
       const response = await fetch(fluxUrl, { 
         method: "HEAD", 
         headers: fetchHeaders,
-        signal: AbortSignal.timeout(4000) // Increase timeout to 4s to avoid false-negative fallbacks
+        signal: AbortSignal.timeout(4000) 
       });
-      if (response.status === 429 || !response.ok) {
-        // Fallback to default (or flux model) but keep authentication headers
-        imageUrl = pollinationsApiKey 
-          ? `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`
-          : defaultUrl;
+      
+      // If the custom model does not exist or gives error, fallback to flux model keeping authorization
+      if (!response.ok) {
+        imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
       }
     } catch {
-      imageUrl = pollinationsApiKey 
-        ? `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`
-        : defaultUrl;
+      imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=768&height=768&seed=${seed}&model=flux&enhance=false&nologo=true`;
     }
 
     return NextResponse.json({
