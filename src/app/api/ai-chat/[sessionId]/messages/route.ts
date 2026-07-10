@@ -15,7 +15,7 @@ export async function POST(
     }
 
     const { sessionId } = await params;
-    const { role, content, subject } = await request.json();
+    const { role, content, subject, image } = await request.json();
 
     if (!role || !content || !subject) {
       return NextResponse.json(
@@ -35,7 +35,14 @@ export async function POST(
       );
     }
 
-    const message = await AiChatRepository.addMessage(user.id, sessionId, subject, role, content);
+    const message = await AiChatRepository.addMessage(
+      user.id,
+      sessionId,
+      subject,
+      role,
+      content,
+      typeof image === "string" && image ? image : undefined,
+    );
 
     return NextResponse.json(message);
   } catch {

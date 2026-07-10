@@ -7,6 +7,7 @@ export interface AiChatMessage {
   subject: string;
   role: "user" | "assistant";
   content: string;
+  imageUrl?: string;
   timestamp: string;
   createdAt: string;
 }
@@ -43,6 +44,7 @@ type SupabaseMessageData = {
   subject: string;
   role: "user" | "assistant";
   content: string;
+  image_url?: string | null;
   timestamp: string;
   created_at: string;
 };
@@ -132,6 +134,7 @@ export class AiChatRepository {
     subject: string,
     role: "user" | "assistant",
     content: string,
+    imageUrl?: string,
   ): Promise<AiChatMessage> {
     const { data, error } = await supabaseServiceRole
       .from("ai_chat_history")
@@ -141,6 +144,7 @@ export class AiChatRepository {
         subject,
         role,
         content,
+        ...(imageUrl ? { image_url: imageUrl } : {}),
         timestamp: new Date().toISOString(),
       })
       .select()
@@ -282,6 +286,7 @@ export class AiChatRepository {
       subject: data.subject,
       role: data.role,
       content: data.content,
+      ...(data.image_url ? { imageUrl: data.image_url } : {}),
       timestamp: data.timestamp,
       createdAt: data.created_at,
     };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { getAiChatResponse } from "@/ai/flows/ai-chat";
 import { Loader2 } from "lucide-react";
 import { getStoredAiPreferences, isAiConfigured } from "@/lib/ai-preferences";
+import { aiChatSessionRepository } from "@/services/ai-chat-session-storage";
 
 interface AIChatMessage {
   id: string;
@@ -95,6 +96,10 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
+  // Persist floating chat history per subject in IndexedDB
+  const floatingSessionId = `floating_${subject}`;
+  const isRestoredRef = useRef(false);
+
   const closeChat = () => {
     setIsOpen(false);
     setIsFullscreen(false);
@@ -108,6 +113,7 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
     setMessages([]);
     setInput("");
     setShowClearConfirm(false);
+    void aiChatSessionRepository.deleteSession(floatingSessionId);
   };
 
   const handleClearClick = () => {
@@ -121,6 +127,49 @@ const AIFloatingChat: React.FC<AIFloatingChatProps> = ({
   useEffect(() => {
     onOpenChange?.(isOpen);
   }, [isOpen, onOpenChange]);
+
+  // Restore persisted history (incl. generated image links) from IndexedDB
+  useEffect(() => {
+    let cancelled = false;
+    isRestoredRef.current = false;
+    (async () => {
+      try {
+        const session = await aiChatSessionRepository.getSession(floatingSessionId);
+        if (!cancelled && session && session.messages.length > 0) {
+          setMessages(session.messages);
+        }
+      } catch {
+        // Restore failed silently, start with a fresh chat
+      } finally {
+        if (!cancelled) {
+          isRestoredRef.current = true;
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [floatingSessionId]);
+
+  // Persist history to IndexedDB whenever messages change (after restore)
+  useEffect(() => {
+    if (!isRestoredRef.current) {
+      return;
+    }
+    // The welcome message is locale/context dependent, don't persist it
+    const toPersist = messages.filter((msg) => msg.id !== "welcome-ai");
+    if (toPersist.length === 0) {
+      return;
+    }
+    void aiChatSessionRepository.saveSession({
+      sessionId: floatingSessionId,
+      userId: "guest",
+      subject,
+      title: `AI Assistant - ${displaySubject}`,
+      messages: toPersist,
+      lastMessageAt: toPersist[toPersist.length - 1]?.timestamp || new Date().toISOString(),
+    });
+  }, [messages, floatingSessionId, subject, displaySubject]);
 
   // Initialize welcome message
   useEffect(() => {

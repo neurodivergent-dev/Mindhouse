@@ -87,6 +87,7 @@ export default function AiChatClient() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const sessionIdRef = useRef<string | null>(null);
   const currentSubjectRef = useRef<string>("Genel");
+  const skipWelcomeResetRef = useRef(false); // Prevents wiping restored messages when subject is synced from a loaded session
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -388,6 +389,10 @@ export default function AiChatClient() {
   }, [showSubjectSelector]);
 
   useEffect(() => {
+    if (skipWelcomeResetRef.current) {
+      skipWelcomeResetRef.current = false;
+      return;
+    }
     setMessages([
       {
         id: "init",
@@ -407,12 +412,13 @@ export default function AiChatClient() {
     currentSubjectRef.current = currentSubject; // Keep ref in sync
   }, [currentSubject]);
 
-  // Load sessionId from localStorage on mount
+  // Load sessionId from localStorage on mount and restore the conversation
   useEffect(() => {
     const savedSessionId = localStorage.getItem("currentAIChatSessionId");
     if (savedSessionId && !currentSessionId) {
       setCurrentSessionId(savedSessionId);
       sessionIdRef.current = savedSessionId;
+      loadSessionMessages(savedSessionId);
     }
   }, []);
 
@@ -575,8 +581,21 @@ export default function AiChatClient() {
     }
   };
 
+  // Sync subject state with a loaded session without wiping the restored messages
+  const syncSubjectFromSession = (sessionSubject?: string) => {
+    if (sessionSubject && sessionSubject !== currentSubjectRef.current) {
+      skipWelcomeResetRef.current = true;
+      currentSubjectRef.current = sessionSubject;
+      setCurrentSubject(sessionSubject);
+    }
+  };
+
   const loadSessionMessages = async (sessionId: string): Promise<Message[]> => {
     try {
+      // Persist as the current session so navigating away and back restores it
+      sessionIdRef.current = sessionId;
+      localStorage.setItem("currentAIChatSessionId", sessionId);
+
       // Try to load from Supabase first
       let userId: string | null = null;
 
@@ -605,23 +624,26 @@ export default function AiChatClient() {
           if (response.ok) {
             const data = await response.json();
             const formattedMessages: Message[] = data.messages.map(
-              (msg: { id: string; role: string; content: string }) => ({
+              (msg: { id: string; role: string; content: string; imageUrl?: string }) => ({
                 id: msg.id,
                 role: msg.role,
                 content: msg.content,
+                ...(msg.imageUrl && { image: msg.imageUrl }), // Restore generated image link
               }),
             );
 
             // Add initial message with correct subject from session data
+            const sessionSubject = data.subject || currentSubjectRef.current;
             const messagesWithInit = [
               {
                 id: "init",
                 role: "assistant" as const,
-                content: getWelcomeMessage(data.subject || currentSubjectRef.current),
+                content: getWelcomeMessage(sessionSubject),
               },
               ...formattedMessages,
             ];
 
+            syncSubjectFromSession(sessionSubject);
             setMessages(messagesWithInit);
             setCurrentSessionId(sessionId);
             return formattedMessages;
@@ -651,6 +673,7 @@ export default function AiChatClient() {
             ...formattedMessages,
           ];
 
+          syncSubjectFromSession(localSession.subject);
           setMessages(messagesWithInit);
           setCurrentSessionId(sessionId);
           return formattedMessages;
