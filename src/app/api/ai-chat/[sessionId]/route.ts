@@ -16,8 +16,12 @@ export async function GET(
 
     const { sessionId } = await params;
     const messages = await AiChatRepository.getMessagesBySessionId(sessionId, user.id);
+    const session = await AiChatRepository.getSessionBySessionId(sessionId);
 
-    return NextResponse.json({ messages });
+    return NextResponse.json({
+      messages,
+      subject: session?.userId === user.id ? session?.subject : undefined,
+    });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

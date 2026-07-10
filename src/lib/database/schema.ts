@@ -127,6 +127,7 @@ export const aiChatHistory = pgTable("ai_chat_history", {
   subject: text("subject").notNull(),
   role: text("role").notNull(), // 'user' or 'assistant'
   content: text("content").notNull(),
+  imageUrl: text("image_url"), // Generated (Pollinations) image link
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
