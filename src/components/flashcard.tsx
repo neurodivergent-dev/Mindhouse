@@ -100,7 +100,7 @@ const FlashcardComponent: React.FC<FlashcardProps> = ({ subject, isDemoMode = fa
   // Check demo mode from localStorage
   const demoModeActive =
     isDemoMode ||
-    (typeof window !== "undefined" && localStorage.getItem("btk_demo_mode") === "true");
+    (typeof window !== "undefined" && localStorage.getItem("demo_mode") === "true");
 
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

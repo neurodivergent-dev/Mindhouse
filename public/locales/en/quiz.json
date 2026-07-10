@@ -1,7 +1,7 @@
 {
   "back_to_home": "Back to Home",
   "quiz_page": "Quiz Page",
-  "btk_demo": "BTK Demo",
+  "demo_label": "Demo",
   "page_description": "Select a subject to test your knowledge and start the quiz.",
   "subject_selection": "Subject Selection",
   "subject_selection_description": "Select a subject from below to start the quiz",

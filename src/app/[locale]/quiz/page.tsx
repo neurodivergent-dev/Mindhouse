@@ -312,12 +312,12 @@ function QuizPageContent() {
 
         if (hasRealQuestions) {
           // Use real questions - don't set demo mode and remove any existing demo flag
-          localStorage.removeItem("btk_demo_mode");
+          localStorage.removeItem("demo_mode");
           const quizUrl = `/quiz?subject=${encodeURIComponent(selectedSubject)}`;
           router.push(quizUrl);
         } else {
           // No real questions - use demo mode
-          localStorage.setItem("btk_demo_mode", "true");
+          localStorage.setItem("demo_mode", "true");
           const quizUrl = `/quiz?subject=${encodeURIComponent(selectedSubject)}&demo=true`;
           router.push(quizUrl);
         }
@@ -572,10 +572,10 @@ function QuizPageContent() {
                       });
                       const hasRealQuestions = questionsForSubject.length > 0;
                       if (hasRealQuestions) {
-                        localStorage.removeItem("btk_demo_mode");
+                        localStorage.removeItem("demo_mode");
                         router.push(`/quiz?subject=${encodeURIComponent(subject.name)}`);
                       } else {
-                        localStorage.setItem("btk_demo_mode", "true");
+                        localStorage.setItem("demo_mode", "true");
                         router.push(`/quiz?subject=${encodeURIComponent(subject.name)}&demo=true`);
                       }
                     });

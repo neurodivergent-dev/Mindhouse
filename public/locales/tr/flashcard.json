@@ -1,7 +1,7 @@
 {
   "back_to_home": "Ana Sayfaya Dön",
   "flashcard_learning_system": "Flashcard Öğrenme Sistemi",
-  "btk_demo": "🎯 BTK Demo",
+  "demo_label": "🎯 Demo",
   "select_demo_subjects": "Demo konulardan birini seçin:",
   "which_subject_study": "Hangi konuyu çalışmak istiyorsunuz?",
   "loading_subjects": "Konular yükleniyor...",
@@ -9,7 +9,7 @@
   "no_subjects_with_questions": "Henüz soru içeren konu bulunamadı.",
   "add_question": "Soru Ekle",
   "cards_available": "{count} {type}kart mevcut",
-  "demo_content": "BTK Demo içeriği",
+  "demo_content": "Demo içeriği",
   "smart_learning_system": "Akıllı öğrenme sistemi ile çalışın",
   "smart_learning_features": "🧠 Akıllı Öğrenme Özellikleri",
   "spaced_repetition": "Aralıklı tekrar algoritması",

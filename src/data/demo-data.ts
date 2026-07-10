@@ -1,6 +1,6 @@
 import type { Subject } from "@/types/question-manager";
 
-// BTK Hackathon Demo Data - Mindhouse AI-Powered Education Platform
+// Demo Data - Mindhouse AI-Powered Education Platform
 // Rich demo data for jury presentation
 
 export interface DemoPerformanceData {
@@ -96,8 +96,7 @@ export const demoSubjects: Subject[] = [
   },
 ];
 
-// Rich performance data - BTK Hackathon
-export const demoPerformanceData: DemoPerformanceData[] = [
+// Rich performance dataexport const demoPerformanceData: DemoPerformanceData[] = [
   {
     subject: "Matematik",
     averageScore: 87,
@@ -223,16 +222,14 @@ export const demoRecentResults: DemoQuizResult[] = [
   },
 ];
 
-// Total statistics - BTK Hackathon
-export const demoTotalStats: DemoTotalStats = {
+// Total statisticsexport const demoTotalStats: DemoTotalStats = {
   totalTests: 157, // High usage indicator
   averageScore: 84.2, // Good success rate
   totalTimeSpent: 4680, // 78 hours (in minutes)
   totalSubjects: 7, // Various subject areas
 };
 
-// AI Recommendations - Show AI features for BTK Hackathon
-export const demoAIRecommendations = [
+// AI Recommendations - Show AI featuresexport const demoAIRecommendations = [
   {
     id: "ai_rec_1",
     subject: "Matematik",
@@ -305,7 +302,7 @@ export const demoUser = {
   },
 };
 
-// BTK Hackathon Analytics Demo Data
+// Analytics Demo Data
 export interface DemoAnalyticsData {
   totalQuestions: number;
   correctAnswers: number;
@@ -346,8 +343,7 @@ export interface DemoAnalyticsData {
 }
 
 export const demoAnalyticsData: DemoAnalyticsData = {
-  totalQuestions: 1247, // Impressive number for BTK Hackathon
-  correctAnswers: 1049, // 84.1% success rate
+  totalQuestions: 1247, // Impressive number  correctAnswers: 1049, // 84.1% success rate
   averageScore: 84.2,
   studyTime: 4680, // 78 hours (in minutes)
   streak: 12, // 12 day study streak
@@ -442,7 +438,7 @@ export const shouldUseDemoData = (): boolean => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const demoParam = urlParams.get("demo") === "true";
-  const localStorageDemo = localStorage.getItem("btk_demo_mode");
+  const localStorageDemo = localStorage.getItem("demo_mode");
 
   // Default to false if no localStorage value is set - use API instead
   const shouldUseDemo = demoParam || localStorageDemo === "true";
@@ -454,13 +450,13 @@ export const shouldUseDemoData = (): boolean => {
 export const toggleDemoMode = (enabled: boolean) => {
   if (typeof window !== "undefined") {
     if (enabled) {
-      localStorage.setItem("btk_demo_mode", "true");
+      localStorage.setItem("demo_mode", "true");
       // Demo açıldığında demo sayfasındaki Start'ı da tetikle
-      localStorage.setItem("btk_demo_playing", "true");
+      localStorage.setItem("demo_playing", "true");
     } else {
       // Demo kapatıldığında hem mode'u hem de demo sayfasındaki play state'ini sıfırla
-      localStorage.removeItem("btk_demo_mode");
-      localStorage.setItem("btk_demo_playing", "false");
+      localStorage.removeItem("demo_mode");
+      localStorage.setItem("demo_playing", "false");
       // Clear demo subjects and questions from localStorage to prevent them from showing up
       try {
         const subjects = localStorage.getItem("mindhouse_subjects");
@@ -504,8 +500,7 @@ export const loadDemoDataToLocalStorage = () => {
   localStorage.setItem("guestAIRecommendations", JSON.stringify(demoData.aiRecommendations));
 };
 
-// Demo Questions for BTK Hackathon
-export const demoQuestions = {
+// Demo Questionsexport const demoQuestions = {
   subj_matematik_001: [
     {
       id: "q_mat_001",
@@ -989,8 +984,7 @@ export const getDemoSubjects = (locale?: string): Subject[] => {
   }));
 };
 
-// Demo Flashcards for BTK Hackathon
-export const demoFlashcards = {
+// Demo Flashcardsexport const demoFlashcards = {
   Matematik: [
     {
       id: "fc_mat_001",

@@ -1,7 +1,7 @@
 {
   "back_to_home": "Back to Home",
   "flashcard_learning_system": "Flashcard Learning System",
-  "btk_demo": "🎯 BTK Demo",
+  "demo_label": "🎯 Demo",
   "select_demo_subjects": "Select one of the demo subjects:",
   "which_subject_study": "Which subject do you want to study?",
   "loading_subjects": "Loading subjects...",
@@ -9,7 +9,7 @@
   "no_subjects_with_questions": "No subjects with questions found yet.",
   "add_question": "Add Question",
   "cards_available": "{count} {type}cards available",
-  "demo_content": "BTK Demo content",
+  "demo_content": "Demo content",
   "smart_learning_system": "Study with smart learning system",
   "smart_learning_features": "🧠 Smart Learning Features",
   "spaced_repetition": "Spaced repetition algorithm",

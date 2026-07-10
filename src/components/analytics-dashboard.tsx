@@ -184,8 +184,7 @@ export default function AnalyticsDashboard({ useMockData }: AnalyticsDashboardPr
 
   useEffect(() => {
     const generateMockData = () => {
-      // Use rich demo data for BTK Hackathon
-      if (useMockData) {
+      // Use rich demo data      if (useMockData) {
         setAnalytics({
           ...demoAnalyticsData,
           weakTopics: demoAnalyticsData.weakTopics?.map((t) => translateTopic(t, locale)) || [],
@@ -926,7 +925,7 @@ export default function AnalyticsDashboard({ useMockData }: AnalyticsDashboardPr
         </Card>
       </div>
 
-      {/* BTK Hackathon: Weekly Progress Graph */}
+      {/* Weekly Progress Graph */}
       <Card className="apple-glass-card border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
