@@ -54,3 +54,6 @@ exam-training.db-shm
 /scripts/node_modules/
 /scripts/package-lock.json
 /scripts/package.json
+/mobile
+stunning-system/
+.claude
