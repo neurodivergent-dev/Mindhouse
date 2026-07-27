@@ -144,7 +144,7 @@
     "quickQuiz": "Hızlı Test",
     "quickQuizDesc": "Test çözmeye hemen başlayın",
     "quickFlashcardDesc": "Akıllı kartlarla çalışın",
-    "quickAiTutor": "AI Tutor",
+    "quickAiTutor": "Yapay Zeka Eğitmeni",
     "quickAiTutorDesc": "Yapay zeka ile sohbet edin",
     "quickQuestionManager": "Soru Yönetimi",
     "quickQuestionManagerDesc": "Soruları düzenleyin",
@@ -218,7 +218,7 @@
     "badgeEnterprise": "Kurumsal",
     "activeBranches": "50+ Aktif Branch",
     "qodoCursor": "Qodo + Cursor Bots",
-    "qualityAssurance": "Quality Assurance",
+    "qualityAssurance": "Kalite Güvencesi",
     "qualityAssuranceDesc": "Python proje kontrol scripti, ESLint, TypeScript strict mode ve otomatik test sistemi",
     "badgePythonScript": "Python Kontrol Scripti",
     "badgeTesting": "Test",
@@ -492,7 +492,9 @@
       "Kişiselleştirilmiş Çalışma Programı",
       "Öncelikli Destek"
     ],
-    "premiumLimitations": ["Aylık abonelik gerektirir"],
+    "premiumLimitations": [
+      "Aylık abonelik gerektirir"
+    ],
     "enterpriseFeatures": [
       "Tüm Pro Özellikleri",
       "Aylık plana göre %20 tasarruf",
@@ -1660,8 +1662,8 @@
     "ollama_cloud_model_hint": "Ollama Cloud üzerinde yüklü olan model adını girin.",
     "api_key": "API Key",
     "api_key_placeholder": "Bearer token veya API Key",
-    "key_configured": "\u2713 Bu sağlayıcı için anahtar yapılandırıldı",
-    "ollama_local_no_key": "\uD83D\uDDA5\uFE0F Yerel Ollama - API anahtarı gerekmez (Ollama'nın belirtilen URL'de çalıştığından emin olun)",
+    "key_configured": "✓ Bu sağlayıcı için anahtar yapılandırıldı",
+    "ollama_local_no_key": "🖥️ Yerel Ollama - API anahtarı gerekmez (Ollama'nın belirtilen URL'de çalıştığından emin olun)",
     "ollama_local_warning": "⚠️ Ollama'nın yerel çalıştığından emin olun. Canlıda tarayıcı güvenlik engellerini aşmak için terminalden CORS izinleriyle başlatmalısınız: OLLAMA_ORIGINS=\"*\" ollama serve",
     "provider_desc_hint": "Yapılandırdığınız sağlayıcı ve anahtar kullanılacaktır. Kurulumunuza uygun olanları seçin.",
     "pollinations_heading": "Pollinations.ai Ayarları (BYOK)",

@@ -479,7 +479,11 @@
       "Local Storage (On-Device)",
       "Basic Support (48h)"
     ],
-    "freeLimitations": ["No Cloud sync", "No Voice Assistant", "No Custom Lesson Plans"],
+    "freeLimitations": [
+      "No Cloud sync",
+      "No Voice Assistant",
+      "No Custom Lesson Plans"
+    ],
     "premiumFeatures": [
       "Cloud Sync (Multi-device)",
       "Advanced Quiz System",
@@ -488,7 +492,9 @@
       "Personalized Study Program",
       "Priority Support"
     ],
-    "premiumLimitations": ["Requires monthly subscription"],
+    "premiumLimitations": [
+      "Requires monthly subscription"
+    ],
     "enterpriseFeatures": [
       "All Pro Features",
       "Save 20% compared to monthly",
@@ -1656,8 +1662,8 @@
     "ollama_cloud_model_hint": "Enter the name of the model installed on Ollama Cloud.",
     "api_key": "API Key",
     "api_key_placeholder": "Bearer token or API Key",
-    "key_configured": "\u2713 Key configured for this provider",
-    "ollama_local_no_key": "\uD83D\uDDA5\uFE0F Local Ollama - no API key needed (make sure Ollama is running at the base URL)",
+    "key_configured": "✓ Key configured for this provider",
+    "ollama_local_no_key": "🖥️ Local Ollama - no API key needed (make sure Ollama is running at the base URL)",
     "ollama_local_warning": "⚠️ Make sure Ollama is running locally. To bypass production browser security blocks, start Ollama from terminal with CORS enabled: OLLAMA_ORIGINS=\"*\" ollama serve",
     "provider_desc_hint": "The AI system will use the provider you select here + its key. Configure the correct one for your setup.",
     "pollinations_heading": "Pollinations.ai Settings (BYOK)",
